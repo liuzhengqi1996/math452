@@ -1,15 +1,8 @@
-# Welcome to Math 452
+Welcome to Math 110
+===================
 
-This is a online textbook of Math 452. 
+This is the online companion to our course packet.
 
-:::{Course information}
-Instuctor: Jinchao Xu
-:::
-
-
-Attention:
+```{tableofcontents}
 ```
-This textbook is still under construction
-```
-
 
