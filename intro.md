@@ -1,16 +1,15 @@
-# Welcome to your Jupyter Book
+# Welcome to Math 452
 
-This is a small sample book to give you a feel for how book content is
-structured.
+This is a online textbook of Math 452. 
 
-:::{note}
-Here is a note!
+:::{Course information}
+Instuctor: Jinchao Xu
 :::
 
-And here is a code block:
 
+Attention:
 ```
-e = mc^2
+This textbook is still under construction
 ```
 
-Check out the content pages bundled with this sample book to see more.
+
