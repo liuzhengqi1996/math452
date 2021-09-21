@@ -23,7 +23,7 @@ bibtex_bibfiles:
 
 # Information about where the book exists on the web
 repository:
-  url                       : https://github.com/liuzhengqi1996/math452  # Online location of your book
+  url                       : https://github.com/liuzhengqi1996/binder  # Online location of your book
   # path_to_book              : 110book/  # Optional path to your book, relative to the repository root
   branch                    : master  # Which branch of the repository should be used when creating links (optional)
   
@@ -76,7 +76,7 @@ parse:
 launch_buttons:
   notebook_interface:  "jupyterlab" #or "classic"
   # binderhub_url: https://binder.jupytr.cloud.psu.edu  # The URL for your BinderHub (e.g., https://mybinder.org)
-  binderhub_url: "https://mybinder.org"
+  binderhub_url: "https://mybinder.org/v2/gh/liuzhengqi1996/binder/0857756f6027721a1be25c69bd6b9061d94d5b7a?urlpath=lab%2Ftree%2Ftutorial.ipynb"
 #   jupyterhub_url: ""
 #   thebe: true
 

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chapter 1 Section 1 &#8212; Math 452 Site</title>
+    <title>pytorch tutorial interactive &#8212; Math 452 Site</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet" />
   <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -51,8 +51,8 @@
     <script async="async" src="../_static/sphinx-thebe.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="This is chapter 1 section 2" href="ch1_2.html" />
-    <link rel="prev" title="Chapter 1" href="ch1_.html" />
+    <link rel="next" title="Complete Preliminary Quiz" href="start_preliminary.html" />
+    <link rel="prev" title="Python and Pytorch tutorial" href="start_pytorch.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
     
@@ -95,60 +95,60 @@
  </span>
 </p>
 <ul class="current nav bd-sidenav">
- <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../start/start_.html">
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="start_.html">
    Get started
   </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
   <label for="toctree-checkbox-1">
    <i class="fas fa-chevron-down">
    </i>
   </label>
-  <ul>
+  <ul class="current">
    <li class="toctree-l2">
-    <a class="reference internal" href="../start/start_info.html">
+    <a class="reference internal" href="start_info.html">
      Course information, requirements and reference
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../start/start_background.html">
+    <a class="reference internal" href="start_background.html">
      Course background and introduction
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../start/start_pytorch.html">
+    <a class="reference internal" href="start_pytorch.html">
      Python and Pytorch tutorial
     </a>
    </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../start/tutorial.html">
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
      pytorch tutorial interactive
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../start/start_preliminary.html">
+    <a class="reference internal" href="start_preliminary.html">
      Complete Preliminary Quiz
     </a>
    </li>
   </ul>
  </li>
- <li class="toctree-l1 current active has-children">
-  <a class="reference internal" href="ch1_.html">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../ch1/ch1_.html">
    Chapter 1
   </a>
-  <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
   <label for="toctree-checkbox-2">
    <i class="fas fa-chevron-down">
    </i>
   </label>
-  <ul class="current">
-   <li class="toctree-l2 current active">
-    <a class="current reference internal" href="#">
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../ch1/ch1_1.html">
      Chapter 1 Section 1
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="ch1_2.html">
+    <a class="reference internal" href="../ch1/ch1_2.html">
      This is chapter 1 section 2
     </a>
    </li>
@@ -217,9 +217,9 @@
         <!-- ipynb file if we had a myst markdown file -->
         
         <!-- Download raw file -->
-        <a class="dropdown-buttons" href="../_sources/ch1/ch1_1.md"><button type="button"
+        <a class="dropdown-buttons" href="../_sources/start/tutorial.ipynb"><button type="button"
                 class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
-                data-placement="left">.md</button></a>
+                data-placement="left">.ipynb</button></a>
         <!-- Download PDF via print -->
         <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
             onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
@@ -237,11 +237,41 @@
 
             <!-- Launch buttons -->
 
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
+    <div class="dropdown-buttons">
+        
+        <a class="binder-button" href="https://mybinder.org/v2/gh/liuzhengqi1996/binder/0857756f6027721a1be25c69bd6b9061d94d5b7a?urlpath=lab%2Ftree%2Ftutorial.ipynb/v2/gh/liuzhengqi1996/binder/master?urlpath=lab/tree/start/tutorial.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
+                data-placement="left"><img class="binder-button-logo"
+                    src="../_static/images/logo_binder.svg"
+                    alt="Interact on binder">Binder</button></a>
+        
+        
+        
+        
+    </div>
+</div>
+
         </div>
 
         <!-- Table of contents -->
         <div class="d-none d-md-block col-md-2 bd-toc show">
             
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> Contents
+            </div>
+            <nav id="bd-toc-nav" aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#this-is-a-interactive-pytoch-tutorial">
+   This is a interactive pytoch tutorial
+  </a>
+ </li>
+</ul>
+
+            </nav>
         </div>
     </div>
 </div>
@@ -250,17 +280,11 @@
         
               <div>
                 
-  <div class="section" id="chapter-1-section-1">
-<h1>Chapter 1 Section 1<a class="headerlink" href="#chapter-1-section-1" title="Permalink to this headline">¶</a></h1>
-<p>This is chapter 1 section 1</p>
-<div class="highlight-{Chapter notranslate"><div class="highlight"><pre><span></span>Put something here
-</pre></div>
+  <div class="section" id="pytorch-tutorial-interactive">
+<h1>pytorch tutorial interactive<a class="headerlink" href="#pytorch-tutorial-interactive" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="this-is-a-interactive-pytoch-tutorial">
+<h2>This is a interactive pytoch tutorial<a class="headerlink" href="#this-is-a-interactive-pytoch-tutorial" title="Permalink to this headline">¶</a></h2>
 </div>
-<p>And here is a code block(put code here):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
-</pre></div>
-</div>
-<p>Check out the content pages bundled with this sample book to see more.</p>
 </div>
 
     <script type="text/x-thebe-config">
@@ -276,7 +300,7 @@
         },
         kernelOptions: {
             kernelName: "python3",
-            path: "./ch1"
+            path: "./start"
         },
         predefinedOutput: true
     }
@@ -293,19 +317,19 @@
 <div class='prev-next-bottom'>
     
     <div id="prev">
-        <a class="left-prev" href="ch1_.html" title="previous page">
+        <a class="left-prev" href="start_pytorch.html" title="previous page">
             <i class="prevnext-label fas fa-angle-left"></i>
             <div class="prevnext-info">
                 <p class="prevnext-label">previous</p>
-                <p class="prevnext-title">Chapter 1</p>
+                <p class="prevnext-title">Python and Pytorch tutorial</p>
             </div>
         </a>
     </div>
      <div id="next">
-        <a class="right-next" href="ch1_2.html" title="next page">
+        <a class="right-next" href="start_preliminary.html" title="next page">
             <div class="prevnext-info">
                 <p class="prevnext-label">next</p>
-                <p class="prevnext-title">This is chapter 1 section 2</p>
+                <p class="prevnext-title">Complete Preliminary Quiz</p>
             </div>
             <i class="prevnext-label fas fa-angle-right"></i>
         </a>

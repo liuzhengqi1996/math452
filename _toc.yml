@@ -11,6 +11,7 @@ parts:
     - file: start/start_info.md
     - file: start/start_background.md
     - file: start/start_pytorch.md
+    - file: start/tutorial.ipynb
     - file: start/start_preliminary.md
   - file: ch1/ch1_
     sections:
