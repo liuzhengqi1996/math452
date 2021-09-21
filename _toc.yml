@@ -1,112 +1,28 @@
+# Table of contents
+# Learn more at https://jupyterbook.org/customize/toc.html
+
 format: jb-book
 root: intro
 parts:
-- caption: Course Packets e-book
+- caption: contents
   chapters:
-  - file: ch_Precalc/precalc_
+  - file: start/start_
     sections:
-    - file: ch_Precalc/precalc_simplification.md
-    - file: ch_Precalc/precalc_factoring.md
-    - file: ch_Precalc/precalc_solvingequations.md
-    - file: ch_Precalc/precalc_graphing.md
-    - file: ch_Precalc/precalc_inequalities.md
-    - file: ch_Precalc/precalc_domain.md
-    - file: ch_Precalc/precalc_TIY.md
-  - file: ch_Functions/functions_
+    - file: start/start_info.md
+    - file: start/start_background.md
+    - file: start/start_pytorch.md
+    - file: start/start_preliminary.md
+  - file: ch1/ch1_
     sections:
-    - file: ch_Functions/functions_functionsdomainrange.md
-    - file: ch_Functions/functions_composition.md
-    - file: ch_Functions/functions_costrevprofit.md
-    - file: ch_Functions/functions_powerpolyrational.md
-    - file: ch_Functions/functions_demandsupply
-    - file: ch_Functions/functions_application
-    - file: ch_Functions/functions_TIY
-  - file: ch_Limits/limits_
+    - file: ch1/ch1_1.md
+    - file: ch1/ch1_2.md  
+  - file: ch2/ch2_
     sections:
-    - file: ch_Limits/limits_def.md
-    - file: ch_Limits/limits_proplim.md
-    - file: ch_Limits/limits_graphs.md 
-    - file: ch_Limits/limits_algebra.md
-    - file: ch_Limits/limits_indeterminate.md
-    - file: ch_Limits/limits_infinity.md
-    - file: ch_Limits/limits_continuity.md
-    - file: ch_Limits/limits_TIY.md
-  - file: ch_Derivatives/derivatives_
-    sections:
-    - file: ch_Derivatives/derivatives_def.md
-    - file: ch_Derivatives/derivatives_rules.md
-    - file: ch_Derivatives/derivatives_TIY.md
-  - file: ch_Marginal/marginal_
-    sections:
-    - file: ch_Marginal/marginal_costrevprofit.md
-    - file: ch_Marginal/marginal_marginalanalysis.md
-    - file: ch_Marginal/marginal_elasticitydemand.md
-    - file: ch_Marginal/marginal_elasticityrevenue.md
-    - file: ch_Marginal/marginal_TIY.md
-  - file: ch_Implicit/implicit_
-    sections:
-    - file: ch_Implicit/implicit_differentiation.md
-    - file: ch_Implicit/implicit_relatedrates.md
-    - file: ch_Implicit/implicit_TIY.md
-  - file: ch_Curvesketching/curvesketching_
-    sections:
-    - file: ch_Curvesketching/curvesketching_increasedecrease
-    - file: ch_Curvesketching/curvesketching_relative_extrema.md
-    - file: ch_Curvesketching/curvesketching_critical_points.md
-    - file: ch_Curvesketching/curvesketching_first_derivative_test.md
-    - file: ch_Curvesketching/curvesketching_second_derivative_test.md
-    - file: ch_Curvesketching/curvesketching_concavity.md
-    - file: ch_Curvesketching/curvesketching_inflection.md
-    - file: ch_Curvesketching/curvesketching_asymptotes.md
-    - file: ch_Curvesketching/curvesketching_sketching.md
-    - file: ch_Curvesketching/curvesketching_TIY.md
-  - file: ch_Optimization/optimization_
-    sections:
-    - file: ch_Optimization/optimization_relative_extrema.md
-    - file: ch_Optimization/optimization_critical_points.md
-    - file: ch_Optimization/optimization_first_derivative_test.md
-    - file: ch_Optimization/optimization_second_derivative_test.md
-    - file: ch_Optimization/optimization_absolute_extrema.md
-    - file: ch_Optimization/optimization_applications.md
-    - file: ch_Optimization/optimization_TIY.md
-  - file: ch_Exponential/exponential_
-    sections:
-    - file: ch_Exponential/exponential_functions.md
-    - file: ch_Exponential/exponential_laws.md
-    - file: ch_Exponential/exponential_logarithmic_diff.md
-    - file: ch_Exponential/exponential_TIY.md
-  - file: ch_Compoundinterest/compoundinterest_
-    sections:
-    - file: ch_Compoundinterest/compoundinterest_notation.md
-    - file: ch_Compoundinterest/compoundinterest_accumulated_amount.md
-    - file: ch_Compoundinterest/compoundinterest_present_value.md
-    - file: ch_Compoundinterest/compoundinterest_TIY.md
-  - file: ch_Indefinite/indefinite_
-    sections:
-    - file: ch_Indefinite/indefinite_integrals.md
-    - file: ch_Indefinite/indefinite_rules.md
-    - file: ch_Indefinite/indefinite_init_value.md
-    - file: ch_Indefinite/indefinite_substitution.md
-    - file: ch_Indefinite/indefinite_TIY.md
-  - file: ch_Definite/definite_
-    sections:
-    - file: ch_Definite/definite_riemann.md
-    - file: ch_Definite/definite_ftc.md
-    - file: ch_Definite/definite_substitution.md
-    - file: ch_Definite/definite_average_value.md
-    - file: ch_Definite/definite_TIY.md
-  - file: ch_Applicationintegrals/applicationintegrals_
-    sections:
-    - file: ch_Applicationintegrals/applicationintegrals_area_between_curves.md
-    - file: ch_Applicationintegrals/applicationintegrals_consumer_producer_total_surplus.md
-    - file: ch_Applicationintegrals/applicationintegrals_income_streams_annuities.md
-  - file: ch_Byparts/byparts_
-    sections:
-    - file: ch_Byparts/byparts_integration.md
-    - file: ch_Byparts/byparts_application.md
-    - file: ch_Byparts/byparts_improper.md
-    - file: ch_Byparts/byparts_application_improper.md
+    - file: ch2/ch2_1.md
+    - file: ch2/ch2_2.md
 
+   
+  
 # - caption: Computational Examples
 #   chapters:
 #   - file: nb_Limits/limits_nb_
@@ -118,6 +34,6 @@ parts:
 #   chapters:
 #   - file: nb_Limits/limits_nb_
 
-- caption: Other
-  chapters:
-  - file: Other/privacy
+#- caption: Other
+#  chapters:
+#  - file: Other/privacy
