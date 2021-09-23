@@ -6,17 +6,16 @@ root: intro
 parts:
 - caption: contents
   chapters:
-  - file: start/start_
-    sections:
-    - file: start/start_info.md
-    - file: start/start_background.md
-    - file: start/start_pytorch.md
-    - file: start/tutorial.ipynb
-    - file: start/start_preliminary.md
   - file: ch1/ch1_
     sections:
     - file: ch1/ch1_1.md
     - file: ch1/ch1_2.md  
+    - file: ch1/ch1_3.md 
+      sections:
+        - file: ch1/ch1_3_1.md
+        - file: ch1/ch1_3_2.md
+        - file: ch1/ch1_3_3.md
+    - file: ch1/ch1_4.md 
   - file: ch2/ch2_
     sections:
     - file: ch2/ch2_1.md
