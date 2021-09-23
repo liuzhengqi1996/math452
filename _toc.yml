@@ -6,21 +6,38 @@ root: intro
 parts:
 - caption: contents
   chapters:
-  - file: ch1/ch1_
+  - file: ch01/ch1_
     sections:
-    - file: ch1/ch1_1.md
-    - file: ch1/ch1_2.md  
-    - file: ch1/ch1_3.md 
+    - file: ch01/ch1_1.md
+    - file: ch01/ch1_2.md  
+    - file: ch01/ch1_3.md 
       sections:
-        - file: ch1/ch1_3_1.md
-        - file: ch1/ch1_3_2.md
-        - file: ch1/ch1_3_3.md
-    - file: ch1/ch1_4.md 
-  - file: ch2/ch2_
+      - file: ch01/ch1_3_1.md
+      - file: ch01/ch1_3_2.md
+      - file: ch01/ch1_3_3.md
+    - file: ch01/ch1_4 
+      sections:
+      - file: ch01/ch1_4_1.md
+      - file: ch01/ch1_4_2.md
+  - file: ch02/ch2_
     sections:
-    - file: ch2/ch2_1.md
-    - file: ch2/ch2_2.md
-
+    - file: ch02/ch2_1
+      sections:
+      - file: ch02/ch2_1_1.md
+      - file: ch02/ch2_1_2.md
+      - file: ch02/ch2_1_3.md
+      - file: ch02/ch2_1_4.md
+      - file: ch02/ch2_1_5.md
+    - file: ch02/ch2_2
+      sections:
+      - file: ch02/ch2_2_1.md
+      - file: ch02/ch2_2_2.md
+    - file: ch02/ch2_3.md
+    - file: ch02/ch2_4
+      sections:
+      - file: ch02/ch2_4_1.md
+      - file: ch02/ch2_4_2.md
+      - file: ch02/ch2_4_3.md
    
   
 # - caption: Computational Examples

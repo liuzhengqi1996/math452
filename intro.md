@@ -5,4 +5,3 @@ This is the online companion to Math452.
 
 ```{tableofcontents}
 ```
-
