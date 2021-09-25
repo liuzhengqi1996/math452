@@ -392,17 +392,15 @@ e.g. <span class="math notranslate nohighlight">\(800 \times 600 \times 3\)</spa
 <ul class="simple">
 <li><p>Data: <span class="math notranslate nohighlight">\(\{x_j, y_j\}_{j=1}^N\)</span></p></li>
 <li><p>Find <span class="math notranslate nohighlight">\(f^*\)</span> in some function class s.t. <span class="math notranslate nohighlight">\(f^*(x_j) \approx y_j\)</span>.</p></li>
-<li><p>Mathematically, solve the optimization problem by parameterizing the abstract function class</p></li>
-</ul>
-<div class="math notranslate nohighlight" id="equation-eq1">
-<span class="eqno">(1)<a class="headerlink" href="#equation-eq1" title="Permalink to this equation">¶</a></span>\[   \min_{\theta} \mathcal L(\theta)\]</div>
-</div>
-<ul class="simple">
+<li><p>Mathematically, solve the optimization problem by parameterizing the abstract function class
+<span class="math notranslate nohighlight">\(
+ \min_{\theta} \mathcal L(\theta)
+\)</span></p></li>
 <li><p>where
 <span class="math notranslate nohighlight">\(
-  	\mathcal L( \theta):=
-  	{\mathbb E}_{(x,y)\sim \mathcal D}[\ell(f(x;  \theta), y)]\approx L( \theta) :=
-  	\frac{1}{N} \sum_{j=1}^N\ell(y_j, f(x_j;  \theta))
+ 	\mathcal L( \theta):=
+ 	{\mathbb E}_{(x,y)\sim \mathcal D}[\ell(f(x;  \theta), y)]\approx L( \theta) :=
+ 	\frac{1}{N} \sum_{j=1}^N\ell(y_j, f(x_j;  \theta))
 \)</span></p></li>
 <li><p>Here
 <span class="math notranslate nohighlight">\(
@@ -414,13 +412,14 @@ is a  general distance between real label <span class="math notranslate nohighli
 <ul class="simple">
 <li><p><span class="math notranslate nohighlight">\(l^2\)</span> distance:
 <span class="math notranslate nohighlight">\(
-  	\ell(y_j,f(x_j; \theta)) = \|y_j - f(x_j; \theta)\|^2.
+ 	\ell(y_j,f(x_j; \theta)) = \|y_j - f(x_j; \theta)\|^2.
 \)</span></p></li>
 <li><p>KL-divergence distance:
 <span class="math notranslate nohighlight">\(
 \ell(y_j, f(x_j;  \theta)) = \sum_{i=1}^k [y_j]_i \log\frac{[y_j]_i }{[f(x_j; \theta)]_i}.
 \)</span></p></li>
 </ul>
+</div>
 <div class="admonition-application-image-classification admonition">
 <p class="admonition-title">Application: image classification</p>
 <p>TBD (cannot find pictures)</p>
