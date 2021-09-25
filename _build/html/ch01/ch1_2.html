@@ -42,6 +42,8 @@
     <script src="../_static/copybutton.js"></script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]]}})</script>
     <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
     <script >
         const thebe_selector = ".thebe"
@@ -345,8 +347,38 @@
                 
   <div class="section" id="image-classification-problem">
 <h1>Image classification problem<a class="headerlink" href="#image-classification-problem" title="Permalink to this headline">¶</a></h1>
-<p>Put something here</p>
-<p>And here is a code block:</p>
+<div class="admonition-image-classification-problem admonition">
+<p class="admonition-title">Image classification problem</p>
+<p>We consider a basic machine learning problem for classifying a collection of images
+into k distinctive classes. As an example, we consider a two-dimensional image
+which is usually represented by a tensor <span class="math notranslate nohighlight">\(x \in R^{n_0\times n_0 \times c} = R^d\)</span>
+Here <span class="math notranslate nohighlight">\(n_0 \times n_0\)</span> is the original image resolutuon and</p>
+<p><span class="math notranslate nohighlight">\(
+c=
+   \left \{
+   \begin{array}[rl]{rl}
+   1 &amp; \mbox{for grayscale image},\\    
+   3 &amp; \mbox{for color image}.
+   \end{array}
+   \right.
+\)</span></p>
+<p>A typical supervised machine learning problem begins with a data set (training
+data)</p>
+<p><span class="math notranslate nohighlight">\(
+\begin{aligned}
+D &amp;= \{(x_j, y_j)\}_{j=1}^N, \quad \text{and} \quad A = \{ x_1, x_2, \cdots, x_N\}  \\
+A &amp;= A_1\cup A_2\cup \cdots \cup A_k, ~A_i\cap A_j = \emptyset, \forall i \neq j
+\end{aligned}\)</span></p>
+<p>and <span class="math notranslate nohighlight">\(y_j \in R^k\)</span> is the label for data <span class="math notranslate nohighlight">\(x_j\)</span>, with <span class="math notranslate nohighlight">\(y_i[i]\)</span> as the probability for <span class="math notranslate nohighlight">\(x_i\)</span> in classes <span class="math notranslate nohighlight">\(i\)</span> or <span class="math notranslate nohighlight">\(x_j \in A_i\)</span>.
+Here for image classification problem, <span class="math notranslate nohighlight">\(y_j = e_{i_j}\)</span>,
+if <span class="math notranslate nohighlight">\(x_j \in A_{i_j}\)</span> or we say <span class="math notranslate nohighlight">\(x_j\)</span> has real label <span class="math notranslate nohighlight">\(i_j\)</span>.
+Roughly speaking, a supervised learning problem can be thought as a data fitting
+problem in a high dimensional space <span class="math notranslate nohighlight">\(R^d\)</span>.
+Namely, we need to find a mapping such that, for any <span class="math notranslate nohighlight">\(x_j \in A\)</span></p>
+<div class="math notranslate nohighlight" id="equation-eq1">
+<span class="eqno">(2)<a class="headerlink" href="#equation-eq1" title="Permalink to this equation">¶</a></span>\[f(x_j)\approx y_j = e_{i_j} \in \mathbb R^k.\]</div>
+</div>
+<p>And here is a code block(is this readable):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 </pre></div>
 </div>
