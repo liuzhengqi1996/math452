@@ -8,8 +8,7 @@ parts:
   chapters:
   - file: ch01/ch1_
     sections:
-    - file: ch01/video.ipynb
-    - file: ch01/ch1_1.md
+    - file: ch01/ch1_1_video.ipynb 
     - file: ch01/ch1_2.md  
     - file: ch01/ch1_3.md 
       sections:

@@ -17,20 +17,43 @@ Traceback (most recent call last):
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
-from matplotlib import rcParams, cycler
-import matplotlib.pyplot as plt
-import numpy as np
-plt.ion()
+##Formulate “learning”
+- Data: $\{x_j, y_j\}_{j=1}^N$
+- Find $f^*$ in some function class s.t. $f^*(x_j) \approx y_j$.
+- Mathematically, solve the optimization problem by parameterizing the abstract function class
+$
+	\min_{\theta} \mathcal L(\theta)
+$
+- where
+$
+		\mathcal L( \theta):=
+		{\mathbb E}_{(x,y)\sim \mathcal D}[\ell(f(x;  \theta), y)]\approx L( \theta) :=
+		\frac{1}{N} \sum_{j=1}^N\ell(y_j, f(x_j;  \theta))
+$
+- Here
+$
+\ell(y_j,f(x_j;  \theta))
+$ 
+is a  general distance between real label $y_j$ and predicted label $f(x_j;\theta)$
+
+Two commonly used distances are 
+- $l^2$ distance: 
+$
+		\ell(y_j,f(x_j; \theta)) = \|y_j - f(x_j; \theta)\|^2.
+$		
+- KL-divergence distance:
+$
+\ell(y_j, f(x_j;  \theta)) = \sum_{i=1}^k [y_j]_i \log\frac{[y_j]_i }{[f(x_j; \theta)]_i}.
+$
+
+
+ 
 ------------------
 
-[0;31m---------------------------------------------------------------------------[0m
-[0;31mModuleNotFoundError[0m                       Traceback (most recent call last)
-[0;32m/var/folders/xz/fhb2zgq551315f5zf88k__ph0000gn/T/ipykernel_24582/2191868119.py[0m in [0;36m<module>[0;34m[0m
-[0;32m----> 1[0;31m [0;32mfrom[0m [0mmatplotlib[0m [0;32mimport[0m [0mrcParams[0m[0;34m,[0m [0mcycler[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m      2[0m [0;32mimport[0m [0mmatplotlib[0m[0;34m.[0m[0mpyplot[0m [0;32mas[0m [0mplt[0m[0;34m[0m[0;34m[0m[0m
-[1;32m      3[0m [0;32mimport[0m [0mnumpy[0m [0;32mas[0m [0mnp[0m[0;34m[0m[0;34m[0m[0m
-[1;32m      4[0m [0mplt[0m[0;34m.[0m[0mion[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;36m  File [0;32m"/var/folders/xz/fhb2zgq551315f5zf88k__ph0000gn/T/ipykernel_81262/1356743603.py"[0;36m, line [0;32m2[0m
+[0;31m    - Data: $\{x_j, y_j\}_{j=1}^N$[0m
+[0m            ^[0m
+[0;31mSyntaxError[0m[0;31m:[0m invalid syntax
 
-[0;31mModuleNotFoundError[0m: No module named 'matplotlib'
-ModuleNotFoundError: No module named 'matplotlib'
+SyntaxError: invalid syntax (1356743603.py, line 2)
 
