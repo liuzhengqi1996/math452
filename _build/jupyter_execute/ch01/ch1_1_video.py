@@ -3,13 +3,23 @@
 
 # # A basic machine learning problem: image classification
 
+# In[1]:
+
+
+from IPython.display import IFrame
+
+IFrame(src="https://cdnapisec.kaltura.com/p/2356971/sp/235697100/embedIframeJs/uiconf_id/41416911/partner_id/2356971?iframeembed=true&playerId=kaltura_player&entry_id=1_z2ldie17&flashvars[streamerType]=auto&amp;flashvars[localizationCode]=en&amp;flashvars[leadWithHTML5]=true&amp;flashvars[sideBarContainer.plugin]=true&amp;flashvars[sideBarContainer.position]=left&amp;flashvars[sideBarContainer.clickToClose]=true&amp;flashvars[chapters.plugin]=true&amp;flashvars[chapters.layout]=vertical&amp;flashvars[chapters.thumbnailRotator]=false&amp;flashvars[streamSelector.plugin]=true&amp;flashvars[EmbedPlayer.SpinnerTarget]=videoHolder&amp;flashvars[dualScreen.plugin]=true&amp;flashvars[hotspots.plugin]=1&amp;flashvars[Kaltura.addCrossoriginToIframe]=true&amp;&wid=1_orbc6trh" ,width='800', height='500')
+
+
 # ## Can a machine (function) tell the difference ?
 # ```{image} /figures/cat-dog-1.png
 # :name: label
 # :height: 150px
 # ```
 #  Mathematically, gray-scale image can be just taken as matrix in $R^{n_0\times n_0}$.
-# 
+#  ```{image} /figures/gray-1.png
+# :height: 250px
+# ```
 #  The next figure shows different result from: human vision and computer representation: 
 #  ```{image} /figures/ImagePixels.png
 # :name: label
@@ -35,10 +45,10 @@
 # 
 # 3 different sets of points in $\mathbb{R}^d$, are they separable?
 # ```{image} /figures/cat-dog-2.png
-# :height: 150px
+# :height: 250px
 # ```
 # ```{image} /figures/cat-dog-3.png
-# :height: 150px
+# :height: 250px
 # ```
 # 
 # - Mathematical problem
@@ -100,7 +110,7 @@
 # 
 #  
 
-# In[1]:
+# In[2]:
 
 
 from IPython.display import IFrame
