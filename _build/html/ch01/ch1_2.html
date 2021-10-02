@@ -337,6 +337,19 @@
         <!-- Table of contents -->
         <div class="d-none d-md-block col-md-2 bd-toc show">
             
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> Contents
+            </div>
+            <nav id="bd-toc-nav" aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id1">
+   Image classification problem
+  </a>
+ </li>
+</ul>
+
+            </nav>
         </div>
     </div>
 </div>
@@ -347,20 +360,20 @@
                 
   <div class="section" id="image-classification-problem">
 <h1>Image classification problem<a class="headerlink" href="#image-classification-problem" title="Permalink to this headline">¶</a></h1>
-<div class="admonition-image-classification-problem admonition">
-<p class="admonition-title">Image classification problem</p>
+<div class="section" id="id1">
+<h2>Image classification problem<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p>We consider a basic machine learning problem for classifying a collection of images
 into k distinctive classes. As an example, we consider a two-dimensional image
 which is usually represented by a tensor <span class="math notranslate nohighlight">\(x \in R^{n_0\times n_0 \times c} = R^d\)</span>
 Here <span class="math notranslate nohighlight">\(n_0 \times n_0\)</span> is the original image resolutuon and</p>
 <p><span class="math notranslate nohighlight">\(
 c=
-   \left \{
-   \begin{array}[rl]{rl}
-   1 &amp; \mbox{for grayscale image},\\    
-   3 &amp; \mbox{for color image}.
-   \end{array}
-   \right.
+	\left \{
+	\begin{array}[rl]{rl}
+	1 &amp; \mbox{for grayscale image},\\    
+	3 &amp; \mbox{for color image}.
+	\end{array}
+	\right.
 \)</span></p>
 <p>A typical supervised machine learning problem begins with a data set (training
 data)</p>
@@ -375,15 +388,29 @@ Here for image classification problem, <span class="math notranslate nohighlight
 if <span class="math notranslate nohighlight">\(x_j \in A_{i_j}\)</span> or we say <span class="math notranslate nohighlight">\(x_j\)</span> has real label <span class="math notranslate nohighlight">\(i_j\)</span>.
 Roughly speaking, a supervised learning problem can be thought as a data fitting
 problem in a high dimensional space <span class="math notranslate nohighlight">\(R^d\)</span>.
-Namely, we need to find a mapping such that, for any <span class="math notranslate nohighlight">\(x_j \in A\)</span></p>
-<div class="math notranslate nohighlight" id="equation-eq1">
-<span class="eqno">(1)<a class="headerlink" href="#equation-eq1" title="Permalink to this equation">¶</a></span>\[f(x_j)\approx y_j = e_{i_j} \in \mathbb R^k.\]</div>
+Namely, we need to find a mapping such that, for any <span class="math notranslate nohighlight">\(x_j \in A\)</span>
+<span class="math notranslate nohighlight">\(
+f(x_j)\approx y_j = e_{i_j} \in \mathbb R^k.
+\)</span></p>
+<p>for data <span class="math notranslate nohighlight">\(x_j \in A\)</span>. For general setting above, we use a probatillistic model for understanding the output <span class="math notranslate nohighlight">\(f(x) \in R^k\)</span> as a discrete distribution on <span class="math notranslate nohighlight">\(\{1,\cdots ,k\}\)</span>,
+with <span class="math notranslate nohighlight">\([f(x)]_{i}\)</span> as the probability for x in the class i, namely
+<span class="math notranslate nohighlight">\(
+0 \leq [f(x)]_i \leq 1
+\)</span>,
+<span class="math notranslate nohighlight">\(
+\sum_{i=1}^{k}[f(x)]_{i} =1
+\)</span>.
+At last, we finish our model with a simple strategy to choose
+<span class="math notranslate nohighlight">\(
+\argmax_i\{ [f(x)]_i :  i = 1:k\}
+\)</span>
+as the label for a test data <span class="math notranslate nohighlight">\(x\)</span>, which ideally is close to . The remaining key issue is the construction of the classification mapping <span class="math notranslate nohighlight">\(f\)</span>.
+Generally speaking, there will be a test set
+<span class="math notranslate nohighlight">\(T = \{(x_j,y_j)\}_{j=1}^{M}\)</span>,
+with the same dimension of training data <span class="math notranslate nohighlight">\(D\)</span>, but is not known before we finish the
+training process. That is to say, we can use this test data <span class="math notranslate nohighlight">\(T\)</span> to verify the performance
+of trained model <span class="math notranslate nohighlight">\(f\)</span> .</p>
 </div>
-<p>And here is a code block(is this readable):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-</pre></div>
-</div>
-<p>Check out the content pages bundled with this sample book to see more.</p>
 </div>
 
     <script type="text/x-thebe-config">
