@@ -1,0 +1,515 @@
+%!TEX root = ../06DL.tex
+
+\chapter{Stochastic Gradient Descent Methods and Its Variants}
+
+\section{Fully Gradient Descent Method}
+\begin{problem}Find ${x}^{*} \in \mathcal{X}$  s.t:
+\begin{equation}\label{equ:sum-opt}
+{x}^* = \mathop{\arg\min}_{{x} \in \mathcal{X} \subseteq \mathbb{R}^{n}} f(x).
+\end{equation}
+Here $\mathcal{X}$ is a convex compact subset. (This condition is used to prove the gradient is bounded, i.e. $\|\nabla f(x)\| \le M$ for SGD method. But in fully gradient descent method, $\mathcal{X}$ can be equal to $\mathbb{R}^n$.)
+\end{problem}
+
+\begin{assumption}\label{assum:GDconvergence}
+Here $f$ satisfies:
+\begin{itemize}
+\item $\lambda$-strongly convex, i.e.
+\begin{equation}\label{equ:lambdastronglyconvex}
+f(x) - f(y) \ge \nabla f(y)^T(x-y) + \frac{\lambda}{2}\|x-y\|^2, \quad \forall x, y.
+\end{equation}
+\begin{itemize}
+\item We can even assume that: 
+\begin{equation}\label{eq:sufficient_lambdastronglyconvex}
+y^T\nabla^2 f(x)y \ge \lambda \|y\|^2, \quad \forall x, y,
+\end{equation}
+and \eqref{eq:sufficient_lambdastronglyconvex} can prove $\lambda$-strongly convex \eqref{equ:lambdastronglyconvex}.
+\end{itemize}
+\item $\nabla f$ Lipschitz continuous with constant $L$ i.e
+\begin{equation}\label{eq:lipschtizcont}
+\| \nabla f(x) - \nabla f(y)\| \le L \|x- y\|
+\end{equation}
+%Thus we will have:
+%\begin{equation}
+%f(x) - f(y) \le \nabla f(y)^T(x-y) + \frac{H}{2}\|x-y\|^2, \quad \forall x, y.
+%\end{equation}
+\end{itemize}
+\end{assumption}
+
+Here from the Lipschitz continuity of $\nabla f$ \eqref{eq:lipschtizcont}, we have:
+\begin{lemma}
+If $f \in C^1$ and $\| \nabla f(x) - \nabla f(y)\| \le L \|x- y\|$, then we have
+\begin{equation}
+f(x) - f(y) - \nabla f(y)^T(x-y) \le |f(x) - f(y) - \nabla f(y)^T(x-y)| \le \frac{L}{2}\|x- y\|^2.
+\end{equation} 
+\end{lemma}
+\begin{proof}
+Take $g(t) = f(tx + (1-t)y)$, so we heve $g^\prime(t) = \nabla f(tx + (1-t)y)^\top (x- y)$ and 
+\begin{equation*}
+f(x) - f(y) = \int_0^1 g^{\prime}(t) {\rm d}t .
+\end{equation*}
+Hence,
+\begin{align*}
+&|f(x) - f(y) - \nabla f(y)^T(x-y)| \\
+= & \left |\int_0^1 \nabla f(t + (1-t)y)^T(x- y) - \nabla f(y)^T(x-y)\rm{dt}\right | \\
+\le & \int_0^1 \left | \nabla (f(t + (1-t)y)^T- \nabla f(y)^T)(x-y)\right | \rm{dt} \\
+\le & L\|x - y\|^2 \int_0^1 t \rm{dt} = \frac{L}{2}\|x-y\|^2.
+\end{align*}
+\end{proof}
+
+
+So the algorithm is:
+\begin{algorithm}
+\caption{ FGD} 
+\label{alg:FGD}
+\begin{equation}\label{equ:fgd-iteration}
+x_{t+1} = \Pi_{\mathcal{X}}(x_{t} - \eta_t \nabla f(x_t)), \quad t = 0:T,
+\end{equation}
+where $\eta_t$ is the stepsize / learning rate.
+\end{algorithm}
+
+Here $\Pi_{\mathcal{X}}$ is the nonlinear projection operator of convex compact set $\mathcal{X} \subseteq \mathbb{R}^n$:
+\begin{equation}
+\Pi_{\mathcal{X}} w = \mathop{\arg\min}_{x \in \mathcal{X}} \|w - x\|.
+\end{equation}
+
+\subsection{Convergence of GD}
+\begin{theorem}
+If $\eta_t  = c $ is a small enough constant, then there exists $ 0< \alpha < 1 $ such that
+\begin{equation}
+\|x_t - x^*\|^2 \le  \alpha^t \|x_0 - x^*\|^2
+\end{equation}
+for Algorithm \ref{alg:FGD} .
+\end{theorem}
+
+\begin{proof}
+%Then we have 
+If we minus any $x \in \mathcal{X}$, we can only get:
+\begin{equation*}
+x_{t+1} - x = \Pi_{\mathcal{X}}(x_{t} - \eta_t \nabla f(x_t)) - x.
+\end{equation*}
+If we take $L^2$ norm for both side, we get:
+\begin{equation*}
+\|x_{t+1} - x \|^2 = \| \Pi_{\mathcal{X}}(x_{t} - \eta_t \nabla f(x_t)) - x \|^2.
+\end{equation*}
+So we cannot get $(x_t - x)$ from the right side directly. But thanks to the definition of $\Pi_{\mathcal{X}}$ and $x \in \mathcal{X}$, we have:
+\begin{equation*}
+\| \Pi_{\mathcal{X}}(x_{t} - \eta_t \nabla f(x_t)) - x \|^2 \le \|x_{t} - \eta_t \nabla f(x_t) - x\|^2,
+\end{equation*}
+so we have the following inequality and take $x = x^*$:
+\begin{align*}
+ \|x_{t+1} - x^* \|^2 &\le  \| x_{t} - \eta_t \nabla f(x_t) - x^* \|^2 \\
+ &= \|x_t-x^*\|^2 - 2\eta_t \nabla f(x_t)^\top (x_t - x^*) + \eta_t^2 \|\nabla f(x_t) - \nabla f(x^*)\|^2 \\
+ &\le \|x_t - x^*\|^2 - \eta_t \lambda \|x_t - x^*\|^2 + \eta_t ^2 L^2 \|x_t - x^*\|^2  \\
+ &\le (1 - 2\eta_t \lambda + \eta_t^2 L^2) \|x_t - x^*\|.
+\end{align*}
+So, if $\eta_t < 2\lambda/L^2$, then $\alpha = (1 - 2\eta_t \lambda + \eta_t^2 L^2) < 1$, so it has linear convergence rate.
+\end{proof}
+
+
+\section{Stochastic Gradient Descent Methods}
+When we consider about the deep learning problems, they are almost like:
+\begin{problem}Find ${x}^{*} \in \mathcal{X}$  s.t:
+\begin{equation}\label{equ:sum-opt}
+{x}^* = \mathop{\arg\min}_{{x} \in \mathcal{X} \subseteq \mathbb{R}^{n}} \frac{1}{m}\sum_{i=1}^m f_i(x).
+\end{equation}
+Here $\mathcal{X}$ is a convex compact subset. (This condition is used to prove the gradient is bounded, i.e. $\|\nabla f_i(x)\| \le M$.)
+\end{problem}
+The SGD algorithm is:
+\begin{algorithm}\caption{SGD}
+\label{alg:SGD}
+\begin{equation}\label{equ:sgd-iteration}
+x_{t+1} = \Pi_{\mathcal{X}}(x_{t} - \eta_t \nabla f_{i_t}(x_t)), \quad t = 0:T,
+\end{equation}
+\begin{equation}
+\mathbb{P}(i_t = s) = \frac{1}{m}, \quad s = 1:m,
+\end{equation}
+\begin{equation}
+i_1, \cdots, i_T \quad \text{are independent}.
+\end{equation}
+\end{algorithm}
+
+Under the next assumptions, we can prove the convergence properties for SGD:
+\begin{assumption}\label{assum:SGDconvergence}
+Here $f_i$ satisfies:
+\begin{itemize}
+\item $\lambda$-strongly convex, i.e.
+\begin{equation}\label{eq:sgdlambdastrcvx}
+f_i(x) - f_i(y) \ge \nabla f_i(y)^\top (x-y) + \frac{\lambda}{2}\|x-y\|^2, \quad \forall x, y, i.
+\end{equation}
+\begin{itemize}
+\item We can even assume that: 
+\begin{equation}\label{eq:sgdsufficientlambdastrcvx}
+y^\top \nabla^2 f_i(x)y \ge \lambda \|y\|^2, \quad \forall x, y, i,
+\end{equation}
+and \eqref{eq:sgdsufficientlambdastrcvx} can prove $\lambda$-strongly convex \eqref{eq:sgdlambdastrcvx}.
+\end{itemize}
+\item Gradient is bounded, i.e. $\|\nabla f_i(x)\| \le M$. 
+\begin{itemize}
+\item This condition can be proved by the projection $\Pi_{\mathcal{X}}$, otherwise this is generally not true for a convex function in $R^n$.
+\end{itemize}
+\end{itemize}
+\end{assumption}
+
+
+\subsection{Convergence of SGD}
+\begin{theorem}Let the problem satisfy Assumptions \ref{assum:SGDconvergence}, and denote $e_t = \|x_t - x^*\|$,
+then %we can prove by induction that 
+\begin{equation}
+\mathbb{E}e_{t}^2 \le \frac{4M^2}{\lambda^2 t},
+\end{equation}
+if we take $\eta_t = \frac{1}{\lambda t}$.
+\end{theorem}
+\begin{proof}
+The $L^2$ error of SDG can be written as
+\begin{equation}
+      \label{equ:L2SGD}
+      \begin{split}
+            \mathbb{E} \|x_{t+1} - x^*\|^2 &\le \mathbb{E}\| x_{t} - \eta_t \nabla f_{i_t}(x_t) - x^* \|^2 \\
+            &\le \mathbb{E} \|x_t - x^*\|^2 
+            - 2 \eta_t \mathbb{E} (\nabla f_{i_t}(x_t) \cdot (x_t - x^*)) 
+            + \eta_t^2 \mathbb{E} \|\nabla f_{i_t}(x_t)\|^2 \\
+            & \le \mathbb{E} \|x_t - x^*\|^2 - 2 \eta_t \mathbb{E} (\nabla f (x_t) \cdot (x_t - x^*))
+            + \eta_t^2 M^2 \\
+            & \le \mathbb{E} \|x_t - x^*\|^2 -  \eta_t \lambda \mathbb{E} \|x_t - x^*\|^2 + \eta_t^2 M^2 \\
+            & = (1 - \eta_t\lambda) \mathbb{E} \|x_t - x^*\|^2 + \eta_t^2 M^2
+      \end{split}
+\end{equation}
+Here we can take the expectation of $i_t$ independently from $\{x_i, i = 1,\ldots,t\}$
+to obtain the second line of (\ref{equ:L2SGD}) since $i_t$ is independent from 
+$\{x_i, i = 1,\ldots,t\}$ which is completely determined by $\{i_j, j = 1,\ldots,t - 1\}$.
+And the third line of (\ref{equ:L2SGD}) is obtained from \eqref{eq:sgdlambdastrcvx}.
+
+Note that from Assumption \ref{assum:SGDconvergence}%inequality (\ref{equ:lambdastronglyconvex}) 
+\begin{equation}
+\frac{\lambda}{2} \|x_{1} - x^*\| \le \|\nabla f_{i_1}(x_{1})\|
+\end{equation}
+which implies $ \mathbb{E}e_{1}^2 \le \frac{4M^2}{\lambda^2}$.
+
+In the case of SDG, by the inductive hypothesis, 
+\begin{equation}
+      \begin{split}
+            \mathbb{E}e_{t+1}^2 & \le 4 (1 - \frac{2}{t}) \frac{M^2}{\lambda^2 t} + \frac{M^2}{\lambda^2 t^2} \\
+            & \le \frac{M^2}{\lambda^2} \frac{1}{t}(4 - \frac{8}{t} + \frac{1}{t}) \\
+            & \le \frac{M^2}{\lambda^2} \frac{4}{t+1}.
+      \end{split}
+\end{equation}
+\end{proof}
+
+
+
+\section{Incremental Gradient Descent and Practical Training Method in
+	Large-Scale Machine Learning Problems}
+
+\subsection{Basic Gradient Descent Type Algorithms}
+Now we suppose we have a machine learning model
+\begin{equation}
+f(x; w),
+\end{equation}
+where $f$ can be any machine learning model like: linear regression, SVM or deep learning models. 
+
+We have data as 
+$$
+z_i=\{x_i, y_i\}\quad i = 1:N,
+$$
+and the loss between the label and prediction is:
+$$
+f_i(w) = l(f(x_i, w), y_i),
+$$
+one example of $l$ is:
+$$
+l(f(x_i, w), y_i) = \|f(x_i, w)- y_i\|^2.
+$$
+What we want to solve is:
+\begin{equation}
+\mathop{\min}_{{w} \in \mathbb{R}^{n}} \frac{1}{N}\sum_{i=1}N f_i(w),
+\end{equation}
+with $F =  \frac{1}{m}\sum_{i=1}^m f_i(w)$.
+
+\subsubsection{Mini-Batch Method}
+Now we introduce the Mini-Batch algorithm which is mostly used basic algorithm for above problem:
+\begin{algorithm}[H]
+\caption{Mini-Batch}
+\label{alg:mini-batch}
+{\bf Input}: learning rate $\eta_t$, batch size $m$, parameter Initialization $ w_0$, number of epochs $K$. \\
+For iteration $t = 1: K\frac{N}{m}$ \\
+For Epoch $k = 1:K$\\
+Shuffle data and get mini-batch $B_1, \cdots, B_{\frac{N}{m}}$, choose mini-batch as: $B_{i_t}$ with
+$$
+i_t \equiv t \mod(\frac{N}{m}),
+$$
+Compute the gradient on $B_{i_t}$:
+$$
+g_t = \nabla_{w} \frac{1}{m} \sum_{i \in B_{i_t}} f_i(w_{t})
+$$
+Update $w$:
+\begin{equation}
+w_{t+1} = w_t - \eta_t g_t.
+\end{equation}
+\end{algorithm}
+
+This method is a little different from pure SGD type method as we still have
+$$
+\mathbb{E} g_t = \nabla f,
+$$
+only the choice of $\nabla f_i$ and $\nabla f_{i+1}$ are dependent.
+But this method works very good with some suitable batch-size. Recently, many researches show that small batch-size may lead to some flat minimizer with better generalization error. And some research suggested that, you can use a small batch size at the beginning and increase the batch size slowly with iteration.
+
+\subsubsection{Momentum Mini-Batch}
+Then we are going to introduce the momentum method to accelerate the gradient method.  
+{\bf Without special statement, the general setup for those next algorithms are the same to Mini-Batch}
+
+\begin{algorithm}[H]
+\caption{Momentum Mini-Batch}
+\label{alg:mom}
+{\bf Input}: momentum coefficient $\alpha$(we often choose as: 0.5, 0.9, 0.999) \\
+Compute the gradient on $B_{i_t}$:
+$$
+g_t = \nabla_{w} \frac{1}{m} \sum_{i \in B_{i_t}} f_i(w_{t}).
+$$
+Compute the momentum:
+\begin{equation}
+v_t = \alpha v_{t-1} - \eta_t g_t \quad (v_0 = 0).
+\end{equation}
+Update $w$:
+\begin{equation}
+w_{t+1} = w_t + v_t.
+\end{equation}
+\end{algorithm}
+
+\subsubsection{Nesterov Momentum Mini-Batch Method}
+We may also use the Nesterov accelerated skill and get the Nesterov momentum Mini-Batch method.
+\begin{algorithm}[H]
+\caption{Nesterov Momentum Mini-Batch}
+\label{alg:Nesterov}
+{\bf Input}: momentum coefficient $\alpha$\\
+Compute the gradient on $B_{i_t}$:
+$$
+g_t = \nabla_{w} \frac{1}{m} \sum_{i \in B_{i_t}} f_i(w_{t} + \alpha v_{t-1}) \quad (v_0 = 0).
+$$
+Compute the momentum:
+\begin{equation}
+v_t = \alpha v_{t-1} - \eta_t g_t.
+\end{equation}
+Update $w$:
+\begin{equation}
+w_{t+1} = w_t + v_t.
+\end{equation}
+\end{algorithm}
+
+
+\subsection{Adaptive Learning Rate Mini-batch Based Method}
+The delta-bar-delta algorithm (Jacobs, 1988) is an early heuristic approach to adapting individual learning rates for model parameters during training. The approach is based on a simple idea: if the partial derivative of the loss, with respect to a given model parameter, remains the same sign, then the learning rate should increase. If the partial derivative with respect to that parameter changes sign, then the learning rate should decrease. Of course, this kind of rule can only be applied to full batch optimization. More recently, a number of incremental (or mini-batch-based) methods have been introduced that adapt the learning rates of model parameters.
+
+\subsubsection{AdaGrad}
+The AdaGrad algorithm, individually adapts the learning rates of all model parameters by scaling them inversely proportional to the square root of the sum of all of their historical squared values (Duchi et al., 2011).  
+\begin{algorithm}[H]
+\caption{AdaGrad}
+\label{alg:AdaGrad}
+{\bf Input}: small constant $\delta$(perhaps $10^{-7}$, for numerical stability)\\
+Compute the gradient on $B_{i_t}$:
+$$
+g_t = \nabla_{w} \frac{1}{m} \sum_{i \in B_{i_t}} f_i(w_{t}).
+$$
+Accumulate squared gradient:
+\begin{equation}
+r_t = r_{t-1} + g_t \otimes g_t. \quad (r_0 = 0),
+\end{equation}
+with $\otimes$ means multiplication element-wise.  \\
+Compute Update:
+\begin{equation}
+\Delta w_t = -\frac{\eta_t}{\delta + \sqrt{r_t}} \otimes g_t,
+\end{equation}
+with division and square root applied element-wise. \\
+Update $w$:
+\begin{equation}
+w_{t+1} = w_t + \Delta w_t.
+\end{equation}
+\end{algorithm}
+
+\subsubsection{RMSProp}
+The RMSProp algorithm (Hinton, 2012) modifies AdaGrad to perform better in the non-convex setting by changing the gradient accumulation into an exponentially weighted moving average. 
+
+\begin{algorithm}[H]
+\caption{RMSProp}
+\label{alg:RMSProp}
+{\bf Input}: decay rate $\rho$, small constant $\delta$(usually $10^{-6}$)\\
+Compute the gradient on $B_{i_t}$:
+\begin{equation}
+g_t = \nabla_{w} \frac{1}{m} \sum_{i \in B_{i_t}} f_i(w_{t}).
+\end{equation}
+Accumulate squared gradient:
+\begin{equation}
+r_t = \rho r_{t-1} + (1-\rho)g_t \otimes g_t. \quad (r_0 = 0),
+\end{equation}
+Compute update:
+\begin{equation}
+\Delta w_t = -\frac{\eta_t}{\sqrt{\delta + {r_t}}} \otimes g_t
+\end{equation}
+Update $w$:
+\begin{equation}
+w_{t+1} = w_t + \Delta w_t.
+\end{equation}
+\end{algorithm}
+
+And if we combine RMSProp  with Nesterov momentum, we can get:
+
+\begin{algorithm}[H]
+\caption{RMSProp with Nesterov momentum}
+\label{alg:RMSPropNesterov}
+{\bf Input}: decay rate $\rho$, momentum coefficient $\alpha$\\
+Compute the gradient on $B_{i_t}$:
+\begin{equation}
+g_t = \nabla_{w} \frac{1}{m} \sum_{i \in B_{i_t}} f_i(w_{t} + \alpha v_{t-1}), \quad (v_0 = 0).
+\end{equation}
+Accumulate squared gradient:
+\begin{equation}
+r_t = \rho r_{t-1} + (1-\rho)g_t \otimes g_t. \quad (r_0 = 0),
+\end{equation}
+Compute velocity update:
+\begin{equation}
+v_t = \alpha v_{t-1} -\frac{\eta_t}{\sqrt{{r_t}}} \otimes g_t
+\end{equation}
+Update $w$:
+\begin{equation}
+w_{t+1} = w_t + v_t.
+\end{equation}
+\end{algorithm}
+
+\subsubsection{Adam}
+Adam (Kingma and Ba, 2014) is yet another adaptive learning rate optimization algorithm, and its name ``Adam'' derives from the phrase \emph{Adaptive Moment Estimation}, which adapt both learning rate $\eta$ and subgradient $g$.
+Use moving average of both $g$ and $g^2$ (here $g^2$ indicates the element-wise square $g \bigodot g$) to compute first order moment vector
+\begin{equation}
+m_t  =\beta_1 m_{t-1} + (1-\beta_1) g_t=(1-\beta_1)\sum_{i=1}^{t}\beta_1^{t-i} g_i ,
+\end{equation}
+and second order moment vector
+\begin{equation}
+v_t  =\beta_2 v_{t-1} + (1-\beta_2) g_t^2=(1-\beta_2)\sum_{i=1}^{t}\beta_2^{t-i} g^2_i.
+\end{equation}
+Here $\beta_1 = 0.9$, $\beta_2 = 0.99$.
+
+Since
+\begin{align}
+\mathbb{E} \left[ m_t \right] & =\mathbb{E} \left[ g_t \right] \cdot (1-\beta_1^t) +\zeta\\
+\mathbb{E} \left[ v_t \right] & =\mathbb{E} \left[ g^2_t \right] \cdot (1-\beta_2^t) +\zeta.
+\end{align}
+Here $\zeta=0$ if the true moment is stationary.
+So, we use a bias-corrected version here
+\begin{align}
+\tilde{m}_t=\frac{m_t}{1-\beta_1^t} \\
+\tilde{v}_t=\frac{v_t}{1-\beta_2^t}.	
+\end{align}
+
+The iterate can be written as 
+\begin{equation}\label{Adam}
+w_{t+1}=w_t-\frac{\eta}{\sqrt{\tilde{v}_t}+\delta} \tilde{m}_t.
+\end{equation}
+
+
+\begin{algorithm}[H]
+\caption{Adam}
+\label{alg:Adam}
+{\bf Input}: small constant $\delta$ (can be $10^{-8}$), decay rate for moment estimates $\rho_1$ and $\rho_2$ (suggested defaults: 0.9 and 0.999 respectively)\\
+Compute the gradient on $B_{i_t}$:
+\begin{equation}
+g_t = \nabla_{w} \frac{1}{m} \sum_{i \in B_{i_t}} f_i(w_{t}).
+\end{equation}
+Update biased first moment estimate:
+\begin{equation}
+m_t = \rho_1 m_{t-1} + (1-\rho_1)g_t, \quad (m_0 = 0).
+\end{equation}
+Update biased second moment estimate:
+\begin{equation}
+v_t = \rho_2 v_{t-1} + (1-\rho_2)g_t \otimes g_t, \quad (v_0 = 0).
+\end{equation}
+Correct bias in first moment:
+\begin{equation}
+\tilde m_t = \frac{m_t}{1 - \rho_1^{t}}.
+\end{equation}
+Correct bias in second moment:
+\begin{equation}
+\tilde v_t = \frac{v_t}{1 - \rho_2^{t}}.
+\end{equation}
+Compute update:
+\begin{equation}
+\Delta w_t =  -\frac{\eta_t}{\sqrt{\tilde v_t} + \delta} \otimes \tilde m_t
+\end{equation}
+Update $w$:
+\begin{equation}
+w_{t+1} = w_t + \Delta w_t.
+\end{equation}
+\end{algorithm}
+
+Now we apply Adam for the following SPD linear system
+\begin{equation}
+	A u-b=0
+\end{equation}
+where $A \in \mathbb{R}^{n \times n}$ is \emph{symmetric positive definite} matrix and $b \in \mathbb{R}^n$.
+It is equal to solve the following minimization problem
+\begin{equation}
+	\min_u\ \left\{f(u):= \frac{1}{2} u^T Au - b^T u\right\}.
+\end{equation}
+
+Assume that we didn't take stochastic technique into consideration, then
+\begin{equation}
+g_k=A u_k-b.
+\end{equation}
+Compute first order moment vector
+\begin{align}
+m_k & = \beta_1 m_{k-1} +(1-\beta_1) g_k\\
+&= \beta_1 m_{k-1} + (1-\beta_1) (A u_k - b)
+\end{align}
+The update can be written as
+\begin{equation}
+u_{k+1}=u_k-\eta P^{-1}_k R_k
+\end{equation}
+where
+\begin{align}
+R_k & =\frac{1-\beta_1}{1-\beta_1^k} \sum_{i=1}^{k} \beta_1^{k-i} (A u_i -b)\\
+& = \frac{(1-\beta_1) \beta_1^{(k-1)}}{1-\beta_1^k} (Au_1 -b) + \frac{(1-\beta_1) \beta_1^{(k-2)}}{1-\beta_1^k} (Au_2 -b) +\cdots \\
+& +\frac{(1-\beta_1) \beta_1^{0}}{1-\beta_1^k} (Au_k -b) \\
+& =c_1 (Au_1-b) + c_2(Au_2-b) + \cdots + c_k (Au_k-b).
+\end{align}
+Here
+\begin{equation}
+c_i = \frac{(1-\beta_1) \beta_1^{(k-i)}}{1-\beta_1^k}
+\end{equation}
+is increase geometrical sequence. 
+And we can easily draw the conclusion that
+\begin{equation}
+\sum_{i=1}^{k} c_i =1.
+\end{equation}
+So $R_k$ is weighted average of $\left\{u_1, u_2, \dots, u_k\right\}$.
+
+$P_k$ is a diagonal matrix
+\begin{align}
+P_k & =\text{diag} \left\{
+\sqrt{ \frac{1-\beta_2}{1-\beta_2^k} \sum_{i=1}^{k} \beta_2^{k-i} (A u_i -b)^2 }+\epsilon 
+\right\}\\
+& = \text{diag} \left\{ p_1, p_2, \cdots, p_n \right\},
+\end{align}
+where $(Au_i -b)^2$ is element-wise product.
+$p_i^2$ is weighted average of $(A u_i-b)^2$.
+
+To simplify our analysis, we will use $A u_k - b$ instead of $R_k$, as well as
+\begin{equation}
+	P_k=\text{diag} \left\{ |A u_k-b| \right\}
+\end{equation}
+
+
+Assume $u^*$ is the solution of $Au-b=0$.
+So
+\begin{equation}
+u^* = u^* + \eta P^{-1} (A u^* -b)
+\end{equation}
+And
+\begin{equation}
+u^* -u_k = (I- \eta P_k^{-1} A) (u^* - u_k)
+\end{equation}
+We need estimate the upper bound of $\|I-\eta P^{-1}_k A\|$.
+
+In other way, we will find the relation of ADAM and SDA.
+
+\subsection{Choosing the Right Optimization Algorithm}
+Schaul et al. (2014) presented a valuable comparison of a large number of optimization algorithms across a wide range of learning tasks. While the results suggest that the family of algorithms with adaptive learning rates (represented by RMSProp and Adam) performed fairly robustly, no single best algorithm has emerged.
+
+Currently, the most popular optimization algorithms actively in use include SGD, SGD with momentum, RMSProp, RMSProp with momentum, AdaDelta and Adam. The choice of which algorithm to use, at this point, seems to depend largely on the user's familiarity with the algorithm (for ease of hyperparameter tuning).

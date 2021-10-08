@@ -1,0 +1,243 @@
+\section{Randomized Algorithms}
+\subsection{Sampling based randomized algorithm (SRA)}
+
+Instead of solving the original problem is
+\begin{equation}\label{ORG}
+\mathcal{Z} = min_{x \in \mathbb{R}^n} \| Ax - b\|_2
+\quad \text{with solution} \quad
+x_{opt} = (A^T A)^{-1} A^T b = A^{\dagger} b,
+\end{equation}
+actually we solve
+\begin{equation}\label{ACT}
+\tilde{\mathcal{Z}} = min_{x \in \mathbb{R}^n} \| X Ax - X b\|_2
+\quad \text{with solution} \quad
+\tilde{x}_{opt} = (XA)^{\dagger} X b.
+\end{equation}
+
+%------------------------------------------------
+\subsubsection{Theory}
+\begin{lemma}[Drineas, Mahoney, Muthukrishnan and Sarlos(2011)]
+	Consider the overconstrained least squares problem of (\ref{ORG}) and let the matrix $U_A \in \mathbb{R}^{m\times n}$ contain the top $n$ left singular vectors of $A$. Assume $X$ satisfies the two conditions
+	\begin{enumerate}
+		\item $\sigma_{min}^2(X U_A) \geq 1/\sqrt{2}; $ \\
+		\item $\| U_A^T X^T X b^{\perp}\|_2^2 \leq \epsilon \mathcal{Z}^2 /2, \quad (b^{\perp} = b - A A^T b), $
+	\end{enumerate}
+	for some $\epsilon \in (0,1).$
+	
+	Then the solution $\tilde{x}_{opt}$ to the least squares approximation problem (\ref{ACT}) satisfies:
+	\begin{enumerate}
+		\item $\| A \tilde{x}_{opt} - b\|_2 \leq (1+ \epsilon) \mathcal{Z} $ , and \\
+		\item $\| x_{opt} - \tilde{x}_{opt} \|_2 \leq \frac{1}{\sigma_{min}(A)} \sqrt{\epsilon} \mathcal{Z}. $
+	\end{enumerate}
+\end{lemma}
+
+%------------------------------------------------
+\subsubsection{Implementation: A sampling-based randomized algorithm}
+A sampling-based randomized algorithm (SRA) is to construct
+$$
+X = S^T H D,
+$$
+
+\begin{itemize}
+	\item $S \in \mathbb{R}^{r \times m}$ is the uniform sampling matrix, where $S_{r} = (\sqrt{m/r}) e_{ir},$ where $ir$ is uniformly chosen from $[m],$
+	and $e_{ir}$ is the standard basis. \\
+	\item $H \in \mathbb{R}^{m \times m}$ is the Hadamard transform matrix defined recursively by
+	$$
+	H_m = \begin{bmatrix} H_{m/2} & H_{m/2} \\ H_{m/2} & -H_{m/2} \end{bmatrix}, \quad \text{with} \quad H_2 = \begin{bmatrix} +1 & +1 \\ +1 & -1 \end{bmatrix}.
+	$$\\
+	\item $D \in \mathbb{R}^{m \times m}$ is the diagonal matrix with
+	$$
+	D_{ii} = \begin{cases} &+1, \quad \text{with probability} \quad 1/2;\\ &-1 \quad \text{with probability} \quad 1/2. \end{cases}
+	$$
+\end{itemize}
+
+$$
+\tilde{x}_{opt} = (S^T H D A)^{\dagger} S^T H D b.
+$$
+
+%------------------------------------------------
+\subsubsection{Effect of the Randomized Hadamard Transform}
+{\color{red} HD approximately 'uniformizes' information in the left singular subspace of the matrix $A$.}
+\begin{lemma}
+	Let $U$ be an $m \times n$ orthogonal matrix and let the product $HD$ be the $m \times m$ Randomized Hadamard Transform. Then with probability at least $0.95$,
+	$$
+	\| (HDU)_{i} \|_2^2 \leq \frac{2n \ln(40 m n)}{m}, \quad \forall i \in [m].
+	$$
+\end{lemma}
+
+%------------------------------------------------
+
+
+\begin{theorem}[Convergence and Complexity of SRA]
+	Suppose $A,b$ and $\epsilon$ satisfy the input requirement of SRA. Run SRA with
+	\begin{equation}\label{eq22}
+	r = max \left( 48^2 n \ln(40 mn) \ln(100^2 n \ln(40 mn)) , 40n \ln(40 mn) /\epsilon \right)
+	\approx O(n/\epsilon).
+	\end{equation}
+	and return $\tilde{x}_{opt}.$ Then, with probability at least $0.8$, the following claims hold:
+	\begin{enumerate}
+		\item $\tilde{x}_{opt}$ satisfies $\| A \tilde{x}_{opt} - b \|_2  \leq (1 + \epsilon) \mathcal{Z}; $ \\
+		\item If we assume that $\| U_A  U_A^T b \|_2 \geq \gamma \|b\|_2 $ for some $0< \gamma \leq 1$ then
+		$$
+		\| x_{opt} - \tilde{x}_{opt}\|_2 \leq \sqrt{\epsilon} \left( \kappa(A) \sqrt{\gamma^{-2} -1} \right) \| x_{opt}\|_2.
+		$$\\
+		\item $m(n+1) + 2m(n+1)log_2(r+1) + O(rn^2)$ time suffices to compute the solution $\tilde{x}_{opt}. $
+	\end{enumerate}
+\end{theorem}
+The cost is reduced since $XA \in \mathbb{R}^{r \times n}$ while $A \in \mathbb{R}^{m \times n}.$
+
+
+%------------------------------------------------
+\subsubsection{Projection Based Randomized Algorithm (PRA)}
+Implementation: A projection-based randomized algorithm
+Projection-based randomized algorithm (PRA) is to construct a smaller problem by performing a 'sparse projection' on the pre-processed problem.
+$$
+X = THD,
+$$
+where
+\begin{itemize}
+	\item $H \in \mathbb{R}^{m \times m}$ is the Hadamard Transform and $D \in \mathbb{R}^{m \times m }$ is the randomized diagonal matrix as defined before. \\
+	\item $T \in \mathbb{R}^{k \times m}$ is a randomized matrix given by
+	$$
+	T_{ij} = \begin{cases} &+ \sqrt{1/kq} \quad \text{with probability} \quad q/2, \\
+	&-  \sqrt{1/kq} \quad \text{with probability} \quad q/2, \\
+	& 0 \quad \text{with probability} \quad 1-q.
+	\end{cases}
+	$$
+\end{itemize}
+$$\tilde{x}_{opt} = (THDA)^{\dagger} THDb. $$
+
+%------------------------------------------------
+
+\begin{theorem}[Convergence and Complexity of PRA]
+	Suppose $A,b$ and $\epsilon$ satisfy the input requirement of FRA. Run FRA with
+	\begin{equation}
+	q \geq \frac{C_q n \ln(40mn)}{m} (2 \ln(m) + 16n + 16);
+	\end{equation}
+	\begin{equation}
+	k \geq max \left( C_k (118^2 n + 98^2), \frac{60n}{\epsilon} \right)
+	\end{equation}
+	and return $\tilde{x}_{opt}.$ Then, with probability at least $0.8$, the following claims hold:
+	\begin{enumerate}
+		\item $\tilde{x}_{opt}$ satisfies $\| A \tilde{x}_{opt} - b \|_2  \leq (1 + \epsilon) \mathcal{Z}; $ \\
+		\item If we assume that $\| U_A  U_A^T b \|_2 \geq \gamma \|b\|_2 $ for some $0< \gamma \leq 1$ then
+		$$
+		\| x_{opt} - \tilde{x}_{opt}\|_2 \leq \sqrt{\epsilon} \left( \kappa(A) \sqrt{\gamma^{-2} -1} \right) \| x_{opt}\|_2.
+		$$\\
+		\item $m(n+1) + 2m(n+1)log_2(mkq+1) + O(kn^2)$ time suffices to compute the solution $\tilde{x}_{opt}. $
+	\end{enumerate}
+\end{theorem}
+
+
+%------------------------------------------------
+\subsection{A Fast Randomized Algorithm (FAR)}
+The fast randomized algorithm (FAR) is from Rokhlin and Tygert's paper \cite{SRFT2008}. The algorithm is given as follows.
+	\begin{enumerate}
+		\item Compute $E = TA$, where $T$ is the $r \times m$ SRFT defined as follows, with $m \geq r \geq n. $ \\
+		\item Form a pivoted QR-decomposition of $E = Q R \Pi$,  where $Q_{r \times n}$ has orthonormal columns, $R_{n \times n}$ is upper triangular and $\Pi_{n \times n}$ is the permutation matrix.  \\
+		\item Solve a preconditioned Least Squares Problem
+		$$
+		\| AP^{-1} y - b\|
+		$$
+		using PCG where $P = R \Pi$ is the preconditioning matrix.
+	\end{enumerate}
+
+
+%------------------------------------------------
+\subsubsection{Complexity for A Fast Randomized Algorithm (FAR)}
+	\begin{enumerate}
+		\item Applying $T$ to every column of $A$ : $O(mnlog(r))$.  \\
+		\item Computing the pivoted QR decomposition of $E$ : $O(n^2r) . $ \\
+		\item Applying $T$ to $b$: O(mlog(r)). Applying $Q^*$ to $Tb$: $O(nr)$.
+		
+		Applying $P^{-1} = \Pi^{-1} R^{-1}$ to $Q^* Tb$ : $O(n^2). $ \\
+		\item Applying $A,A^T$ a total of $O(\kappa(AP^{-1}) |log(\epsilon)|)$ times: {\color{red}$O(mn\kappa(AP^{-1}) |log(\epsilon)|).$} \\
+		\item Applying $P^{-1},(P^{-1})^*$ to a total of $O(\kappa(AP^{-1}) |log(\epsilon)|)$ times: {\color{red}$O(n^2 \kappa(AP^{-1}) |log(\epsilon)|).$} \\
+		\item Applying $P^{-1}$ to $y$ : $O(n^2). $
+	\end{enumerate}
+Thus
+{\color{red}
+	$$
+	C_{theoretical} = O((log(r) + \kappa(AP^{-1}) |log(\epsilon)|) mn +n^2r).
+	$$}
+
+
+
+
+%------------------------------------------------
+\subsubsection{SRFT Matrix}
+T is the sampled randomized Fourier transform (SRFT) Matrix defined by
+$$T _{r \times m} = G_{r \times m} H_{m \times m}, \quad  r \leq m. $$
+G is the random matrix given by
+$$ G_{r \times m} = S_{r \times m} F_{m \times m} D_{m \times m}, $$
+
+
+
+\begin{itemize}
+	\item $S$ is a random permutation matrix in each row j there is one column $s_j$ such that $S_{j,s_j} = 1$ and $S_{j,k} =0$ if $k \neq s_j$. $s_j$'s are i.i.d. random variables distributed uniformly over $\{ 1,\cdots,m\}. $ \\
+	\item $F$ is the $m \times m$ discrete Fourier transform. \\
+	\item $D = diag(d_1,d_2,\cdots,d_m)$
+	where $d_1,\cdots,d_m$ are i.i.d. complex random variables distributed uniformly over the unit circle.
+\end{itemize}
+
+
+
+%------------------------------------------------
+$$
+H_{m \times m} =\Theta_{m \times m} \Pi_{m \times m} Z_{m \times m} \tilde{\Theta}_{m \times m}\tilde{\Pi}_{m \times m} \tilde{Z}_{m \times m},
+$$
+where
+
+
+\begin{itemize}
+	\item $\Pi$ and $\tilde{\Pi}$ are permutation matrices chosen independently and uniformly at random. \\
+	\item $Z$ and $\tilde{Z}$ are diagonal matrices whose diagonal entries are i.i.d. complex random variables distributed uniformly over the unit circle. \\
+	\item
+	$\Theta_{m \times m} = \begin{bmatrix} cos(\theta_1)& sin(\theta_1) & 0& \cdots &0\\
+	- sin(\theta_1)  & cos(\theta_1) & 0 & \cdots & 0 \\
+	0 & 0 & 1 & \cdots & 0 \\
+	\cdots & \cdots & \cdots & \cdots & \cdots  \\
+	0 & 0 &0 & \cdots & 1
+	\end{bmatrix}
+	\cdots
+	\begin{bmatrix} 1& \cdots & 0& 0  &0\\
+	\cdots  & \cdots  & \cdots & \cdots & \cdots \\
+	0 & \cdots & 1 & 0 & 0 \\
+	0 & \cdots & 0 & cos(\theta_{m-1})& sin(\theta_{m-1}) \\
+	0 & \cdots &0 &  -sin(\theta_{m-1}) & cos(\theta_{m-1})
+	\end{bmatrix} ,$
+	
+	
+	where $\theta_k, \quad k =1 ,\cdots m-1$ are i.i.d. real random variables drawn uniformly from $[0,2\pi]$.
+	So is $\tilde{\Theta}$, but defined with different $\tilde{\theta}_k$.
+	
+\end{itemize}
+
+%------------------------------------------------
+
+\subsubsection{Why SRFT works?}
+\begin{corollary}
+	Suppose that $\alpha$ and $\beta$ are real numbers greater than 1 and $r,m$ and $n$ are positive integers such that $m \geq r \geq (\frac{\alpha^2 +1}{\alpha^2-1})^2 \beta n^2. $ Suppose further that $T$ is the $r \times m$ SRFT matrix. Suppose in addition that $U$ is an $m \times n$ matrix whose columns are orthonormal.
+	Then, the condition number of $TU$ is at most $\alpha$ with probability at least $1 - \frac{1}{\beta}. $
+\end{corollary}
+$\kappa(TU)$ can be made arbitrarily close to 1 when $r$ is large enough.
+
+%------------------------------------------------
+
+\begin{theorem}[Rokhlin and Tygert (2008)]
+	Suppose that $r,m$ and $n$ are positive integers such that $m \geq r \geq n$. Suppose further that $A$ is a full rank $m \times n$ matrix and the SVD of $A$ is
+	$$
+	A_{m \times n} = U_{m \times n} \Sigma_{n \times n} V^*_{n \times n}.
+	$$
+	Suppose in addition that $T$ is an $r \times m$ matrix such that the $r \times n$ matrix $TU$ has full rank.
+	Then
+	$$
+	T_{r \times m} A_{m \times n} = Q_{r \times n} P_{n \times n},
+	$$
+	where $Q$ has orthonormal columns.
+	And
+	$$
+	\kappa(AP^{-1}) = \kappa(TU).
+	$$
+\end{theorem}
+\small{$r \geq 4n^2$ guarantees $\kappa(TU) \leq 3.$}

@@ -1,0 +1,298 @@
+\chapter{Universal Approximation}\label{ch:approx}
+
+Three categories of approximation theory.
+\begin{enumerate}
+\item 
+In Barron's paper, there is a section on the lower bound of
+approximation using linear subspaces. If the basis is fixed, then the
+rate $n^{-1/d}$ is not improvable. The DNN uses a basis adapt to the
+function.
+
+The adaptive FEM we have studied before is indeed using linear
+subspaces. For a given and fixed basis, select the best n term to
+approximate a function. The non-linear approximation theory (by
+DeVore) is to relax the smoothness of function to achieve the optimal
+rate $n^{-1/d}$ but won't improve the rate.
+
+Now the problem is a truly nonlinear approximation problem, even the
+basis can be changed according to $f$. The dimension independent rate
+$n^{-1/2}$ seems also optimal. What we can improve is the
+characterization of the smoothness.
+\end{enumerate}
+
+\input{6DL/nonpoly}
+
+\section{Semi-constructive Method}
+A interesting problem is that how big this special function set $\mathcal{F}$ is? In 1989, there are many papers using some different methods to prove a surprising results that with some simple assumption for active function $g_k$, for K=1, then $\mathcal{F}$ is uniformly dense on compact in $C^0(R^{m})$. To state and proof those result simpler, we have the next definition:
+\begin{definition}\label{def:space}
+For $\mathcal{F}$ with $K=1$, we note it by the next function set:
+\begin{equation}
+\mathcal{F} = \Sigma(g) := \{ \sum_{j=1}^{n_1} \beta_j g (\omega_{j}\cdot x + \theta_{j}) ~ | ~  n_1 \in \mathbb{N}^{+}, \beta_i, \theta_j, \in \mathbb{R}, \bm \omega_j \in \mathbb{R}^m \}.
+\end{equation}
+\end{definition}
+
+\begin{definition}\label{def:algebra-space}
+We define the smallest function algebra which contains $\Sigma(g)$ as a subset:
+\begin{equation}
+\Pi \Sigma(g) := \{ \sum_{j}^{n_1} \beta_j \cdot \prod_{k}^{l_j}G({\omega}_{j}^k \cdot {x} + \theta_j^k) ~|~ {\omega}_{j}^{k} \in \mathbb{R}^m, \beta_j \in \mathbb{R}, l_j \in \mathbb{N}, n_1 \in \mathbb{N}^{+} \},
+\end{equation}
+\end{definition}
+
+\begin{definition}\label{def:udoc}
+A subset $S \subset C^0(\mathbb{R}^m)$ is said to be {\bf uniformly dense on compact in $C^0(\mathbb{R}^m)$ }if for any compact subset $K \subset \mathbb{R}^m$, then $S$ is dense in $C^0(K)$ when restrict $S$ to $K$.
+\end{definition}
+
+\begin{definition}\label{def:squashing}
+A function $g: \mathbb{R} \to [0,1]$ is {\bf squashing} if it is non-decreasing, $\lim_{x\to \infty}g(x) = 1$ and $\lim_{x\to -\infty} g(x) = 0$.
+\end{definition}
+
+\begin{definition}\label{def:cosine-squasher}
+We define the next cosine squasher function as: 
+\begin{equation}
+\phi(x) = 
+\begin{cases}
+0 & -\infty < x \le -\frac{\pi}{2} \\
+\frac{cos(x+\frac{3\pi}{2}) + 1}{2} \quad &-\frac{\pi}{2} < x < \frac{\pi}{2} \\
+1 &\frac{\pi}{2} \le x < \infty. 
+\end{cases}
+\end{equation}
+\end{definition}
+
+To prove the next theorem by Hornik et. 1989 we need the Stone-Weierstrass theorem:
+\begin{theorem}[Stone-Weierstrass]
+Let $\mathcal{A}$ be an algebra of real continuous functions on a compact set $\Omega$, which means that $\mathcal{A} \subset C^0(\Omega)$ and $af(x) + bg(x) \in \mathcal{A}$, $fg \in \mathcal{A}$ for any $a, b \in \mathbb{R}$ and $f, g \in \mathcal{A}$. If $\mathcal{A}$ separates points on $\Omega$ and if $\mathcal{A}$ vanishes at no point of $\Omega$, i.e:
+\begin{itemize}
+\item for every $x \neq y \in \Omega$, then exists $f \in \mathcal{A}$ s.t $f(x) \neq f(y)$,
+\item for every $x \in \Omega$, then exists $f \in \mathcal{A}$ s.t $f(x) \neq 0$.
+\end{itemize}
+Then the uniform closure of $\mathcal{A}$ w.r.t $L^{\infty}$ norm is equal to $C^{0}(\Omega)$.
+\end{theorem}
+ 
+ And we introduce a important lemma which might be the most important results to construct the dense result for $\Sigma(g)$ in Hornik et, 1989. 
+ \begin{lemma}\label{lemm:squashing}
+ Let $f$ be a continuous squashing function and $g$ an arbitrary squashing function. Then for any $\epsilon > 0$, there is an function $\hat{f} \in \Sigma(g)$ such that 
+ $$ \|f - \hat{f} \|_{C^0(\mathbb{R})} < \epsilon .$$
+ \end{lemma}
+ \begin{proof}
+ This is an interesting exercise. Remark: here $m = 1$ for $\Sigma(g)$.
+ \end{proof}
+
+Here is the result:
+\begin{theorem}[Hornik 1989]
+For any squashing function $g$, $\Sigma(g)$ is uniformly dense on compact in $C^0(\mathbb{R}^m)$.
+%, if we just take the output layer active function $g_{2}(x) = x$, then there exist $n_1$ and $W_2$ such that:
+%\begin{equation}
+%\|\bm{f}_2(W_2; \bm{x}) - f(\bm{x})\|_{C^{0}(I^m)} \le \epsilon
+%\end{equation}
+%where $\bm{f}_2(W_2; \bm{x})$ is defined as
+%\begin{equation}
+%\bm{f}_2(W_2; \bm{x}) = \sum_{l=1}^{n_1} \omega_{2,l1}\sigma(\sum_{i=1}^m \omega_{1,li}x_i + \theta_{1,l}). 
+%= \bm{W}_{2}^{T} \sigma(\bm{W}_{1}\bm{x} + \bm{\theta}_1).
+%\end{equation}
+\end{theorem}
+
+\begin{proof}
+Without loss of generality, we consider a compact set $K$. And choose any $f \in C^{0}(\mathbb{R}^m)$ and any $\epsilon > 0$. We use the next steps to prove the theory.
+\begin{itemize}
+\item We can use the Stone-Weierstrass theorem which shows that $\Sigma(cos) = \Pi \Sigma(cos)$ is dense in $C^0(K)$. Which means we have $f_1 \in \Sigma(cos)$ such that 
+$$
+\|f - f_1\|_{C^{0}(K)} \le \frac{\epsilon}{2},
+$$
+with 
+$$f_1 = \sum_{i=1}^P \hat \beta_i cos(\hat\omega_i \cdot x + \hat\theta_i).$$
+Now we take $M \in \mathbb{N}^{+}$ such that 
+$$
+(\hat\omega_i \cdot x + \hat\theta_i) |_K \subset [-2\pi M, 2\pi M] \quad \forall 1\le i \le P.
+$$
+\item We construct a new function $\hat{\phi}$ by M and $\phi$ defined in \ref{def:cosine-squasher}:
+\begin{align}
+\hat{\phi}(x) = \sum_{k = -M}^{M} 2(\phi(-x + \frac{\phi}{2} - 2m\phi) + \phi(x - \frac{3\phi}{2} + 2m\phi) - 1) \\=  
+\begin{cases}
+0 & -\infty < x \le -2\pi M \\
+cos(x) - 1 \quad &-2\pi M < x < 2\pi (M+1) \\
+0 &  2\pi(M+1)\le x < \infty. 
+\end{cases}
+\end{align}
+So we have 
+\begin{equation}
+f_1  = \sum_{i=1}^P \hat\beta_i \hat{\phi}(\hat\omega_i \cdot x + \hat\theta_i) + (\sum_{i=1}^P \beta_i )\hat{\phi}(0\cdot x + \frac{\pi}{2}) = \sum_{i=1}^Q\beta_i \phi(\omega_i \cdot x +  \theta_i),
+\end{equation}
+when restricted into $K$.
+
+
+
+\item Then we use the Lemma \ref{lemm:squashing}, we can approximate $\phi$ by using:
+$$
+\tilde \phi(x) = \sum_{i=1}^{L} \alpha_ig(a_ix + \gamma_i) \quad a_i, \gamma_i \in \mathbb{R},
+$$
+such that
+$$
+\|\phi - \tilde \phi \|_{C^{0}(\mathbb{R})} \le \frac{\epsilon}{ 2 \sum_{i=1}^{Q} |\beta_i|}.
+$$
+So we let
+$$
+f_2 = \sum_{i=1}^Q \beta_i \tilde \phi(\omega_i \cdot x + \theta_i) \in \Sigma(g),
+$$
+when restricted to $K$, we have
+$$
+\|f_1 - f_2\|_{C^0(K)} \le \sum_{i=1}^{Q} |\beta_i| \| \phi - \tilde \phi \|_{C^0(K)} \le \frac{\epsilon}{2}.
+$$
+\end{itemize}
+
+This finish this proof.
+\end{proof}
+
+However, this approximation property cannot tell us anything about how to set the net structure to get better approximation.
+
+
+\section{Functional Analysis Methods}
+\paragraph{Hahn-Banach Theorem: analytic form}
+Let $X$ be a normed space over field $K$ of real or complex numbers. Let $f:V\rightarrow K$ be a bounded linear functional defined on a subspace $V\subset X$. Then $f$ can be extended to a bounded linear functional $F:X \rightarrow K$ having the same norm: $norm(F):=\mathop{sup} \limits_{x\in X,norm(x)\le 1}|F(x)|=\mathop{sup} \limits_{x\in V,norm(x)\le 1}|f(x)|=:norm(f)$
+
+\paragraph{Hahn-Banach Theorem: geometric form}
+
+Let $X$ be a normed space over the reals, and let $A,B$ be nonempty, disjoint, convex subsets of $X$:
+
+(i) If $A$ is open, then there exists a bounded linear functional $\phi: X\rightarrow R$ and a number $c\in R$ such that: $\phi(a)<c\le\phi(b)$ for all $a\in A, b\in B$
+
+(ii) If $A$ is compact and $B$ is closed, then there exists a bounded linear functional $\phi: X\rightarrow R$ and numbers $c_1, \ c_2$ such that: $\phi(a)\le c_1<c_2\le \phi(b)$ for all $a\in A, b\in B$
+
+\paragraph{Riesz-Markov Theorem (Representation theorem for the continuous dual of $C_0(X)$)}
+
+Let $X$ be locally compact Hausdorff space. For any continuous linear functional $\phi$ on $C_0(X)$, there is a unique regular countably additive complex Borel measure $\mu$ on $X$ such that $\phi(f)=\int_Xf(x)d\mu(x)$ for all $f\in C_0(X)$.
+
+\paragraph{Some definitions}
+
+Let $I_n$ denote the n-dimensional unit cube, $[0,1]^n$. The space of continuous functions on $I_n$ is denoted by $C(I_n)$ and we use $norm(f)$ to denote the supremum (or uniform) norm of an $f\in C(I_n)$. In general we use $norm(\cdot)$ to denote the maximum of a function on its domain. The space of finite, signed regular Borel measures on $I_n$ is denoted by $M(I_n)$.
+
+
+Def: We say that $\sigma$ is discriminatory if for a measure $\mu\in M(I_n)$
+$$\int_{I_n}\sigma(y^Tx+\theta)d\mu(x)=0$$
+for all $y\in R^n$ and $\theta\in R$ implies that $\mu=0$.
+
+
+Def: We say that $\sigma$ is sigmoidal if
+$\sigma(t)\rightarrow \Big\{
+\begin{aligned}
+1  \ \ \ as \ \ \ t\rightarrow + \infty \\
+0  \ \ \ as \ \ \ t\rightarrow - \infty
+\end{aligned}$
+
+\paragraph{Theorem 1}
+
+Let $\sigma$ be any continuous discriminatory function. Then finite sums of the form:
+$$G(x)=\mathop{\Sigma}\limits_{j=1}^N\alpha_j\sigma(y_j^Tx+\theta_j)$$
+are dense in $C(I_n)$. In other words, given any $f\in C(I_n)$ and $\epsilon>0$, there is a sum, $G(x)$, of the above form, for which $|G(x)-f(x)|<\epsilon$ for all $x\in I_n$.
+~\\~\\proof: Let $S\subset C(I_n)$ be the set of functions of the form $G(x)$ as in the statement of the theorem 1. Clearly $S$ is a linear subspace of $C(I_n)$. We claim that the closure of $S$ is all of $C(I_n)$.
+
+Assume that the closure of $S$, say $R(=\bar{S})$, is a closed proper subspace of $C(I_n)$ [Notice: the closure of a linear space is also a linear space: $r_1\in R,r_2\in R, r_1=\mathop{lim}\limits_{n\rightarrow \infty}S_n^1, r_2=\mathop{lim}\limits_{n\rightarrow \infty}S_n^2 (S_n^1\in S, S_n^2\in S)$. So, $ar_1+br_2=\mathop{lim}\limits_{n\rightarrow \infty}aS_n^1+bS_n^2$. Because $S$ is a linear space, so $aS_n^1+bS_n^2\in S$. Then $ar_1+br_2\in R$. So $R$ is a linear space.]
+
+
+Claim: there is a bounded linear functional on $C(I_n)$, call it $L$, with the property that $L\neq 0$ but $L(R)=L(S)=0$.
+
+
+proof of the claim: Because $R\subsetneqq C(I_n)$, so there exists an $x_0\in C(I_n) \setminus R$. We denote $\tilde{R}=span(R,x_0)$. For $\forall \tilde{r}\in \tilde{R}, \exists! \ r\in R, t\in \mathbb{R}$ s.t. $\tilde{r}=r+tx_0$\ (if $\tilde{r}=r+tx_0=r'+t'x_0$, then $r-r'=(t-t')x_0$. So $(t-t')x_0\in R$. Then we get $t=t', r=r'$)
+~\\ We define a funcitonal on $\tilde{R}$, say $\tilde{L}$.
+$$\tilde{L}: \tilde{R} \rightarrow \mathbb{R}$$
+$$\tilde{r}=r+tx_0\mapsto t$$
+That is $\tilde{L}(\tilde{r})=\tilde{L}(r+tx_0)=t$.
+~\\It's easy to show $\tilde{L}$ is linear. Now we prove that $\tilde{L}$ is bounded.
+~\\$norm(\tilde{L})=\mathop{sup}\limits_{\tilde{r}\neq0}\frac{|L(\tilde{r})|}{norm(\tilde{r})}=\mathop{sup}\limits_{r+tx_0\neq0}\frac{|t|}{norm(r+tx_0)}=\mathop{sup}\limits_{r/t+x_0\neq0}\frac{|t|}{|t|\cdot norm(r/t+x_0)}=\mathop{sup}\limits_{r/t+x_0\neq0}\frac{1}{norm(r/t+x_0)}=\frac{1}{\mathop{inf}\limits_{r/t\in R}norm(r/t+x_0)}=\frac{1}{\mathop{inf}\limits_{v\in R}norm(x_0-v)}$
+~\\Because $R,x_0$ are nonempty, disjoint, and convex subsets of $C(I_n)$, and $R$ is closed, $x_0$ is compact.
+~\\By Hahn-Banach theorem(geometric form), there exists a bounded linear functional $\phi: C(I_n)\rightarrow \mathbb{R}$ and $c_1, c_2\in \mathbb{R}$ s.t. $\phi(x_0)\le c_1<c_2\le \phi(r)\ \ \forall r\in R$
+~\\So $\phi(r)-\phi(x_0)=\phi(r-x_0)\ge c_2-c_1>0$, then we have $c_2-c_1\le\phi(r-x_0)\le norm(\phi)\cdot norm(r-x_0)\Rightarrow norm(r-x_0)\ge\frac{c_2-c_1}{norm(\phi)}>0\ \ \forall r\in R$.
+~\\Then, $\mathop{inf}\limits_{v\in R}norm(x_0-v)\ge\frac{c_2-c_1}{norm(\phi)}>0$, so $norm(\tilde{L})<\infty$
+~\\Now, we've proved that $\tilde{L}$ is a bounded linear functional on $\tilde{R}$, and $\tilde{L}\neq 0$, and $\tilde{L}(r)=\tilde{L}(r+0\cdot x_0)=0\ \ \forall r\in R$. So $\tilde{L}(R)=\tilde{L}(S)=0$.
+~\\if $\tilde{R}=C(I_n)$, then we define $L:=\tilde{L}$, then we're done.
+~\\if $\tilde{R}\subsetneqq C(I_n)$. By Hahn-Banach Theorem(analytic form), $\tilde{L}$ can be extended to a bounded linear functional $L: C(I_n)\rightarrow \mathbb{R}$ and $L|_{\tilde{R}}=\tilde{L}$. So $L\neq0$, and $L(R)=\tilde{L}(R)=0$. Then we have $L(R)=L(S)=0$ and $L\neq0$.
+
+
+So we have proved the claim that there is a bounded linear functional on $C(I_n)$, call it $L$, with the property that $L\neq 0$ but $L(R)=L(S)=0$.
+
+~\\Because $I_n$ is locally compact (actually, it is compact) and Hausdorff space. So $C_0(I_n)=C(I_n)$, and $L$ is a continuous linear functional on $C(I_n)$. By Riesz-Markov Theorem, there is a unique regular countably additive signed Borel measure $\mu$ on $I_n$ such that $L(h)=\int_{I_n}h(x)d\mu(x)$ for all $h\in C(I_n)$
+~\\In particular, $\sigma(y^Tx+\theta)\in R$ (by definition), so $\int_{I_n}\sigma(y^Tx+\theta)d\mu(x)=L(\sigma(y^Tx+\theta))=0$ for all $y$ and $\theta$
+
+~\\However, we assumed $\sigma$ wa discriminatory so that $\mu=0$. But $L\neq0$. So $\exists f\in C(I_n)$ such that $L(f)=\int_{I_n}fd\mu\neq0$, so $\mu\neq0$. We get the contradiction.
+~\\Hence, $R=\bar{S}=C(I_n)$, that is $S$ is dense in $C(I_n)$.
+~\\ Q.E.D.
+
+~\\~\\Now, we specialize this result to show that any continuous sigmoidal $\sigma$ of the form discussed before, namely
+$\sigma(t)\rightarrow \Big\{
+\begin{aligned}
+1  \ \ \ as \ \ \ t\rightarrow + \infty \\
+0  \ \ \ as \ \ \ t\rightarrow - \infty
+\end{aligned}$
+is discriminatory.
+\paragraph{Lebesgue Bounded Convergence Theorem}
+
+Let ${f_n}$ be a sequence of measurable functions on a set of finite measure $E$. Suppose ${f_n}$ is uniformly pointwise bounded on $E$, that is, there is a number $M\ge0$ for which $|f_n|\le M$ on $E$ for all $n$.
+
+If $f_n\rightarrow f$ pointwise on $E$, then $\mathop{lim}\limits_{n\rightarrow\infty}\int_Ef_n=\int_Ef$.
+\paragraph{Lemma1}
+
+Any bounded, measurable sigmoidal function, $\sigma$, is discriminatory. In particular, any continuous sigmoidal function is discriminatory.
+~\\~\\proof:To prove this, we assume $\int_{I_n}\sigma(y^Tx+\theta)d\mu(x)=0$ for $\forall y,\theta$, we want to prove $\mu=0$. To demonstrate this, note that for any $x,y,\theta,\phi$, we have
+$$\sigma(\lambda(y^Tx+\theta)+\phi) \Big\{
+\begin{aligned}
+\rightarrow1 \ \ \ for \ \ \ y^Tx+\theta>0 \ \ \ as \ \ \ \lambda\rightarrow + \infty \\
+\rightarrow0 \ \ \ for \ \ \ y^Tx+\theta<0  \ \ \ as \ \ \ \lambda\rightarrow + \infty \\
+=\sigma(\phi) \ \ \ for \ \ \ y^Tx+\theta=0 \ \ \ for \ \ \ all \ \ \lambda
+\end{aligned}$$
+Thus, the functions $\sigma_\lambda(x)=\sigma(\lambda(y^Tx+\theta)+\phi)$ converge pointwise to the function
+$$\gamma(x) =\Big\{
+\begin{aligned}
+1 \ \ \ for \ \ \ y^Tx+\theta>0 \\
+0 \ \ \ for \ \ \ y^Tx+\theta<0 \\
+\sigma(\phi) \ \ \ for \ \ \ y^Tx+\theta=0
+\end{aligned}$$
+as $\lambda\rightarrow + \infty$
+~\\Furthermore, $\sigma_\lambda(x)=\sigma(\lambda(y^Tx+\theta)+\phi)$ is uniformly bounded. (Because we've assumed that $\sigma$ is bounded).
+~\\Let $\Pi_{y,\theta}$ be the hyperplane defined by $\{x|y^Tx+\theta=0, x\in I_n\}$ and let $H_{y,\theta}$ be the open half-space defined by $\{x|y^Tx+\theta>0, x\in I_n\}$. By the Lebesgue Bounded Convergence Theorem, we have:
+$$\mathop{lim}\limits_{\lambda\rightarrow+ \infty}\int_{I_n}\sigma_{\lambda}(x)d\mu(x)=\int_{I_n}\gamma(x)d\mu(x)$$
+Because $\int_{I_n}\sigma_{\lambda}(x)d\mu(x)=0$ for $\forall \lambda$ by assumption, so $\int_{I_n}\gamma(x)d\mu(x)=\mathop{lim}\limits_{\lambda\rightarrow+ \infty}\int_{I_n}\sigma_{\lambda}(x)d\mu(x)=0$
+~\\Then $0=\int_{I_n}\gamma(x)d\mu(x)=\int_{\Pi_{y,\theta}}\gamma(x)d\mu(x)+\int_{H_{y,\theta}}\gamma(x)d\mu(x)+\int_{I_n\setminus (\Pi_{y,\theta}\cup H_{y,\theta})}\gamma(x)d\mu(x)$
+~\\Because $$\gamma(x) =\Big\{
+\begin{aligned}
+1 \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ x\in H_{y,\theta} \\
+0 \ \ \ x\in I_n\setminus H_{y,\theta}\cup \Pi_{y,\theta} \\
+\sigma(\phi) \ \ \ \ \ \ \ \ \ \ \ \ \ \ x\in \Pi_{y,\theta}
+\end{aligned}$$
+So, $0=\int_{\Pi_{y,\theta}}\gamma(x)d\mu(x)+\int_{H_{y,\theta}}\gamma(x)d\mu(x)=\sigma(\phi)\cdot\mu(\Pi_{y,\theta})+\mu(H_{y,\theta})$
+~\\We now show that the measure of all half-planes being 0 implies that the measure $\mu$ itself must be 0.
+~\\Fix y, for a bounded measurable function, h, define the linear functional, F, according to :
+$$F(h)=\int_{I_n}h(y^Tx)d\mu(x)$$
+$$|F(h)|\le\int_{I_n}|h(y^Tx)|d|\mu|(x)\le norm(h)_{L^{\infty}(\mathbb{R})}\cdot|\mu|(I_n)$$
+Because $\mu$ is finite signed measure, so $|\mu|(I_n)<\infty$.
+Then $norm(F)=\mathop{sup}\limits_{h\neq0}\frac{|F(h)|}{norm(h}_{L^{\infty}(\mathbb{R})})\le|\mu|(I_n)<\infty$, so $F$ is a bounded functional on $L^{\infty}(\mathbb{R})$.
+~\\Let $h$ be the indicator function of the interval $[\theta, \infty)$ (That is, $h(u)=1$ if $u\ge\theta$ and $h(u)=0$ if $u<\theta$). So that
+$$F(h)=\int_{I_n}h(y^Tx)d\mu(x)=\int_{\Pi_{y,-\theta}}h(y^Tx)d\mu(x)+\int_{H_{y,-\theta}}h(y^Tx)d\mu(x)+\int_{I_n\setminus (\Pi_{y,-\theta}\cup H_{y,-\theta})}h(y^Tx)d\mu(x)$$
+(Recall that $\Pi_{y,\theta}=\{x|y^Tx+\theta=0, x\in I_n\}$ and $H_{y,\theta}=\{x|y^Tx+\theta>0, x\in I_n\}$)
+~\\So $F(h)=\mu(\Pi_{y,-\theta})+\mu(H_{y,-\theta})$
+~\\Because we've shown that $\sigma(\phi)\mu(\Pi_{y,\theta})+\mu(H_{y,\theta})=0$ for all $\phi, \theta, y$ and $\sigma$ is sigmoidal function. So we take $\phi\rightarrow +\infty$, then $\sigma(\phi)\rightarrow1$. So $\mu(\Pi_{y,\theta})+\mu(H_{y,\theta})=0$ for all $y, \theta$. So
+$$F(h)=\mu(\Pi_{y,-\theta})+\mu(H_{y,-\theta})=0$$
+If $h$ is the indicator function of the open interval $(\theta, \infty)$.
+$$F(h)=\int_{I_n}h(y^Tx)d\mu(x)=\int_{\Pi_{y,-\theta}}h(y^Tx)d\mu(x)+\int_{H_{y,-\theta}}h(y^Tx)d\mu(x)+\int_{I_n\setminus (\Pi_{y,-\theta}\cup H_{y,-\theta})}h(y^Tx)d\mu(x)=\mu(H_{y,-\theta})$$
+Similarly, because we have $\sigma(\phi)\mu(\Pi_{y,\theta})+\mu(H_{y,\theta})=0$ for all $\phi, \theta, y$ and $\sigma$ is sigmoidal function. We take $\phi\rightarrow-\infty$, so $\sigma(\phi)\rightarrow0$. Then $\mu(H_{y,\theta})=0$ for all $y,\theta$. So we have
+$$F(h)=\mu(H_{y,-\theta})=0$$
+By linearity, $F(h)=0$ for the indicator function of any open intervals. ($F(\chi_{(a,b)})=F(\chi_{(a,\infty)}-\chi_{[b,\infty)})=F(\chi_{(a,\infty)})-F(\chi_{[b,\infty)})=0-0=0$)
+~\\So it is true for any step functions($\mathop{\Sigma}\limits_{n=1}^Na_n\chi_{c_n}, \ \{c_n\}$ are disjoint open intervals).
+~\\Because $sin(z)$ and $cos(z)$ can be uniformly approximated by step functions on a closed bounded interval. So we have $\int_{I_n}sin(y^Tx)d\mu(x)=0$ and $\int_{I_n}cos(y^Tx)d\mu(x)=0$ for any $y$. Then we have:
+$$\int_{I_n}cos(y^Tx)+i\cdot sin(y^Tx)d\mu(x)=\int_{I_n}exp(iy^Tx)d\mu(x)=0$$
+for all $y$. Thus, the Fourier transform of $\mu$ is 0 and so $\mu$ must be zero as well (trigonometric polynomials are dense in $C(I_n)$(stone-weierstrass), we can approximate a simple function by step functions and approximate a step function by continuous functions. So $\mu(E)=0$ for any measurable set $E$). Hence, $\sigma$ is discriminatory.
+~\\Q.E.D.
+
+~\\~\\Now, we apply the previous results to the case of most interest in neural network theory. A straightforward combination of Theorem 1 and Lemma 1 shows that networks with one internal layer and an arbitrary continuous sigmoidal function can approximate continuous functions with arbitrary precision providing that no constraints are placed on the number of nodes or the size of the weights. This is Theorem 2 below.
+
+\paragraph{Theorem 2}
+
+Let $\sigma$ be any continuous sigmoidal function. Then finite sums of the form
+$$G(x)=\mathop{\Sigma}\limits_{j=1}^N\alpha_j\sigma(y_j^Tx+\theta_j)$$
+are dense in $C(I_n)$. In other words, given any $f\in C(I_n)$ and $\epsilon>0$, there is a sum, $G(x)$, of the above form, for which
+$$|G(x)-f(x)|<\epsilon$$
+for all $x\in I_n$
+
+~\\proof: Combine Theorem 1 and Lemma 1.
+~\\Q.E.D.
+
+
+

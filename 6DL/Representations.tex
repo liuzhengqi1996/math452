@@ -1,0 +1,84 @@
+\section{Approximation results for various activation functions}
+\input{6DL/BarronSpace}
+%\input{6DL/FourierRepresentation}
+%\input{6DL/DoubleFourier}
+%\input{6DL/DoubleFourier2}
+\input{6DL/BsplineApprox}
+%\input{6DL/ReLUFourierSimple}
+%\input{6DL/ReLUFourier}
+\input{6DL/PeriodicActivation}
+\endinput
+ Since $f(x)$ is real-valued, it implies that, for $x, x_B\in B$
+ \begin{equation}
+ \label{key}
+ \begin{aligned}
+ f(x)-f(x_B)
+ &={\rm Re}\int_{\mathbb{R}^d}
+ (e^{i\omega\cdot x}-e^{i\omega\cdot x_B}) 
+ \hat{f}(\omega)d\omega \\
+ &={\rm Re}\int_{\mathbb{R}^d}
+ (e^{i\omega\cdot x}-e^{i\omega\cdot x_B})  
+ e^{i\beta
+ 	(\omega)}|\hat{f}(\omega)|d\omega \\
+ &=\int_{\mathbb{R}^d}(\cos(\omega\cdot
+ x+\beta(\omega))-\cos(\omega\cdot x_B+\beta(\omega)))|\hat{f}(\omega)|d\omega \\
+ &=\int_{\mathbb{R}^d}(\cos(\omega\cdot(x-x_B)+\beta_B(\omega))-\cos(\beta_B(\omega)))|\hat{f}(\omega)|d\omega
+ \end{aligned}
+ \end{equation}
+ where
+ $$
+ \beta_B(\omega)=\omega\cdot x_B+\beta(\omega),\quad|\omega|_B:=\sup\limits_{x\in B}|\omega\cdot(x-x_B)|
+ $$
+ \begin{lemma}
+ 	\begin{equation}
+ 	\label{eq:2}
+ 	f(x)-f(x_B)=\int_{\mathbb{R}^d}k(x,\omega)d\omega
+ 	\end{equation}
+ 	\begin{equation}
+ 	\label{eq:1}
+ 	k(x, \omega)=\cos(\omega\cdot(x-x_B)+\beta_B(\omega))-\cos(\beta_B(\omega)))|\hat{f}(\omega)|  
+ 	\end{equation}
+ 	satisfying
+ 	$$
+ 	|D^\alpha k(x, \omega)|\lesssim|\omega|^{|\alpha|}|\hat{f}(\omega)|  
+ 	$$
+ \end{lemma}
+ 
+ For simplicity, we take $x_B=0$, we then have
+ \begin{equation}
+ \label{eq:2}
+ f(x)-f(0)=\int_{\mathbb{R}^d}k(x,\omega)d\omega
+ \end{equation}
+ \begin{equation}
+ \label{eq:1}
+ k(x, \omega)=(\cos(\omega\cdot x+\beta(\omega))-\cos(\beta(\omega)))|\hat{f}(\omega)|  
+ \end{equation}
+
+
+\endinput
+
+Using Lemma~\ref{lem:sample}, we only need to find a function
+$\rho(\theta)$ so the following will give a good bound:
+\begin{equation}
+\label{f-sigma}
+\int_{\mathbb R^{d+1}} 
+\int_{\Omega}|\sigma(a^{-1}\omega\cdot  x+b)|^2dx \frac{|\hat{f}(\omega)|^2}{\rho(\theta)}d\theta
+\end{equation}
+
+
+We note that
+\begin{equation}
+\label{eq:4}
+D^\alpha  k(x,\theta)= 
+\frac{(a^{-1}\omega)^\alpha}{2\pi\hat{\sigma}(a)}
+\sigma^{(|\alpha|)}\left(a^{-1}\omega\cdot
+x+b\right) |\hat{f}(\omega)|\chi(\omega, b)
+\end{equation}
+Thus
+$$
+|D^\alpha  k(x,\theta)|\le C_a h(\omega, b)(1+|\omega|)^m |\hat{f}(\omega)|
+$$
+where 
+$$
+|\sigma^{(|\alpha|)}(a^{-1}\omega\cdot x+b)|\le h(\omega, b)
+$$

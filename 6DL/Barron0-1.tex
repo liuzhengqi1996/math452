@@ -1,0 +1,546 @@
+\section{Convergence rates in Sobolev norms}
+\subsection{Compactly supported activation function}
+Given a bounded domain $\Omega\subset\mathbb R^d$, we consider the function
+$$
+f: \Omega\mapsto \mathbb R
+$$
+Let 
+$$
+f^e: \mathbb R^d\mapsto \mathbb R
+$$ 
+be any extension of $f$ so that
+$$
+f^e|_\Omega=f(x), \quad x\in \Omega. 
+$$
+Most time, we will drop the superscript $``e"$ to still use $f$ to
+denote an extension of $f$. 
+
+Consider the Fourier transform:
+\begin{equation}
+\label{Fourier}
+\hat f(\omega)=\frac{1}{(2\pi)^d}\int_{\mathbb{R}^d}e^{-i\omega\cdot x}f(x)dx
+\quad \forall \omega \in \mathbb R^d.
+\end{equation}
+Let $x_\Omega\in\Omega$ is such that
+\begin{equation}
+\label{xOmega}
+x_\Omega\in \arg\min_{y\in\bar\Omega}(\max_{x\in\bar\Omega}|x-y|)
+\end{equation}
+We may call
+\begin{equation}
+\label{rOmega}
+r_\Omega=\max_{x\in\bar\Omega}|x-x_\Omega|
+\end{equation}
+the radius of $\Omega$.
+
+
+Using the Fourier inversion formula, we can have a Fourier
+representation of $f(x)$ as follows
+\begin{equation}
+\label{eqn1}
+f(x)=\int_{\mathbb{R}^d}e^{i\omega\cdot x}\hat{f}(\omega)d\omega
+\quad \forall x \in \Omega,
+\end{equation}
+Let us write
+\begin{equation}
+\label{theta-omega}
+\hat{f}(\omega)=e^{i\beta_1(\omega)}|\hat{f}(\omega)|.   
+\end{equation}
+
+%Define $\mu_f$ as a complex measure on $\mathbb{R}^d$ such that 
+%\begin{equation}
+%d\mu_f = e^{i\alpha(\omega)}|\hat{f}(\omega)|d\omega
+%\end{equation}
+%and
+%\begin{equation}
+%\label{norm}
+%\|\mu_f\| = \int_{\mathbb{R}^d} (1+|\omega|)^2d|\mu_f|(\omega) 
+%\end{equation}
+%Also we have:
+%\begin{equation}
+%f(x)=\int_{\mathbb{R}^d}e^{i\omega\cdot x}d\mu_f
+%\end{equation}
+
+
+Let $\sigma$ be the activation function with compact support and bounded derivatives up to order $m$, that is
+\begin{equation}
+\|\sigma\|_{m,\infty} := \max_{0\le\alpha\le m}\sup_{x\in\mathbb{R}}|\sigma^{(\alpha)}(x)|\le \infty
+\end{equation}
+Set
+\begin{equation}
+\label{eq:3}
+\tilde x=x-x_\Omega.  
+\end{equation}
+Choose $a\ne0$ such that $\hat{\sigma}(a)\ne 0$, by Fourier transform, we have:
+\begin{equation*}
+\hat{\sigma}(a)=\frac{1}{2\pi}\int_{\mathbb{R}}\sigma(y)e^{-ia
+	y}dy=\frac{1}{2\pi}\int_{\mathbb{R}}\sigma(\omega\cdot \tilde
+x+b)e^{-ia(\omega\cdot \tilde x+\theta)}db
+\end{equation*}
+and we can also write
+\begin{equation*}
+\hat{\sigma}(a)=e^{i\beta_2(a)}|\hat{\sigma}(a)|.   
+\end{equation*}
+
+Thus
+\begin{equation}
+|\hat{\sigma}(a)|=\frac{1}{2\pi}\int_{\mathbb{R}}\sigma((\omega\cdot \tilde{x}+b ) )e^{-ia(\omega\cdot \tilde{x}+b )-i\beta_2(a)}db.   
+\end{equation}
+%be the hat function defined as:
+%\begin{equation*}
+%\sigma(x)=\left\{
+%\begin{aligned}
+%&x,\qquad\ \  0\le x\le 1 \\
+%&2-x,\quad 1\le x\le 2\\
+%&0,\qquad\quad \mathrm{otherwise} 
+%\end{aligned}
+%\right.
+%\end{equation*}
+
+Then we can write
+\begin{equation}
+\begin{aligned}
+f(x)=& \int_{\mathbb{R}^d}e^{i\omega\cdot x}e^{i\beta_1(\omega)}|\hat{f}(\omega)|d\omega\\
+=&\int_{\mathbb{R}^d}|a|^d e^{ia(\omega\cdot x)}e^{i\beta_1(a\omega)}|\hat{f}(a\omega)|d\omega \\
+=&\int_{\mathbb{R}^d}\frac{|a|^d }{ |\hat{\sigma}(a)|} |\hat{\sigma}(a)|e^{ia(\omega\cdot x)+i\beta_1(a\omega)}|\hat{f}(a\omega)|d\omega \\
+=&\int_{\mathbb{R}^d}\int_{\mathbb{R}}\frac{|a|^d}{2\pi|\hat{\sigma}(a)|}\sigma(\omega\cdot \tilde{x}+b  )e^{-i\beta_2(a)}
+e^{ia\omega\cdot x_\Omega-iab}db e^{i\beta_1(a\omega)}|\hat{f}(a\omega)|d\omega \\
+=&\int_{\mathbb{R}^d}\int_{\mathbb{R}}\sigma(\omega\cdot x+b )\frac{|a|^d}{2\pi|\hat{\sigma}(a)|}e^{i\beta_3(a,\omega,b)}|\hat{f}(a\omega)|db d\omega
+\end{aligned}
+\end{equation}
+where $\beta_3(a,\omega,b)=a\omega\cdot x_\Omega-ab-\beta_2(a)+\beta_1(a\omega)$.
+
+Let
+$$
+\theta=(\omega, b).
+$$
+Since $f$ is real, we have
+$$
+f(x)={\rm Re}\; f(x) 
+%\int_{\mathbb{R}^d}\int_{\mathbb{R}}\frac{\cos(\beta_1(a\omega)-ab-\beta_2(a))}{2\pi|\hat{\sigma}(a)|}\sigma(\omega\cdot
+%\tilde x+b )|a|^d|\hat{f}(a\omega)|db d\omega
+=\int_{\mathbb{R}^{d+1}}\kappa(\theta)\sigma(\omega\cdot\tilde x+b )|a|^d|\hat{f}(a\omega)|d\theta.
+$$
+where
+\begin{equation}
+\kappa(\theta)\equiv
+\kappa(\omega,b)=\frac{\cos\beta_3(a,\omega,b)}{2\pi|\hat{\sigma}(a)|},
+\end{equation}
+
+
+
+Notice that $\sigma$ is compactly supported, assume that $\mathrm{supp}(\sigma)\subset[-M_1,M_1]$. Then we have:
+\begin{equation}
+\begin{aligned}
+f(x) =\int_{\mathbb{R}^{d+1}}\kappa(\theta)\mathbf{1}_{D_M}\sigma(\omega\cdot \tilde{x}+b)|a|^d|\hat{f}(a\omega)|d\theta 
+\end{aligned}
+\end{equation}
+where
+\begin{equation}
+M=\max(M_1,r_\Omega)
+\end{equation}
+\begin{equation}
+D_M=\{\theta=(\omega,b):|b|\le(1+|\omega|)M  \}
+\end{equation}
+
+Define 
+\begin{equation}
+\gamma(f)=\int_{\mathbb{R}^{d+1}}\mathbf{1}_{D_M}(1+|\omega|)^m|a|^d|\hat{f}(a\omega)|d\theta 
+\end{equation}
+
+Now that
+\begin{equation}
+\begin{aligned}
+f(x) 	&=\int_{\mathbb{R}^{d+1}}\kappa(\theta)\mathbf{1}_{D_M}\sigma(\omega\cdot \tilde{x}+b)|a|^d|\hat{f}(a\omega)|d\theta \\
+&= \int_{\mathbb{R}^{d+1}}\frac{\kappa(\theta)\gamma(f)}{(1+|\omega|)^m}\sigma(\omega\cdot \tilde{x}+b)\frac{(1+|\omega|)^m\mathbf{1}_{D_M}|a|^d|\hat{f}(a\omega)|}{\gamma(f)}d\theta\\
+&:=\int_{\mathbb{R}^{d+1}}\frac{\kappa(\theta)\gamma(f)}{(1+|\omega|)^m}\sigma(\omega\cdot \tilde{x}+b) d\lambda
+\end{aligned}
+\end{equation}
+where
+
+$$
+d\lambda= \frac{(1+|\omega|)^m\mathbf{1}_{D_M}|a|^d|\hat{f}(a\omega)|}{\gamma(f)}d\theta ,\quad \int_{\mathbb{R}^{d+1}}d\lambda=1,
+$$
+
+and we can write
+\begin{equation}
+\tilde f(x)\equiv\frac{f(x)}{\gamma(f)}
+=\mathbb{E}(g(\theta; x))
+\end{equation}
+where
+\begin{equation}
+\label{gx}
+g(\theta; x))
+=\frac{\kappa(\theta)}{(1+|\omega|)^m}\sigma(\omega\cdot\tilde x+b)) 
+\end{equation}
+And 
+\begin{equation}
+D^\alpha \tilde f(x)=\mathbb{E}(D^\alpha g).
+\end{equation}
+%\mathbb{E}(\kappa(\omega,b)\frac{D^\alpha\sigma(\omega\cdot\tilde x+b)}{(1+|\omega|)^m})
+Let $\theta_i=(\omega_i,b_i)_{i=1}^n$ be independently drawn from the same distribution $\lambda$ and let 
+$$
+\bar g(\theta_1,\ldots,\theta_n)
+=\frac{1}{n} \sum_{i=1}^ng(\theta_i, x).
+$$
+Then
+$$
+\bar{\mathbb E} \left(\sum_{|\alpha|\le m}(D^\alpha \tilde f-D^\alpha \bar
+g)^2\right) 
+=\sum_{|\alpha|\le m}\bar{\mathbb E} (D^\alpha \tilde f-D^\alpha \bar g)^2
+=\sum_{|\alpha|\le m}\bar{\mathbb E} (\mathbb E(D^\alpha g)-D^\alpha \bar g)^2 
+\le{1\over n}\sum_{|\alpha|\le m}\|D^\alpha g\|_\infty^2.
+$$
+Taking the $L^2$ norm (with a probability measure) on both side of the above inequality
+and using Fubini's theorem,
+\begin{equation}
+\mathbb{\bar{\mathbb{E}}}(\|\tilde f(\cdot)-g(\theta,\cdot)\|^2_{H^m(\Omega)})
+\le{1\over n}\sum_{|\alpha|\le m}\|D^\alpha g\|_\infty^2.
+\end{equation}
+Thus there exists $\theta_i=(\omega_i^*,b_i^*)_{i=1}^n$ and $\beta_i$ such that 
+$$
+\|\tilde f-\frac{1}{n}\sum_{i=1}^{n} g(\theta_i; \cdot)\|_m^2
+\le{1\over n}\sum_{|\alpha|\le m}\|D^\alpha g\|_\infty^2.
+$$
+$$
+\|f-f_n\|_m^2
+\le{\gamma(f)^2\over n}
+\sum_{|\alpha|\le m}\|D^\alpha g\|_\infty^2.
+$$
+where
+$$
+f_n(x)=\frac{\gamma(f)}{n}\sum_{i=1}^{n} g(\theta_i; \cdot)=\frac{1}{n} \sum_{i=1}^n a_i\sigma(\omega_i^*\cdot\tilde{x}+b_i^*).
+$$
+where 
+$$
+a_i= \frac{\gamma(f)\kappa(\theta_i^*)}{(1+|\omega_i^*|)^m} \le \frac{\gamma(f)}{2\pi|\hat{\sigma}(a)|}
+$$
+
+Noting that $\frac{1}{1+|\omega|}\le1$, we have
+$$
+\|D^\alpha g\|_{\infty}=
+\max_{0\le|\alpha|\le m}\max_{\in\mathbb{R}^d,\theta\in\mathbb{R}^{d+1}}|\kappa(\theta)|\frac{|D^\alpha\sigma(\omega\cdot\tilde x+b)|}{(1+|\omega|)^m}\le \frac{\|\sigma\|_{m,\infty}}{2\pi|\hat{\sigma}(a)|}
+$$
+Then we have:
+
+\begin{equation}
+\begin{aligned}
+\gamma(f)&=|a|^d\int_{\mathbb{R}^d}(1+|\omega|)^m \int_{-(1+|\omega|)M}^{(1+|\omega|)M}db |\hat{f}(a\omega)|d\omega \\
+&= |a|^d\int_{\mathbb{R}^d}2M(1+|\omega|)^{m+1} |\hat{f}(a\omega)|d\omega\\
+&\le 2M \int_{\mathbb{R}^d}(1+|\omega/a|)^{m+1} |\hat{f}(\omega)|d(\omega)\\
+\end{aligned}
+\end{equation}
+
+Denote
+$$
+\|f\|_{m+1} = \int_{\mathbb{R}^d}(1+|\omega/a|)^{m+1} |\hat{f}(\omega)|d(\omega)
+$$
+Then there exists $(\omega_i^*,b_i^*)_{i=1}^n$ and $\beta_i$ such that 
+$$
+\|f-f_n\|_m
+\le\frac{\|\sigma\|_{m,\infty}}{\sqrt{n}}\|f\|_{m+1} 
+$$
+where $C=\frac{M\sqrt{C_{m+d}^m}}{\pi|\hat{\sigma}(a)|} $.
+
+\subsection{Periodic activation function}
+
+Now $\sigma$ is periodic with period $T$. Then we can write the Fourier series for $\sigma$:
+$$
+\sigma(x) =  \sum_{i=-\infty}^{\infty}c_n e^{i\frac{2\pi nx}{T}}
+$$
+choose $n_1$ such that $c_{n_1}\ne 0$, we also have:
+$$
+c_{n_1} = \frac{1}{T}\int_{0}^{T}\sigma(x) e^{-i\frac{2\pi n_1x}{T}}dx= |c_{n_1}|e^{i\beta_2(c_{n_1})}
+$$
+Then for $f$:
+\begin{equation}
+\begin{aligned}
+f(x)=& \int_{\mathbb{R}^d}e^{i\omega\cdot x}e^{i\beta_1(\omega)}|\hat{f}(\omega)|d\omega\\
+=&\int_{\mathbb{R}^d}\frac{1}{c_{n_1}}\frac{1}{T}\int_{x_0}^{x_0+T}\sigma(t) e^{-i\frac{2\pi n_1t}{T}}dte^{i(\omega\cdot x)+i\beta_1(\omega)}|\hat{f}(\omega)|d\omega \\
+=&\int_{\mathbb{R}^d}\frac{1}{|c_{n_1}|e^{i\beta_2(c_{n_1})}}\frac{1}{2\pi n_1}\int_{0}^{2\pi n_1}\sigma(\frac{T}{2\pi n_1}(\omega\cdot x+b)) e^{-i(\omega\cdot x+b)}dbe^{i(\omega\cdot x)+i\beta_1(\omega)}|\hat{f}(\omega)|d\omega \\
+=&\int_{\mathbb{R}^d}\frac{1}{2|c_{n_1}|\pi n_1}\int_{0}^{2\pi n_1}\sigma(\frac{T}{2\pi n_1}(\omega\cdot x+b)) e^{i(\beta_1(\omega)-b-\beta_2(c_{n_1})}db|\hat{f}(\omega)|d\omega \\
+=&\int_{\mathbb{R}^d}\int_{0}^{2\pi n_1}\kappa(b,\omega)\sigma(\frac{T}{2\pi n_1}(\omega\cdot x+b)) db|\hat{f}(\omega)|d\omega \\
+\end{aligned}
+\end{equation}
+here we do a substitution $t=\frac{T}{2\pi n_1}(\omega\cdot x+b)$ and 
+\begin{equation}
+\kappa = \frac{\cos(\beta_1(\omega)-b-\beta_2(c_{n_1}))}{2|c_{n_1}|\pi n_1}
+\end{equation}
+which is then the same as what we did for compactly supported activation functions.
+\begin{equation}
+\begin{aligned}
+f(x)=&\int_{\mathbb{R}^d}\int_{0}^{2\pi n_1}\kappa(b,\omega)\sigma(\frac{T}{2\pi n_1}(\omega\cdot x+b)) db|\hat{f}(\omega)|d\omega \\
+=&\int_{\mathbb{R}^d\times[0,2\pi n_1]}\frac{\kappa(\theta)}{(1+|\omega|)^m}\sigma(\frac{T}{2\pi n_1}(\omega\cdot x+b))(1+|\omega|)^m|\hat{f}(\omega)|d\theta \\
+=&\int_{\mathbb{R}^d\times[0,2\pi n_1]}\frac{\kappa(\theta)\gamma(f)}{(1+|\omega|)^m}\sigma(\frac{T}{2\pi n_1}(\omega\cdot x+b))\frac{(1+|\omega|)^m|\hat{f}(\omega)|}{\gamma(f)}d\theta \\
+:=&\int_{\mathbb{R}^{d+1}}\frac{\kappa(\theta)\gamma(f)}{(1+|\omega|)^m}\sigma(\frac{T}{2\pi n_1}(\omega\cdot x+b))d\lambda
+\end{aligned}
+\end{equation}
+where
+$$
+\gamma(f)=\int_{\mathbb{R}^{d+1}}\mathbf{1}_{0\le b\le 2\pi n_1}(1+|\omega|)^m|\hat{f}(\omega)|d\theta =2\pi n_1\int_{\mathbb{R}^d}(1+|\omega|)^m|\hat{f}(\omega)|d\omega
+$$
+and
+$$
+d\lambda= \frac{(1+|\omega|)^m|\hat{f}(\omega)|\mathbf{1}_{0\le b\le 2\pi n_1}}{\gamma(f)}d\theta,\quad \int_{\mathbb{R}^{d+1}}d\lambda=1,
+$$
+
+
+We can write
+\begin{equation}
+\tilde f(x)\equiv\frac{f(x)}{\gamma(f)}
+=\mathbb{E}(g(\theta; x))
+\end{equation}
+where
+\begin{equation}
+\label{gx}
+g(\theta; x))
+=\frac{\kappa(\theta)}{(1+|\omega|)^m}\sigma(\frac{T}{2\pi n_1}(\omega\cdot x+b))
+\end{equation}
+And 
+\begin{equation}
+D^\alpha \tilde f(x)=\mathbb{E}(D^\alpha g).
+\end{equation}
+%\mathbb{E}(\kappa(\omega,b)\frac{D^\alpha\sigma(\omega\cdot\tilde x+b)}{(1+|\omega|)^m})
+Let $\theta_i=(\omega_i,b_i)_{i=1}^n$ be independently drawn from the same distribution $\lambda$ and let 
+$$
+\bar g(\theta_1,\ldots,\theta_n)
+=\frac{1}{n} \sum_{i=1}^ng(\theta_i, x).
+$$
+Then
+$$
+\bar{\mathbb E} \left(\sum_{|\alpha|\le m}(D^\alpha \tilde f-D^\alpha \bar
+g)^2\right) 
+=\sum_{|\alpha|\le m}\bar{\mathbb E} (D^\alpha \tilde f-D^\alpha \bar g)^2
+=\sum_{|\alpha|\le m}\bar{\mathbb E} (\mathbb E(D^\alpha g)-D^\alpha \bar g)^2 
+\le{1\over n}\sum_{|\alpha|\le m}\|D^\alpha g\|_\infty^2.
+$$
+Taking the $L^2$ norm (with a probability measure) on both side of the above inequality
+and using Fubini's theorem,
+\begin{equation}
+\mathbb{\bar{\mathbb{E}}}(\|\tilde f(\cdot)-g(\theta,\cdot)\|^2_{H^m(\Omega)})
+\le{1\over n}\sum_{|\alpha|\le m}\|D^\alpha g\|_\infty^2.
+\end{equation}
+Thus there exists $\theta_i=(\omega_i^*,b_i^*)_{i=1}^n$ and $\beta_i$ such that 
+$$
+\|\tilde f-\frac{1}{n}\sum_{i=1}^{n} g(\theta_i; \cdot)\|_m^2
+\le{1\over n}\sum_{|\alpha|\le m}\|D^\alpha g\|_\infty^2.
+$$
+$$
+\|f-f_n\|_m^2
+\le{\gamma(f)^2\over n}
+\sum_{|\alpha|\le m}\|D^\alpha g\|_\infty^2.
+$$
+where
+$$
+f_n(x)=\frac{\gamma(f)}{n}\sum_{i=1}^{n} g(\theta_i; \cdot)=\frac{1}{n} \sum_{i=1}^n a_i\sigma(\frac{T}{2\pi n_1}(\omega_i^*\cdot x+b_i^*)).
+$$
+where 
+$$
+a_i= \frac{\gamma(f)\kappa(\theta_i^*)}{(1+|\omega_i^*|)^m} \le \frac{\gamma(f)}{2|c_{n_1}|\pi n_1}
+$$
+
+Noting that $\frac{1}{1+|\omega|}\le1$, we have
+$$
+\|D^\alpha g\|_{\infty}=
+\max_{0\le|\alpha|\le m}\max_{\in\mathbb{R}^d,\theta\in\mathbb{R}^{d+1}}|\kappa(\theta)|\frac{|D^\alpha\sigma( \frac{T}{2\pi n_1}(\omega\cdot x+b) )|}{(1+|\omega|)^m}\le \frac{k\|\sigma\|_{m,\infty}}{2|c_{n_1}|\pi n_1}
+$$
+where
+$$
+k = \max(\frac{T}{2\pi n_1},(\frac{T}{2\pi n_1})^\alpha)
+$$
+
+
+Denote
+$$
+\||f\||_{m} = \int_{\mathbb{R}^d}(1+|\omega|)^{m} |\hat{f}(\omega)|d(\omega)
+$$
+Then there exists $(\omega_i^*,b_i^*)_{i=1}^n$ and $\beta_i$ such that 
+$$
+\|f-f_n\|_m
+\le\frac{\|\sigma\|_{m,\infty}}{\sqrt{n}}|\|f\||_{m} 
+$$
+where $C=\frac{k\sqrt{C_{m+d}^m}}{2|c_{n_1}|\pi n_1} $.
+
+
+\subsubsection{Exponential Decay}
+If there exists $\eta>0$ such that for all $0\le k \le m$
+$$
+|e^{\eta|t|}D^{k}\sigma(t)|_{L^1(t)}\le \zeta<\infty,
+$$
+which means that $|e^{\eta|t|}D^{k}\sigma(t)|$ is finite for all $t$ and all $0\le k \le m$, with abuse of notation here, we still use $\zeta$ to denote the bound.
+$$
+e^{\eta|t|}|D^{k}\sigma(t)|\le \zeta,
+$$
+
+We have
+\begin{equation}
+	\begin{aligned}
+		&f(x)=\int_{\mathbb{R}^{d}}\int_{\mathbb{R}}\kappa(\omega,b)\sigma(\omega\cdot x+b)|a|^d|\hat{f}(a\omega)|dbd\omega.\\
+		=&\int_{\mathbb{R}^{d}}\int_{\mathbb{R}}\frac{\kappa(\omega,b)}{(1+|\omega|)^m}\sigma(\omega\cdot x+b)(1+|\omega|)^m|a|^d|\hat{f}(a\omega)|dbd\omega.\\
+		=&\int_{\mathbb{R}^{d}}\int_{\mathbb{R}}\frac{\kappa(\omega,b)e^{\eta\max\{0,|b|-M|\omega|\}}}{(1+|\omega|)^m}\sigma(\omega\cdot x+b)\frac{(1+|\omega|)^m|a|^d|\hat{f}(a\omega)|}{e^{\max\{0,\eta(|b|-M|\omega|)\}}}dbd\omega.\\
+		=&\int_{\mathbb{R}^{d+1}}\frac{\kappa(\theta)e^{\max\{0,\eta(|b|-M|\omega|)\}}\gamma(f)}{(1+|\omega|)^m}\sigma(\omega\cdot x+b) d\lambda
+	\end{aligned}
+\end{equation}
+
+where
+$$
+\gamma(f)=\int_{\mathbb{R}^{d+1}}\frac{(1+|\omega|)^m|a|^d|\hat{f}(a\omega)|}{e^{\max\{0,\eta(|b|-M|\omega|)\}}}d\theta
+$$
+and
+$$
+d\lambda= \frac{(1+|\omega|)^m|a|^d|\hat{f}(a\omega)|}{e^{\max\{0,\eta(|b|-M|\omega|)\}}\gamma(f)}d\theta,\quad \int_{\mathbb{R}^{d+1}}d\lambda=1,
+$$
+
+
+We can write
+\begin{equation}
+	\tilde f(x)\equiv\frac{f(x)}{\gamma(f)}
+	=\mathbb{E}(g(\theta; x))
+\end{equation}
+where
+\begin{equation}
+	\label{gx}
+	g(\theta; x))
+	=\frac{\kappa(\theta)e^{\max\{0,\eta(|b|-M|\omega|)\}}}{(1+|\omega|)^m}\sigma(\omega\cdot x+b)
+\end{equation}
+And 
+\begin{equation}
+	D^\alpha \tilde f(x)=\mathbb{E}(D^\alpha g).
+\end{equation}
+%\mathbb{E}(\kappa(\omega,b)\frac{D^\alpha\sigma(\omega\cdot\tilde x+b)}{(1+|\omega|)^m})
+
+Also we should have:
+\begin{equation*}
+	\begin{aligned}
+		\|D^\alpha g\|_{\infty}&\le \frac{1}{2\pi|\hat{\sigma}(a)|}e^{\max\{0,\eta(|b|-M|\omega|)\}}|D^\alpha\sigma(\omega\cdot x+b)|\\
+		&\le\frac{1}{2\pi|\hat{\sigma}(a)|}e^{\eta|b+\omega\cdot x|}|D^\alpha\sigma(\omega\cdot x+b)|\\
+		&\le\frac{\zeta}{2\pi|\hat{\sigma}(a)|}
+	\end{aligned}
+\end{equation*}
+
+
+Let $\theta_i=(\omega_i,b_i)_{i=1}^n$ be independently drawn from the same distribution $\lambda$ and let 
+$$
+\bar g(\theta_1,\ldots,\theta_n)
+=\frac{1}{n} \sum_{i=1}^ng(\theta_i, x).
+$$
+Then
+$$
+\bar{\mathbb E} \left(\sum_{|\alpha|\le m}(D^\alpha \tilde f-D^\alpha \bar
+g)^2\right) 
+=\sum_{|\alpha|\le m}\bar{\mathbb E} (D^\alpha \tilde f-D^\alpha \bar g)^2
+=\sum_{|\alpha|\le m}\bar{\mathbb E} (\mathbb E(D^\alpha g)-D^\alpha \bar g)^2 
+\le{1\over n}\sum_{|\alpha|\le m}\|D^\alpha g\|_\infty^2.
+$$
+Taking the $L^2$ norm (with a probability measure) on both side of the above inequality
+and using Fubini's theorem,
+\begin{equation}
+	\mathbb{\bar{\mathbb{E}}}(\|\tilde f(\cdot)-g(\theta,\cdot)\|^2_{H^m(\Omega)})
+	\le{1\over n}\sum_{|\alpha|\le m}\|D^\alpha g\|_\infty^2.
+\end{equation}
+Thus there exists $\theta_i=(\omega_i^*,b_i^*)_{i=1}^n$ and $\beta_i$ such that 
+$$
+\|\tilde f-\frac{1}{n}\sum_{i=1}^{n} g(\theta_i; \cdot)\|_m^2
+\le{1\over n}\sum_{|\alpha|\le m}\|D^\alpha g\|_\infty^2.
+$$
+$$
+\|f-f_n\|_m^2
+\le{\gamma(f)^2\over n}
+\sum_{|\alpha|\le m}\|D^\alpha g\|_\infty^2.
+$$
+where
+$$
+f_n(x)=\frac{\gamma(f)}{n}\sum_{i=1}^{n} g(\theta_i; \cdot)=\frac{1}{n} \sum_{i=1}^n a_i\sigma(\omega_i^*\cdot\tilde{x}+b_i^*).
+$$
+where 
+$$
+a_i= \frac{\gamma(f)\kappa(\theta_i^*)e^{\max\{0,\eta(|b_i^*|-M|\omega_i^*|)\}}}{(1+|\omega_i^*|)^m}
+$$
+
+Now with
+$$
+\||f\||_{m+1} = \int_{\mathbb{R}^d}(1+|\omega/a|)^{m+1} |\hat{f}(\omega)|d(\omega)
+$$
+we need to give an estimation on $\gamma(f)$:
+\begin{equation}
+	\begin{aligned}
+		&\gamma(f)=\int_{\mathbb{R}^{d+1}}\frac{(1+|\omega|)^m|a|^d|\hat{f}(a\omega)|}{e^{\max\{0,\eta(|b|-M|\omega|)\}}}dbd\omega\\
+		=&\int_{\mathbb{R}^d}|a|^d(1+|\omega|)^m \int_{-|\omega|M}^{|\omega|M}db |\hat{f}(a\omega)|d\omega + \int_{\mathbb{R}^d}|a|^d(1+|\omega|)^m \int_{|b|\ge M|\omega|}\frac{1}{e^{\eta(|b|-M|\omega|)}}db |\hat{f}(a\omega)|d\omega  \\
+		\le&\||f\||_{m+1}+C\||f\||_{m}\\
+		\le&C\||f\||_{m+1}
+	\end{aligned}
+\end{equation}
+
+
+
+
+
+
+
+
+
+
+
+%\subsection{Noncompactly supported activation function}
+%
+%Now $\sigma$ is not compactly supported, however, we can still write $f$ as:
+%$$
+%f(x)=\int_{\mathbb{R}^{d+1}}\kappa(\theta)\sigma(\omega\cdot\tilde x+b )|a|^d|\hat{f}(a\omega)|d\theta.
+%$$
+%
+%denote 
+%$$
+%f_M(x)=\int_{\mathbb{R}^{d+1}}\kappa(\theta)\mathbf{1}_{D_M}\sigma(\omega\cdot \tilde{x}+b)|a|^d|\hat{f}(a\omega)|d\theta
+%$$
+%where for $M >0$, 
+%\begin{equation}
+%D_M=\{\theta=(\omega,b):|b|\le(1+|\omega|)M  \}
+%\end{equation}
+%by the conclusion in last subsection, we have :
+%$$
+%\|f_M-f_n\|_m
+%\le C\frac{\|\sigma\|_{m,\infty}}{\sqrt{n}}\|f\|_{m+1} 
+%$$
+%where $C=\frac{M\sqrt{C_{m+d}^m}}{\pi|\hat{\sigma}(a)|} $.
+%
+%Now it suffices to estimate $\|f-f_M\|_m$:
+%\begin{equation}
+%f_r:=f-f_M=\int_{\mathbb{R}^{d}}\int_{|b|>(1+|\omega|)M}\kappa(\omega,b)\sigma(\omega\cdot \tilde{x}+b)|a|^d|\hat{f}(a\omega)|d\omega db
+%\end{equation}
+%
+%Since we are in a bounded domain $\Omega$, we can choose $M>0$ such that $x\in\Omega\subset B_M$ where $B_M$ is the ball of radius $M$ in $\mathbb{R}^d$.
+%If $x\in\Omega$ and $|b|>(1+|\omega|)M$, then:
+%$$
+%|\omega\cdot x+b|\ge |b|-|\omega\cdot x| \ge M
+%$$
+%
+%Hence for all $x\in\Omega$ and $0\le|\alpha|\le m$, since $(1+|\omega|)^k$ is non decreasing w.r.t k, we have:
+%\begin{equation}
+%\begin{aligned}
+%|D^{\alpha}f_r|&\le\frac{1}{2\pi|\hat{\sigma}(a)|}\|D^{|\alpha|}\sigma(t)\|_{L^1(|t|\ge M)}\int_{\mathbb{R}^d}(1+|\omega/a|)^{m} |\hat{f}(\omega)|d(\omega)\\
+%&= \frac{1}{2\pi|\hat{\sigma}(a)|}\|D^{|\alpha|}\sigma(t)\|_{L^1(|t|\ge M)}\|f\|_{m}\\
+%&\le\frac{1}{2\pi|\hat{\sigma}(a)|}\|D^{|\alpha|}\sigma(t)\|_{L^1(|t|\ge M)}\|f\|_{m+1}
+%\end{aligned}
+%\end{equation}
+%Thus take the $L^2$ norm w.r.t a probability measure on $\Omega$, we can have:
+%\begin{equation}
+%\int_{\mathbb{R}^{d}}|D^{\alpha}f_r|^2\le \frac{1}{(2\pi|\hat{\sigma}(a)|)^2}\|D^{|\alpha|}\sigma(t)\|^2_{L^1(|t|\ge M)}\|f\|_{m+1}^2
+%\end{equation}
+%
+%Summing over $0\le|\alpha|\le m$, and let
+%$$
+%R_{M}(\sigma)=\max_{0\le k\le m}\|D^{k}\sigma(t)\|^2_{L^1(|t|\ge M)}
+%$$
+%we have:
+%\begin{equation}
+%\|f_r\|_{H^m}^2\le \frac{C_{m+d}^m}{(2\pi|\hat{\sigma}(a)|)^2}R_{M}^2(\sigma)\|f\|_{m+1}^2
+%\end{equation}
+%
+%Thus in the end we have:
+%\begin{equation}
+%\begin{aligned}
+%\|f-f_n\|_{H^m}&\le\|f_r\|_{H^m}^2+\|f_M-f_n\|_m\\
+%&\le \frac{\sqrt{C_{m+d}^m}}{2\pi|\hat{\sigma}(a)|}R_{M}(\sigma)\|f\|_{m+1}+\frac{M\sqrt{C_{m+d}^m}}{\pi|\hat{\sigma}(a)|} \frac{\|\sigma\|_{m,\infty}}{\sqrt{n}}\|f\|_{m+1} \\
+%&\le  \frac{\sqrt{C_{m+d}^m}}{\pi|\hat{\sigma}(a)|}\|f\|_{m+1}(\frac{R_{M}(\sigma)}{2}+\frac{M\|\sigma\|_{m,\infty}}{\sqrt{n}})
+%\end{aligned}
+%\end{equation}

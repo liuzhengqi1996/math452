@@ -1,0 +1,223 @@
+\section{Numerical experiments}\label{sec:numerics}
+In this section, we present some numerical results to illustrate the
+efficiency and potential of MgNet as described in Algorithm
+\ref{alg:mgnet}.
+
+\subsection{Data sets and model structure }
+We choose CIFAR-10 and CIFAR-100 
+\cite{krizhevsky2009learning}
+as two data sets for numerical tests. 
+Here, the CIFAR-10 dataset consists of 60000 32x32 colour 
+images in 10 classes, with 6000 images per class. 
+The CIFAR-100 dataset is just like the CIFAR-10, 
+except it has 100 classes containing 600 images each. 
+We split these two data sets with 50000 training images 
+and 10000 test images. 
+
+
+We will mainly carry out
+ a comparison with study between MgNet and  ResNet \cite{he2016deep} 
+on these two data sets, so we choose some 
+similar process techniques such as there will 
+be a average pooling before linear regression
+layers:
+\begin{equation}\label{eq:ave-pooling}
+R_{ave}: \mathbb{R}^{m_{J-1} \times n_{J-1} \times c_{J-1}} \mapsto \mathbb{R}^{c_{J-1}}.
+\end{equation}
+We use the similar ideas in MgNet to take $\nu_{J} = 0$, thus to choose 
+$$
+u^{J} = \Pi_{J-1}^J u^{J-1, m_{J-1}} \in \mathbb{R}^{c_{J-1}},
+$$
+with
+$$
+\Pi_{J-1}^J  = R_{ave}.
+$$
+This can be true also thanks to our structure that 
+\begin{equation}\label{eq:c_u}
+c_{u,\ell} = c_{u}, \quad 1 \le \ell \le J.
+\end{equation}
+Given an image $f$, similar to ResNet, we apply our MgNet as follows:
+\begin{equation}\label{final-mg}
+y = S \circ \theta \circ u^{J}(f),
+\end{equation}
+where $u^J(f)$ is the output from our MgNet as described in Algorithm
+\ref{alg:mgnet},  $S$ is the soft-max mapping  and 
+\begin{equation}\label{final-theta}
+\theta: \mathbb{R}^{c_u} \mapsto \mathbb{R}^\kappa,
+\end{equation}
+represents a fully linear layer with $\kappa = 10$ for CIFAR-10 and 
+$\kappa = 100$ for CIFAR-100.
+
+We will make the following choice of hyper parameters
+for the MgNet:
+\begin{itemize}
+	\item $J$: the number of grids. As all images in CIFAR-10 or CIFAR-100
+	are $32\times 32 \times 3$,  we choose $J = 4$ to be consistent with ResNet.
+	\item $\nu_\ell$:  the number of smoothings in each grids. To be consistent with
+	ResNet-18 or ResNet-34 we choose $\nu_\ell = 2$ or $\nu_\ell = 4$.
+	\item $c_u$ and $c_f$: the number of feature and data channels. 
+	\item $A^\ell$: the data-feature mapping. We choose the linear case in \eqref{linearA}.
+	\item $B^{\ell,i}$: the feature extractor. We choose the variable extractors as in \eqref{extractor-ell}.
+	\item $R_{\ell}^{\ell+1}$: the restriction operator in \eqref{restrict-f}. 
+	Here we choose it as a convolution with stride $2$ which need to be trained.
+	\item $\Pi_\ell^{\ell+1}$: the interpolation operator in
+	\eqref{interpolation}.  Here we compare these next three
+	different choices: 
+	\begin{enumerate}
+		\item {$\Pi_0$: } $\Pi_\ell^{\ell+1} = 0$;
+		\item {$\Pi_1$: }convolution with stride $2$ which need to be
+		trained; 
+		\item {$\Pi_2$: }channel-wise interpolation as in
+		\eqref{Pi}, with $\bar P_{\ell}^{\ell+1}$ as a convolution
+		with one channel and stride $2$ which also need to be trained.
+	\end{enumerate}
+\end{itemize}
+
+\subsection{Top 1 and Top 5 accuracy}
+Once you trained your model, you have the CNN model with soft-max layer.  
+This can be defined by
+\begin{equation}
+y = H(f) = S \circ \theta \circ u^{J}(f),
+\end{equation}
+as in \eqref{final-mg}.
+
+Now, suppose that we have test data like: 
+\begin{equation}
+\{(f_i, y_i)\}_{i=1}^n.
+\end{equation}
+
+Then the two accuracy are defined by:
+\begin{description}
+\item[Top 1] 
+\begin{equation}
+\frac{1}{n}\left( \# \left\{i~:~  y_i =  \max_{ j = 1:\kappa}\{[H(f_i)]_j \} \right \} \right).
+\end{equation}
+\item[Top 5] 
+\begin{equation}
+\frac{1}{n}\left( \# \left\{i~:~  y_i \in \max_5 \{ [H(f_i)]_1, \cdots, [H(f_i)]_\kappa \} \right \} \right)
+\end{equation}
+where $\max_5$ means the first 5 largest elements:
+\begin{equation}
+{\rm max}_5\{x_1, \cdots, x_\kappa \} = \{x_{j_1}, \cdots, x_{j_5}\},
+\end{equation}
+with
+\begin{equation}
+x_{j_1} \ge \cdots \ge x_{j_5} \ge x_{j}, \quad \forall j \neq j_1 \cdots, j_5.
+\end{equation}
+
+\end{description}
+
+\subsection{Training algorithm}\label{subsec:traning}
+While there are many different choices of training algorithms \cite{bottou2018optimization}, 
+in our test, we adopt the popular 
+stochastic gradient descent (SGD) with mith-batch and momentum for
+cross-entropy loss function.
+\begin{breakablealgorithm}
+	\caption{SGD with mini-batch and momentum}
+	\label{alg:sgd}
+	\begin{algorithmic}
+\State {\bf Input}: learning rate $\eta_t$, batch size $m$, parameter Initialization $ w_0$, number of epochs $K$. 
+\For{Epoch $k = 1:K$} \\
+\State Shuffle data and get mini-batch $B_1, \cdots, B_{\frac{N}{m}}$, choose mini-batch as: $B_{i_t}$ with
+$$
+i_t \equiv t \mod(\frac{N}{m}),
+$$
+\State Compute the gradient on $B_{i_t}$:
+$$
+g_t = \nabla_{w} \frac{1}{m} \sum_{i \in B_{i_t}} h_i(w_{t}).
+$$
+\State Compute the momentum:
+\begin{equation}
+v_t = \alpha v_{t-1} - \eta_t g_t \quad (v_0 = 0).
+\end{equation}
+\State Update $w$:
+\begin{equation}
+w_{t+1} = w_t + v_t.
+\end{equation}
+\EndFor
+\end{algorithmic}
+\end{breakablealgorithm}
+
+Here we have $h_i(w_t) = l(H(f_i;w_t),y_i)$ as defined in \eqref{eq:3}, where $w_t$ notes all free parameters in MgNet and $\theta$ in \eqref{final-theta}.
+We use the SGD with momentum of 0.9. 
+The mini-batch size is chosen as
+$m=128$. The learning rate starts from 0.1 and is divided by $10$ for
+every $30$ epochs, and the models are trained for up to $K=120$ epochs.
+We adopt batch normalization (BN) after each convolution and before
+activation, following \cite{ioffe2015batch}.  Initialization strategy
+is the same with ResNet as in \cite{he2015delving}.  We
+do not use weight decay and dropout.  The final Top-1 test accuracy is
+shown in Table~\ref{comparison}.
+\begin{table}[!htbp]
+	\caption{ResNet and MgNet on CIFAR-10 and CIFAR-100. 
+	Our methods are named with $\nu_\ell$, ($c_u$, $c_f$), $\Pi_\ell^{\ell+1}$ by definition above.}
+	\label{comparison}
+	\vskip 0.15in
+	\begin{center}
+				%		\resizebox{.5\textwidth}{!}{
+				\begin{tabular}{cccc}
+					\hline
+					Models & CIFAR-10 & CIFAR-100 & Params \\
+					\hline
+					ResNet-18 & 92.24 & 71.96 & 11.2M   \\
+					ResNet-34 & 92.80 & 71.93 & 21.3M   \\
+					\hline
+					%				{$\nu_\ell$,  $(c_u, c_f)$, $\Pi_\ell^{\ell+1}$} & Accuracy & Accuracy & Numbers  \\
+					$2, (256,256)$, $\Pi_0$ & 92.02 & 68.29 & 7.1M  \\
+					$2, (256,256)$, $\Pi_1$ & 93.04 & 72.32 & 8.9M  \\
+					$2, (256,512)$, $\Pi_1$ & 93.20 & 72.42 & 19.5M  \\ 
+					$4, (256,512)$, $\Pi_2$ & 93.53& 74.26 & 17.7M  \\ 
+					\hline
+				\end{tabular} 
+		%		}
+	\end{center}
+	\vskip -0.1in
+\end{table}
+
+From the above numerical results, we find that the modified CNN models
+based on MgNet structure have competitive and sometimes better
+performance in comparison with standard ResNet models when applied to
+both CIFAR-10 and CIFAR-100 data sets. Generally speaking, the more
+channels the better performance you can achieve (see WideResNet
+\cite{zagoruyko2016wide} for similar observation). Furthermore,
+$\Pi_1$ and $\Pi_2$ work better than $\Pi_0$, and $\Pi_2$ can even
+work better than $\Pi_1$ with fewer parameters for big enough 
+channel numbers.
+
+
+\section{Concluding remarks}\label{sec:conclusion}
+By carefully studying the connections between the traditional
+multigrid method and the convolutional neural network (especially the
+ResNet type) models, the MgNet established in this paper provides a
+unified framework that connects both multigrid and CNN in a technical
+level.  Comparing with other existing works that discuss the
+connection between multigrid and CNN, MgNet goes beyond formal or
+qualitative comparisons and identifies key model components that play
+the same corresponding roles, from an abstract viewpoint, for these two different
+methodologies.  As a result, how and why CNN models work can be
+mathematically understood in a similar fashion as for multigrid method
+which has a much more mature and better developed theory.  Motivated
+from various known techniques from multigrid method, many variants and
+improvements of CNN can then be naturally obtained.  For example, as
+demonstrated from our preliminary numerical experiments, the resulting
+modified CNN models quipped with fewer weights and hyper parameters
+actually exhibit competitive and sometimes better performance than
+standard ResNet models.
+
+The MgNet framework opens a new door to the
+mathematical understanding, analysis and improvements of deep learning
+models.  The very preliminary results presented in
+this paper have demonstrated the great potential of MgNet from both
+theoretical and practical viewpoints.  Obviously many aspects of MgNet
+should be further explored and expect to be much improved.  In fact, only very
+few techniques from multigrid method have been tried in this paper and
+many more in-depth techniques from multigrid require further study for
+deep neural networks, especially CNN.  
+In particular, we believe that the MgNet framework will
+lead to improved CNN that only has a small fraction of the number
+of weights that are required by the current CNN. On the other hand,
+the techniques in CNN can also be used to develop new generation of multigrid
+and especially  algebraic multigrid methods \cite{xu2017algebraic} for solving
+partial differential equations. Our ongoing works have
+demonstrated great potentials for research in these directions and  many
+more results will be reported in future papers. 

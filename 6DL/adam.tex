@@ -1,0 +1,69 @@
+\section{Adam algorithm}
+Adam (Kingma and Ba, 2014) is yet another adaptive learning rate optimization algorithm. Adam optimization is an extension to stochastic gradient decent and can be used in place of classical stochastic gradient descent to update network weights more efficiently. The name ``Adam'' derives from the phrase \emph{Adaptive Moment Estimation}, which adapts both learning rate $\eta$ and subgradient $g$.
+
+
+
+Let $g$ be the gradient of the stochastic objective $f$ with parameters $x$. We wish to estimate its  first order moment vector (the mean of gradients), and second order moment vector (the uncentered variance of gradients)  using an exponential moving average of the squared gradient, with decay rate $\beta_1$ and $\beta_2$, respectively. Let $g_1$, $g_2$, $\cdots$, $g_T$ be the gradients at subsequent timesteps. 
+Use moving average of both $g$ and $g^2$ (here $g^2$ indicates the element-wise square% $g \bigodot g$
+) to compute first order moment vector  
+\begin{equation}
+m_t  =\sum_{i=1}^{t} w_i g_i,\quad w_i={\beta_1^{t-i} \over \sum_{i=1}^t\beta_1^{t-i}},
+\end{equation}
+and second order moment vector  
+\begin{equation}
+v_t  =\sum_{i=1}^{t}r_i g^2_i,\quad r_i={\beta_2^{t-i} \over \sum_{i=1}^t\beta_2^{t-i}}.
+\end{equation}
+Here $\beta_1 = 0.9$, $\beta_2 = 0.99$.
+
+The iterate can be written as 
+\begin{equation}\label{Adam}
+x_{t+1}=x_t-\frac{\eta}{\sqrt{v_t}+\delta} m_t,
+\end{equation}
+where $\eta$ is stepsize, $\delta$ is some small constant and $x$ is the parameter vector. Another way to represent the first and second order moment vector  is 
+\begin{align}
+m_t=\frac{\tilde m_t}{1-\beta_1^t} &\mbox{ with }\ \tilde m_t  =\beta_1 \tilde m_{t-1} + (1-\beta_1) g_t,\\
+v_t=\frac{\tilde v_t}{1-\beta_2^t}&\mbox{ with }\ \tilde v_t  =\beta_2 \tilde v_{t-1} + (1-\beta_2) g_t^2,	
+\end{align}
+which is usually used in implementation as in the following algorithm.
+
+\begin{algorithm}[H]
+\caption{Adam Optimization}
+\label{alg:Adam}
+{\bf Input}: 
+\begin{enumerate}
+\item small constant $\delta$ (can be $10^{-8}$), 
+\item decay rate for moment estimates $\beta_1$ and $\beta_2$ (suggested defaults: 0.9 and 0.999 respectively)
+\item initial first moment vector $m_0=0$ and initial second moment vector $v_0=0$
+\item initial timestep $t=0$, initial parameter vector $x_0$ and stepsize $\eta$
+\end{enumerate}
+{\bf Steps}: 
+
+Compute the gradient on $B_{i_t}$:
+\begin{equation}
+g_t = \nabla_{x} \frac{1}{m} \sum_{i \in B_{i_t}} f_i(x_{t}),\quad B_{i_t} \subset \{1, 2, \cdots, N \},\ \#B_{i_t} =m
+\end{equation}
+Update biased first moment estimate:
+\begin{equation}
+m_t = \beta_1 m_{t-1} + (1-\beta_1)g_t.
+\end{equation}
+Update biased second moment estimate:
+\begin{equation}
+v_t = \beta_2 v_{t-1} + (1-\beta_2)g_t \circ g_t.
+\end{equation}
+Correct bias in first moment:
+\begin{equation}
+\tilde m_t = \frac{m_t}{1 - \beta_1^{t}}.
+\end{equation}
+Correct bias in second moment:
+\begin{equation}
+\tilde v_t = \frac{v_t}{1 - \beta_2^{t}}.
+\end{equation}
+Compute update:
+\begin{equation}
+\Delta x_t =  -\frac{\eta}{\sqrt{\tilde v_t} + \delta} \otimes \tilde m_t
+\end{equation}
+Update $w$:
+\begin{equation}
+x_{t+1} = x_t + \Delta x_t.
+\end{equation}
+\end{algorithm}

@@ -1,0 +1,94 @@
+\documentclass[leqno,labelfig,psfigt]{svmono}
+%\usepackage{showkeys}
+%\openup8pt
+
+%\DeclareMathAlphabet{\mathpzc}{OT1}{pzc}{m}{it}
+
+\makeatletter
+\providecommand*{\input@path}{}
+\edef\input@path{{./}{../}\input@path}% prepend
+%\makeatother
+
+\input{../Xmacros} 
+%\renewcommand{\mgnote}[1]{}
+
+\usepackage{geometry}
+\geometry{letterpaper}                   % ... or a4paper or a5paper or ...
+%\usepackage{listings} 
+\usepackage{mcode}
+\usepackage{textcomp}
+%\usepackage{algorithmic,algorithm}
+\usepackage{enumerate}
+\usepackage{empheq}
+\usepackage{multirow}
+\usepackage{undertilde}
+\usepackage{centernot}
+\usepackage{amscd}
+\usepackage{indentfirst}
+\usepackage{amsmath, amsfonts, amssymb}
+\usepackage{tikz}
+
+\makeatletter
+\newenvironment{breakablealgorithm}
+{% \begin{breakablealgorithm}Re: ML workshop
+	\begin{center}
+		\refstepcounter{algorithm}% New algorithm
+		\hrule height.8pt depth0pt \kern2pt% \@fs@pre for \@fs@ruled
+		\renewcommand{\caption}[2][\relax]{% Make a new \caption
+			{\raggedright\textbf{\ALG@name~\thealgorithm} ##2\par}%
+			\ifx\relax##1\relax % #1 is \relax
+			\addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##2}%
+			\else % #1 is not \relax
+			\addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##1}%
+			\fi
+			\kern2pt\hrule\kern2pt
+		}
+	}{% \end{breakablealgorithm}
+		\kern2pt\hrule\relax% \@fs@post for \@fs@ruled
+	\end{center}
+}
+\makeatother
+
+\usepackage{multirow}
+\usepackage{mathtools}
+
+%\newtheorem{properties}[theorem]{Properties}
+%\graphicspath{{figures/}{6DL/figures/}}
+\graphicspath{{../}{../figures/}{../6DL/figures/}}
+
+
+% add author name on header
+\usepackage{fancyhdr}
+
+%\pagestyle{fancy}
+%\fancyhf{}
+\rhead{\hfill Jinchao Xu}
+
+%\newcommand{\sh}{{\cal S}_h}
+
+\usepackage[style=numeric, backend=biber]{biblatex}
+\addbibresource{3FEM.bib,6DL/ref.bib}
+
+\begin{document}
+
+\title{ReLU-DNN}
+\author{Jinchao Xu\\Penn State}
+\date{Spring 2020}
+\maketitle
+
+\begin{quote} 
+This set of notes are prepared by Jinchao Xu for the class MATH/CSE
+556 at Penn State in Spring 2019. All rights reserved.  Not to be
+disseminated without explicit permission of the author.
+\end{quote}
+\tableofcontents
+
+\chapter{Error Estimates for ReLU-DNN}
+\section{Sampling Techniques}
+\input{6DL/EEn}
+\input{6DL/MonteCarloBasic}
+\input{6DL/MonteCarlo}
+%\input{6DL/StratifiedL2}
+\input{6DL/ReLUFourier}
+\end{document}
+

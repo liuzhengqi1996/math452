@@ -1,0 +1,198 @@
+\chapter{Deep Learning and Large Scale Computing}
+\section{Deep Learning and Large Scale Computing}
+	\subsection{What is a learning algorithm?}
+		
+		A \textbf{machine learning algorithm} is an algorithm that is able to learn form data. But	what do we mean by learning? Mitchell (1997) provides the definition "A computer program is said to learn from experience $E$	with respect to some class of tasks	$T$	and performance measure	$P$, if its performance at tasks in	$T$, as measured by $P$, improves with experience $E$."Learning is not the task, but the means of attaining the ability to perform the task. The result of the learning is a model that is used to perform tasks.
+		
+		The machine learning algorithm grew out of work in \textbf{Artificial Intelligence (AI)} and take advantage of new capability of computing resources. \textbf{Deep learning} is a subset of machine learning.
+
+	\subsection{Types of learning algorithm}
+		
+		 Machine learning algorithms can be broadly categorized as \textbf{unsupervised} or \textbf{supervised} or \textbf{Reinforcement learning algorithms
+		 }	by what kind of experience they are allowed to have during the learning process.
+	\begin{itemize}		
+		\item Unsupervised learning algorithms learn from a dataset containing many features, then learn useful properties of the structure of this dataset. E.g. K-means clustering	
+		\item Supervised learning algorithms learn from a dataset containing features, but each example is also associated with a label or target. E.g. classification , regression method to predict housing price	
+		\item Reinforcement learning algorithms interact with an environment, so there is feedback loop between the learning system and its experience. But it's out of the scope of this note.		
+	\end{itemize}	
+	Here we offer a simple example to illustrate the difference between the supervised and unsupervised learning algorithm.
+	
+	 Suppose we have a set of points in $\mathbb{R}^2: \{(x_1,y_1),(x_2,y_2),\dots,(x_n,y_n)\}$.
+	 \begin{itemize}
+	 	\item Ther's no more information about the points except their coordinates. We want to split them into several subsets (which is 'clustering') based on their coordinates. That's an unsupervised algorithm.
+	 	\item The points are painted red or blue. We want to learn from the data about the reason why the point is red or blue. If given a new point, we can label it as red or blue according the points before. That's an example of classification, which is one kind of supervised learning algorithm.
+	 \end{itemize}
+	\section{Maximum Likelihood Estimation}
+	As the process of machine learning is to estimate a set of parameters $\theta$ based on observations of examples X, \textbf{maximum likelihood} is often considered the preferred estimator to use for machine learning.
+	
+	\begin{itemize}
+		\item Consider a set of $m$ examples $\mathbb X=\{\bm x^{(1)},...,\bm x^{(m)}\}$ drawn independently from the true but unknown data generating distribution $p_{data}(\bm x)$.
+		\item Let $p_{model}(\bm x;\bm \theta)$ be a parametric family of probability distributions over the same space indexed by $\bm \theta$.
+		\item The maximum likelihood estimator for $\bm \theta$ is then defined as
+		\begin{equation*}
+		\begin{split}
+		\bm \theta_{ML} &= \arg \max_{\bm \theta}p_{model}(\mathbb X;\bm \theta) \\
+		&=\arg \max_{\bm \theta}\prod_{\bm x \in \mathbb X} p_{model}(\bm x;\bm \theta)\\
+		&=\arg \max_{\bm \theta}\sum_{\bm x \in \mathbb X} \log p_{model}(\bm x;\bm \theta)\\
+		\end{split}
+		\end{equation*}
+	\end{itemize}
+
+	\section{Input data}
+	Previously observed data in the experience can be split to three categories:
+	\begin{itemize}
+		\item Training data: used to train the model
+		\item Validation data: used to adjust the model
+		\item Test data: used to evaluate the generalization of the model
+	\end{itemize}
+	Training data and validation data are usually split from a large observed data set. The ratio between training data and validation data is commonly 4:1 or 9:1.
+	\subsection{Capacity and Performance}	
+
+	The capacity of the learning algorithms can be underfitting, appropriate capacity and overfitting. Underfitting occurs when the model is not able to obtain a sufficiently low error value on the training set. Overfitting occurs when the gap between the training error and test error is too large.
+	
+	The factors determining the performance of the machine learning algorithms are:
+	\begin{itemize}
+		\item Test error (final error of the generated model) The error is calculated by a cost function based on the test data set
+		\item The gap between training and validation error
+	\end{itemize}
+	The central challenge in machine learning is that we must perform well on new, previously unseen inputs, not just those on which our model was trained. So Machine learning algorithms indirectly minimize the test error. Regularization is the modification of machine learning algorithms to reduce validation error but not the training error in order to avoid overfitting.
+	
+\section{Neural Network}
+According to Maureen Caudill{\color{red} LZ:???} neural network is a computing system made up of a number of simple, highly interconnected processing elements, which process information by their dynamic state response to external inputs.
+
+
+{\bf Activation function}. In a neural network, an activation function of a node determines the output of that node for a given input. Inspired by biological neurons, an activation function basically works as a switch that can set the neuron on "ON" or "OFF".
+
+The sigmoid function is a common choice for activation function. It is defined by
+\begin{equation}
+\sigma(t) = \frac{1}{1+e^{-t}}.
+\end{equation}
+The sigmoid function is monotonically increasing over $\mathbb{R}$ and is infinitely-differentiable. It has limit 0 and 1 as $t$ approaches $-\infty$ and $+\infty$, respectively.
+%The graph of $\sigma(t)$ is shown in Figure \ref{fsig}.
+
+A useful property of $\sigma(t)$ is that its derivative can be expressed by the function itself.
+{\color{red} LZ:Add graph of sigmoid}
+\begin{lemma}
+\label{lsig}
+$\sigma'(t) = \sigma(t)(1-\sigma(t))$.
+\end{lemma}
+
+
+Besides the sigmoid function, commonly used activation functions are:
+
+\begin{enumerate}
+\item
+Binary step function: $f(t) = \mathbbm{1}_{t\ge 0}$.
+\item
+Hyperbolic tangent function: $f(t) = \tanh(t)=\frac{2}{1+e^{2t}}-1$.
+\item
+Arctan function: $f(t) = \tan^{-1}(t)$.
+\item
+Rectified linear unit (ReLU) $f(t) = \max\{0, t\}$.
+\end{enumerate}
+
+A \textit{neural network} is a network model with non-linear unites on its hidden layers.
+
+
+
+
+{\bf Hyper-parameters.} Most machine learning algorithms involve hyper-parameters which are variables set before actually optimizing the model's parameters. For a neural network, hyper-parameters include the depth of the network $d$, the width of each layer $n$, the regularization parameter $\lambda$, the learning rate for gradient descent $r$, and the initial values for weight matrices $(\bm{W_1}(0),...,\bm{W_d}(0))$ and biases $(\bm{b_1}(0),...,\bm{b_d}(0))$. {\color{red} LZ:???}There is no theorem stating how to choose the best hyper-parameters, we now choose them merely by experience and luck.
+
+\section{Back Propagation}
+
+{\bf Training a neural network model}. Suppose we have $m$ labeled training examples
+$$\{(\bm{x^1, y^1}),...,(\bm{x^m, y^m})\}.$$ Let $\sigma_k$, $\bm{W_k}$, $\bm{b_k}$, be the activation function, weight matrix, bias vector, resp. for the $k_{th}$ hidden layer, $k=1,2,...,d-1$. Let $\sigma_d$, $\bm{W_d}$ and $\bm{b_d}$ be the activation function, weight matrix and bias vector for the output layer. 
+
+The neural network model can be defined recursively as follows:
+\begin{equation}
+\label{enn}
+\aligned
+\bm{z_1}=&\bm{W_1^Tx}+\bm{b_1}\\
+\bm{a_1}=&\sigma_1(\bm{z_1})\\
+\bm{z_k}=&\bm{W_k^T}\bm{a_{k-1}}+\bm{b_k}\\
+\bm{a_k}=&\sigma_k(\bm{z_k}), k=2,...,d.
+\endaligned
+\end{equation}
+Here we use the convention $\sigma(x_1,...,x_n) = (\sigma(x_1),...,\sigma(x_n))$ and call $\bm{z_k}$ weighted input and $\bm{a_k}$ weighted output hence $\bm{a_d}(\bm{x})$ is the output from the neural network given $\bm{x}$ as the input data.
+
+{\bf Cost function}.
+The error of a neural network with respect to a sample $(\bm{x^j, y^j})$ is defined by cost (loss) function. One way is to use the quadratic loss function
+\begin{equation}
+L(\bm{x^j, y^j}) =\|\bm{y^j} - \bm{a_d}(\bm{x^j})\|^2+\lambda \sum_{i=1}^d ||\bm{W_i}||_F^2,
+\end{equation}
+where the second term is the regularization term to avoid overfitting and $\lambda$ is the regularization parameter.{\color{red} LZ: remove regularization?}
+
+An alternative way is to use the cross-entropy loss function
+\begin{equation}
+L(\bm{x^j, y^j}) = -[\bm{y^j} \ln (\bm{a_d}(\bm{x^j}))+(1-\bm{y^j}) \ln (1-\bm{a_d}(\bm{x^j}))]+\lambda \sum_{i=1}^d ||\bm{W_i}||_F^2,
+\end{equation}
+{\color{red} LZ: remove regularization?}
+
+The goal of training a neural network model is to find parameters $(\bm{W_1},...,\bm{W_d},\bm{b_1},..,\bm{b_d})$ such that the total loss
+\begin{equation}
+\label{etotalloss}
+L_{total} = \frac{1}{m} \sum_{j=1}^m L(\bm{x^j, y^j})
+\end{equation}
+is as small as possible.
+
+{\bf Back propagation}.
+The parameters are adjusted using the following process called \textit{back-propagation} w.r.t. $L_{total}$.
+
+There is an intuition to introduce the error $\delta_l^j$.
+Suppose there is a very small change $\Delta z_l^j$ added to the weighted input to the $j_{th}$ neuron in the $l_{th}$ layer, after the forward propagation, the final cost function changes by $\frac{\partial}{\partial \bm{z_l^j}}L_{total} \Delta z_l^j$. If the partial derivative $\frac{\partial}{\partial \bm{z_l^j}}L_{total}$ is large, we can choose $\Delta z_l^j$ with the different sign to decrease the cost function. Otherwise if the partial derivative is near zero, it's difficult to change the cost function. Therefore we use $\delta_l^j = \frac{\partial}{\partial \bm{z_l^j}}L_{total}$ to denote the error of the $j_{th}$ neuron in the $l_{th}$ layer.
+First  we compute the error in the last layer.
+{\color{red}LZ: bold sigma}
+
+\begin{equation}
+\aligned
+\bm{\delta_d^j} =& \frac{\partial}{\partial z_d^j}L_{total}\\
+=& \sum_{k} \frac{\partial L_{total}}{\partial a_k^j}\frac{\partial a_k^j}{\partial z_d^j}\\
+=& \frac{\partial L_{total}}{\partial a_d^j} \sigma'(z_d^j),\\
+\bm{\delta_d} =& \nabla_{a_d} L_{total}\odot \sigma'(z_d).
+\endaligned
+\end{equation}
+Here $\odot$ is the Hadamard product meaning component-wise multiplication of two vectors. In the third equality results from that $a_d^k$ relies only on the weighted input $z_d^k$.
+
+Then we compute the error in the $l_{th}$ layer, $l=1,2,...,d-1$.
+\begin{equation}
+\aligned
+\delta_l^j =& \frac{\partial}{\partial {z_l^j}}L_{total}\\
+=& \sum_{k} \frac{\partial L_{total}}{\partial z_{l+1}^k}\frac{\partial z_{l+1}^k}{\partial z_l^j}\\
+=& \sum_{k} \frac{\partial z_{l+1}^k}{\partial z_l^j} \bm\delta_{l+1}^k\\
+=& \sum_{k} W_{l+1}^{kj} \delta_{l+1}^k \sigma'(z_l^j),\\
+\bm{\delta_l} =& ((W_{l+1})^T \bm\delta_{l+1} \odot \sigma'(z_l).
+\endaligned
+\end{equation}
+
+
+The computation of $\bm{\delta^k}$ depends on the knowledge of $\bm{\delta^{k+1}}$, and here comes the name back-propagation. The gradient of the loss function with respect to each parameter can be computed as follows: for each $k=1,...,d$ we have
+\begin{equation}
+\label{ebpparam}
+\aligned
+\frac{\partial}{\partial W_l^{jk}}L_{total}
+=& \sum_{i} \frac{\partial L_{total}}{\partial z_l^i}\frac{\partial z_l^i}{\partial W_l^{jk}}\\
+=& \frac{\partial L_{total}}{\partial z_l^j}\frac{\partial z_l^j}{\partial W_l^{jk}}\\
+=& \delta_l^j a_{l-1}^k,\\
+\frac{\partial}{\partial b_l^{j}}L_{total}
+=& \sum_{i} \frac{\partial L_{total}}{\partial z_l^i}\frac{\partial z_l^i}{\partial b_l^{j}}\\
+=& \frac{\partial L_{total}}{\partial z_l^j}\frac{\partial z_l^j}{\partial b_l^{j}}\\
+=& \delta_l^j.
+\endaligned
+\end{equation}
+{\color{red}LZ: matrix form:
+\begin{align*}
+    \frac{\partial L_{total}}{\partial \bm W_l} =& \bm{\delta_l}\bm a_{l-1}\\
+    \frac{\partial L_{total}}{\partial \bm b_l} =& \bm{\delta_l}
+\end{align*}}
+
+With the gradients computed, we use the following update rule to adjust the parameters:
+\begin{equation}
+\label{ebpup}
+\aligned
+W_l^{jk} =& W_l^{jk} - r\frac{\partial L_{total}}{\partial W_l^{jk}}\\
+b_l^{j} =& b_l^{j} - r\frac{\partial L_{total}}{\partial b_l^{j}},
+\endaligned
+\end{equation}
+where r is the learning rate, for $l=1,...,d$. The learning rate r and the regularization parameter $\lambda$ are hyper parameters, we still don't know why and how to choose them.{\color{red}LZ: $\lambda$? overstatement?} Therefore we normally choose them by experience and manually parameter tuning to decide the optimal hyper parameters.
+
+

@@ -1,0 +1,93 @@
+\section{Qualitative approximation of neural networks}
+The first question about ${\rm DNN}_1$ is about the approximation
+properties for any continuous functions. Here we have the next
+theorem. 
+
+The first proof for this theorem above can be found in
+\cite{leshno1993multilayer} and summarized in
+\cite{pinkus1999approximation}.  %The next theorem plays an important role in the proof of above lemma, which is first proved in \cite{leshno1993multilayer} with several steps. 
+Here we can present a
+more direct and simple version.
+
+
+\begin{theorem}[Universal Approximation Property of Shallow Neural
+ Networks]
+ Let $\sigma$ be a Riemann integrable function and $\sigma\in
+ L_{loc}^\infty(\mathbb{R})$.  Then $\Sigma_d(\sigma)$ 
+ in dense in
+ $C(\Omega)$ for any compact $\Omega\subset \mathbb{R}^n$ if and and
+ only if $\sigma$ is not a polynomial!
+
+Namely, if $\sigma$ is not a polynomial,  then, for  any $f\in C(\bar \Omega)$,
+ there exists a sequence $\phi_n \in {\rm DNN}_1$ such that
+$$
+	\max_{x\in \bar \Omega} |\phi_n(x) - f(x)| \to 0, \quad n \to \infty.
+$$
+\end{theorem}
+
+\begin{proof}
+Let us first prove the theorem in a special case that $\sigma\in
+C^\infty(\mathbb{R})$.
+Since $\sigma\in C^\infty(\mathbb{R})$, it follows that for every $\omega,b$,
+\begin{equation}
+ \frac{\partial}{\partial \omega_j}\sigma(\omega\cdot x+b) = 
+ \lim_{n\rightarrow \infty}\frac{\sigma((\omega+h e_j)\cdot x+b)-\sigma(\omega\cdot x+b)}{h} \in \overline{\Sigma}_d(\sigma)
+\end{equation}
+for all $j=1,...,d$. 
+
+By the same argument, for $\alpha = (\alpha_1,...,\alpha_d)$
+$$D^\alpha_\omega\sigma(\omega\cdot x+b)\in\overline{\Sigma}_d(\sigma)$$
+for all $k\in\mathbb{N}$, $j=1,...,d$, $\omega\in\mathbb{R}^d$ and $b\in\mathbb{R}$.
+
+Now 
+$$
+D^\alpha_\omega\sigma(\omega\cdot x+b)=x^\alpha\sigma^{(k)}(\omega\cdot x+b)
+$$
+where $k=|\alpha|$ and $x^\alpha = x_1^{\alpha_1}\cdots x_d^{\alpha_d}$.  Since
+$\sigma$ is not a polynomial there exists a $\theta_k\in\mathbb{R}$
+such that $\sigma^{(k)}(\theta_k)\ne0$.  Taking $\omega=0$ and
+$b=\theta_k$, we thus see that $x_j^k\in\overline{\Sigma}_d(\sigma)$.
+Thus, all polynomials of the form $x_1^{k_1}\cdots x_d^{k_d}$ are in
+$\overline{\Sigma}_d(\sigma)$.
+
+This implies that $\overline{\Sigma}_d(\sigma)$ contains all
+polynomials.  By Weierstrass's Theorem \cite{stone1948generalized} it
+follows that $\overline{\Sigma}_d(\sigma)$ contains $C(K)$ for each
+compact $K\subset\mathbb{R}^n$. That is $\Sigma_d(\sigma)$ is dense in
+$C(\mathbb{R}^d)$.
+
+Now we consider the case that $\sigma$ is only Riemann integrable. 
+Consider the mollifier $\eta$
+	\begin{equation*}
+	\begin{aligned}
+	\eta(x)=\frac{1}{\sqrt {\pi}}e^{-x^2}.
+	\end{aligned}
+	\end{equation*}
+Set $\eta_\epsilon=\frac{1}{\epsilon}\eta(\frac{x}{\epsilon})$. Then consider $\sigma_{\eta_\epsilon}$
+\begin{equation}
+\sigma_{\eta_\epsilon}(x):=\sigma\ast{\eta_\epsilon}(x)=\int_{\mathbb{R}}\sigma(x-y){\eta_\epsilon}(y)dy
+\end{equation}
+It can be seen that $\sigma_{\eta_\epsilon}\in C^\infty(\mathbb{R})$.
+We first notice that
+$\overline{\Sigma}_1(\sigma_{\eta_\epsilon})\subset\overline{\Sigma}_1(\sigma)$,
+which can be done easily by checking the Riemann sum of
+$\sigma_{\eta_\epsilon}(x)=\int_{\mathbb{R}}\sigma(x-y){\eta_\epsilon}(y)dy$
+is in $\overline{\Sigma}_1(\sigma)$.
+
+Following the argument in the beginning of the proof proposition, we
+want to show that $\overline{\Sigma}_1(\sigma_{\eta_\epsilon}))$
+contains all polynomials.  For this purpose, it suffices to show that
+there exists $\theta_k$ and $\sigma_{\eta_\epsilon}$ such that
+$\sigma_{\eta_\epsilon}^{(k)}(\theta_k)\ne0$ for each k. If not, then
+there must be $k_0$ such that
+$\sigma_{\eta_\epsilon}^{(k_0)}(\theta)=0$ for all
+$\theta\in\mathbb{R}$ and all $\epsilon>0$.  Thus
+$\sigma_{\eta_\epsilon}$'s are all polynomials with degree at most
+$k_0-1$.  In particular, It is known that $\eta_\epsilon\in
+C_0^\infty(\mathbb{R})$ and $\sigma\ast\eta_\epsilon$ uniformly
+converges to $\sigma$ on compact sets in $\mathbb{R}$ and
+$\sigma\ast\eta_\epsilon$'s are all polynomials of degree at most
+$k_0-1$. Polynomials of a fixed degree form a closed linear subspace,
+therefore $\sigma$ is also a polynomial of degree at most $k_0-1$,
+which leads to contradiction.
+\end{proof}

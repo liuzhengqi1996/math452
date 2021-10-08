@@ -1,0 +1,457 @@
+%\chapter{Multigrid Methods}\label{chap:introMG}
+In this chapter, we will introduce the multigrid 
+methods for numerical partial differential equations with
+some notation in convolutional neural networks as discussed in 
+previous sections. 
+The main purpose of this section is to give three different 
+version of multigrid methods: recursion form, method of subspace
+correction form and expansion form.
+
+
+\input{4MSC/4ChTri-tenmatrix}
+
+\input{4MSC/4ChLocality}
+
+\section{Some basic components for multigrid methods}\label{sec:mg}
+Let us first briefly describe a geometric multigrid method used to solve the 
+following boundary value problem
+\begin{equation}
+\label{laplace}
+-\Delta u = f,  \mbox{ in } \Omega,\quad
+ u=0  \mbox{ on } \partial\Omega,\quad
+\Omega=(0,1)^2.
+\end{equation}
+
+We consider a continuous linear finite element discretization of
+\eqref{laplace} on a nested sequence of grids of sizes $n_\ell\times
+n_\ell$ with $n_{\ell}=2^{J-\ell+1} + 1$, as shown in the left part of
+Fig. \ref{mgrid} and the corresponding sequence of finite
+element spaces \eqref{Vk}.
+%Here we need to notice that, $n_\ell = 2^{k_\ell} + 1$ for general PDEs grid 
+%with the above boundary condition. For general images, we can take them as
+%discrete functions on grid with size $n_\ell = 2^{k_\ell}m$ with small $m = 1,3,\cdots$.
+%Then generally speaking, the coarse grid size is $n_{\ell+1} = \frac{n_\ell}{2}=2^{k\ell - 1}m$.
+
+Based on the grid $\mathcal T = \mathcal T_\ell$, the discretized system is
+\begin{equation}
+\label{laplace-h}
+Au=f.
+\end{equation}
+Here,  $A:\mathbb R^{n\times n}\mapsto \mathbb R^{n\times n}$ is a tensor satisfying
+\begin{equation}
+\label{uniform-laplace}
+(Au)_{i,j}=4u_{i,j}-u_{i+1,j}-u_{i-1,j}-u_{i,j+1}-u_{i,j-1},
+\end{equation}
+which holds for $1\le i,j \le n$ with zero padding. 
+Here we notice that, there exists a $3\times 3$ kernel as
+\begin{equation}\label{eq:kernel-A}
+K_A = \begin{pmatrix}
+0 & -1 & 0 \\
+-1 & 4 & -1 \\
+0 & -1 & 0
+\end{pmatrix},
+\end{equation}
+with 
+\begin{equation}\label{eq:convA}
+Au = K_A \ast u.
+\end{equation}
+Where $\ast$ is the stander convolution operation with zero padding like \eqref{con1}. 
+We now briefly describe a simple multigrid method by a mixed use of the terminologies from 
+deep learning \cite{goodfellow2017deep} and multigrid methods.
+
+The gradient descent method can be derived as following 
+\begin{itemize}
+	\item $\min_{x\in \mathbb{R}^n} F(x)$ with $ F(x) =
+          \frac{1}{2}u^TA u - f^Tu$ 
+	\item Gradient:
+	$$
+	\nabla F= Au - f := - r.
+	$$
+	\item Given $u^k$, a new approximate solution is computed by two steps:
+	$$
+	r^k = f-Au^k,\quad u^{k+1} = u^k + \omega r^k.
+	$$
+\end{itemize}
+Here we can clearly see that gradient descent method is just Jacobi method.  
+And the method can be written as 
+$$
+u^{k+1} = u^k + \omega (f-Au^k).
+$$
+Denote $e^k=u-u^k$, then the error equation of the method is as follows
+$$
+e^{k+1} = (I -\omega A)e^k.
+$$
+the method converges if and only if $\rho(I-\omega A)< 1$, a sufficient condition is $\|I-\omega A\|< 1$ which means $\omega<\frac{1}{8}$.
+
+The first main ingredient in GMG is a smoother.  A commonly used smoother is a
+damped Jacobi with damped coefficient $\omega$ with $\omega \in (0,2)$,  which can be written as $S_{0}:\mathbb R^{n\times n}\mapsto
+\mathbb R^{n\times n}$ satisfying
+\begin{equation}
+\label{jacobi1}
+(S_{0}f)_{i,j}={\omega\over 4}f_{i,j},
+\end{equation}
+for equation \eqref{laplace-h} with initial guess zero.
+If we apply the Jacobian iteration twice, then
+$$
+S_1(f) = S_{0} f + S(f - A(S_{0}f)),
+$$
+with element-wise form
+\begin{equation} 
+\begin{aligned}
+\label{jacobi2}
+[S_1(f)]_{i,j} &={1\over 4}\omega(2-\omega)f_{i,j} + {\omega^2\over 16}(f_{i+1,j}+f_{i-1,j}+f_{i,j+1}+f_{i,j-1}).
+\end{aligned}
+\end{equation}
+Then we have 
+\begin{equation}\label{eq:kernel-S}
+K_{S_{0}} = {\omega \over 4},
+\end{equation}
+and 
+\begin{equation}\label{eq:kernel-S2}
+K_{S_1} = \begin{pmatrix}
+0 & \frac{\omega^2}{16} & 0 \\
+\frac{\omega^2}{16} & {\omega(2-\omega) \over 4} & \frac{\omega^2}{16}  \\
+0 & \frac{\omega^2}{16}  & 0
+\end{pmatrix},
+\end{equation}
+such that 
+\begin{equation}\label{eq:convS}
+S_{0}f = K_{S_{0}} \ast f \quad S_1 f = K_{S_1} \ast f.
+\end{equation}
+Similarly, we can define 
+$S^{\ell}: \mathbb{R}^{n_\ell \times n_\ell} \mapsto \mathbb{R}^{n_\ell \times n_\ell}$.
+
+We use prolongation $P_{\ell+1}^\ell: R^{n_{\ell+1}\times n_{\ell+1}}\mapsto R^{n_{\ell}\times n_{\ell}}$
+as defined in \eqref{mg-prolong} and restriction $R_{\ell}^{\ell+1} = (P_{\ell+1}^{\ell})^T$. Further more,
+we use the following relationship to define coarse operation
+\begin{equation}\label{eq:def_coarse}
+A^{\ell+1}=R_{\ell}^{\ell+1} A^{\ell}P_{\ell+1}^{\ell} \quad (\ell = 1:J-1),
+\end{equation}
+with $A^1 = A$. 
+
+
+
+An important results in multilevel finite element methods is that 
+if we take the restriction as \eqref{eq:restriction} with prolongation as 
+the transposition of restriction, we will have $A^2$ is still a convolution operation 
+with $K_{A^2} = K_{A^1} = K_A$ as in \eqref{eq:kernel-A}. 
+
+
+\section{Recursion form of multigrid methods}
+In almost multigrid literatures \cite{trottenberg2000multigrid, briggs2000a}, 
+the multigrid algorithms are expressed in a recursion form. Also, in the implementation
+for multigrid method, the recursion form is much easier for coding. 
+Without loss of generality, we list a general V-cycle or W-cycle multigrid forms
+with recursion form with iterative scheme
+$$
+u = {\text{MG}}(u, f; 1, \nu, J).
+$$
+\begin{breakablealgorithm}%[!htb]
+	\caption{$ u = {\text{MG}}(u, f; \ell, \nu, J)$}
+	\label{alg:MG}
+	\begin{algorithmic}
+		\If{$\ell == J$}
+		\State Coarsest level: exact solve
+		$$
+		u = [A^J]^{-1} f;
+		$$
+		\EndIf
+		\State Presmoothing
+		\For{$i = 1:\nu$}
+		\State
+		$$
+		u \leftarrow u + S^{\ell} (f - A^\ell u).
+		$$
+		\EndFor
+		\State Restriction
+		$$
+		r = R_\ell^{\ell+1} (f - A^\ell u).
+		$$
+		\State Coarse grid correction
+		$$
+		e = \text{MG}(0,r, \ell+1, \nu, J);
+		$$
+		\If{ W-cycle}
+		\State
+		$$
+		e = \text{MG}(e, r, \ell+1,\nu J); 
+		$$
+		\EndIf
+		\State Prolongation
+		$$
+		u=u+P_{\ell+1}^\ell e;
+		$$
+		\State Pre-smoothing:
+		\For{$i = 1:\nu$}
+		\State
+		\begin{equation}\label{eq:smoothing}
+		u \leftarrow u + [S^{\ell}]^T (f - A^\ell u).
+		\end{equation}
+		\EndFor
+	\end{algorithmic}
+\end{breakablealgorithm}
+
+\begin{remark}
+	Here we need to notice that we use $\mathcal V_1$ for the finest
+	space and $\mathcal V_J$ for the coarser space to consistent
+	with the CNN terminology. However this is opposite to the general 
+	multigrid literatures \cite{xu1992iterative, xu2002method, 
+		xu2016algebraic, trottenberg2000multigrid, briggs2000a}.
+\end{remark}
+
+\section{Method of subspace correction form for multigrid methods}
+That the multigrid methods can be interpreted as a 
+successive subspace correction method is a very surprising
+discovery by Prof. Xu in \cite{xu1989theory, xu1992iterative}. 
+Here we give a simple introduction for this method. 
+One of the most important idea for this theory is that
+we focus on the abstract function space and its duality not
+just the represented vector space \cite{xu1992iterative, xu2017algebraic}.
+
+We consider a sequence of spaces $\mathcal V_{1},\ldots,\mathcal V_{J}$.  
+These spaces, which will be known as {\it auxiliary spaces}, are not
+necessarily subspace of $\mathcal  V$ 
+(such as the finest space as mentioned in \S \ref{sec:CNNs} and above), 
+but each of them is related to the
+original space $\mathcal  V$ by a linear operator
+$$
+\Pi_{j}: \mathcal V_{j} \mapsto \mathcal V. 
+$$ 
+Our very basic assumption is that the following decomposition holds:
+\begin{equation}
+\label{aux-decomp}
+\mathcal V=\sum_{i=1}^J\Pi_i \mathcal V_i. 
+\end{equation}
+This means that for any $v\in \mathcal  V$, there exists $v_i\in \mathcal  V_i$ (which may
+not be unique) such that 
+\begin{equation}
+\label{aux-decomp0}
+v=\sum_{i=1}^J \Pi_i v_i.   
+\end{equation}
+Furthermore, we assume that each $\mathcal  V_i$ is equipped with an energy inner product
+$a_i(\cdot,\cdot)$. 
+
+We define
+$$
+ A^i:  \mathcal  V_i\mapsto \mathcal V_i'
+$$ 
+by
+$$
+\langle A^i w_i,\phi_i \rangle= (w_i,\phi_i)_{A^i}:=a_i(w_i,\phi_i), \quad w_i,\phi_i\in V_i. 
+$$
+Let $\Pi_i':  \mathcal  V' \mapsto \mathcal V_i'$ be the adjoint of $\Pi_i$:
+$$
+\langle \Pi_i'f, v_i\rangle=\langle f,\Pi_i v_i\rangle, \quad f\in \mathcal  V',  v_i\in \mathcal V_i.
+$$
+Let $P_i=\Pi_i^*: \mathcal V\mapsto \mathcal V_i$ be the adjoint of $\Pi_i$ with respect
+to the A-inner products:
+$$
+(P_iu,v_i)_{A^i}=(u,\Pi_iv_i)_{A}, u\in \mathcal V, v_i\in \mathcal V_i.
+$$
+
+\begin{lemma}
+	The following identity holds
+	\begin{equation}
+	\label{PiAAP}
+	\Pi_i'A=A^iP_i.
+	\end{equation}
+\end{lemma}
+
+If $u$ is the solution of \eqref{laplace-h}, by \eqref{PiAAP}, we have
+\begin{equation}
+\label{3.3a}A^iu_i=f_i
+\end{equation}
+where 
+$$
+u_i=P_iu, \quad f_i=\Pi_i'f
+$$
+This equation may be regarded as the restriction of  \eqref{laplace-h} to
+$\mathcal V_i$. 
+We assume that each such $A_i$ has an approximate inverse or preconditioner:
+\begin{equation}
+\label{Ri}
+S^i: \mathcal V_i'\mapsto \mathcal V_i.   
+\end{equation}
+
+This type of algorithm is similar to the Gauss-Seidel method.
+We here make the correction in one subspace at a time by using the most
+updated approximation of $u$.  More precisely, starting from
+$v^{0}= u^{\text{old}}$ and correcting its residual in $\mathcal  V_1$ gives
+$$
+v^1=v^{0}+\Pi_1R_1\Pi_1'(f-Av^0).
+$$
+By correcting the new approximation $v^1$ in the next space $\mathcal V_2$,
+we get
+$$
+v^2=v^1+\Pi_2R_2\Pi_2'(f-Av^1).
+$$
+Proceeding this way successively for all $\mathcal V_i$ leads to
+\begin{breakablealgorithm}%[!htb]
+	\caption{$u^T = MSC(u^0)$}
+	\label{alg:MSC}
+	\begin{algorithmic}
+		\For{$t=0,1,\ldots T$  or till convergence} 
+		\State  Initialization in one cycle 
+		$$
+		v \leftarrow u^t.
+		$$
+		\For {$i=1:K$}
+		\State Correction in subspace $V_i$
+		$$
+		v \leftarrow v+\Pi_iS^i\Pi_i'(f-Av).
+		$$
+		\EndFor
+		\State Update for one cycle
+		$$
+		u^{t+1} \leftarrow v.
+		$$
+		\EndFor
+	\end{algorithmic}
+\end{breakablealgorithm}
+
+
+To prove that this above Algorithm \ref{alg:MSC} can be 
+equivalent to the original form of multigrid in Algorithm \ref{alg:MG}
+is non-trivial. We can prove it by investigate its error propagation operator. 
+
+Let $T_i = \Pi_iR_i\Pi_i'A$. By \eqref{PiAAP}, $T_i=\Pi_iR_iA_iP_i.$ Note that $T_i:
+\mathcal  V \mapsto \mathcal  V$ is symmetric with respect to $(\cdot, \cdot)_A$ and nonnegative
+and that $T_i=\Pi_iP_i$ if $S^i=A_i^{-1}$.
+
+If $u$ is the exact solution of \eqref{laplace-h}, then $f=Au$.  Let $v^i$ be
+the $i-th$ iterate (with $v^0=u^k$) from Algorithm \ref{alg:MSC}, we have by
+definition
+$$
+u-v^{i+1}=(I-T_i)(u-v^i),\quad i=1,\cdots,K.
+$$
+A successive application of this identity yields
+\begin{equation}\label{error}
+u-u^t=E_K(u-u^{t-1}),
+\end{equation}
+where
+\begin{equation}\label{Em}
+E_K=(I-T_K)(I-T_{K-1})\cdots(I-T_1).
+\end{equation}
+
+It is easy to see that Algorithm \ref{alg:MSC} is equivalent to 
+$$
+u^t=u^{t-1}+B(f - Au^{t-1}), \quad t=1,2,\ldots,
+$$
+if $B: \mathcal V' \mapsto \mathcal V$ is given by 
+\begin{equation}
+\label{SSC-B}
+I-BA= (I-T_K)(I-T_{K-1})\cdots(I-T_1). 
+\end{equation}
+
+With the same idea, Algorithm \ref{alg:MG} can also be write as
+$$
+u^t=\text{V-MG}(u^{t-1},f), \quad t=1,2,\ldots,
+$$
+with
+$$
+u^{t} = u^{t-1} + B^{\text{V-MG}}(f - Au^{t-1}),
+$$
+because of its linearity. Here $\text{V-MG}$ means the V-cycle multigrid
+methods.
+Then one can prove that $B: \mathcal V' \mapsto \mathcal V$ is given by 
+\begin{equation}
+I-B^{\text{V-MG}}A= (I-T_K)(I-T_{K-1})\cdots(I-T_1),
+\end{equation}
+if $K = 2J-1$ with $\mathcal V_{2J-i} = \mathcal V_i$  and
+$S^{2J-i} = [S^i]^T$ for $i = 1:J-1$.
+
+There is a beautiful result by investigating multigrid methods
+as the method of subspace correction which is so-called 
+X-Z identity \cite{xu2002method}. 
+\begin{theorem}[X-Z Identity($c_0$)]\label{th:xzidentityc0}
+	Assume that $B$ is defined by Equation (\ref{SSC-B}). Then 
+	\begin{equation}\label{eq:xzidentityc0}
+	\|I-BA\|_A^2=1-\frac{1}{1+c_0}=1-\frac{1}{c_1},
+	\end{equation}
+	where
+	\begin{equation}\label{eq:xzc0}
+	c_0=\sup_{\|v\|_A=1}\inf_{\sum
+		\Pi_i v_i=v}\sum_{i=1}^J\|[S^i]^tw_i\|_{{\overline R_i}^{-1}}^{2}.
+	\end{equation}
+	with $w_i=A^iP_i\sum_{j\geq i} \Pi_j v_j-R_i^{-1}v_i$, 
+	and
+	\begin{equation}\label{eq:xzc1}
+	c_1=\sup_{\|v\|_A=1}\inf_{\sum \Pi_i v_i=v}\sum_{i=1}^J
+	\left\|\overline R_i R_i^{-1} v_i +R_i^t w_i\right\|_{\overline R_i^{-1}}^2
+	\end{equation}
+	
+	In particular, for $S^i=[A^i]^{-1}$, we have 
+	\begin{equation}
+	\label{eq:c0p}
+	c_0=\sup_{\|v\|_A=1}\inf_{\sum \Pi_i v_i=v}\sum_{i=1}^J\left\| P_i\sum_{j> i}v_j\right\|_{A^i}^{2}.
+	\end{equation}
+	and
+	\begin{equation}\label{eq:c1p}
+	c_1=\sup_{\|v\|_A=1}\inf_{\sum \Pi_i v_i=v}\sum_{i=1}^J
+	\left\|P_i\left(\sum_{j\geq i}v_j\right)\right\|_{A}^2.
+	\end{equation}
+\end{theorem}
+
+
+
+\section{Expansion form of multigrid methods}\label{sec:mg_expansion}
+Despite the convenience of recursion form in implementation
+of multigrid methods especially for some complex cycles, the computer can
+only execute it with its expansion (unfolded) form step by step. 
+
+Here, we are going to use the smoother $S^\ell$, prolongation $P^{\ell}_{\ell+1}$, restriction $R_{\ell}^{\ell+1}$ and mapping
+$A^\ell$ as given in \eqref{eq:def_coarse}  to formulate the following algorithm
+as a major component of a multigrid algorithm. 
+\begin{breakablealgorithm}%[!htb]
+	\caption{$(u^{\ell,\nu_\ell}: ~\ell = 1:J) = {\text{MG0}}(f; J,\nu_1, \cdots, \nu_J)$}
+	\label{alg:L-Slash0}
+	\begin{algorithmic}
+		\State Set up
+		$$
+		f^1 = f, \quad u^{1,0}=0.
+		$$
+		\State Smoothing and restriction from fine to coarse level (nested)
+		\For{$\ell = 1:J$}
+		\State Pre-smoothing:
+		\For{$i = 1:\nu_\ell$}
+		\State
+		\begin{equation}\label{eq:smoothing}
+		u^{\ell,i} = u^{\ell,i-1} + S^{\ell} (f^\ell - A^\ell u^{\ell,i-1}).
+		\end{equation}
+		\EndFor
+		\State Form restricted residual and set initial guess:
+		$$
+		u^{\ell+1,0} = 0, \quad f^{\ell+1} = R^{\ell+1}_\ell(f^\ell - A^{\ell} u^{\ell,\nu_\ell}).
+		$$
+		\EndFor
+	\end{algorithmic}
+\end{breakablealgorithm}
+
+Using the above algorithm, there are different multigrid algorithms such as: $\backslash$-cycle, V-cycle and W-cycle.
+Let us now only give one special form of multigrid algorithm as follows.
+\begin{breakablealgorithm}%[!htb]
+	\caption{$u = {\backslash\text{-MG}}(f; J,\nu_1, \cdots, \nu_J)$}
+	\label{alg:L-Slash1}
+	\begin{algorithmic}
+		\State Call Algorithm \ref{alg:L-Slash0},
+		$$
+		(u^{\ell,\nu_\ell}: ~\ell = 1:J) = {\text{MG0}}(f; J,\nu_1, \cdots, \nu_J).
+		$$
+		\State Prolongation and restriction from coarse to fine level
+		\For{$\ell = J-1:1$}
+		\State
+		$$
+		u^{\ell,\nu_\ell} \leftarrow u^{\ell,\nu_\ell} + P_{\ell+1}^{\ell}u^{\ell+1, \nu_{\ell+1}}.
+		$$
+		\EndFor
+		\State Output
+		$$
+		u = u^{1,\nu_\ell}.
+		$$
+	\end{algorithmic}
+\end{breakablealgorithm}
+
+No one would like to implement a multigrid algorithm with the above form
+especially for some complex cycles. However, we will show that the fine to 
+coarse process in expansion form as in Algorithm \ref{alg:L-Slash0} has a deep
+connection with the convolutional neural networks. 

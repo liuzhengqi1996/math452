@@ -1,0 +1,127 @@
+
+\newpage
+
+ \section{Linear neural networks}
+ 
+\subsection{Linear NN experiments}
+Our main goal of this experiment is to test if deeper linear neural network can converge faster. we use linear MNIST with totally 60000 data points as our dataset. The first experiment randomly split this dataset into training set with 48000 training data points and 12000 test data points. The second experiment we use the full data as our training set.\\
+Generally, we use a linear neural network model.  A linear NN with $H$ hidden layers can be modeled as
+\begin{equation}
+	\bm f(x,\bm\theta) = W_{H+1}(W_H(\cdots(W_1 x + b_1)\cdots)+b_H)+b_{H+1}
+\end{equation}
+where $W_1\in \mathbb{R}^{d_1\times d_x}$, $b_1 \in \mathbb{R}^{d_1}$, $W_i\in \mathbb{R}^{d_{i}\times d_{i-1}}$, $b_i \in \mathbb{R}^{d_i}$, $i = 2,\cdots,H$, $W_{H+1}\in \mathbb{R}^{d_y\times d_{H+1}}$, $b_{H+1} \in \mathbb{R}^{d_y}$. Notice that $d_x$ represents the input size which is 500 in this experiment, while $d_y$ represents the output size , namely, the number of classes, which is 10 in this experiment. So from now on, we may only  use an array $(d_x,d_1,\cdots,d_H,d_y)$ to represent our model.\\
+We use cross-entropy with $L_2$ regularization as our loss function.
+\begin{equation}
+	L(\bm\theta,D) = \frac{1}{|D|} \sum_{i = 1}^k \sum_{x\in D_i} (\log ({\bm 1}^T e^{\bm f(x,\bm\theta)}) - f_i(x,\bm\theta)) + \lambda \sum_{j = 0}^{p+1} (\|W_j\|_F^2 + \|b_j\|_2^2)
+\end{equation}
+
+\begin{itemize}
+	\item Model.\\
+    \begin{itemize}
+    	\item Net0 (500,10).
+    	\item Net1 (500,100,10)
+    	\item Net2 (500,200,100,10)
+    	\item Net3 (500,400,200,100,10)
+    	\item Net4 (500,800,200,100,10)
+    \end{itemize}
+    \item Training algorithm.
+    \begin{itemize}
+    	\item Full gradient descent(GD).
+    	    \begin{equation}
+    	    	\bm\theta = \bm\theta - lr \frac{\partial L}{\partial \bm\theta}
+    	    \end{equation} 
+    	\item Coordinate descent(CD).
+    	\begin{align}
+    		&\bm\theta_1^+ = \bm\theta_1 - lr \frac{\partial L}{\partial \bm\theta_1}(\bm\theta_1,\bm\theta_2,\cdots,\bm,\bm\theta_p,\theta_{p+1}),\\
+    		&\bm\theta_2^+ = \bm\theta_2 - lr \frac{\partial L}{\partial \bm\theta_2}(\bm\theta_1^+,\bm\theta_2,\cdots,\bm\theta_p,\bm\theta_{p+1}),\\
+    		&\bm\theta_3^+ = \bm\theta_3 - lr \frac{\partial L}{\partial \bm\theta_3}(\bm\theta_1^+, \bm\theta_2^+,\cdots,\bm\theta_p,\bm\theta_{p+1}),\\
+    		&\cdots,\\
+    		&\bm\theta_{p+1}^+ = \bm\theta_{p+1} - lr \frac{\partial L}{\partial \bm\theta_{p+1}}(\bm\theta_1^+, \bm\theta_2^+,\cdots,\bm\theta_p^+,\bm\theta_{p+1})
+    	\end{align}
+    	where $\bm\theta_j = (W_j,b_j), j = 1,2,\cdots,p+1$.
+    \end{itemize}
+    \item Stopping criterion.\\
+    We stop iteration when training accuracy first obtain 100\%.
+\end{itemize}
+
+
+\begin{enumerate}
+	\item Training Net0-4 using gradient descent.\\
+	We set $\lambda = 10^{-5}$, learning rate $= 0.1$.
+	\begin{itemize}
+		\item Experiment 1: Using ranomly chosen 48000 data points from linear MNIST as training set.\\
+		\begin{table}[H]
+			\centering
+			\caption{Randomly chosen 80\% full dataset as training set}
+			\label{tab:1}      
+			\begin{tabular}{lllllll}
+				\hline\noalign{\smallskip}
+				Model &  Optim & Iterations & Time  & TrainL  & TestL & TestA \\
+				\noalign{\smallskip}\hline\noalign{\smallskip}
+				
+				Net0 & GD & 3190 & 3743 & 0.0062 & 0.0077 & 99.94   \\
+				
+				Net1 & GD & 2009 & 2475 & 0.0046 & 0.0063 & 99.95 \\
+				
+				Net2 & GD & 2322 & 3245 & 0.0034 & 0.0049 & 99.94 \\
+				
+				Net3 & GD & 1767 & 2705 & 0.0048 & 0.0066 & 99.93 \\
+				
+				Net4 & GD & 1805 & 3346 &0.0059 & 0.0075 & 99.93 \\
+				
+				\noalign{\smallskip}\hline
+				
+			\end{tabular}
+		\end{table}
+		
+%		\begin{figure}[H]
+%			\centering
+%			\includegraphics[width=3in]{logGDtrainL.png}   
+%			\caption{log(Train Loss)}
+%		\end{figure}
+
+	
+	
+	
+		\item Experiment 2: Using whole linear MNIST dataset as training set.
+		\begin{table}[H]
+			\centering
+			\caption{Full dataset}
+			\label{tab:2}      
+			\begin{tabular}{lllll}
+				\hline\noalign{\smallskip}
+				Model &  Optim & Iterations & Time  & TrainL \\
+				\noalign{\smallskip}\hline\noalign{\smallskip}
+				
+				Net0 & GD & 4218 & 6168 & 0.0051  \\
+				
+				Net1 & GD & 2546 & 3937 & 0.0038  \\
+				
+				Net2 & GD & 2269 & 4010 & 0.0035  \\
+				
+				Net3 & GD & 2099 & 4046 & 0.0044  \\
+				
+				Net4 & GD & 1578 & 3815 &0.0065  \\
+				
+				\noalign{\smallskip}\hline
+				
+			\end{tabular}
+		\end{table}
+		
+		
+%		\begin{figure}[H]
+%			\centering
+%			\includegraphics[width=3in]{logGDfullL.png}   
+%			\caption{log(Train Loss) for full dataset}
+%		\end{figure}
+		We can see very clearly in the two figures that the loss of Net0 always decrease slower than other deeper linear NN. Or we can see in the table that Net0 use most iterations to reach 100\% training accuracy. 
+	
+	    \item Experiment 3: Training '0' and '1' data in MNIST.\\
+	     First I use Adam algorithm to verify that '0' and '1' are linearly separable in the training set of MNIST. Then I use full GD to iterate 50 epoches for each model and record their loss history. 
+%	    \begin{figure}[H]
+%		  \centering
+%		  \includegraphics[width=3in]{log_MNIST_50.png}   
+%		  \caption{log(Train Loss) for MNIST dataset}
+%	      \end{figure}
+		\end{itemize}
+	\end{enumerate}

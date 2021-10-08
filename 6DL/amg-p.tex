@@ -1,0 +1,74 @@
+\paragraph{Numerical Experiment of Restriction}
+We test to different restriction, on is 7-point (based on linear) and the other is 9 point (based on bilinear).
+
+ The kernel of 7-point is 
+\begin{equation}
+\begin{pmatrix}
+0 &0.5 &0.5\\
+0.5 &1 &0.5\\
+0.5 &0.5 &0
+\end{pmatrix} 
+\end{equation} 
+ The kernel of 9-point is 
+\begin{equation}
+\begin{pmatrix}
+0.25 &0.5 &0.25\\
+0.5 &1 &0.5\\
+0.25 &0.5 &0.25
+\end{pmatrix} 
+\end{equation} 
+
+Suppose the prolongation is $P$, 
+we can write a step iteration of two layer multigrid method as:
+\begin{equation}
+x^{t+1}-x^*=[I-(D-U)^{-1}A][I-(D-L)^{-1}A][I-P(P^T A P)^{-1}P^T)A](x^t-x^*)
+\end{equation}
+write $I-BA=[I-(D-U)^{-1}A][I-(D-L)^{-1}A][I-P(P^T A P)^{-1}P^T)A]$
+
+
+Some numerical experiment are briefly list below:
+
+Our problem is a Possion equation on $n\times n$ conforming triangular grid. Boundary condition is Dirichlet or Neumann.
+
+\begin{table}[!htp]
+	\caption{Dirichlet Boundary}
+	\begin{tabular}{l |c}
+		n&  32\\ \hline
+		7-point  & 0.2308	\\
+		9-point  & 0.1984	\\
+	\end{tabular}
+\end{table}
+\begin{table}[!htp]
+	\caption{Neumann Boundary}
+	\begin{tabular}{l |c}
+		n&  32\\ \hline
+		7-point  & 0.2325	\\
+		9-point  & 0.2232	\\
+	\end{tabular}
+\end{table}
+
+For multilayer, we choose $A_i = P_i^T A P_i$, then
+\begin{equation}
+x^{t+1}-x^*=[\Pi_{i=1}^{J}(I-T_i)](x^t-x^*)
+\end{equation}
+where $T_i=\Pi_iR_i\Pi_i^TA$, $R_i$ is the GS smoother of $A_i$.
+
+\begin{table}[!htp]
+	\caption{Dirichlet Boundary}
+	\begin{tabular}{l |c c}
+		Layer& 2&3 \\ \hline
+		7-point  & 0.3234 &	0.7433\\
+		9-point  & 0.2870 &	0.6256\\
+	\end{tabular}
+\end{table}
+
+\begin{table}[!htp]
+	\caption{Neumann Boundary}
+	\begin{tabular}{l |c c}
+		Layer& 2&3 \\ \hline
+		7-point  & 0.3289 &	0.7167\\
+		9-point  & 0.3155 &	0.6283\\
+	\end{tabular}
+\end{table}
+
+

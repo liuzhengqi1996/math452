@@ -1,0 +1,377 @@
+\section{Introduction to Kernels}
+In this section, we present the basic definitions and concepts concerning kernels. We begin with the most basic definition of a pre-kernel.
+\begin{definition}
+Let $V$ be a Hilbert space, and $\Omega\subset V$. A \textbf{pre-kernel} is a continuous function $k:\Omega\times \Omega \rightarrow \mathbb{R}$ which is symmetric, i.e. for which
+\begin{equation}
+ k(x,y) = k(y,x).
+\end{equation}
+
+\end{definition}
+Below are some common examples:
+\begin{itemize}
+ \item Radial-basis functions $k(x,y) = g(\|x-y\|_V)$, where $g:[0,\infty)\rightarrow \mathbb{R}$ is a given function. Some simple examples are:
+ \begin{itemize}
+ \item Identity $g(t) = t$
+ \item Exponential $g(t) = e^{-ct}$
+ \item Gaussian $g(t) = e^{-ct^2}$
+ \end{itemize}
+ \item Shift-invariant kernels $k(x,y) = \phi(x-y)$, where $\phi(x) = \phi(-x)$ is an even function.
+ \item Functions of the inner product, i.e. $k(x,y) = g(\langle x, y\rangle_V)$.
+\end{itemize}
+
+\subsection{Interpolation}
+Given a collection of datapoints $\xi_1,...,\xi_n\in \Omega$, we form the prekernel space
+\begin{equation}
+ I_k(\{\xi_1,...,\xi_n\}) = \text{span}\{k(\cdot, \xi_i),~i=1,...,n\}.
+\end{equation}
+This is a linear space of real-valued functions on $\Omega$, spanned by the kernels `centered' at each of the datapoints $\xi_1,...,\xi_n$.
+
+Given function values $f_i = f(\xi_i)$, a major question is whether we can interpolate the values $f_i$ in $I_k(\{\xi_1,...,\xi_n\})$, i.e. whether we can find coefficients $a_k$ such that
+\begin{equation}
+ \sum_{j=1}^n a_jk(x_i,x_j) = f_i
+\end{equation}
+for $i=1,...,n$. This of course means that the function
+$$f_n(x) = \sum_{j=1}^n a_jk(x,x_j)\in I_k(\{\xi_1,...,\xi_n\})$$
+matches $f$ at the datapoints $\xi_i$.
+
+Evidently, this will always be possible as long as the matrix $(k(\xi_i,\xi_j))^n_{i,j = 1}$ is invertible. This leads us to the following two definitions.
+\begin{definition}
+ A pre-kernel $k$ is called an \textbf{invertible kernel} if the matrix $(k(\xi_i,\xi_j))^n_{i,j = 1}$ is non-singular for any $n$ and $\xi_1,...,\xi_n\in \Omega$.
+\end{definition}
+\begin{definition}
+ A pre-kernel $k$ is called a \textbf{positive-definite kernel} or just a \textbf{kernel} if the matrix $(k(\xi_i,\xi_j))^n_{i,j = 1}$ is positive definite for any $n$ and $\xi_1,...,\xi_n\in \Omega$.
+\end{definition}
+
+In either of these cases, the interpolation problem can always we uniquely solved.
+
+\subsection{Shift-invariant Kernels on $\mathbb{R}^d$}
+We now turn to the question of how to determine whether a pre-kernel is invertible or positive-definite. We first consider the case of shift invariant kernels $k(x,y) = \phi(x-y)$ on $\Omega = \mathbb{R}^n$. In this case we determine exactly when a kernel is positive definite in terms of the Fourier transform of $\phi$. We begin with a lemma (where we aren't being completely rigorous).
+
+\begin{lemma}
+ A kernel is positive definite iff the bilinear form
+ \begin{equation}
+  K(f,g) = \int_\Omega\int_\Omega f(x)k(x,y)g(y)dxdy
+ \end{equation}
+ is positive definite on $L^2(\Omega)$. Another way of saying this is that the operator $K:L^2(\Omega)\rightarrow L^2(\Omega)$ defined by
+ \begin{equation}
+  K(g)(x) = \int_\Omega k(x,y)g(y)dx
+ \end{equation}
+ is positive definite.
+
+\end{lemma}
+Here we have brushed over the technical issue that this map may not be well-defined on $L^2(\Omega)$ if $\Omega$ is not compact. Technically, this only holds if the map $K$ above is well-defined on $L^2(\Omega)$.
+
+Since the kernel $k(x,y) = \phi(x-y)$ on $\Omega = \mathbb{R}^d$ is shift invariant, the above map $K$ is a convolution $K(g) = \phi*g$. Thus it is diagonalized by the Fourier transform, in particular $\widehat{K(g)} = \hat{\phi}\hat{g}$. This leads us to the following theorem.
+\begin{theorem}
+ Suppose that $\phi\in L^1(\mathbb{R}^d)$. Then the shift invariant kernel $k(x,y) = \phi(x-y)$ is positive definite iff $\hat{\phi} > 0$.
+\end{theorem}
+\begin{proof}
+ If $\phi\in L^1$, then the map $K:L^2(\mathbb{R}^d)\rightarrow L^2(\mathbb{R}^d)$,
+ \begin{equation}
+  K(g) = \int_{\mathbb{R}^d} \phi(x-y)g(y)dx = \phi*g
+ \end{equation}
+ is well-defined by Young's inequality. Moreover the Fourier transform $\hat{\phi}\in L^\infty(\mathbb{R}^d)$. This means that the equation
+ \begin{equation}
+  \widehat{K(g)} = \hat{\phi}\hat{g}
+ \end{equation}
+ holds rigorously. Thus we see that $K$ is positive definite (and thus we have a positive definite kernel) iff $\hat{\phi} > 0$.
+\end{proof}
+Next we give an important corollary, which forms the building block of the radial basis function theory.
+\begin{corollary}\label{gaussian-corollary}
+ The Gaussian kernel $k_c(x,y) = e^{-c\|x-y\|^2}$ is positive definite for any $c > 0$.
+\end{corollary}
+\begin{proof}
+ This follows since the Gaussian is integrable and it's Fourier transform is another Gaussian (and thus is positive).
+\end{proof}
+
+
+\subsection{Radial Basis Functions}
+We now consider the case of kernels defined via radial basis functions, i.e. $k(x,y) = g(\|x-y\|_V)$, for which useful sufficient conditions can be derived. We first consider when we can say that a radial basis kernel is positive definite.
+We begin with a definition and classical result.
+
+\begin{definition}
+ A smooth function $f:\mathbb{R}_{\geq 0}\rightarrow \mathbb{R}$ is called \textbf{completely monotonic} if $(-1)^nf^{(n)}(x) \geq 0$ for all $x > 0$.
+\end{definition}
+
+We have the following characterization of completely monotonic functions.
+\begin{theorem}[Bernstein-Widder]
+ $f$ is completely monotonic iff there exists a positive measure $\mu$ on $[0,\infty)$ such that
+ \begin{equation}
+  f(x) = \int_0^\infty e^{-cx} d\mu(c).
+ \end{equation}
+ In other words, $f$ is completely monotonic iff it lies in the cone generated by the exponentials $e^{-cx}$ for $c \geq 0$.
+\end{theorem}
+
+This gives us the following fundamental result.
+
+\begin{theorem}
+ If $f$ is completely monotonic and not constant, then the radial basis function $k(x,y) = g(\|x-y\|_V) = f(\|x-y\|_V^2)$ for $g(x) = f(x^2)$ is positive definite.
+\end{theorem}
+\begin{proof}
+ Note first that since the number of points $\xi_1,...,\xi_n$ is always finite, these datapoints lie in a finite dimensional subspace and we can assume without loss of generality that $\Omega = \mathbb{R}^d$ for some finite $d$.
+ 
+ Now we use the Bernstein-Widder theorem to write our kernel $k(x,y)$ as a positive combination of Gaussian kernels, as follows
+ \begin{equation}
+  k(x,y) = f(\|x-y\|^2) = \int_0^\infty e^{-c\|x-y\|^2} d\mu(c).
+ \end{equation}
+ Now since $f$ is non-constant, $\mu$ is not entirely supported at $0$. Thus $k$ is a positive combination of Gaussians, with at least some weight on $c > 0$. Since the Gaussians are all positive semi-definite (and positive definite for $c > 0$, by corollary \ref{gaussian-corollary}), we see that $k$ must be positive-definite as well.
+
+\end{proof}
+
+Let us now give some examples of completely monotonic functions and the associated kernels to which this theorem applies.
+\begin{itemize}
+ \item Gaussian: $f(x) = e^{-cx}$, $k(x,y) = e^{-c\|x-y\|^2}$.
+ \item Multi-quadric: $f(x) = (x^2 + r^2)^{-\frac{1}{2}}$, $k(x,y) = (x^2 + r^2)^{-1}$
+\end{itemize}
+
+\section{Positive-Definite Kernels and Feature Maps}
+In this section we consider positive definite kernels, their associated reproducting kernel Hilbert spaces, and their feature maps. We begin with the definition of a feature map.
+\begin{definition}
+ A feature map for a kernel $k$ is a Hilbert space $V$ together with a map $\Phi:\Omega\rightarrow V$ such that
+ \begin{equation}
+  k(x,y) = \langle\Phi(x), \Phi(y)\rangle_V.
+ \end{equation}
+
+\end{definition}
+It is clear that if a kernel has a feature map, then it must be positive semi-definite.
+\begin{lemma}
+ If a kernel $k$ has a feature map, then it must be positive semi-definite.
+\end{lemma}
+\begin{proof}
+ Note that the matrix $(k(x_i,x_j))_{i,j=1}^n$ is the Gram matrix of the vectors $\Phi(x_1),...,\Phi(x_n)$ which is positive semi-definite.
+\end{proof}
+
+Next we address the converse question, i.e. whether a positive semi-definite kernel always has a feature map. For simplicity we consider the case of positive definite kernel $k$.
+
+\begin{theorem}
+ Suppose that $k$ is a positive definite kernel. Then there exists a feature map $\Phi$ for the kernel $k$.
+\end{theorem}
+\begin{proof}
+ The proof proceeds by constructing the \textit{reproducing kernel Hilbert space} $H_k$ corresponding to $k$ and explicitly exhibiting a feature map $\Phi:\Omega\rightarrow H_k$.
+ 
+ We define $H_k$ as follows. Let $S_k = \text{span}\{k(\cdot,x):~x\in\Omega\} \subset C(\Omega)$ be the vector space spanned by the kernels centered at each of the points $x\in\Omega$. Define a norm on this space by extending the inner product
+ \begin{equation}
+  \langle k(\cdot,x), k(\cdot,y)\rangle_{H_k} = k(x,y)
+ \end{equation}
+ to all finite linear combinations of the kernels. Since $k$ is positive definite, this corresponds to a positive definite norm on $S_k$. Taking the completion of $S_k$ with respect to this norm we obtain the reproducing kernel Hilbert space $H_k$.
+ 
+ It is now easy to check (essentially follows by definition) that the map $\Phi:\Omega\rightarrow H_k$ given by
+ \begin{equation}
+  \Phi(x) = k(\cdot,x)\in H_k
+ \end{equation}
+ is a feature map.
+ 
+\end{proof}
+We collect the following definition from the previous proof.
+\begin{definition}
+ Let $k$ be a positive definite kernel. The space $H_k$ in the above proof is called the \textbf{reproducing kernel Hilbert space} associated to $k$. 
+\end{definition}
+
+We conclude with a lemma showing that $H_k\subset C(\Omega)$ under mild conditions on $k$.
+
+\begin{lemma}
+ Suppose that $k(x,x) < C$ is bounded for all $x\in \Omega$. Then $H_k\subset C(\Omega)$ and we have the bound
+ \begin{equation}
+  \|f\|_{L^\infty} \leq \sqrt{C}\|f\|_{H_k}.
+ \end{equation}
+ for all $f\in H_k$.
+
+\end{lemma}
+\begin{proof}
+ Since $H_k$ is the completion of a subspace of $C(\Omega)$ with respect to the $H_k$-norm, $\|f\|_{L^\infty} \leq C\|f\|_{H_k}$ implies that $H_k\subset C(\Omega)$. To this end, we see that since
+ \begin{equation}
+  \langle k(\cdot, x), k(\cdot, y)\rangle_{H_k} = k(y,x)
+ \end{equation}
+ holds for every $y\in \Omega$ and $k(\cdot, x)$ is a Riesz basis for $H_k$, we have
+ \begin{equation}
+  \langle f, k(\cdot, y)\rangle_{H_k} = f(y)
+ \end{equation}
+ holds for every $f\in H_k$. Thus,
+ \begin{equation}
+  |f(y)| = |\langle f, k(\cdot, y)\rangle_{H_k}| \leq \|k(\cdot, y)\|_{H_k}\|f\|_{H_k}.
+ \end{equation}
+ Finally,
+ \begin{equation}
+  \langle k(\cdot, y),k(\cdot, y)\rangle_{H_k} = k(y,y),
+ \end{equation}
+ so that $\|k(\cdot, y)\|_{H_k} \leq \sqrt{k(y,y)} \leq \sqrt{C}$ as desired.
+
+
+\end{proof}
+
+\section{Reproducing Kernel Hilbert Spaces}
+From the above discussion, a natural question to ask is which Hilbert spaces can arise as reproducing kernel Hilbert spaces for a given kernel $k$.
+
+A complete answer is given by the following theorem.
+
+\begin{theorem}
+ A Hilbert space $H$ of functions on $\Omega$ is a reproducing Hilbert space for some kernel $k$ iff the evaluation maps
+ \begin{equation}
+  \delta_x(f) = f(x),
+ \end{equation}
+ are continuous with respect to $\|\cdot\|_H$ for all $x\in \Omega$.
+
+\end{theorem}
+\begin{proof}
+ The proof follows from the Riesz representation theorem. Since the evaluation maps $\delta_x$ are continuous linear functionals, there exist elements $k(\cdot, x)\in H$ such that $\delta_x(f) = f(x) = \langle f, k(\cdot x)\rangle_H$. These functions $k$ are exactly the kernel of the reproducing Hilbert space.
+\end{proof}
+
+Note for instance that this theorem tells us that Sobolev spaces of sufficient regularity are reproducing kernel Hilbert spaces. 
+
+\section{Mercer's Theorem}
+In this section we give Mercer's construction. When $\Omega$ is compact, this gives a useful feature map which helps elucidate the approximation properties of the kernel.
+
+Suppose that $\Omega\subset \mathbb{R}^d$ is compact and $k$ is positive definite. Then the map $T_k:L^2(\Omega)\rightarrow L^2(\Omega)$ given by
+\begin{equation}
+ T_k(f)(x) = \int_\Omega k(x,y)f(y)dy
+\end{equation}
+is a positive definite, symmetric, compact operator on $L^2(\Omega)$. Thus it can be diagonalized and has a discrete set of eigenvalues $\lambda_i\rightarrow 0$ and corresponding orthonormal eigenfunctions $\phi_i(x)$. Additionally the kernel can be represented as
+\begin{equation}
+ k(x,y) = \sum_{i=1}^\infty \lambda_i\phi_i(x)\phi_i(y).
+\end{equation}
+
+This provides the corresponding feature map
+\begin{equation}
+ \Phi(x) = \begin{pmatrix}
+            \sqrt{\lambda_1}\phi_1(x) \\
+            \sqrt{\lambda_2}\phi_2(x) \\
+            \vdots
+           \end{pmatrix}\in \ell^2(\mathbb{N}).
+\end{equation}
+
+
+\section{Universality}
+Now we come the question of univerality, i.e. when is the reproducing kernel Hilbert space corresponding to a kernel $k$ dense in the space of continuous functions.
+
+The important lemma is the following.
+\begin{lemma}
+ Let $k$ be a kernel with feature map $\Phi:\Omega\rightarrow V$. Then $k$ is a universal kernel iff
+ \begin{equation}
+  \overline{\text{span}}(\{\langle \Phi(x), v\rangle_V:~v\in V\}) = C(\Omega).
+ \end{equation}
+ I.e. if the feature map is dense in $C(\Omega)$.
+\end{lemma}
+
+
+\subsection{Shift-invariant Kernels}
+
+\subsection{Neural Network Kernels}
+In this section we consider a deep neural network randomly with randomly initialized weights (appropriately scaled). It turns out the the random function represented by such a network is drawn from a Gaussian process with covariance given by a certain kernel $k$.
+
+Consider a neural network $f(x,\Theta)$ with input $x\in \mathbb{R}^{d_0}$ and output $f(x,\Theta)\in \mathbb{R}^{d_n}$. Here $f$ is defined recursively by 
+\begin{equation}
+\begin{split}
+ f_0(x) &= x \\
+ f_i(x) &= \sigma(W_if_{i-1}(x) + b_i) \\
+ f(x,\Theta) &= W_nf_{n-1}(x) + b_n,
+ \end{split}
+\end{equation}
+where $\Theta = W_i\in \mathbb{R}^{d_i\times d_{i-1}}, b_i\in \mathbb{R}^{d_i}$ are parameters and $\sigma$ is an activation functions. 
+
+We now consider the random initialization. Suppose that each entry of the weights $W_i$ are chosen at random with variance $\frac{c_{i-1}}{d_{i-1}}$ and the bias $b$ is initialized at $0$. This gives us a random function $f(x,\Theta_0)$ drawn from a distribution on the space of functions $f:\mathbb{R}^{d_0}\rightarrow \mathbb{R}^{d_n}$. Our goal is to analyze this distribution.
+
+Before we consider the general case, let us consider shallow linear networks, i.e. $\sigma_i = \text{id}$ and $n=2$. In this case $\Theta = W_1, W_2, b_1, b_2$ and 
+\begin{equation}
+ f(x,\Theta_0) = W_2W_1x,
+\end{equation}
+where $W_1\in \mathbb{R}^{d_1\times d_0}$ is chosen uniformly at random with variance $\frac{c_0}{d_0}$ and $W_2\in \mathbb{R}^{d_2\times d_1}$ independently with variance $\frac{c_1}{d_1}$. Now let $x,y\in \mathbb{R}^{d_0}$ and consider the joint distribution of $f(x,\Theta_0)\in \mathbb{R}^{d_2}$ and $f(y,\Theta_0)\in \mathbb{R}^{d_2}$. We begin by calculating the covariance of the values at $x$ and $y$
+\begin{equation}
+ \mathbb{E}(f(x,\Theta_0)f(y,\Theta_0)^T) = \mathbb{E}_{W_2}(W_2\mathbb{E}_{W_1}(W_1xy^TW_1^T)W_2^T).
+\end{equation}
+We now easily calculate
+\begin{equation}
+ \mathbb{E}_{W_1}(W_1xy^TW_1^T) = \frac{c_0(x^Ty)}{d_0}I_{d_1},
+\end{equation}
+and so, since $\mathbb{E}_{W_2}(W_2W_2^T) = c_1I_{d_2}$, we get
+\begin{equation}
+ \mathbb{E}(f(x,\Theta_0)f(y,\Theta_0)^T) = \frac{c_0c_1(x^Ty)}{d_0}I_{d_2}.
+\end{equation}
+One can also easily calculate that this is the same covariance which would be obtained if the hidden layer were removed or if more hidden layers were added. One can also show that as $d_1\rightarrow \infty$, the random function $f(x,\Theta_0)$ converges in distribution to a Gaussian process with the given convariance
+\begin{equation}
+ K(x,y) = \frac{c_0c_1(x^Ty)}{d_0}I_{d_2}.
+\end{equation}
+
+Adding in an activation function $\sigma$ simply changes the covariance, which now becomes
+\begin{equation}
+ \mathbb{E}(f(x,\Theta_0)f(y,\Theta_0)^T) = \mathbb{E}_{W_2}(W_2\mathbb{E}_{W_1}(\sigma(W_1x)\sigma(y^TW_1^T))W_2^T),
+\end{equation}
+which generally won't have a closed form expression.
+
+Note that if $\sigma$ is a positively homogeneous function such as the ReLU, then the relative scaling of the $W_i$ doesn't matter, i.e. only the product of their variance is important. However, for non-ReLU activation functions it may be important to give the correct scale for each $W_i$ and the correct initialization schemes are potentially not known. We now summarize this discussion in the following result.
+\begin{theorem}
+ In the limit $d_1,...,d_{n-1}\rightarrow \infty$, the randomly initialized function $f(x,\Theta)$ converges in distribution to a Gaussian process on $\mathbb{R}^{d_0}$ with covariance
+ \begin{equation}
+  K(x,y) = \lim_{d_1,...,d_{n-1}\rightarrow \infty} \mathbb{E}(f(x,\Theta_0)f(y,\Theta_0)^T).
+ \end{equation}
+ This (multidimensional) kernel $K$ cannot in general be computed explicitly except in the linear case, in which case it is given by
+ \begin{equation}
+  K(x,y) = \left(\prod_{i=0}^{n-1} c_i\right)\frac{x^Ty}{d_0}I_{d_n}.
+ \end{equation}
+
+\end{theorem}
+Finally, we note that for positively homogenous $\sigma$ (i.e. a piecewise linear function with discontinuous derivative only at $0$), we can explicitly calculate the diagonal of the kernel $K$. We get
+\begin{equation}
+ K(x,x) = \left(\frac{s_l^2 + s_r^2}{2}\right)^{n-1}\left(\prod_{i=0}^{n-1} c_i\right)\frac{\|x\|^2}{d_0}I_{d_n},
+\end{equation}
+where $s_l$ and $s_r$ are the slopes to the left and right of $0$, respectively. Choosing the $c_i$ appropriately so that this quantity is constant independent of the depth $n$ is exactly He's initialization scheme.
+
+\subsection{Neural Tangent Kernel}
+We now proceed to describe the neural tangent kernel, which describes the behavior of the function $f(x,\Theta_t)$ under a gradient flow on the parameters $\Theta$ with loss function $L(f)$. Specifically, we consider the gradient flow dynamics
+\begin{equation}
+ \frac{d}{dt}\Theta_t = -D_\Theta\nabla_\Theta L(f(\cdot, \Theta_t)),
+\end{equation}
+where $D_\Theta$ is a diagonal preconditioner with diagonal weight $\frac{1}{d_{i-1}}$ for the weights in $W_i$ and weight $1$ for the biases.
+
+We consider the network $f(\cdot, \Theta_t)$ as a curve in the space of functions $f:\mathbb{R}^{d_0}\rightarrow \mathbb{R}^{d_n}$. The neural tangent kernel (NTK) describes this curve in the infinite width limit ($d_1,...,d_{n-1}\rightarrow \infty$). 
+
+We begin with an abstract description of the idea. The object we want to calculate is $\frac{d}{dt}f(x,\Theta_t)\in C(\mathbb{R}^{d_0}\rightarrow \mathbb{R}^{d_n})$ (here $C(\mathbb{R}^{d_0}\rightarrow \mathbb{R}^{d_n})$ is the space of continuous functions from $\mathbb{R}^{d_0}$ to $\mathbb{R}^{d_n}$). We want to relate this to the loss function derivative $\partial_fL\in C^\prime(\mathbb{R}^{d_0}\rightarrow \mathbb{R}^{d_n})$, which is the space of $\mathbb{R}^{d_n}$ valued measures on $\mathbb{R}^{d_0}$. The chain rule implies that
+\begin{equation}
+ \left(\frac{d}{dt}f(\cdot,\Theta_t)\right)(y) = -\int_{\mathbb{R}^{d_0}} \sum_{\theta\in \Theta}D_\theta \left(\frac{d}{d\theta} f(y, \Theta_t)\right)
+ \left(\frac{d}{d\theta} f(x, \Theta_t)\right)^T \partial_fL(x) dx.
+\end{equation}
+Here the neural tangent kernel at $\Theta_t$ is defined by
+\begin{equation}
+ K^{NT}_t(x,y) = \sum_{\theta\in \Theta} D_\theta\left(\frac{d}{d\theta} f(y, \Theta_t)\right)
+ \left(\frac{d}{d\theta} f(x, \Theta_t)\right)^T,
+\end{equation}
+where $D_\theta$ denotes the diagonal elements of the preconditioner $D_\Theta$.
+
+At this point we proceed by considering the case of shallow linear networks and calculate the above quantity. We obtain, using Einstein notation,
+\begin{equation}
+ f(x, \Theta_t)_i = w^2_{ik}w^1_{kj}x_j + w^2_{ik}b^1_k + b^2_i.
+\end{equation}
+This enables us to calculate
+\begin{equation}
+\begin{split}
+ K^{NT}_t(x,y) = &\left(\sum_{k=1}^{d_1} \frac{1}{d_1}(w^1_{kj}x_j)(w^1_{kl}y_l) + \frac{b^1_k}{d_1} + 1\right)I_{d_n} + \left(\frac{1}{d_0}x_jy_j + 1\right) w^2_{ik}w^2_{lk} \\
+ = &~\left(\frac{1}{d_1}(W_1x)^T(W_1y) + b_1^T\frac{1}{d_1} + 1\right)I_{d_n} + \left(\frac{1}{d_0}x^Ty + 1\right) W_2W_2^T.
+ \end{split}
+\end{equation}
+
+There are now two key observations made. The first is that as $d_1\rightarrow \infty$, the initial neural tangent kernel converges almost surely (under the previously considered initialization) to
+\begin{equation}
+\begin{split}
+ K^{NT}_0(x,y) \rightarrow &\left(\frac{c_0}{d_0}x^Ty + 1\right)I_{d_n} + \left(\frac{1}{d_0}x^Ty + 1\right) c_1I_{d_n} \\
+ &= \left(\frac{1}{d_0}\left(c_0 + c_1\right)x^Ty + c_1 + 1\right)I_{d_n}
+ \end{split}
+\end{equation}
+
+The second, much more subtle observation is that as $d_1\rightarrow \infty$, the kernel at time $t$ converges almost surely to the same thing
+\begin{equation}
+ K^{NT}_t(x,y) \rightarrow K^{NT}_0(x,y) \rightarrow \left(\frac{1}{d_0}\left(c_0 + c_1\right)x^Ty + c_1 + 1\right)I_{d_n}.
+\end{equation}
+
+This means that in the infinite width limit the gradient flow in function space is the gradient flow of the functional $L$ with respect to the inner product (on the function space) defined by the neural tangent kernel (which is asymptotically constant)
+\begin{equation}
+ \langle f, g\rangle_{NT} = \int_{\mathbb{R}^n}\int_{\mathbb{R}^n} f(x)K^{NT}_0(x,y)g(y) dx dy.
+\end{equation}
+In other words, the flow in function space is given by
+\begin{equation}
+ \left(\frac{d}{dt}f(\cdot,\Theta_t)\right)(y) = -\int_{\mathbb{R}^{d_0}} \left(\frac{1}{d_0}\left(c_0 + c_1\right)x^Ty + c_1 + 1\right)I_{d_n}\partial_fL(x) dx.
+\end{equation}
+Notice that for the linear networks, the neural tangent kernel is positive semi-definite and not positive definite. This corresponds to the fact that the linear networks can only represent linear functions, a very small subspace of all continuous functions.
+
+The neural tangent kernel observation is that essentially the same analysis can be carried out for arbitrarily deep neural networks with more complicated activation functions. In this case the neural tangent kernel $K^{NT}_0(x,y)$ is much more complicated and can't be given in closed form. Nevertheless, it is shown in the original paper that the kernel is positive definite as long as $\sigma$ is not a polynomial.
+
+\includepdf[pages=-,pagecommand={},width=\textwidth]{6DL/HandWrittenNotes/KernelNotes.pdf}
+\includepdf[pages=-,pagecommand={},width=\textwidth]{6DL/HandWrittenNotes/Kernels2.pdf}

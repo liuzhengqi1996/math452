@@ -1,0 +1,201 @@
+%% Jonathan's notes here
+
+\section{Bayesian Statistics}
+A Bayesian statistical model approximates a `true' probability distribution over a set $X$
+from a collection of independent samples $x_1,...,x_n\in X$ (the data) drawn from the distribution. 
+Here we call $X$ the sample space.
+
+The Bayesian model consists of a set of parameters $\Theta$, along with an initial probability distribution $\mathbb{P}$ over 
+the product space $\Theta\times X$. To avoid technical issues, we will assume that $X$ and $\Theta$ are either finite
+sets or subsets of Euclidean space $\mathbb{R}^d$. This means that $X$ and $\Theta$ have a natural measure
+$\mu_X$ and $\mu_\Theta$, respectively, which are either counting measure or Lesbesgue measure.
+We will also assume that the distribution $\mathbb{P}$ is absolutely
+continuous with respect to the product measure $\mu_\Theta\times \mu_X$, and thus has a density, which we denote by
+$\mathbb{P}(\theta,x)$.
+
+Abusing notation, we denote the marginal distributions of $X$ and $\Theta$ as follows
+$$\mathbb{P}(x) = \int_{\Theta} \mathbb{P}(\theta,x)d\mu_\Theta$$
+$$\mathbb{P}(\theta) = \int_{X} \mathbb{P}(\theta,x)d\mu_x$$
+and the conditional distributions as
+$$\mathbb{P}(x|\theta) = \frac{\mathbb{P}(\theta,x)}{\mathbb{P}(\theta)}$$
+$$\mathbb{P}(\theta|x) = \frac{\mathbb{P}(\theta,x)}{\mathbb{P}(x)}$$
+
+We want to update the joint distribution $\mathbb{P}(\theta,x)$ after seeing the data $D = \{x_1,...,x_n\}$. We denote this
+new distribution by $\mathbb{P}(\theta,x|D)$. Additionally, we denote the new marginal and conditional distributions as follows
+$$\mathbb{P}(x|D) = \int_{\Theta} \mathbb{P}(\theta,x|D)d\mu_\Theta$$
+$$\mathbb{P}(\theta|D) = \int_{X} \mathbb{P}(\theta,x|D)d\mu_x$$
+$$\mathbb{P}(x|s,D) = \frac{\mathbb{P}(\theta,x|D)}{\mathbb{P}(\theta)}$$
+$$\mathbb{P}(\theta|x,D) = \frac{\mathbb{P}(\theta,x|D)}{\mathbb{P}(x)}$$
+
+The question now becomes how to update this distribution after seeing the data. The key constraint
+is that we choose to update $\mathbb{P}(\theta,x)$ in a way which keeps the conditional distributions 
+$\mathbb{P}(x|\theta)$ fixed for each $\theta\in \Theta$. This means that we only need to specify how the marginal distribution
+$\mathbb{P}(\theta)$ should be updated, as $\mathbb{P}(\theta,x) = \mathbb{P}(x|\theta)\mathbb{P}(\theta)$.
+
+Given a sample $x_i$, we choose to set the marginal distribution $\mathbb{P}(\theta)$ equal to the conditional distribution
+$\mathbb{P}(\theta|x_i)$. A formula for this new distribution is provided by Bayes' Law, which
+follows easily from the definitions above:
+\begin{equation}\label{bayes_law}
+  \mathbb{P}(\theta|x_i) = \frac{\mathbb{P}(x_i|\theta)\mathbb{P}(\theta)}{\mathbb{P}(x_i)}
+\end{equation}
+Often, the normalizing constant $\mathbb{P}(x_i)$ (which is independent of $\theta$) is suppressed and this is written
+\begin{equation}
+  \mathbb{P}(\theta|x_i) \sim \mathbb{P}(x_i|\theta)\mathbb{P}(\theta)
+\end{equation}
+where $\sim$ means `is proportional to.'
+
+Given $n$ independent samples $x_1,...,x_n$, this formula is iterated to obtain
+\begin{equation}
+  \mathbb{P}(\theta|D) \sim \mathbb{P}(x_1|\theta)\mathbb{P}(x_2|\theta)\cdots\mathbb{P}(x_n|\theta)\mathbb{P}(\theta)
+\end{equation}
+and the predicted (or approximated) distribution over $X$ given the data is obtained by marginalizing out the 
+parameter $\theta$ (remember that we choose to keep the conditional distributions $\mathbb{P}(x|\theta)$ fixed independently
+of the data $D$)
+\begin{equation}
+  \mathbb{P}(x|D) = \int_{\Theta} \mathbb{P}(\theta,x|D)d\mu_\Theta = \int_{\Theta} \mathbb{P}(x|\theta)\mathbb{P}(\theta|D)d\mu_\Theta
+\end{equation}
+
+This ideal approach is almost always intractable. Consequently, much research in the statistics literature is concerned with
+computationally efficient approximations to this approach. Two of the most common approaches are either to approximate
+the posterior by a distirbution from a specified class (this is called the variational Bayes' approach) or to design an
+algorithm which generates (often approximately) a sample from the posterior distribution.
+
+\subsection{Sample Mean Estimation Example}
+\subsection{Application to Image Classification}
+For the problem of image classification, we want to estimate more than just a single distribution. We are trying to
+estimate a distribution over the labels for every possible image $I$.
+
+The Bayesian setup is now similar, it consists of a parameters space $\Theta$, together with an initial probability
+distribution over $\Theta\times X$ for every image $I$ (here $X$ is the set of possible labels). We make the same assumptions
+as before, im particular for each image $I$ we obtain a density over $\Theta\times X$, wehich we write $\mathbb{P}(s,x|I)$.
+
+We introduce the same notation as before, this time everything depends upond the image $I$. The marginal distributions
+are denoted
+$$\mathbb{P}(x|I) = \int_{\Theta} \mathbb{P}(\theta,x|I)d\mu_\Theta$$
+$$\mathbb{P}(\theta|I) = \int_{X} \mathbb{P}(\theta,x|I)d\mu_x$$
+and the conditional distributions as
+$$\mathbb{P}(x|\theta,I) = \frac{\mathbb{P}(\theta,x|I)}{\mathbb{P}(\theta|I)}$$
+$$\mathbb{P}(\theta|x,I) = \frac{\mathbb{P}(\theta,x|I)}{\mathbb{P}(x|I)}$$
+
+We make one additional important assumption. We assume that in our model the marginal distribution 
+$\mathbb{P}(\theta|I)$ is independent of $I$
+and we remove the $I$ in our notation and write $\mathbb{P}(\theta)$. Essentially, we are assuming that our
+parameter distribution is fixed independently of the image $I$. Note that this assumption does hold for our
+Neural Network models.
+
+As before, the question becomes how to update the distributions $\mathbb{P}(s,x|I)$ when data $D = \{(x_1,I_1),...,(x_N,D_N)\}$
+are available. We choose to update this distribution so that $\mathbb{P}(x|\theta,I)$ remains fixed for all
+$\theta$ and $I$, and also so that $\mathbb{P}(\theta)$ remains independent of $I$.
+
+Similar to the previous setup, when we see the data point $(x_1,I_1)$ we update the distribution $\mathbb{P}(\theta)$
+by setting it equal to $\mathbb{P}(\theta|x_1,I_1)$ and Bayes' formula gives
+\begin{equation}
+ \mathbb{P}(\theta|x_1,I_1) = \frac{\mathbb{P}(\theta,x_1|I_1)\mathbb{P}(\theta)}{\mathbb{P}(x|I)}
+\end{equation}
+
+One often omits the normalizing factor $\mathbb{P}(x|I)$ and simply writes 
+\begin{equation}
+ \mathbb{P}(\theta|x_1,I_1) \sim \mathbb{P}(\theta,x_1|I_1)\mathbb{P}(\theta)
+\end{equation}
+Iterating this, we see that the new distribution (called the Bayes' posterior distribution) after seeing the data
+is given by
+\begin{equation}
+ \mathbb{P}(\theta|D) \sim \mathbb{P}(\theta,x_1|I_1)\mathbb{P}(\theta,x_2|I_2)\cdots\mathbb{P}(\theta,x_N|I_N)\mathbb{P}(\theta)
+\end{equation}
+To make a prediction given an image $I$ we marginalize out the parameters to obtain (recalling again that $\mathbb{P}(x|\theta,I)$
+remains fixed)
+\begin{equation}
+ \mathbb{P}(x|I,D) = \int_{\Theta} \mathbb{P}(x|\theta,I)\mathbb{P}(\theta|D)d\mu_{\Theta}
+\end{equation}
+
+\section{Smoluchowski Dynamics}
+The Smoluchowski dynamics, or `noisy gradient flow' is given by the SDE
+\begin{equation}\label{Smoluchowski}
+ dX_t = -\nabla V(x_t)dt + \sqrt{2\beta^{-1}} dW_t
+\end{equation}
+where $V$ is some potential (in our application the Neural Network loss function).
+
+The Fokker-Planck equation corresponding to this dynamics is
+\begin{equation}\label{Smoluchowski_FP}
+ \frac{d}{dt}\rho = \nabla \cdot ((\nabla V)\rho + \beta^{-1}\nabla \rho)
+\end{equation}
+This means that if $X_0$ is distributed according to $\rho_0$, then $X_t$ will be distributed
+according to $\rho_t$ which solves the above equation. We have the following convergence result.
+\begin{theorem}
+
+ Assume that $V$ is a confining potential, which means that $$e^{-\beta V(x)}\in L^1$$
+ for all $\beta > 0$. 
+ 
+ Then
+ the solution to the Fokker-Planck equation (\ref{Smoluchowski_FP}) converges exponentially to the
+ equilibrium distribution
+ \begin{equation}\label{equilibrium_dist}
+ \rho_{eq}(x) \sim e^{-\beta V(x)}
+ \end{equation}
+ which satisfies
+ \begin{equation}\label{equilibrium_eq}
+ (\nabla V)\rho_{eq} + \beta^{-1}\nabla \rho_{eq} = 0
+ \end{equation}
+ 
+ The convergence is in the following sense. If $\rho_0 = f_0\rho_{eq}$ with $f_0\in L^2(\rho_{eq}dx)$,
+ then $\rho_t = f_t\rho_{eq}$ for $f_t\in L^2(\rho_{eq}dx)$ and 
+ \begin{equation}\label{decay_rate}
+  \|f_t - 1\|_{L^2(\rho_{eq}dx)} \leq e^{-\alpha t}\|f_0 - 1\|_{L^2(\rho_{eq}dx)}
+ \end{equation}
+ for some convergence rate $\alpha > 0$.
+\end{theorem}
+
+We won't formally prove this, but let us explain where this theorem comes from and how to determine the decay rate
+$\alpha$.
+
+First, a simple calculation shows that $\rho_{eq}$ satisfies equation (\ref{equilibrium_eq}). Namely, the chain rule gives
+$$\nabla \rho_{eq} = -\beta (\nabla V)\rho_{eq}$$
+regardless of the normalizing factor. This implies that $\rho_{eq}$ is stationary, i.e. that by equation (\ref{Smoluchowski_FP}),
+$$\left.\frac{d}{dt}\rho\right|_{\rho_{eq}} = 0$$
+
+To understand the decay rate, let $\rho_0 = f_0\rho_{eq}$ (here the subscript denotes the time $t$) with $f_0\in L^2(\rho_{eq}dx)$.
+This space is the Hilbert space generated by the inner product
+\begin{equation}
+ \langle f,g\rangle_{L^2(\rho_{eq}dx)} = \int f(x)g(x)\rho_{eq}(x)dx
+\end{equation}
+
+We now use the equation (\ref{Smoluchowski_FP}) to derive an equation for $f_t$. We obtain (using equation (\ref{equilibrium_eq}))
+\begin{equation}
+ \frac{d}{dt} f = \nabla V\cdot\nabla f + \beta^{-1}\Delta f = Lf
+\end{equation}
+where we have set $L = \nabla V\cdot\nabla  + \beta^{-1}\Delta$.
+
+A similar calculation shows that $L$ is self-adjoint with respect to the inner product 
+$\langle \cdot, \cdot\rangle_{L^2(\rho_{eq}dx)}$. The decay rate to equilibrium can now be determined from 
+the spectrum of $L$. These calculations can be explicitly carried out for a quadratic objective, which we will
+do later in this section.
+
+\subsection{Relation to Stochastic Gradient Descent}
+Stochastic gradient descent is given by the following iteration
+\begin{equation}\label{sgd}
+ x_{n+1} = x_n - s_n(\nabla V(x_n) + \nu_n)
+\end{equation}
+where $V$ is the objective we are trying to minimize, $s_n$ is the step size, and $\nu_n$ is a random variable
+representing the noise in our gradient sample. If the random variable $\nu_n$ satisfies
+\begin{equation}
+ \mathbb{E}(\nu_n) = 0,~\mathbb{E}(\nu_n^2) = \frac{2\beta^{-1}}{\sqrt{s_n}}
+\end{equation}
+then the iteration (\ref{sgd}) converges to the dynamics (\ref{Smoluchowski}) by Donsker's theorem.
+
+If we set $V$ to be the average log-likelihood loss function
+\begin{equation}
+ V(\theta) = -\frac{1}{N}\displaystyle\sum_{j = 1}^N \log(\mathbb{P}(x_j|\theta,I_j))
+\end{equation}
+and set the inverse temperature $\beta = N$, then the equilibrium distribution corresponding to the
+dynamics (\ref{Smoluchowski}) is exactly the Bayes Posterior distribution (with improper prior)
+$$\mathbb{P}(\theta|D) \sim \mathbb\prod_{j = 1}^N \log(\mathbb{P}(x_j|\theta,I_j))$$
+
+So we see that the relationship between the step size and the noise in our gradient sample which produces
+an approximate Bayes posterior sample is
+\begin{equation}
+ \mathbb{E}(\nu_n^2)\sqrt{s_n} = \frac{2}{N}
+\end{equation}
+where $N$ is the number of samples. This helps explain many phenomena, for instance why taking the step size too small produces
+worse results and why increasing the minibatch size (which decreases the sample variance) allows for a greater step size.
+
+\section{Langevin Dynamics}

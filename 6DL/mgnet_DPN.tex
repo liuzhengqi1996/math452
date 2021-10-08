@@ -1,0 +1,98 @@
+\subsection{Dual Path Network (DPN)}
+The general idea of DPN model \cite{chen2017dual} can be described as
+\begin{equation}\label{eq:DPN}
+\begin{cases}
+f^{1,0} &=R_{\rm max}\circ \sigma \circ \theta^0(f), \\
+\text{\bf For} &\ell = 1:J \\
+\quad &\text{\bf For} \quad i = 1:\nu_\ell \\
+&\tilde{f}^{\ell,i} = \tilde{\mathcal{H}}^{\ell,i} \left(  [f^{\ell,0}, \cdots, f^{\ell,i-1}]  \right), 
+\quad  \bar{f}^{\ell,i} = \bar{\mathcal{H}}^{\ell,i} \left([f^{\ell,0}, \cdots, f^{\ell,i-1}] \right),\\ 
+&f^{\ell,i} =  \tilde f^{\ell,i} +  \bar f^{\ell,i} \\
+\quad &\text{\bf EndFor} \\
+&\tilde f^{\ell+1,0} =  \tilde R_\ell^{\ell+1} ( f^{\ell, \nu_\ell} ) ,  \quad \bar f^{\ell+1,0} =  \bar R_\ell^{\ell+1} ( f^{\ell, \nu_\ell} ) ,\\
+&f^{\ell,0} =  \tilde f^{\ell,0} +  \bar f^{\ell,0} \\
+\text{\bf End} &\\
+H_0(f) &=  R_{\rm ave}(f^{L,\nu_\ell}). \\
+\end{cases}
+\end{equation}
+
+Here, if we take 
+\begin{equation}
+\tilde{\mathcal{H}}^{\ell,i} =  \bar{\mathcal{H}}^{\ell,i},
+\end{equation}
+with some special forms such as classical CNN or ResNet, this is
+similar to the trick in AlexNet.
+
+In DPN, the trick is to take different forms for $\tilde{\mathcal{H}}^{\ell,i} $ and $ \bar{\mathcal{H}}^{\ell,i}$.
+For example, they take
+\begin{equation}\label{eq:DPN-1}
+\tilde{\mathcal{H}}^{\ell,i} \left(  [f^{\ell,0}, \cdots, f^{\ell,i-1}]  \right) = \sigma( f^{\ell,i-1} + \xi^{\ell,i} \circ \sigma \circ \eta^{\ell,i}(f^{\ell,i-1})),
+\end{equation}
+and 
+\begin{equation}\label{eq:DPN-2}
+\bar{\mathcal{H}}^{\ell,i} \left(  [f^{\ell,0}, \cdots, f^{\ell,i-1}]  \right) = \sigma \left( \sum_{j=0}^{i-1} [\theta^{\ell,i}]_{j} f^{\ell,j} \right)
+\end{equation}
+in original DPN paper.
+Here we need to mention that, equation \eqref{eq:DPN-1} mens that $\tilde f^{\ell,i}$ follows the
+process of ResNet structure and equation \eqref{eq:DPN-2} mens that $\bar f^{\ell,i}$ follows the
+process of DenseNet structure. That is to say, DPN is some special combination of these two models.
+
+\paragraph{The connection to MgNet}
+First, we can make a extended version for DPN as:
+\begin{equation}\label{eq:DPN}
+\begin{cases}
+f^{1,0} &=R_{\rm max}\circ \sigma \circ \theta^0(f), \\
+\text{\bf For} &\ell = 1:J \\
+\quad &\text{\bf For} \quad i = 1:\nu_\ell \\
+&\tilde{f}^{\ell,i} = \tilde{\mathcal{H}}^{\ell,i} \left(  f^{\ell,i-1} \right), 
+\quad  \bar{f}^{\ell,i} = \bar{\mathcal{H}}^{\ell,i} \left( f^{\ell,i-1} \right),\\ 
+&f^{\ell,i} =  \red{[\tilde f^{\ell,i} ,\bar f^{\ell,i}]}\\
+\quad &\text{\bf EndFor} \\
+&\tilde f^{\ell+1,0} =  \tilde R_\ell^{\ell+1} ( f^{\ell, \nu_\ell} ) ,  \quad \bar f^{\ell+1,0} =  \bar R_\ell^{\ell+1} ( f^{\ell, \nu_\ell} ) ,\\
+&f^{\ell,0} =  \tilde f^{\ell,0} +  \bar f^{\ell,0} \\
+\text{\bf End} &\\
+H_0(f) &=  R_{\rm ave}(f^{L,\nu_\ell}). \\
+\end{cases}
+\end{equation}
+Then, we can take some special form of $ \tilde{\mathcal{H}}$,
+$\bar{\mathcal{H}}^{\ell,i}$, $\tilde R_\ell^{\ell+1}$ and $ \bar R_\ell^{\ell+1}$
+to connect our MgNet. 
+\begin{itemize}
+\item recover $u^{\ell,i}$ for $i = 1:\nu_\ell$
+\begin{equation}
+\blue{\tilde f^{\ell,i}} = \tilde{\mathcal{H}}^{\ell,i} \left(  f^{\ell,i-1} \right) = \tilde{\mathcal{H}}^{\ell,i} \left(  [\tilde f^{\ell,i} ,\bar f^{\ell,i}] \right) = 
+\blue{\tilde f^{\ell,i-1} + B_{\ell,i}  ({\bar f^{\ell,i} -  A^{\ell} (\tilde f^{\ell,i-1})})},
+\end{equation}
+\item recover $f^{\ell}$
+\begin{equation}
+\blue{\bar f^{\ell,i}} = \bar{\mathcal{H}}^{\ell,i} \left(  f^{\ell,i-1} \right) = \bar{\mathcal{H}}^{\ell,i} \left(  [\tilde f^{\ell,i} ,\bar f^{\ell,i}] \right) = 
+\blue{\bar f^{\ell,i-1}} ,
+\end{equation}
+\item recover $u^{\ell,0}$
+\begin{equation}
+\blue{\tilde f^{\ell+1,0}} = \tilde f^{\ell+1,0} =  \tilde R_\ell^{\ell+1} ( f^{\ell, \nu_\ell} ) = \tilde f^{\ell+1,0} =  
+\tilde R_\ell^{\ell+1} ( [\tilde f^{\ell,\nu_\ell} ,\bar f^{\ell,\nu_\ell}]  )  = \blue{\Pi_\ell^{\ell+1} \tilde f^{\ell,\nu_\ell}},
+\end{equation}
+\item recover $f^{\ell+1}$
+\begin{equation}
+\begin{aligned}
+\blue{\bar f^{\ell+1,0}} =  \bar R_\ell^{\ell+1} ( f^{\ell, \nu_\ell} ) 
+&=  \bar R_\ell^{\ell+1} ( [\tilde f^{\ell,\nu_\ell} ,\bar f^{\ell,\nu_\ell}]  ),  \\
+&= \blue{R^{\ell+1}_\ell( \bar f^{\ell,\nu_\ell} - A^\ell(\tilde f^{\ell,\nu_\ell})) + A^{\ell+1} (\Pi_\ell^{\ell+1} \tilde f^{\ell,\nu_\ell})},\\
+&= \blue{R^{\ell+1}_\ell( \bar f^{\ell,\nu_\ell} - A^\ell(\tilde f^{\ell,\nu_\ell})) + A^{\ell+1} (\tilde f^{\ell+1,0})}. \\
+\end{aligned}
+\end{equation}
+\end{itemize}
+This means that, we can connect the MgNet and DPN with the next relationship:
+\begin{equation}
+u^{\ell,i} = \tilde f^{\ell,i}, \quad i = 0:\nu_\ell, \quad \ell = 1:J,
+\end{equation}
+and
+\begin{equation}
+f^{\ell} = \bar f^{\ell,i},  \quad i = 0:\nu_\ell, \quad \ell = 1:J.
+\end{equation}
+
+Thus to say, we may give a better explanation for DPN from the viewpoint of MgNet.
+Furthermore, we give some further developments version of DPN by involving more
+structure from MgNet like what we are doing for ResNet and iResNet.
+

@@ -1,0 +1,49 @@
+\section{Jinchao's inputs}
+
+\subsection{Classification versus regression}
+Classification is a special form of regression.   Basically, it tries to find the (continuous) boundary of domains (that contain different clusters of data)
+
+\subsection{Overfitting}
+
+It seems to be related to the Runge phenomenon in polynomial interpolation for non-analytic function.  It would be interesting to study, theoretically, whether deep neural network also has Runge phenomenon.  
+
+\subsection{CNN versus multigrid}
+$$
+Au=f
+$$
+
+\paragraph{Multigrid}
+
+We know $f$, then try to find $u$.
+
+We have multilevel
+
+We also use average, namely convolution, which is smoother:
+
+\begin{itemize}
+\item filter out the high frequencies
+\end{itemize}
+
+\paragraph{CNN}
+We know $u$, then try to find $f$.  In order to find $f$, we have to find $A$ first. 
+
+We use ``finite difference'', namely convolution, which is ``rougher''.
+\begin{itemize}
+\item filter out the low frequencies
+\end{itemize}
+
+
+\subsection{Role of probability theory and tool}
+
+The role of probability is important for sure, but it is not essential .... 
+
+In the idealistic situation, namely all the data are good, no noise etc, we can approach deep learning problem without relying on probability theory and tools.
+
+To understand the essence of deep learning, can we first skip probability tool?
+
+If we skip probability, how much do we miss?   We would not miss very much for the understanding how and why DNN works. 
+
+\begin{itemize}
+\item High school probability is enough.
+\end{itemize}
+

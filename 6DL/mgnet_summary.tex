@@ -1,0 +1,210 @@
+\section{Summary for CNN Models From the Viewpoint of Multigrid}
+For a general classification problem, the data sets $X : = \{x_i: i = 1:N\}$ can be separated by many 
+subsets: 
+\begin{equation}
+\{A_1, \cdots, A_{\kappa}\} = X,
+\end{equation}
+by different labels. 
+
+If these $A_i$ are already linear separable, then we can just apply some linear model
+such as logistic regression or SVM to finish the classification task.
+
+However, generally speaking, these data sets are not linear separable, so the role for CNN
+is just to map the original data $X : = \{x_i: i = 1:N\}$ into $f_{\rm CNN} (X) : =  \{f_{\rm CNN}(x_i): i = 1:N\}$,
+then 
+\begin{equation}
+\{f_{\rm CNN}(A_1), \cdots, f_{\rm CNN}(A_{\kappa})\} = f_{\rm CNN} (X),
+\end{equation}
+are linear separable.
+
+A key observation in our MgNet is: we have feature-data mapping in each grid:
+\begin{itemize}
+	\item $g \longleftarrow$ image,
+	\item $u \longleftarrow$ feature,
+\end{itemize}
+with the next control equation:
+\begin{equation}\label{eq:f-d-mapping}
+A \ast u = g.
+\end{equation}
+We have many numerical evidences to show this is indeed a good model.
+
+However, there are still some things mystery: 
+\begin{itemize}
+	\item Why only use the coarse grid?
+	\item Why this is enough?
+\end{itemize}
+
+\paragraph{Explanation:} Think about the one dimension case with $\ell=1$ i.e. the finest grid.
+We have the formula for $u$ with just one channel then:
+\begin{equation}
+u(x) = \sum_{i=1}^{n_1} \alpha_i \phi_i^1(x).
+\end{equation}
+Here we can recover these $\phi_{i}^1$ with one channel in coarse grid as
+\begin{equation}
+\phi_i^1(x) = \phi_1^2(\frac{x-x_i}{h}),
+\end{equation} 
+which means
+\begin{equation}
+u(x) = \sum_{i=1}^{n_1} \alpha_i \phi_i^1(x) = \sum_{i=1}^{n_1} \alpha_i \phi_1^2(\frac{x-x_i}{h}).
+\end{equation}
+This means that, we can recover a one channel function $u(x)$ in fine grid
+by multi-channel in coarse grid.
+
+Thus to say, after each restriction operation in CNN models, we need to increase the channels.
+As a result, the number of channels in last few coarse grids needs to be very large. This is the main factor
+that why a CNN model has so many parameters.
+
+There are some classical method to deal with this problem caused by the dense connection in channel dimension in CNN models. For example, dense connections in channel dimension corresponds to the 
+multiplication for dense matrix. So, they would like to use the special matrix theory such as H-matrix and Fourier transform to reduce the complexity of dense connection in channels.
+for multiplication of dense matrix 
+
+
+Here, our idea is to propose some better structure to 
+reduce the complexity of these CNN models. 
+We find that we can reconstruct these CNN models from the 
+iterative methods for solving the feature-data mapping.
+Actually, we can model them in two different ways:
+\begin{enumerate}
+	\item \begin{equation}
+	\min_{\theta} f(\theta) 
+	\end{equation}
+	\item \begin{equation}Au=g \end{equation}
+\end{enumerate}
+
+We have dynamic system approach:
+(1) Optimization: 
+\begin{equation}
+\theta^*\in \arg\min_{\theta} f(\theta)\to \nabla f(\theta^*)=0 ,
+\end{equation}
+which means that
+\begin{equation}
+\frac{d\theta}{dt}=-\nabla f(\theta(t)) .
+\end{equation}
+By Euler's method,
+\begin{equation}
+\frac{\theta^{i+1}-\theta^i}{\eta}=-\nabla f(\theta^i) ,
+\end{equation}
+thus we have
+\begin{equation}
+\theta^{i+1}=\theta^i-\eta\nabla f(\theta^i) .
+\end{equation}
+(2) For linear equation system:
+\begin{align}
+Au&=g  \\\notag
+u&=u(t) \\\notag
+u_t&=g-Au\\\notag
+u^*&=\lim_{t\to \infty}u(t)\\\notag
+g-Au^*&=0
+\end{align}
+
+Moreover, we can apply a preconditionor for the above system:
+\begin{equation}
+Au=g \Leftrightarrow B(Au-g)=0, 
+\end{equation} 
+where $B$ is nonsingular. 
+A simple choice for $B$ is $B=D^{-1}$, where $D=\diag(A)$.
+
+For Euler's method,
+\begin{equation}\frac{u^{i+1}-u^i}{\eta}=B(g-Au^i)\equiv r_i \end{equation}
+\begin{equation} u^{i+1}=u^i+\eta r_i. \end{equation}
+
+\subsection{How we involve multigrid in this viewpoint}
+
+\subsubsection{A closer look at a one dimensional problem: continuous case}
+\begin{equation}
+\left\{
+\begin{array}{rcll}
+u_t-u_{xx} & = & f(x) & x\in (0,1), t>0\\
+u(x,t) & = & 0 & x\in \{0,1\}, t>0\\
+u(x,0) & = & u_0(x) & x\in (0,1)
+\end{array}
+\right.
+\end{equation}
+
+By the theorem we proved earlier, as $t\rightarrow \infty$, $u(x,t)$ approaches
+to the solution of the steady state problem:
+\begin{equation}\Label{1dSteady}
+\left\{
+\begin{array}{rcll}
+-v_{xx} & = & f(x) & x\in (0,1)\\
+v(x) & = & 0 & x=0,1.
+\end{array}
+\right.
+\end{equation}
+
+We will take a closer look at the convergence pattern using Fourier series.
+
+We write
+$$
+f(x)=\sum_{k=1}^\infty\beta_k\sin(k\pi x)
+$$
+and
+$$
+u_0(x)=\sum_{k=1}^\infty\mu^0_k\sin(k\pi x).
+$$
+Using a standard separation of variable technique, we obtain
+$$
+u(x,t)=v(x)+\sum_{k=1}^\infty\bigg(\mu^0_k-\frac{\beta_k}{(k\pi)^2}\bigg)
+e^{-(k\pi)^2t}\sin(k\pi x).
+$$
+where
+$$
+v(x)=\sum_{k=1}^\infty \frac{\beta_k}{(k\pi)^2}\sin(k\pi x)
+$$
+is the solution to (\ref{1dSteady}).
+
+
+We have the following {\bf Observations:}
+
+\begin{enumerate}
+	\item $u(x,t)$ converges to $v(x)$ faster on higher frequency
+	components.  More precisely
+	$$ \int_0^1 (u(x,t)-v(x))\sin(k\pi
+	x)dx=\left(\mu^0_k-\frac{\beta_k}{(k\pi)^2}\right)e^{-(k\pi)^2t}
+	$$
+	which converges to zero faster for larger $k$.
+	
+	\item The error $u(x,t)-v(x)$, as a function of $x$, gets smoother
+	(namely fewer and smaller oscillations) as $t$ gets larger. 
+\end{enumerate}
+From the above observation, we know the key idea in accelerating
+Euler's scheme is try to make all components to be high frequency.
+Here Multigrid plays a key role because of the fact that:
+{	the restriction of the low frequency in fine grid is a relatively high 
+	frequency in coarse grids. }
+This explains the reason for using multigrid and why multigrid works. 
+
+\subsection{Residual and other methods}
+Why do we consider the residual?
+For $Au=g$, we want to know whether $u^i \to u^{i+1}$.
+Consider $Ae=r=g-Au^i$, we have the update $u^{i+1}=u^i+e$.
+After solving $Ae=r$ ``approximately'', say 
+\begin{equation} 
+\hat{e}=Br, B\approx A^{-1}. 
+\end{equation} 
+We can have 
+\begin{equation} u^{i+1}=u^i+\hat{e}=u^i+B(g-Au^i). \end{equation}
+
+Apply the numerical ODE methods.
+\begin{itemize}
+	\item The explicit Euler's method:
+\begin{equation} \theta^{i+1}=\theta^i-\eta_i\nabla f(\theta^i). \end{equation}
+\item The implicit Euler's method:
+\begin{equation} \theta^{i+1}=\theta^i-\eta_i\nabla f(\theta^{i+1}). \end{equation}
+\item  Multistep method:
+\begin{equation} u^{i+1}= \sum_{j=0}^{i} \eta_j(u^j+B^j r_j ). 
+\end{equation}
+\end{itemize}
+Then we can apply the explicit Euler's method and multi-step ODE solver
+to get the ResNet and DenseNet as shown in the previous sections.
+
+Finally, Y. LeCun mentioned the evolution of the CNN models as:
+\begin{enumerate}
+	\item LeNet,
+	\item AlexNet,
+	\item ResNet,
+	\item DenseNet.
+\end{enumerate}
+So, can MgNet be the next evolution of CNN?
+
+

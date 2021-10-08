@@ -1,0 +1,568 @@
+
+
+\subsection{Representation of images}
+
+By the linear finite element discretization and bilinear finite element discretization, 
+we have \eqref{2d-fe0} and \eqref{2d-fe1} respectively. 
+
+As usual, the F-inner product is defined as follows:
+$$
+(u, v)_F := \sum_{i,j} u_{i,j}v_{i,j}.
+$$
+
+more general form for the discretization systems  is the so 
+called
+
+
+As discussed above, the restriction mapping is consistent with
+
+Here let us show a simple example about some details for computing deconvolution. 
+
+\subsubsection{Pooling or restriction}\label{sec:cnn-restriction}
+Solving the residual equation 
+$$
+K_A\ast e=r^h
+$$
+in matrix form is equivalent to solve the problem 
+\begin{equation}\label{FEres}
+a(e_h, v_h)=(r_h,v_h)~~\forall~~v_h\in \mathcal V_h,
+\end{equation}
+where 
+\begin{equation}\label{expresion:residual}
+e_h=\sum_{i=1}^{m_1}\sum_{j=1}^{n_1}e^h_{i,j}\phi^h_{i,j}(x,y), r_h=\sum_{i=1}^{m_1}\sum_{j=1}^{n_1}r^h_{i,j}\psi^h_{i,j}(x,y).
+\end{equation}
+We solve the equation \eqref{FEres} on the coarse grid space $\mathcal V_H$, namely 
+\begin{equation}\label{FEres:coarse}
+a(e_{2h}, v_{2h})=(r_h,v_{2h})~~\forall~~v_{2h}\in \mathcal V_{2h},
+\end{equation}
+where $e_{2h}=\sum_{i=1}^{m_2}\sum_{j=1}^{n_2}e^{2h}_{i,j}\phi^{2h}_{i,j}(x,y)$, the matrix form for \eqref{FEres:coarse} is 
+\begin{equation}\label{coarse:matrix}
+K_A\ast e^{2h}=r^{2h},~~r_{i,j}^{2h}=(r_h,\phi^{2h}_{i,j})
+\end{equation}
+\begin{equation}\label{restriction}
+r_{i,j}^{2h}=(r_h,\phi^{2h}_{i,j})
+\end{equation}
+Now we consider the expression of nodal basis functions $(\phi_{i,j}^{2h})(x,y)\subset \mathcal V_{2h}$ by the nodal basis functions $(\phi_{i,j}^{h})(x,y)\subset \mathcal V_{h}$. Here, we only show the details of the case of bilinear finite element space.  The case of linear finite element space can be shown similarly.
+
+ for general $\mathcal V_1=\mathcal  V_\ell,  \mathcal V_2=\mathcal  V_{\ell+1}$, 
+ 
+ 
+ \section{Multigrid for finite element methods}
+Let $\mathcal  V_1=\mathcal  V_h$, then the finite element method: Find $u_h\in \mathcal  V_h$ such that 
+\begin{equation}\label{FEdis}
+a(u_h, v_h)=(f, v_h)~~~\forall~~v_h\in \mathcal  V_h,
+\end{equation}
+where $a(u_h, v_h)=(\nabla u_h, \nabla v_h)$.
+\begin{lemma}
+FE $\rightarrow$ FD with $f_{i,j}=\int_{\Omega}f(x,y)\phi_{ij}(x,y)dxdy$.
+\end{lemma}
+
+For a more comprehensive notation, let us also define 
+$K\ast$ as an operator from $\mathbb{R}^{m\times n} \quad \text{and}$
+to $\mathbb{R}^{m\times n}$ as $\mathcal C_K$.
+Then we have the ``transpose'' of convolution without stride as:
+\begin{equation}\label{eq:def_tran_conv}
+(K \ast u, v)_F = (\mathcal C_K (u), v) =  (u,  \mathcal C_K^\top v).
+\end{equation}
+
+Finite element method: $A_h: \mathcal  V_h\rightarrow \mathcal  V_h, ~~(A_hu_h,v_h)_{L^2}=(\nabla u_h, \nabla v_h)$ (discrete Laplacian $A_h\approx -\Delta_h$. )
+\begin{equation}\label{FE:eq}
+A_hu_h=f_h,~~ 
+\end{equation}
+where~$f_h(x,y)=\sum_{i=1}^{m_1}\sum_{j=1}^{n_1}f_{i,j}\psi_{i,j}(x,y)$ in terms of dual basis $\psi_{i,j}(x,y)\subset \mathcal V_h$ satisfying \eqref{dual-basis}.
+
+The gradient descent for \eqref{FE:eq} is equivalent to the damped Jacobi method for \eqref{FE:eq} and can be written as follows
+$$
+u^k=u^{k-1}+S_0(f-K_A\ast u^{k-1}),~~~1\le k\le m_1.
+$$
+Smoother is equivalent to filter (filtering out high frequncies). Given any $u^0$, $u-u^k$ is much smoother than $u-u^0$.
+
+%Fine grid smoothing $\Longleftrightarrow$ feature extraction.
+
+After smoothing, we do coarse grid correction: for example, for 
+$\mathcal T_h,~\mathcal T_H,~H=2h, \mathcal V_2=\mathcal V_H\subset \mathcal V_h=\mathcal V_1$, we do
+\begin{itemize}
+\item $K_A\ast e=f- K_A\ast u^{m_1}=r^h$;
+\item  $u=u^{m_1}+e$;
+\item  $K_A\ast u=f$.
+\end{itemize}
+We need to solve the residual equation
+$$
+K_A\ast e=r^h.
+$$
+Multigrid idea: solve this residual  equation on coarse grid space $\mathcal V_H$ with $H=2h$.
+
+
+
+Let us first briefly describe a geometric multigrid method used to solve the 
+following boundary value problem
+\begin{equation}
+\label{laplace}
+-\Delta u = f,  \mbox{ in } \Omega,\quad
+\frac{\partial u}{\partial {\bm n}} =0  \mbox{ on } \partial\Omega,\quad
+\Omega=(0,1)^2.
+\end{equation}
+
+As example, we consider a continuous linear finite element discretization of
+\eqref{laplace} on a nested sequence of grids of sizes $n_\ell\times
+n_\ell$ with $n_{\ell}=2^{J-\ell+1} + 1$, as shown in the right part of
+Fig. \ref{fig:2dpartition} and the corresponding sequence of finite
+element spaces.
+%Here we need to notice that, $n_\ell = 2^{k_\ell} + 1$ for general PDEs grid 
+%with the above boundary condition. For general images, we can take them as
+%discrete functions on grid with size $n_\ell = 2^{k_\ell}m$ with small $m = 1,3,\cdots$.
+%Then generally speaking, the coarse grid size is $n_{\ell+1} = \frac{n_\ell}{2}=2^{k\ell - 1}m$.
+
+Based on the grid $\mathcal T = \mathcal T_\ell$, the discretized system is
+\begin{equation}
+\label{laplace-h}
+Au=f.
+\end{equation}
+Here,  $A:\mathbb R^{n\times n}\mapsto \mathbb R^{n\times n}$ is a tensor satisfying
+\begin{equation}
+\label{uniform-laplace}
+(Au)_{i,j}=4u_{i,j}-u_{i+1,j}-u_{i-1,j}-u_{i,j+1}-u_{i,j-1},
+\end{equation}
+which holds for $1\le i,j \le n$ with zero padding. 
+Here we notice that, there exists a $3\times 3$ kernel as
+\begin{equation}\label{eq:kernel-A}
+K_A = \begin{pmatrix}
+0 & -1 & 0 \\
+-1 & 4 & -1 \\
+0 & -1 & 0
+\end{pmatrix},
+\end{equation}
+with 
+\begin{equation}\label{eq:convA}
+Au = K_A \ast u.
+\end{equation}
+Where $\ast$ is the stander convolution operation with zero padding like \eqref{con1}. 
+We now briefly describe a simple multigrid method by a mixed use of the terminologies from 
+deep learning \cite{goodfellow2017deep} and multigrid methods.
+
+However, because of the specially properties of 
+ An important results in multilevel finite element methods is that 
+if we take the restriction as \eqref{eq:restriction} with prolongation as 
+the transposition of restriction, we will have $A^2$ is still a convolution operation 
+with $K_{A^2} = K_{A^1} = K_A$ as in \eqref{eq:kernel-A}.
+
+%	Note that $\sigma_\phi^{(k_0)}=\sigma\ast\phi^{(k_0)}=0$, this implies that $\sigma$ is a polynomial of degree at most $k_0-1$, which contradicts with the assumption that $\sigma$ is not a polynomial. 
+%	As a result, $\overline{\Sigma}_n$ contains all polynomials, hence is dense in $C(\mathbb{R})$.
+%\end{proof}
+%
+%\begin{theorem}
+%	\label{prop:riemann}
+%		Let $\sigma$ be a non-polynomial Riemann integrable function and $\sigma\in L_{loc}^\infty(\mathbb{R})$. Then $\Sigma_1$ in dense in $C(\mathbb{R})$.	
+%	\end{theorem}
+%\begin{proof}
+%	The proof basically follows the proof of Proposition~\ref{prop:conti}. Let $\phi\in C_0^\infty(\mathbb{R})$, and consider $\sigma_\phi$. Again we assume $\mathrm{supp}(\phi)\subset[-\alpha,\alpha]$. Then we can take the Riemann sum $\sum_{i=1}^{m}\sigma(x-y_i)\phi(y_i)\Delta y_i$ where $y_i=-\alpha+\frac{2\alpha}{m}i$ and $\Delta y_i=\frac{2\alpha}{m}$ for $i=0:m$. Set $V_i=[y_{i-1}.y_i]$. The goal is to show that the Riemann sum uniformly converges to $\sigma_\phi$ on any compact set $K$. 
+%	
+%	For any compact set $K$, and any $x\in K$, still we need to do estimation similar to \eqref{uniconv}. Denote $\tilde{K}=K-[-\alpha,\alpha]$. Given $\delta>0$, since $\sigma$ is Riemann integrable, the set of discontinuous points is of measure 0, thus there exists a finite number $n(\delta)$ of intervals, the union of which denoted by $U$, such that the measure of $U$ is $\delta$ and $\sigma$ is uniformly continuous on $\tilde{K}\setminus U$. 
+%	
+%	Choose $\delta>0$ such that 
+%	\begin{equation}
+%	\label{delta}
+%	10\delta\|\sigma\|_{L^\infty(\tilde{K})}\|\phi\|_{L^\infty}\le\epsilon.
+%	\end{equation}
+%	
+%	
+%	Choose $m$ large enough such that $m\delta>\alpha n(\delta)$, and:
+%	\begin{equation}
+%	\label{m-large}
+%	|\phi(x)-\phi(y)|\le\frac{\epsilon}{2\alpha\|\sigma\|_{L^\infty(\tilde{K})}},\qquad \forall |x-y|\le\frac{2\alpha}{m},
+%	\end{equation}
+%	and 
+%	\begin{equation}
+%	\label{sigma}
+%	|\sigma(x)-\sigma(y)|\le\frac{\epsilon}{\|\phi\|_{L^1}},\qquad x,y\in \tilde{K}\setminus U, |x-y|\le\frac{2\alpha}{m}.
+%	\end{equation}
+%	
+%	Then
+%		\begin{equation}
+%		\label{riemann}
+%	\begin{aligned}
+%	&|\int_{\mathbb{R}}\sigma(x-y)\phi(y)dy-\sum_{i=1}^{m}\sigma(x-y_i)\phi(y_i)\Delta y_i|,\\
+%	\le&\sum_{i=1}^{m}\int_{V_i}|\sigma(x-y)-\sigma(x-y_i)||\phi(y)|+|\sigma(x-y_i)||\phi(y)-\phi(y_i)|dy.
+%	\end{aligned}
+%	\end{equation}
+%	By \eqref{m-large}, we have:
+%\begin{equation}
+%\label{part1}
+%\sum_{i=1}^{m}\int_{V_i}|\sigma(x-y_i)||\phi(y)-\phi(y_i)|dy\le\epsilon.
+%\end{equation}
+%When $(x-V_i)\bigcap U=\emptyset$, then by \eqref{sigma}	
+%	\begin{equation}
+%	\label{part2}
+%	\int_{V_i}|\sigma(x-y)-\sigma(x-y_i)||\phi(y)|dy\le\frac{\epsilon}{\|\phi\|_{L^1}}\int_{V_i}|\phi(y)|dy.
+%	\end{equation}
+%	Thus sum together we will get a term that is less than $\epsilon$.
+%For those $V_i$'s intersect with $U$, the total length should be at most $\delta+\frac{4\alpha}{m}n(\delta)$ since there are $n(\delta)$ intervals in $U$. By the choice of $m$, we have $\delta+\frac{4\alpha}{m}n(\delta)\le5\delta$. Hence,
+%	\begin{equation}
+%\label{part3}
+%\sum\int_{V_i}|\sigma(x-y)-\sigma(x-y_i)||\phi(y)|dy\le2\|\sigma\|_{L^\infty(\tilde{K})}\|\phi\|_{L^\infty}5\delta\le\epsilon.
+%\end{equation}
+%	Combine together we should have
+%	$$
+%	|\int_{\mathbb{R}}\sigma(x-y)\phi(y)dy-\sum_{i=1}^{m}\sigma(x-y_i)\phi(y_i)\Delta y_i|\le3\epsilon.
+%	$$
+%	which implies the convergence is uniform.
+%	
+%	Then it left to show that there exists $\phi$ such that $\sigma_\phi$ is not a polynomial. If not, then there must be $k_0$ and $\phi$ such that $\sigma_\phi^{(k_0)}(\theta)=0$ for all $\theta\in\mathbb{R}$ and all $\phi\in C_0^\infty(\mathbb{R})$. Since for every compact set $K$, we should have:
+%	$$
+%	\|\sigma-\sigma_{\eta_\epsilon}\|_{L^p(K)}\to0,\quad1\le p<\infty, \quad \epsilon\to0.
+%	$$
+%	If $\sigma_{\eta_\epsilon}$'s are all polynomials of degree at most $k_0-1$, then $\sigma$ is also a polynomial of degree at most $k_0-1$ almost everywhere.
+%	
+%	\end{proof}
+
+
+
+
+Here, we have
+\begin{equation*}
+0=x_0<x_1<\cdots<x_{n+1}=1, \quad x_j=\frac{j}{n+1},\quad (j=0,\cdots, n+1).
+\end{equation*}
+and
+\begin{equation*}
+0=y_0<y_1<\cdots<y_{n+1}=1, \quad y_j=\frac{j}{n+1},\quad (j=0,\cdots,n+1).
+\end{equation*}
+\begin{figure}[H]
+\begin{center}
+\setlength{\unitlength}{0.5mm}
+\begin{picture}(0,45)(10,0)
+\linethickness{0.25mm}
+\multiput(0,0)(10,0){5}{\line(0,1){40}}
+\multiput(0,0)(0,10){5}{\line(1,0){40}}
+\put(0,0){\line(1,1){40}}
+\put(10,0){\line(1,1){30}}
+\put(20,0){\line(1,1){20}}
+\put(30,0){\line(1,1){10}}
+%\put(40,0){\line(1,1){10}}
+\put(0,10){\line(1,1){30}}
+\put(0,20){\line(1,1){20}}
+\put(0,30){\line(1,1){10}}
+%\put(0,40){\line(1,1){10}}
+\put(37,24){$\displaystyle \left. \begin{array}{l}~ \\ ~\end{array}
+\right\} h={1\over n+1}$}
+\put(44,4){$\displaystyle N = n^2$}
+%\multiput(100,0)(10,0){6}{\line(0,1){50}}
+%\multiput(100,0)(0,10){6}{\line(1,0){50}}
+%\put(147,34){$\displaystyle \left. \begin{array}{l}~ \\ ~\end{array}
+%\right\} h={1\over n+1}$}
+%\put(154,14){$\displaystyle N = n^2$}
+\end{picture}
+%\setlength{\unitlength}{0.5mm}
+\end{center}
+\label{fig:2dpartition}
+\caption{Two-dimensional uniform grid for finite element method}
+\end{figure}
+
+The weak form is: Find $u_h \in V_h$, such that
+\begin{equation} \label{eqn:weak}
+a(u_h, v_h) = (f, v_h), \ \forall \ v_h \in V_h
+\end{equation}
+where $a(u_h,v_h) = \int_{\Omega} \nabla u_h \nabla v_h $ and $(f, v_h) = \int_{\Omega} fv_h$, and $V_h$ is the corresponding linear finite element space.  Take $v_h = \phi^h_{i,j}$ where $\phi^h_{i,j}$ is the basis function at point $(x_i, y_j)$, from \eqref{eqn:weak}, we have
+
+
+
+
+
+where ${A} = \text{tridiag}(-{I}, {B}, -{I})$ and ${B} = \text{tridiag}(-1,4,-1)$ and ${u} = ({u}_{i,j})$ and ${f} = ({f}_{i,j})$ with $i$ and $j$ both follow the lexicographic ordering. 
+\begin{enumerate}
+\item \emph{Jacobi method:}  implement the Jacobi method as shown in the following algorithm
+\
+
+\begin{algorithm}
+Jacobi method:  $[{u}^{k+1}] = \texttt{jacobi} ({u}^k, {f}, h)$
+\begin{algorithmic}[1]
+\STATE $n \gets \frac{1}{h} - 1$
+\FOR{$j = 1:n$}
+\FOR{$i = 1:n$}
+\STATE $ {u}^{k+1}_{i,j} \gets {u}^{k+1}_{i,j } + ({f}_{i,j} + {u}^k_{i-1,j} + {u}^k_{i+1,j} + {u}^k_{i,j-1} + {u}^{k}_{i,j+1} -4 {u}^k_{i,j})/4$
+\ENDFOR
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+\
+
+Choose right hand side $f$ and initial guess ${u}^0$ freely (constant right hand side and random initial guess are recommended), and use the stopping criterion $\| {f} - {A} {u}^k \| / \| {f} - {A} {u}^0 \|  \leq 10^{-6} $.  Make a table to report the number of iterations and CPU time for $h = 2^{-5}, 2^{-6}, \cdots, 2^{-8}$.
+
+\item \emph{Gauss-Seidel method:}  
+
+
+
+
+It is easy to verify that the formulation for the linear element method is 
+\begin{equation}
+  \label{2d-fe0}
+4u_{ij}-(u_{i+1,j}+u_{i-1,j}+u_{i,j+1}+u_{i,j-1})=f_{i,j},~~u_{i,j}=0~~\hbox{if}~~i ~~\hbox{or}~~ j\in \{0, n+1\}.
+\end{equation}
+where ${f}_{i,j} = (f, \phi^h_{i,j})$.  This leads to the following linear system of equations.
+\begin{equation*}
+A \ast u = f,
+\end{equation*}
+where
+\begin{equation}\label{eq:kernel-A}
+A = \begin{pmatrix}
+0 & -1 & 0 \\
+-1 & 4 & -1 \\
+0 & -1 & 0
+\end{pmatrix}.
+\end{equation}
+
+%Implement the following gradient descent method:
+%
+%\
+%
+%%\begin{algorithm}
+%\underline{\textbf{Gradient descent method:}}  $[{u}] = \texttt{GD} ({u}, {f}, n)$
+%\begin{algorithmic}[1]
+%%\STATE ${v} \gets {u}^{k}$
+%%\STATE $n \gets \frac{1}{h} - 1$
+%\FOR{$j = 1:n$}
+%\FOR{$i = 1:n$}
+%\STATE $ {u}_{i,j} \gets  {u}_{i,j} +\frac{1}{8}({f}_{i,j} -4 {u}_{i,j} +{u}_{i-1,j} +{u}_{i+1,j} +{u}_{i,j-1}+{u}_{i,j+1} )$
+%\ENDFOR
+%\ENDFOR
+%\end{algorithmic}
+%\end{algorithm}
+
+
+
+as
+ \begin{equation}
+u \leftarrow u + \frac{1}{8}( f - K\ast u).
+\end{equation}
+This can be done with  the convolution
+
+
+
+Especially if 
+$$
+u^{0} = 0,
+$$
+we have
+\begin{equation}
+u^{1} \leftarrow S_0 \ast f,
+\end{equation}
+and if we apply the gradient descent iteration twice we have 
+\begin{equation}
+u^{2} \leftarrow S_1 \ast f,
+\end{equation}
+with 
+\begin{equation}\label{eq:kernel-S}
+S_0 = {1 \over 8},
+\end{equation}
+and 
+\begin{equation}\label{eq:kernel-S2}
+S_1={1\over 64} \begin{pmatrix}
+0 & 1 & 0 \\
+1 & 12 & 1  \\
+0 &1  & 0
+\end{pmatrix}.
+\end{equation}
+\hrule
+
+%Given an initial guess ${u}^0$, consider the gradient descent iteration as follows:
+%
+%
+%
+%\begin{algorithmic}[1]
+%\STATE $k \gets 0$
+%\WHILE{$\| {f} - {A} {u}^k \| / \| {f} - {A} {u}^0 \|  > \texttt{Tol}$}
+%\STATE $[{u}^{k+1}] = \texttt{GD} ({u}^k, {f}, n)$
+%\STATE $k \gets k+1$
+%\ENDWHILE
+%\end{algorithmic}
+
+\
+
+\eqref{conA}
+
+ by convolution as
+\begin{equation}
+u \leftarrow K\ast u.
+\end{equation}
+This can be done with
+
+
+
+%\hrule
+
+\
+
+%The restriction and prolongation are implemented as follows:
+%
+%\
+%
+%%\begin{algorithm} \label{alg:restrict}
+%\underline{\textbf{Restriction:}} $[{r}^H] = \texttt{restrict}({r}^h, n_H)$
+%\begin{algorithmic}[1]
+%%\STATE $H = 2h$, $n_H = \frac{1}{H} - 1$
+%\FOR{$j = 1:n_H$}
+%\FOR{$i = 1:n_H$}
+%\STATE ${r}^H_{i,j} \gets {r}^h_{2i,2j} + \frac{1}{2} \left( {r}^h_{2i+1,2j} + {r}^h_{2i-1,2j}  + {r}^h_{2i,2j+1}  + {r}^h_{2i,2j-1}  + {r}^h_{2i+1,2j+1} + {r}^h_{2i-1,2j-1}   \right)$
+%\ENDFOR
+%\ENDFOR
+%\end{algorithmic}
+%\end{algorithm}
+
+\hrule
+
+\begin{equation}
+r^{H} = R \ast_2 r^h,
+\end{equation}
+with 
+\begin{equation}
+\label{linear-restrict}
+R=
+\begin{pmatrix}
+0 &\frac{1}{2}&\frac{1}{2}\\
+\frac{1}{2}& 1&\frac{1}{2}\\
+\frac{1}{2}&\frac{1}{2}&  0
+\end{pmatrix}.
+\end{equation}
+\
+This can be done with
+
+
+%\hrule
+%
+%%\begin{algorithm}\label{alg:prolongate}
+%\underline{\textbf{Prolongation:}} $[ {e}^h] = \texttt{prolongate}({e}^H, n_H)  $
+%\begin{algorithmic}[1]
+%%\STATE $n_H = \frac{1}{H} - 1$
+%\FOR{$j = 0:n_H-1$}
+%\FOR{$i = 0:n_H-1$}
+%\STATE ${e}^h_{2i,2j} \gets {e}^H_{i,j}$
+%\STATE ${e}^h_{2i+1,2j} \gets \frac{1}{2} ({e}^H_{i,j} + {e}^H_{i+1,j} )$
+%\STATE ${e}^h_{2i+1,2j+1} \gets \frac{1}{2}( {e}^H_{i,j} + {e}^H_{i+1,j+1}) $
+%\STATE ${e}^h_{2i,2j+1} \gets  \frac{1}{2} ({e}^H_{i,j} + {e}^H_{i,j+1})$
+%\ENDFOR
+%\ENDFOR
+%\end{algorithmic}
+%\end{algorithm}
+%\hrule
+\hrule
+
+
+
+\begin{equation}
+e^{h} =  R \ast_2^\top r^H,
+\end{equation}
+with 
+\begin{equation}
+\label{linear-restrict}
+R=
+\begin{pmatrix}
+0 &\frac{1}{2}&\frac{1}{2}\\
+\frac{1}{2}& 1&\frac{1}{2}\\
+\frac{1}{2}&\frac{1}{2}&  0
+\end{pmatrix}.
+\end{equation}
+\
+This can be done with 
+
+
+
+%Now, one step of the two-grid method with gradient descent smoother is defined as follows:
+%
+%\
+%
+%%\begin{algorithm} 
+%\underline{\textbf{Two-grid method:}} $[{u}] = \texttt{TwoGrid}( {u}, {f}, n, n_H)$
+%\begin{algorithmic}[1]
+% \STATE \emph{Smoothing:} $[{u}] = \texttt{GD} ({u}, {f}, n)$
+%\STATE \emph{Compute residual:} ${r} \gets {f} - \texttt{Action}({u}, n) $
+%\STATE \emph{Restriction:} $[{r}^{H}]= \texttt{restrict}({r}, n_H)$
+%\STATE \emph{Coarse grid correction:} (Suppose to use $ {e}^{H} \gets {A}_{H}^{-1} {r}^{H}$, however, we cannot compute ${A}_H^{-1}$ since we do not form ${A}_H$ explicitly.  Therefore, we use sufficient steps of Gauss-Seidel method)
+%\begin{enumerate}
+%\item [\small{4.1:}] ${e}^{H} \gets {0}$
+%\item [\small{4.2:}] \textbf{for} $m = 1: \texttt{coarse\_step}$ \textbf{do}
+%\item [\small{4.3:}] \quad $[{e}^H] = \texttt{GD} ({e}^H, {r}^H, n_H)$
+%\item [\small{4.4:}]  \textbf{end} \textbf{for}
+%\end{enumerate}
+%%\STATE ${e}^{H} \gets {0}$
+%%\FOR{$m = 1: \texttt{coarse\_step}$}
+%%\STATE $[{e}^H] = \texttt{GD} ({e}^H, {r}^H, H)$
+%%\ENDFOR 
+%\STATE \emph{Prolongation:} ${u} \gets {u} + \texttt{prolongate}({e}^H, n_H) $
+%\end{algorithmic}
+%%\end{algorithm}
+%
+%\
+%
+%Given an initial guess ${u}^0$, please implement the two-grid iteration as follows:
+%
+%\begin{algorithmic}[1]
+%\STATE $k \gets 0$
+%\WHILE{$\| {f} - {A} {u}^k \| / \| {f} - {A} {u}^0 \|  > \texttt{Tol}$}
+%\STATE $[{u}^{k+1}] = \texttt{TwoGrid} ({u}^k, {f}, n, n_H)$
+%\STATE $k \gets k+1$
+%\ENDWHILE
+%\end{algorithmic}
+%
+%\
+%
+%Choose right hand side $f$ and initial guess ${u}^0$ freely (constant right hand side and random initial guess are recommended), and set the tolerance to be $\texttt{Tol} = 10^{-6}$.  Make a table to report the number of iterations, convergence factor ($\| {f} - {A} {u}^k \| / \| {f} - {A} {u}^{k-1} \|  $ ), and CPU time for $J = 3, 4, 5, 6$.
+
+
+MG method is based on the following nested spaces
+\begin{equation*}
+\mathcal V_1 \subset \mathcal V_2 \subset \cdots \subset \mathcal V_J,
+\end{equation*}
+where $\mathcal V_\ell$, $\ell = 1, 2, \cdots, J$, are linear finite element spaces on uniform grids with mesh size $h_\ell = 2^{-\ell}$ and $n_\ell = 2^\ell-1$. 
+%The prolongation matrix ${I}_{l-1}^l \in \mathbb{R}^{N_l \times N_{l-1}}$ where $N_l = (1/h_l-1)^2$ are defined by the manner of \eqref{eqn:prolongation}.  Moreover, we also have the restriction matrix is the transpose of the prolongation matrix, i.e. ${I}_l^{l-1}: = ( {I}_{l-1}^l )^t$. And ${A}_{l-1} = {I}_l^{l-1} {A}_l  {I}_{l-1}^l $ with ${A}_J = {A}$.  
+Recursive implementation of the MG method with GD smoother is defined as follows:
+%\begin{algorithm} 
+
+\
+
+%\underline{\textbf{MG method:}} $[ {u}_l ] = \texttt{MultiGrid}({u}_l, {f}_l, l)$
+%\begin{algorithmic}[1]
+%\STATE $n_l \gets 2^l-1$, $n_{l-1} = 2^{l-1}-1$
+%\IF{$l=1$}
+%\STATE ${u}_1 \gets {A}_1^{-1} {f}_1$
+%\ELSE 
+%\STATE \emph{Smoothing:} $[{u}_l] = \texttt{GD} ({u}_l, {f}_l, n_l)$
+%\STATE \emph{Compute residual:} ${r}_l \gets {f}_l - \texttt{Action}({u}_l, n_l)$
+%\STATE \emph{Restriction:} $[{r}_{l-1}] = \texttt{restrict}({r}_l, n_{l-1})$
+%\STATE \emph{Coarse grid correction:} $[ {e}_{l-1} ] = \texttt{MultiGrid}({0}, {r}_{l-1}, l-1) $
+%\STATE \emph{Prolongation:} ${u}_{l} \gets {u}_l + \texttt{prolongate}({e}_{l-1}, n_{l-1})$
+%\ENDIF
+%\end{algorithmic}
+%%\end{algorithm}
+
+%\underline{\textbf{MG method:}} $[ {u}^\ell ] = \texttt{MultiGrid}(0, {f}^\ell,\ell)$
+%\begin{algorithmic}[1]
+%	\STATE $n_\ell \gets 2^\ell-1$, $n_{\ell-1} = 2^{\ell-1}-1$
+%	\IF{$\ell=1$}
+%	\STATE ${u}^1 \gets {A}_1^{-1} {f}^1$
+%	\ELSE 
+%	\STATE \emph{Smoothing:} $[{u}^\ell] = S \ast {f}^\ell$
+%	\STATE \emph{Compute residual:} ${r}^\ell \gets {f}^\ell - A \ast {u}^\ell,$
+%	\STATE \emph{Restriction:} $[{r}^{\ell-1}] = R \ast_2 {r}^\ell$
+%	\STATE \emph{Coarse grid correction:} $[ {e}^{\ell-1} ] = \texttt{MultiGrid}({0}, {r}^{\ell-1}, \ell-1) $
+%	\STATE \emph{Prolongation:} ${u}^{\ell} \gets {u}^\ell + R \ast_2^\top {e}^{\ell-1}$
+%	\ENDIF
+%\end{algorithmic}
+%\end{algorithm}
+
+\
+
+
+Given an initial guess ${u}^0$, please implement the MG iteration as follows:
+
+%\
+%
+%\begin{algorithmic}[1]
+%\STATE $k \gets 0$
+%\WHILE{$\| {f} - {A} {u}^k \| / \| {f} - {A} {u}^0 \|  > \texttt{Tol}$}
+%\STATE $[{u}^{k+1}] = \texttt{MultiGrid} ({u}^k, {f}, J)$
+%\STATE $k \gets k+1$
+%\ENDWHILE
+%\end{algorithmic}
+
+\
+

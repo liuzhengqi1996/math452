@@ -1,0 +1,58 @@
+\chapter{0411notes}
+Iterative methods for solving:
+\begin{enumerate}
+\item \begin{equation}
+\min_{\theta} f(\theta) 
+ \end{equation}
+\item \begin{equation}Au=g \end{equation}
+\end{enumerate}
+
+We have dynamic system approach:
+(1) Optimization:
+\begin{equation}\theta^*\in \arg\min_{\theta} f(\theta)\to \nabla f(\theta^*)=0 \end{equation}
+\begin{equation}\frac{d\theta}{dt}=-\nabla f(\theta(t)) \end{equation}
+By Euler's method,
+\begin{equation}\frac{\theta^{i+1}-\theta^i}{\eta}=-\nabla f(\theta^i) \end{equation}
+\begin{equation}\theta^{i+1}=\theta^i-\eta\nabla f(\theta^i) \end{equation}
+(2) \begin{align}
+Au&=g  \\\notag
+u&=u(t) \\\notag
+u_t&=g-Au\\\notag
+u^*&=\lim_{t\to \infty}u(t)\\\notag
+g-Au^*&=0
+\end{align}
+
+Moreover,
+\begin{equation}Au=g \Leftrightarrow B(Au-g)=0, \end{equation} where $B$ is nonsingular. 
+A simple choice for $B$ is $B=D^{-1}$, where $D=\diag(A)$.
+
+For Euler's method,
+\begin{equation}\frac{u^{i+1}-u^i}{\eta}=B(g-Au^i)\equiv r_i \end{equation}
+\begin{equation} u^{i+1}=u^i+\eta r_i. \end{equation}
+
+Why do we consider the residual?
+For $Au=g$, we want to know whether $u^i \to u^{i+1}$.
+Consider $Ae=r=g-Au^i$, we have the update $u^{i+1}=u^i+e$.
+After solving $Ae=r$ 'approximately', say 
+\begin{equation} \hat{e}=Br, B\approx A^{-1}. \end{equation} 
+We have 
+\begin{equation} u^{i+1}=u^i+\hat{e}=u^i+B(g-Au^i) \end{equation}
+
+Apply the numerical ODE methods.
+(1) Apply the machine learning to Euler's method.
+For $\min_{\theta} f(\theta)$, the explicit Euler's method is
+\begin{equation} \theta^{i+1}=\theta^i-\eta_i\nabla f(\theta^i). \end{equation}
+The implicit Euler's method is
+\begin{equation} \theta^{i+1}=\theta^i-\eta_i\nabla f(\theta^{i+1}). \end{equation}
+(2) Multistep method.
+\begin{equation} u^{i+1}=u^i+\eta_i r_i+\eta_{i-1} r_{i-1}+...+\eta_0 r_0). \end{equation}
+Then we can apply the explicit Euler's method to ResNet and the multi-step ODE solvers to the Dense-Net.
+There are some examples,
+\begin{enumerate}
+\item LeNet
+\item AlexNet
+\item ResNet
+\item DenseNet
+\item MgNet
+\end{enumerate}
+

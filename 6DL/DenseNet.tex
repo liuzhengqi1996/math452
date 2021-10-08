@@ -1,0 +1,294 @@
+\section{DenseNet}
+\subsection{Densenet architecture for Cifar}
+\begin{enumerate}
+\item Initialization of inputs
+$$
+f \in \mathbb{R}^{3\times 32\times 32}, \quad
+growth~rate = k, \quad
+compression~coefficient = \alpha.
+$$
+\item First layer
+$$f^0=f\in \mathbb{R}^{3\times 32\times 32} \quad \theta^0 \in \mathbb{R}^{3\times c_0\times 3\times 3}$$
+%$$f^{1,0}=R_{max} \ast_2 \sigma(\theta^{0} \ast_2 (f^0))\in \mathbb{R}^{c_0\times 32\times 32}$$
+$$f^{1,0}= \sigma(\theta^{0} \ast (f^0))\in \mathbb{R}^{c_0\times 32\times 32}$$
+\item First block\\
+1st layer:\quad input$f^{1,0}\in \mathbb{R}^{c_0\times 32\times 32}$ ,$\theta^{1,1} \in \mathbb{R}^{c_0\times k\times 3\times 3}$
+$$f^{1,1}=\theta^{1,1} \ast (\sigma(f^{1,0}))\in \mathbb{R}^{k\times 32\times 32}$$
+\quad\quad\quad\quad\quad output $[f^{1,0},f^{1,1}] \in \mathbb{R}^{(c_0+k)\times 32\times 32}$
+\\ \hspace*{\fill} \\
+2nd layer:\quad input$[f^{1,0},f^{1,1}] \in \mathbb{R}^{(c_0+k)\times 32\times 32}$ ,$\theta^{1,2} \in \mathbb{R}^{(c_0+k)\times k\times3\times 3 }$
+$$ f^{1,2}=\theta^{1,2} \ast (\sigma([f^{1,0},f^{1,1}]))\in \mathbb{R}^{k\times 32\times 32}$$
+\quad\quad\quad\quad\quad output $[f^{1,0},f^{1,1}, f^{1,2}] \in \mathbb{R}^{(c_0+2k)\times 32\times 32}$
+\\ \hspace*{\fill} \\
+3rd layer:\quad input$[f^{1,0},f^{1,1},f^{1,2}] \in \mathbb{R}^{(c_0+2k)\times 32\times 32}$ ,$\theta^{1,3} \in \mathbb{R}^{ (c_0+2k)\times k\times 3\times 3 }$
+$$ f^{1,3}=\theta^{1,3} \ast (\sigma([f^{1,0},f^{1,1},f^{1,2}]))\in \mathbb{R}^{k\times 32\times 32}$$
+\quad\quad\quad\quad\quad output $[f^{1,0},f^{1,1}, f^{1,2},f^{1,3}] \in \mathbb{R}^{(c_0+3k)\times 32\times 32}$
+\\ \hspace*{\fill} \\
+4th layer:\quad input$[f^{1,0},f^{1,1},f^{1,2},f^{1,3}] \in \mathbb{R}^{(c_0+3k)\times 32\times 32}$ ,$\theta^{1,4} \in \mathbb{R}^{ (c_0+3k)\times k\times 3\times 3}$
+$$ f^{1,4}=\theta^{1,4} \ast (\sigma([f^{1,0},f^{1,1},f^{1,2},f^{1,3}]))\in \mathbb{R}^{k\times 32\times 32}$$
+\quad\quad\quad\quad\quad output $[f^{1,0},f^{1,1}, f^{1,2},f^{1,3},f^{1,4}] \in \mathbb{R}^{(c_0+4k)\times 32\times 32}$
+\\ \hspace*{\fill} \\
+$$\cdots\cdots$$
+$\nu_1$th layer:\quad input$[f^{1,0},f^{1,1},f^{1,2},f^{1,3},\cdots,f^{1,\nu_1-1}] \in \mathbb{R}^{(c_0+(\nu_1-1)k)\times 32\times 32}$ ,$\theta^{1,\nu_1} \in \mathbb{R}^{ (c_0+(\nu_1-1)k)\times k\times3\times 3}$
+$$ f^{1,\nu_1}=\theta^{1,\nu_1} \ast (\sigma([f^{1,0},f^{1,1},f^{1,2},f^{1,3},\cdots,f^{1,\nu_1-1}]))\in \mathbb{R}^{k\times 32\times 32}$$
+\quad\quad\quad\quad\quad output $[f^{1,0},f^{1,1}, f^{1,2},f^{1,3},f^{1,4},\cdots,f^{1,\nu_1}] \in \mathbb{R}^{(c_0+\nu_1k)\times 32\times 32}$
+\\ \hspace*{\fill} \\
+\item First transition
+$$f^1 = [f^{1,0},f^{1,1}, f^{1,2},f^{1,3},f^{1,4},\cdots,f^{1,\nu_1}] \in \mathbb{R}^{(c_0+\nu_1k)\times 32\times 32}$$
+$$\theta^1 \in \mathbb{R}^{(c_0+\nu_1k)\times \alpha(c_0+\nu_1k)\times 1\times 1 }$$
+$$f^{2,0}=R_{avg} \ast_2 \theta^{1} \ast (\sigma(f^1))\in \mathbb{R}^{\alpha(c_0+\nu_1k)\times 16\times 16}$$
+suppose $c_1 = \alpha(c_0+\nu_1k)\quad f^{2,0}\in \mathbb{R}^{c_1\times 16\times 16}$
+\\ \hspace*{\fill} \\
+\item Second block\\
+1st layer:\quad input$f^{2,0}\in \mathbb{R}^{c_1\times 16\times 16}$ ,$\theta^{2,1} \in \mathbb{R}^{c_1\times k\times3\times 3 }$
+$$f^{2,1}=\theta^{2,1} \ast (\sigma(f^{2,0}))\in \mathbb{R}^{k\times 16\times 16}$$
+\quad\quad\quad\quad\quad output $[f^{2,0},f^{2,1}] \in \mathbb{R}^{(c_1+k)\times 16\times 16}$
+\\ \hspace*{\fill} \\
+2nd layer:\quad input$[f^{2,0},f^{2,1}] \in \mathbb{R}^{(c_1+k)\times 16\times 16}$ ,$\theta^{2,2} \in \mathbb{R}^{(c_1+k)\times k\times 3\times 3}$
+$$ f^{2,2}=\theta^{2,2} \ast (\sigma([f^{2,0},f^{2,1}]))\in \mathbb{R}^{k\times 16\times 16}$$
+\quad\quad\quad\quad\quad output $[f^{2,0},f^{2,1}, f^{2,2}] \in \mathbb{R}^{(c_1+2k)\times 16\times 16}$
+\\ \hspace*{\fill} \\
+3rd layer:\quad input$[f^{2,0},f^{2,1},f^{2,2}] \in \mathbb{R}^{(c_1+2k)\times 16\times 16}$ ,$\theta^{2,3} \in \mathbb{R}^{(c_1+2k)\times k\times 3\times 3}$
+$$ f^{2,3}=\theta^{2,3} \ast (\sigma([f^{2,0},f^{2,1},f^{2,2}]))\in \mathbb{R}^{k\times 16\times 16}$$
+\quad\quad\quad\quad\quad output $[f^{2,0},f^{2,1}, f^{2,2},f^{2,3}] \in \mathbb{R}^{(c_1+3k)\times 16\times 16}$
+\\ \hspace*{\fill} \\
+4th layer:\quad input$[f^{2,0},f^{2,1},f^{2,2},f^{2,3}] \in \mathbb{R}^{(c_1+3k)\times 16\times 16}$ ,$\theta^{2,4} \in \mathbb{R}^{(c_1+3k)\times k\times3\times 3}$
+$$ f^{2,4}=\theta^{2,4} \ast (\sigma([f^{2,0},f^{2,1},f^{2,2},f^{2,3}]))\in \mathbb{R}^{k\times 16\times 16}$$
+\quad\quad\quad\quad\quad output $[f^{2,0},f^{2,1}, f^{2,2},f^{2,3},f^{2,4}] \in \mathbb{R}^{(c_1+4k)\times 16\times 16}$
+\\ \hspace*{\fill} \\
+$$\cdots\cdots$$
+$\nu_2$th layer:\quad input$[f^{2,0},f^{2,1},f^{2,2},f^{2,3},\cdots,f^{2,\nu_2-1}] \in \mathbb{R}^{(c_1+(\nu_2-1)k)\times 16\times 16}$ ,$\theta^{2,\nu_2} \in \mathbb{R}^{(c_1+(\nu_2-1)k)\times k\times 3\times 3}$
+$$ f^{2,\nu_2}=\theta^{2,\nu_2} \ast (\sigma([f^{2,0},f^{2,1},f^{2,2},f^{2,3},\cdots,f^{2,\nu_2-1}]))\in \mathbb{R}^{k\times 16\times 16}$$
+\quad\quad\quad\quad\quad output $[f^{2,0},f^{2,1}, f^{2,2},f^{2,3},f^{2,4},\cdots,f^{2,\nu_2}] \in \mathbb{R}^{(c_1+\nu_2k)\times 16\times 16}$
+\\ \hspace*{\fill} \\
+\item Second transition
+$$f^2 = [f^{2,0},f^{2,1}, f^{2,2},f^{2,3},f^{2,4},\cdots,f^{2,\nu_2}] \in \mathbb{R}^{(c_1+\nu_2k)\times 16\times 16}$$
+$$\theta^2 \in \mathbb{R}^{(c_1+\nu_2k)\times \alpha(c_1+\nu_2k)\times 1\times 1}$$
+$$f^{3,0}=R_{avg} \ast_2 \theta^{2} \ast (\sigma(f^2))\in \mathbb{R}^{\alpha(c_1+\nu_2k)\times 8\times 8}$$
+suppose $c_2 = \alpha(c_1+\nu_2k)\quad f^{3,0}\in \mathbb{R}^{c_2\times 8\times 8}$
+\\ \hspace*{\fill} \\
+\item Third block\\
+1st layer:\quad input$f^{3,0}\in \mathbb{R}^{c_2\times 8\times 8}$ ,$\theta^{3,1} \in \mathbb{R}^{ c_2\times k\times 3\times 3}$
+$$f^{3,1}=\theta^{3,1} \ast (\sigma(f^{3,0}))\in \mathbb{R}^{k\times 8\times 8}$$
+\quad\quad\quad\quad\quad output $[f^{3,0},f^{3,1}] \in \mathbb{R}^{(c_2+k)\times 8\times 8}$
+\\ \hspace*{\fill} \\
+2nd layer:\quad input$[f^{3,0},f^{3,1}] \in \mathbb{R}^{(c_2+k)\times 8\times 8}$ ,$\theta^{3,2} \in \mathbb{R}^{(c_2+k)\times k\times 3\times 3 }$
+$$ f^{3,2}=\theta^{3,2} \ast (\sigma([f^{3,0},f^{3,1}]))\in \mathbb{R}^{k\times 8\times 8}$$
+\quad\quad\quad\quad\quad output $[f^{3,0},f^{3,1}, f^{3,2}] \in \mathbb{R}^{(c_2+2k)\times 8\times 8}$
+\\ \hspace*{\fill} \\
+3rd layer:\quad input$[f^{3,0},f^{3,1},f^{3,2}] \in \mathbb{R}^{(c_2+2k)\times 8\times 8}$ ,$\theta^{3,3} \in \mathbb{R}^{ (c_2+2k)\times k\times 3\times 3}$
+$$ f^{3,3}=\theta^{3,3} \ast (\sigma([f^{3,0},f^{3,1},f^{3,2}]))\in \mathbb{R}^{k\times 8\times 8}$$
+\quad\quad\quad\quad\quad output $[f^{3,0},f^{3,1}, f^{3,2},f^{3,3}] \in \mathbb{R}^{(c_2+3k)\times 8\times 8}$
+\\ \hspace*{\fill} \\
+4th layer:\quad input$[f^{3,0},f^{3,1},f^{3,2},f^{3,3}] \in \mathbb{R}^{(c_2+3k)\times 8\times 8}$ ,$\theta^{3,4} \in \mathbb{R}^{(c_2+3k)\times k\times 3\times 3}$
+$$ f^{3,4}=\theta^{3,4} \ast (\sigma([f^{3,0},f^{3,1},f^{3,2},f^{3,3}]))\in \mathbb{R}^{k\times 8\times 8}$$
+\quad\quad\quad\quad\quad output $[f^{3,0},f^{3,1}, f^{3,2},f^{3,3},f^{3,4}] \in \mathbb{R}^{(c_2+4k)\times 8\times 8}$
+\\ \hspace*{\fill} \\
+$$\cdots\cdots$$
+$\nu_3$th layer:\quad input$[f^{3,0},f^{3,1},f^{3,2},f^{3,3},\cdots,f^{3,\nu_3-1}] \in \mathbb{R}^{(c_2+(\nu_3-1)k)\times 8\times 8}$ ,$\theta^{3,\nu_3} \in \mathbb{R}^{(c_2+(\nu_3-1)k)\times k\times 3\times 3}$
+$$ f^{3,\nu_3}=\theta^{3,\nu_3} \ast (\sigma([f^{3,0},f^{3,1},f^{3,2},f^{3,3},\cdots,f^{3,m-1}]))\in \mathbb{R}^{k\times 8\times 8}$$
+\quad\quad\quad\quad\quad output $[f^{3,0},f^{3,1}, f^{3,2},f^{3,3},f^{3,4},\cdots,f^{3,\nu_3}] \in \mathbb{R}^{(c_2+\nu_3k)\times 8\times 8}$
+\\ \hspace*{\fill} \\
+\item Fully connect
+$$f^3 = [f^{3,0},f^{3,1}, f^{3,2},f^{3,3},f^{3,4},\cdots,f^{3,\nu_3}] \in \mathbb{R}^{(c_2+\nu_3k)\times 8\times 8}$$
+$$f = R_{global~avg} \ast(\sigma(f^3)) \in \mathbb{R}^{(c_2+\nu_3k)}$$
+$$\theta_{fc} \in \mathbb{R}^{num~class\times (c_2+\nu_3k)}$$
+$$output = \theta_{fc}\times f \in \mathbb{R}^{num~class}$$
+
+\end{enumerate}
+
+
+The DenseNet for cifar can be written as:%\cite{huang2017densely}
+\begin{equation}\label{eq:densenet}
+\begin{cases}
+f^{1,0} &=\sigma(\theta^{0} \ast (f^0)), \\
+\text{\bf For} &\ell = 1:3 \\
+\quad &\text{\bf For} \quad i = 1:\nu_\ell \\
+&f^{\ell,i} = \theta^{\ell,i}\ast \sigma \circ ([f^{\ell,0,}, \cdots, f^{\ell,i-1}]), \quad i = 1:\nu_\ell ,\\
+%&\tilde f^{\ell,i} = [f^{\ell,0,}, \cdots, f^{\ell,i}] \quad i = 1:\nu_\ell  , \\
+\quad &\text{\bf EndFor} \\
+f^{\ell+1,0} &=  R_{avg} \ast_2 \theta^{\ell} \ast (\sigma([f^{\ell,0,}, \cdots, f^{\ell,\nu_\ell}])) ) , \\
+\text{\bf End} &\\
+H_0(f) &=  R_{\rm global~avg}(\sigma(f^{3,\nu_\ell})). \\
+\end{cases}
+\end{equation}
+
+\subsection{The DenseNet for cifar experiments setting}
+\begin{enumerate}
+\item network:3 dense blocks that each has an equal number of layers($\nu_1=\nu_2=\nu_3$)
+\item first layer output channels $c_0$:16 (or twice the growth rate for DenseNet-BC)
+\item optimization method:SGD,use a weight decay of $10^{-4}$ and a Nesterov momentum of 0.9.
+\item batch size:$64$
+\item epochs:300 or 40
+\item learning rate:initail learning rate:0.1,and is divided by 10 at 50\% and 75\% of the total number of training epochs.
+\item weight initialization: Kaiming method.
+\item others:add a dropout layer,ratio$=0.2$
+\end{enumerate}
+
+\subsection{The DenseNet Classification Results on CIFAR}
+\begin{tabular}{| l | c | c | c  | c | c | r |}
+\hline
+Method              &   Depth   & Params   & C10   & C10+   & C100   &   C100+ \\
+\hline
+Densenet(k=12)      &    40     & 1.0M     & 7.00  & 5.24   & 27.55  &   24.42  \\
+\hline
+Densenet(k=12)      &   100     & 7.0M     & 5.77  & 4.10   & 23.79  &   20.20  \\
+\hline
+Densenet(k=24)      &   100     & 27.2M    & 5.83  & 3.74   & 23.42  &   19.25  \\
+\hline
+Densenet-BC(k=12)   &   100     & 0.8M     & 5.92  & 4.51   & 24.15  &   22.27  \\
+\hline
+Densenet-BC(k=24)   &   250     & 15.3M    & 5.19  & 3.62   & 19.64  &   17.60  \\
+\hline
+Densenet-BC(k=40)   &   190     & 25.6M    & -     & 3.46   & -      &   17.28  \\
+\hline
+\end{tabular}
+\\ \hspace*{\fill} \\
+Refer the DenseNet with $\alpha<1$ as DenseNet-C, and  set $\alpha=0.5$in experiment.When both the bottleneck and transition layers with $\alpha<1$
+are used, refer  as DenseNet-BC.\\
+$'+'$ indicates standard data augmentation.
+\subsection{Densenet architecture for ImageNet}
+\begin{enumerate}
+\item Initialization of inputs
+$$
+f \in \mathbb{R}^{c\times n\times n}, \quad
+growth~rate = k, \quad
+compression~coefficient = \alpha.
+$$
+\item First layer
+$$f^0=f\in \mathbb{R}^{c\times n\times n} \quad \theta^0 \in \mathbb{R}^{c\times c_0\times 7\times 7}$$
+$$f^{1,0}=R_{max} \ast_2 \sigma(\theta^{0} \ast_2 (f^0))\in \mathbb{R}^{c_0\times n_1\times n_1}$$
+\item First block\\
+1st layer:\quad input$f^{1,0}\in \mathbb{R}^{c_0\times n_1\times n_1}$ ,$\theta^{1,1} \in \mathbb{R}^{c_0\times k\times 3\times 3}$
+$$f^{1,1}=\theta^{1,1} \ast (\sigma(f^{1,0}))\in \mathbb{R}^{k\times n_1\times n_1}$$
+\quad\quad\quad\quad\quad output $[f^{1,0},f^{1,1}] \in \mathbb{R}^{(c_0+k)\times n_1\times n_1}$
+\\ \hspace*{\fill} \\
+2nd layer:\quad input$[f^{1,0},f^{1,1}] \in \mathbb{R}^{(c_0+k)\times n_1\times n_1}$ ,$\theta^{1,2} \in \mathbb{R}^{(c_0+k)\times k\times3\times 3 }$
+$$ f^{1,2}=\theta^{1,2} \ast (\sigma([f^{1,0},f^{1,1}]))\in \mathbb{R}^{k\times n_1\times n_1}$$
+\quad\quad\quad\quad\quad output $[f^{1,0},f^{1,1}, f^{1,2}] \in \mathbb{R}^{(c_0+2k)\times n_1\times n_1}$
+\\ \hspace*{\fill} \\
+3rd layer:\quad input$[f^{1,0},f^{1,1},f^{1,2}] \in \mathbb{R}^{(c_0+2k)\times n_1\times n_1}$ ,$\theta^{1,3} \in \mathbb{R}^{ (c_0+2k)\times k\times 3\times 3 }$
+$$ f^{1,3}=\theta^{1,3} \ast (\sigma([f^{1,0},f^{1,1},f^{1,2}]))\in \mathbb{R}^{k\times n_1\times n_1}$$
+\quad\quad\quad\quad\quad output $[f^{1,0},f^{1,1}, f^{1,2},f^{1,3}] \in \mathbb{R}^{(c_0+3k)\times n_1\times n_1}$
+\\ \hspace*{\fill} \\
+4th layer:\quad input$[f^{1,0},f^{1,1},f^{1,2},f^{1,3}] \in \mathbb{R}^{(c_0+3k)\times n_1\times n_1}$ ,$\theta^{1,4} \in \mathbb{R}^{ (c_0+3k)\times k\times 3\times 3}$
+$$ f^{1,4}=\theta^{1,4} \ast (\sigma([f^{1,0},f^{1,1},f^{1,2},f^{1,3}]))\in \mathbb{R}^{k\times n_1\times n_1}$$
+\quad\quad\quad\quad\quad output $[f^{1,0},f^{1,1}, f^{1,2},f^{1,3},f^{1,4}] \in \mathbb{R}^{(c_0+4k)\times n_1\times n_1}$
+\\ \hspace*{\fill} \\
+$$\cdots\cdots$$
+$m_1$th layer:\quad input$[f^{1,0},f^{1,1},f^{1,2},f^{1,3},\cdots,f^{1,m_1-1}] \in \mathbb{R}^{(c_0+(m_1-1)k)\times n_1\times n_1}$ ,$\theta^{1,m_1} \in \mathbb{R}^{ (c_0+(m_1-1)k)\times k\times3\times 3}$
+$$ f^{1,m_1}=\theta^{1,m_1} \ast (\sigma([f^{1,0},f^{1,1},f^{1,2},f^{1,3},\cdots,f^{1,m_1-1}]))\in \mathbb{R}^{k\times n_1\times n_1}$$
+\quad\quad\quad\quad\quad output $[f^{1,0},f^{1,1}, f^{1,2},f^{1,3},f^{1,4},\cdots,f^{1,m_1}] \in \mathbb{R}^{(c_0+m_1k)\times n_1\times n_1}$
+\\ \hspace*{\fill} \\
+\item First transition
+$$f^1 = [f^{1,0},f^{1,1}, f^{1,2},f^{1,3},f^{1,4},\cdots,f^{1,m_1}] \in \mathbb{R}^{(c_0+m_1k)\times n_1\times n_1}$$
+$$\theta^1 \in \mathbb{R}^{(c_0+m_1k)\times \alpha(c_0+m_1k)\times 1\times 1 }$$
+$$f^{2,0}=R_{avg} \ast_2 \theta^{1} \ast (\sigma(f^1))\in \mathbb{R}^{\alpha(c_0+m_1k)\times n_2\times n_2}$$
+suppose $c_1 = \alpha(c_0+m_1k)\quad f^{2,0}\in \mathbb{R}^{c_1\times n_2\times n_2}$
+\\ \hspace*{\fill} \\
+\item Second block\\
+1st layer:\quad input$f^{2,0}\in \mathbb{R}^{c_1\times n_2\times n_2}$ ,$\theta^{2,1} \in \mathbb{R}^{c_1\times k\times3\times 3 }$
+$$f^{2,1}=\theta^{2,1} \ast (\sigma(f^{2,0}))\in \mathbb{R}^{k\times n_2\times n_2}$$
+\quad\quad\quad\quad\quad output $[f^{2,0},f^{2,1}] \in \mathbb{R}^{(c_1+k)\times n_2\times n_2}$
+\\ \hspace*{\fill} \\
+2nd layer:\quad input$[f^{2,0},f^{2,1}] \in \mathbb{R}^{(c_1+k)\times n_2\times n_2}$ ,$\theta^{2,2} \in \mathbb{R}^{(c_1+k)\times k\times 3\times 3}$
+$$ f^{2,2}=\theta^{2,2} \ast (\sigma([f^{2,0},f^{2,1}]))\in \mathbb{R}^{k\times n_2\times n_2}$$
+\quad\quad\quad\quad\quad output $[f^{2,0},f^{2,1}, f^{2,2}] \in \mathbb{R}^{(c_1+2k)\times n_2\times n_2}$
+\\ \hspace*{\fill} \\
+3rd layer:\quad input$[f^{2,0},f^{2,1},f^{2,2}] \in \mathbb{R}^{(c_1+2k)\times n_2\times n_2}$ ,$\theta^{2,3} \in \mathbb{R}^{(c_1+2k)\times k\times 3\times 3}$
+$$ f^{2,3}=\theta^{2,3} \ast (\sigma([f^{2,0},f^{2,1},f^{2,2}]))\in \mathbb{R}^{k\times n_2\times n_2}$$
+\quad\quad\quad\quad\quad output $[f^{2,0},f^{2,1}, f^{2,2},f^{2,3}] \in \mathbb{R}^{(c_1+3k)\times n_2\times n_2}$
+\\ \hspace*{\fill} \\
+4th layer:\quad input$[f^{2,0},f^{2,1},f^{2,2},f^{2,3}] \in \mathbb{R}^{(c_1+3k)\times n_2\times n_2}$ ,$\theta^{2,4} \in \mathbb{R}^{(c_1+3k)\times k\times3\times 3}$
+$$ f^{2,4}=\theta^{2,4} \ast (\sigma([f^{2,0},f^{2,1},f^{2,2},f^{2,3}]))\in \mathbb{R}^{k\times n_2\times n_2}$$
+\quad\quad\quad\quad\quad output $[f^{2,0},f^{2,1}, f^{2,2},f^{2,3},f^{2,4}] \in \mathbb{R}^{(c_1+4k)\times n_2\times n_2}$
+\\ \hspace*{\fill} \\
+$$\cdots\cdots$$
+$m_2$th layer:\quad input$[f^{2,0},f^{2,1},f^{2,2},f^{2,3},\cdots,f^{2,m_2-1}] \in \mathbb{R}^{(c_1+(m_2-1)k)\times n_2\times n_2}$ ,$\theta^{2,m_2} \in \mathbb{R}^{(c_1+(m_2-1)k)\times k\times 3\times 3}$
+$$ f^{2,m_2}=\theta^{2,m_2} \ast (\sigma([f^{2,0},f^{2,1},f^{2,2},f^{2,3},\cdots,f^{2,m_2-1}]))\in \mathbb{R}^{k\times n_2\times n_2}$$
+\quad\quad\quad\quad\quad output $[f^{2,0},f^{2,1}, f^{2,2},f^{2,3},f^{2,4},\cdots,f^{2,m_2}] \in \mathbb{R}^{(c_1+m_2k)\times n_2\times n_2}$
+\\ \hspace*{\fill} \\
+\item Second transition
+$$f^2 = [f^{2,0},f^{2,1}, f^{2,2},f^{2,3},f^{2,4},\cdots,f^{2,m_2}] \in \mathbb{R}^{(c_1+m_2k)\times n_2\times n_2}$$
+$$\theta^2 \in \mathbb{R}^{(c_1+m_2k)\times \alpha(c_1+m_2k)\times 1\times 1}$$
+$$f^{3,0}=R_{avg} \ast_2 \theta^{2} \ast (\sigma(f^2))\in \mathbb{R}^{\alpha(c_1+m_2k)\times n_3\times n_3}$$
+suppose $c_2 = \alpha(c_1+m_2k)\quad f^{3,0}\in \mathbb{R}^{c_2\times n_3\times n_3}$
+\\ \hspace*{\fill} \\
+\item Third block\\
+1st layer:\quad input$f^{3,0}\in \mathbb{R}^{c_2\times n_3\times n_3}$ ,$\theta^{3,1} \in \mathbb{R}^{ c_2\times k\times 3\times 3}$
+$$f^{3,1}=\theta^{3,1} \ast (\sigma(f^{3,0}))\in \mathbb{R}^{k\times n_3\times n_3}$$
+\quad\quad\quad\quad\quad output $[f^{3,0},f^{3,1}] \in \mathbb{R}^{(c_2+k)\times n_3\times n_3}$
+\\ \hspace*{\fill} \\
+2nd layer:\quad input$[f^{3,0},f^{3,1}] \in \mathbb{R}^{(c_2+k)\times n_3\times n_3}$ ,$\theta^{3,2} \in \mathbb{R}^{(c_2+k)\times k\times 3\times 3 }$
+$$ f^{3,2}=\theta^{3,2} \ast (\sigma([f^{3,0},f^{3,1}]))\in \mathbb{R}^{k\times n_3\times n_3}$$
+\quad\quad\quad\quad\quad output $[f^{3,0},f^{3,1}, f^{3,2}] \in \mathbb{R}^{(c_2+2k)\times n_3\times n_3}$
+\\ \hspace*{\fill} \\
+3rd layer:\quad input$[f^{3,0},f^{3,1},f^{3,2}] \in \mathbb{R}^{(c_2+2k)\times n_3\times n_3}$ ,$\theta^{3,3} \in \mathbb{R}^{ (c_2+2k)\times k\times 3\times 3}$
+$$ f^{3,3}=\theta^{3,3} \ast (\sigma([f^{3,0},f^{3,1},f^{3,2}]))\in \mathbb{R}^{k\times n_3\times n_3}$$
+\quad\quad\quad\quad\quad output $[f^{3,0},f^{3,1}, f^{3,2},f^{3,3}] \in \mathbb{R}^{(c_2+3k)\times n_3\times n_3}$
+\\ \hspace*{\fill} \\
+4th layer:\quad input$[f^{3,0},f^{3,1},f^{3,2},f^{3,3}] \in \mathbb{R}^{(c_2+3k)\times n_3\times n_3}$ ,$\theta^{3,4} \in \mathbb{R}^{(c_2+3k)\times k\times 3\times 3}$
+$$ f^{3,4}=\theta^{3,4} \ast (\sigma([f^{3,0},f^{3,1},f^{3,2},f^{3,3}]))\in \mathbb{R}^{k\times n_3\times n_3}$$
+\quad\quad\quad\quad\quad output $[f^{3,0},f^{3,1}, f^{3,2},f^{3,3},f^{3,4}] \in \mathbb{R}^{(c_2+4k)\times n_3\times n_3}$
+\\ \hspace*{\fill} \\
+$$\cdots\cdots$$
+$m_3$th layer:\quad input$[f^{3,0},f^{3,1},f^{3,2},f^{3,3},\cdots,f^{3,m_3-1}] \in \mathbb{R}^{(c_2+(m_3-1)k)\times n_3\times n_3}$ ,$\theta^{3,m_3} \in \mathbb{R}^{(c_2+(m_3-1)k)\times k\times 3\times 3}$
+$$ f^{3,m_3}=\theta^{3,m_3} \ast (\sigma([f^{3,0},f^{3,1},f^{3,2},f^{3,3},\cdots,f^{3,m-1}]))\in \mathbb{R}^{k\times n_3\times n_3}$$
+\quad\quad\quad\quad\quad output $[f^{3,0},f^{3,1}, f^{3,2},f^{3,3},f^{3,4},\cdots,f^{3,m_3}] \in \mathbb{R}^{(c_2+m_3k)\times n_3\times n_3}$
+\\ \hspace*{\fill} \\
+\item Third transition
+$$f^3 = [f^{3,0},f^{3,1}, f^{3,2},f^{3,3},f^{3,4},\cdots,f^{3,m_3}] \in \mathbb{R}^{(c_2+m_3k)\times n_3\times n_3}$$
+$$\theta^3 \in \mathbb{R}^{(c_2+m_3k)\times \alpha(c_2+m_3k)\times 1\times 1}$$
+$$f^{4,0}=R_{avg} \ast_2 \theta^{3} \ast (\sigma(f^3))\in \mathbb{R}^{\alpha(c_2+m_3k)\times n_4\times n_4}$$
+suppose $c_3 = \alpha(c_2+m_3k)\quad f^{4,0}\in \mathbb{R}^{c_3\times n_4\times n_4}$
+\\ \hspace*{\fill} \\
+\item Fouth block\\
+1st layer:\quad input$f^{4,0}\in \mathbb{R}^{c_3\times n_4\times n_4}$ ,$\theta^{4,1} \in \mathbb{R}^{c_3\times k\times 3\times 3 }$
+$$f^{4,1}=\theta^{4,1} \ast (\sigma(f^{4,0}))\in \mathbb{R}^{k\times n_4\times n_4}$$
+\quad\quad\quad\quad\quad output $[f^{4,0},f^{4,1}] \in \mathbb{R}^{(c_3+k)\times n_4\times n_4}$
+\\ \hspace*{\fill} \\
+2nd layer:\quad input$[f^{4,0},f^{4,1}] \in \mathbb{R}^{(c_3+k)\times n_4\times n_4}$ ,$\theta^{4,2} \in \mathbb{R}^{(c_3+k)\times k\times 3\times 3}$
+$$ f^{4,2}=\theta^{4,2} \ast (\sigma([f^{4,0},f^{4,1}]))\in \mathbb{R}^{k\times n_4\times n_4}$$
+\quad\quad\quad\quad\quad output $[f^{4,0},f^{4,1}, f^{4,2}] \in \mathbb{R}^{(c_3+2k)\times n_4\times n_4}$
+\\ \hspace*{\fill} \\
+3rd layer:\quad input$[f^{4,0},f^{4,1},f^{4,2}] \in \mathbb{R}^{(c_3+2k)\times n_4\times n_4}$ ,$\theta^{4,3} \in \mathbb{R}^{(c_3+2k)\times k\times3\times 3}$
+$$ f^{4,3}=\theta^{4,3} \ast (\sigma([f^{4,0},f^{4,1},f^{4,2}]))\in \mathbb{R}^{k\times n_4\times n_4}$$
+\quad\quad\quad\quad\quad output $[f^{4,0},f^{4,1}, f^{4,2},f^{4,3}] \in \mathbb{R}^{(c_3+3k)\times n_4\times n_4}$
+\\ \hspace*{\fill} \\
+4th layer:\quad input$[f^{4,0},f^{4,1},f^{4,2},f^{4,3}] \in \mathbb{R}^{(c_3+3k)\times n_4\times n_4}$ ,$\theta^{4,4} \in \mathbb{R}^{(c_3+3k)\times k\times3\times 3 }$
+$$ f^{4,4}=\theta^{4,4} \ast (\sigma([f^{4,0},f^{4,1},f^{4,2},f^{4,3}]))\in \mathbb{R}^{k\times n_4\times n_4}$$
+\quad\quad\quad\quad\quad output $[f^{4,0},f^{4,1}, f^{4,2},f^{4,3},f^{4,4}] \in \mathbb{R}^{(c_3+4k)\times n_4\times n_4}$
+%\\ \hspace*{\fill} \\
+$$\cdots\cdots$$
+$m_4$th layer:\quad input$[f^{4,0},f^{4,1},f^{4,2},f^{4,3},\cdots,f^{4,m_4-1}] \in \mathbb{R}^{(c_3+(m_4-1)k)\times n_4\times n_4}$ ,$\theta^{4,m_4} \in \mathbb{R}^{(c_3+(m_4-1)k)\times k\times3\times 3 }$
+$$ f^{4,m_4}=\theta^{4,m_4} \ast (\sigma([f^{4,0},f^{4,1},f^{4,2},f^{4,3},\cdots,f^{4,m_4-1}]))\in \mathbb{R}^{k\times n_4\times n_4}$$
+\quad\quad\quad\quad\quad output $[f^{4,0},f^{4,1}, f^{4,2},f^{4,3},f^{4,4},\cdots,f^{4,m_4}] \in \mathbb{R}^{(c_3+m_4k)\times n_4\times n_4}$
+\item Fully connect
+$$f^4 = [f^{4,0},f^{4,1}, f^{4,2},f^{4,3},f^{4,4},\cdots,f^{4,m_4}] \in \mathbb{R}^{(c_3+m_4k)\times n_3\times n_3}$$
+$$f = R_{global~avg} \ast(\sigma(f^4)) \in \mathbb{R}^{(c_3+m_4k)}$$
+$$\theta_{fc} \in \mathbb{R}^{num~class\times (c_3+m_4k)}$$
+$$output = \theta_{fc}\times f \in \mathbb{R}^{num~class}$$
+
+\end{enumerate}
+
+The DenseNet can be written as:%\cite{huang2017densely}
+\begin{equation}\label{eq:densenet}
+\begin{cases}
+f^{1,0} &=R_{max} \ast_2 \sigma(\theta^{0} \ast_2 (f^0)), \\
+\text{\bf For} &\ell = 1:4 \\
+\quad &\text{\bf For} \quad i = 1:\nu_\ell \\
+&f^{\ell,i} = \theta^{\ell,i}\ast \sigma \circ ([f^{\ell,0,}, \cdots, f^{\ell,i-1}]), \quad i = 1:\nu_\ell ,\\
+%&\tilde f^{\ell,i} = [f^{\ell,0,}, \cdots, f^{\ell,i}] \quad i = 1:\nu_\ell  , \\
+\quad &\text{\bf EndFor} \\
+f^{\ell+1,0} &=  R_{avg} \ast_2 \theta^{\ell} \ast (\sigma([f^{\ell,0,}, \cdots, f^{\ell,\nu_\ell}])) ) , \\
+\text{\bf End} &\\
+H_0(f) &=  R_{\rm global~avg}(\sigma(f^{4,\nu_\ell})). \\
+\end{cases}
+\end{equation}
+
+\subsection{Bottleneck layers}
+Although each layer only produces $k$ output feature-maps, it typically has many more inputs.A $1\times 1$ convolution can be introduced as bottleneck layer before each $3\times 3$ convolution to reduce the number of input feature-maps, and thus to improve computational efficiency.In paper,use BN-ReLU-Conv($1\times 1$)-BN-ReLU-Conv($3\times 3$) version, as DenseNet-B, and  each $1\times 1$ convolution produce $4k$ feature-maps.It can be written as:\\
+
+input$[f^{\ell,0},f^{\ell,1},f^{\ell,2},\cdots,f^{\ell,i}] \in \mathbb{R}^{(c_{\ell-1}+ik)\times n_{\ell}\times n{\ell}}$
+$$\theta^{\ell,i+1}_{1\times 1} \in \mathbb{R}^{(c_{\ell-1}+ik)\times 4k\times 1\times 1 },\quad \theta^{\ell,i+1}_{3\times 3} \in \mathbb{R}^{4k\times k\times3\times 3 }$$
+$$f^{\ell,i+1}=\theta^{\ell,i+1}_{3\times 3}\ast (\sigma(\theta^{\ell,i+1}_{1\times 1}\ast(\sigma([f^{\ell,0},f^{\ell,1},f^{\ell,2},\cdots,f^{\ell,i}]))))\in\mathbb{R}^{k\times n_{\ell-1}\times n_{\ell-1}}$$

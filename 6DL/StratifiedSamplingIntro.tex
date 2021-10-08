@@ -1,0 +1,72 @@
+
+\subsection{Stratified sampling}
+Stratified sampling refers to a type of sampling method . With stratified sampling, the population is divided into separate groups, called strata. Then, a probability sample (often a simple random sample) is drawn from each group.
+
+Consider the political polling, it's impractical to poll an entire population. So pollsters select a sample of individuals that represents the whole population. Understanding how respondents come to be selected to be in a poll is a big step toward determining how well their views and opinions mirror those of the voting population. A simple example is that choose $n$ individuals randomly,
+$$
+\mathbb{E}_p({\# Republicans \over n})=p, \quad Var({\# Republicans \over n})=p(1-p).
+$$
+The accuracy of the sampling is approximate to $\sqrt{p(1-p)\over n}$. If the size of the sample is 100 and $p\approx 0.5$, then $\sqrt{p(1-p)\over n}\approx 5\%$. This implies that the size of the sample should be large enough to get a good estimate.
+
+Another way to select a sample is to break the population into several groups, say A and B. Suppose the percentage of individuals belong to group A is $p_A=70\%$, and the percentage for group B is $p_B=30\%$. And $p_{A, R}=80\%$ individuals in group A will vote for Republicans and only $p_{B, R}=10\%$ in group B will vote for Republicans. Instead of calling $n=100$ individuals randomly, we call $np_A=70$ people in group A and $np_B=30$ people in group B. Then the variance becomes
+\begin{equation*}
+\begin{split}
+\mathbb{V}(0.7{\# Republicans \over 70} + 0.3{\# Republicans \over 30})&=0.7^2{p_{A, R}(1-p_{A, R})\over 70} + 0.3^2{p_{B, R}(1-p_{B, R})\over 30}\\
+&=100(0.7*0.8*0.2 + 0.3*0.1*0.9).
+\end{split}
+\end{equation*}
+
+This is an application of the stratified sampling. The population is divided into separate groups. There are two stratified sampling strategies: One is proportionate allocation, which  uses a sampling fraction in each of the strata that is proportional to that of the total population. The above example belongs to this case. The other strategy is 
+optimum allocation, where the sampling fraction of each stratum is proportionate to both the proportion (as above) and the standard deviation of the distribution of the variable. 
+
+
+Stratified sampling has several advantages over simple random sampling. For example, using stratified sampling, it may improve the precision of the sample by reducing sampling error. It can produce a weighted mean that has less variability than the arithmetic mean of a simple random sample of the population.
+
+Let $\theta$ be a random variable representing the groups mentioned above and $P(\theta)$ be the distribution. Define
+$$
+f(x)=\mathbb{E}_{P} (f_{\theta}(x))=\mathbb{E}_{\theta} (q(x, \theta))=\int_G q(x,\theta) dP(\theta).
+$$ 
+A sample from the distribution $P(\theta)$ gives us $\theta_1, \theta_2, \cdots , \theta_n$. Let
+\begin{equation}
+f_n(x)={1\over n}\sum_{k=1}^n f_{ \theta_k}(x)={1\over n}\sum_{k=1}^n q(x, \theta_k)
+\end{equation}
+Then, the variance is 
+\begin{equation}
+\mathbb{V}(f_n(x))={1\over n}\mathbb{V}(f)
+\end{equation}
+with error ${1\over \sqrt{n}}$.
+
+Stratified sampling is to break $G$ into groups $G_1, G_2, \cdots, G_M$ so that the variation of $q(x,\theta)$ is small on each $G_i$. Instead of sampling uniformly from $G$ and taking the average, we sample from each $G_i$ and get $\theta_{i,1}$, $\theta_{i,2}, \cdots, \theta_{i,n_i}$ where $n_i=\lceil nP(G_i)\rceil$ is the size of samples in $G_i$. Then there exists the estimate
+\begin{equation}
+\sum_{i=1}^M P(G_i)[{1\over n_i}\sum_{j=1}^{n_i} q(x,\theta_{ij})]
+\end{equation}
+where ${1\over n_i}\sum_{j=1}^{n_i} q(x,\theta_{ij})$ is an estimate of the conditional expectation $\mathbb{E}_p(q(x,\theta|\theta\in G_i))$. Note that $n_i\leq np_i$ with $p_i=P(G_i)=\int_{G_i} dP(\theta)$. The variance of the estimate is 
+\begin{equation}
+\sum_{i=1}^M p_i^2{\mathbb{V}[q(x,\theta)|\theta\in G_i)]\over n_i}
+\leq \sum_{i=1}^M {p_i^2\over np_i}\mathbb{V}[q(x,\theta)|\theta\in G_i]
+= {1\over n}\sum_{i=1}^M p_i\mathbb{V}[q(x,\theta)|\theta\in G_i].
+\end{equation} 
+This implies that we need to choose $G_i$ so that $\mathbb{V}[q(x,\theta)|\theta\in G_i]$ is small. 
+
+If $G$ is bounded in $\mathbb{R}^d$ and $q(x,\theta)$ is smooth with respect to $\theta$,
+$$
+|\nabla_\theta q|\leq C.
+$$
+We can consider a particular partition of $G$ into  $M$ sets $G_1, G_2, \cdots, G_M$ with diameter $\mathcal{O}(n^{-1/d})$. We choose one element from each set. For each $G_i$, sample $n_i=\lceil nP(G_i)\rceil$ samples in $G_i$.  Let
+\begin{equation}
+f_n(x)=\sum_{k=1}^n p_i[{1\over n_i}\sum_{j=1}^{n_i}q(x,\theta_{ij})]\in NN_{2n}.
+\end{equation}
+The variance is 
+\begin{equation}
+Var(f_n)= {1\over n}\sum_{i=1}^M p_i\mathbb{V}[q(x,\theta)|\theta\in G_i]\leq (n^{-1/d}C)^2
+\end{equation}
+According to , there exists the following modified estimate 
+\begin{equation}
+Var(f_n)\leq n^{-1-2/d} 
+\end{equation}
+Thus, for any $f$, there exist $\theta_{ij}, 1\leq i\leq n, 1\leq j\leq n_i$ such that
+\begin{equation}
+|f_n-f|\leq  n^{-1/2-1/d}.
+\end{equation}
+
+ 

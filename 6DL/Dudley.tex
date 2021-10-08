@@ -1,0 +1,689 @@
+\section{Dudley Integrals}
+
+Given random variables $X_t,\ t\in \Omega$. A most typical example is Guassian process, a time continuous stochastic process $X_t,\ t\in \Omega$ is called Gaussian if and only if every finite set of indices $t_1$, $t_2$, $\cdots , t_k$ in the index set $\Omega$
+$$
+X_{t_1,\cdots, t_k}=(X_{t_1}, \cdots, X_{t_k})
+$$
+is a multivariate Gaussian random variables. If $k=1$, for any given $t$, $X_t$ is a random variable  with a Gaussian distribution, and $\mathbb{E}X_t$ is the expectation of this random variable $X_t$.
+
+
+
+Dudley's Entropy Integral gives a bound on 
+$$
+\mathbb{E}\left[\sup _{t, s \in \Omega} (X_{t} - X_s)\right].
+$$
+
+\begin{lemma}\label{lm:dudley0}
+If $\mathbb{E} e^{\lambda Z} \leq e^{\frac{\lambda^{2} \nu}{2}}$, then
+\begin{equation}
+\mathbb{E} \max_{1\le i \le N} Z_{i} \leq \sqrt{2 \nu \log N}.
+\end{equation}
+\end{lemma}
+\begin{proof}
+Since $e^{\lambda z}$ is a convex function of $z$, by Jensan's inequality,
+\begin{equation}
+\displaystyle 
+e^{\lambda \mathbb{E}\max_{1\le i \le N} Z_{i}} \leq \mathbb{E} \max_{1\le i \le N}  e^{\lambda Z_{i}} \leq  \sum_{i=1}^{N} \mathbb{E} e^{\lambda Z_{i}} \leqslant N e^{\frac{\lambda^{2} \nu}{2}},\qquad \forall \lambda.
+\end{equation}
+It follows that
+\begin{equation}
+\mathbb{E} \max _{1 \leqslant i \leq N} Z_{i} \leq  {\log N\over \lambda}+\frac{\lambda \nu}{2}
+\end{equation} 
+Choose $\lambda=\sqrt{2\log N\over \nu}$,
+\begin{equation}
+\mathbb{E} \max _{1 \leqslant i \leq N} Z_{i} \leq  \sqrt{2\nu \log N }.
+\end{equation} 
+\end{proof}
+ 
+\begin{definition} (Covering Number) A $ \delta$ -cover of a set $\mathcal{T}$ w.r.t metric $d$ is a set $\left\{x_{1}, x_{2} \ldots x_{N}\right\} \subseteq \mathcal{T}$ such that for each $x \in \mathcal{T},$ there exists some $i \in\{1,2, \ldots N\}$ such that $d\left(x, x_{i}\right) \leq \delta .$ The $\delta$ -covering number $N(\delta, \mathcal{T})$ is the cardinality of the smallest $\delta$-cover.
+\end{definition}
+
+\iffalse
+\begin{theorem}\label{th:dudley}
+(Dudley's theorem for bounded  $\Omega$)Suppose $\Omega$ is a bounded set. Let $\left\{X_x: x \in \Omega\right\}$ be a collection of random variables such that 
+$$
+\mathbb{E}\left[ e^{\lambda (X_x - X_{x'})}\right]\le e^{\nu\lambda^2 d^2(x, x')\over 2},
+$$
+with metric d on a finite set $\Omega$.
+Then, for any $x_0\in \Omega$,
+\begin{equation}\label{eq:dudley}
+\mathbb{E}\left[\sup _{x \in \mathcal{T}} X_x-X_{x_0}\right] \leq 12\sqrt{\nu}\int_0^{\delta\over 2} \sqrt{\log N(\mu, \Omega)} d \mu
+\end{equation}
+is the $\displaystyle \delta=\sup_{x\in \Omega} d(x, x_0)$.
+\end{theorem}
+\begin{proof}
+Given $x_0\in \Omega$, let $\displaystyle \delta=\sup_{x\in \Omega} d(x, x_0)$.
+Consider a sequence of triangulation $\mathcal{T}_j$ such that 
+$$
+\sup_{x, x'\in \mathcal{T}_j}d(x, x')\le \delta_j=2^{-j}\delta.
+$$
+Denote the number of elements in $\mathcal{T}_j$ by $N_j$.
+Define a mapping $\Pi_j: \mathcal{T}\rightarrow \mathcal{T}_j$ with
+$$
+d(x, \Pi_j x)\le \delta_j\quad \forall x\in \Omega.
+$$
+Since $\Omega$ is finite, there exists a positive integer $J$ such that for all $x\in \Omega$,
+$$
+\Pi_{J+1}(x)=x.
+$$
+Thus,
+$$
+X_x=X_{\Pi_0 x} + \sum_{j=0}^J (X_{\Pi_{j+1}(x)} - X_{\Pi_{j}(x)}).
+$$
+By definition, $N_0=1$.
+For any $x$, let $\Pi_0 (x)=x_0$, and
+$$
+\mathbb{E}\left [ \sup_{x\in\Omega } X_{\Pi_0 (x)} - X_{x_0}\right]\leq \sum_{j=1}^J \mathbb{E}\left [ \sup_{x\in \Omega} (X_{\Pi_{j+1} (x)} - X_{\Pi_j (x)})\right]
+$$
+By the triangle inequality, for any $x\in \Omega$,
+$$
+d(\Pi_j(x), \Pi_{j+1}(x))\le \delta_{j+1} + \delta_{j}\le 3\delta_{j+1}.
+$$
+Note that for every integer $j$,
+$$
+\# \{(\Pi_j(x), \Pi_{j+1}(x)): x\in \Omega\} \le N_{j+1}^2.
+$$
+Since $\left\{X_x: x \in \Omega\right\}$ be a zero-mean sub-Gaussian process, by Lemma \ref{lm:dudley0},
+\begin{equation}
+\begin{split}
+\mathbb{E}\left [ \sup_{x\in \Omega} (X_{\Pi_{j+1} (x)} - X_{\Pi_j (x)})\right]
+&\le \sqrt{2 \nu \log N}d(\Pi_j(x), \Pi_{j+1}(x)) 
+\\
+&\le 6\delta_{j+1}\sqrt{\nu \log N_{j+1}}.
+\end{split}
+\end{equation}
+Hence, summing over $j$,
+\begin{equation}
+\begin{split}
+\mathbb{E}\left [ \sup_{x\in \Omega} X_x - X_{x_0}\right]
+&\le \sum_{j=1}^J \mathbb{E}\left [ \sup_{x\in \Omega} (X_{\Pi_{j+1} (x)} - X_{\Pi_j (x)})\right]
+\\
+&\le \sum_{j=1}^J 6\delta_{j+1}\sqrt{\nu \log N_{j+1}}
+\\
+& = 6\sqrt{\nu}\sum_{j=1}^J \delta_{j+1}\sqrt{\log N_{j+1}}.
+\end{split}
+\end{equation}
+Note that 
+\begin{equation}
+N_{j+1}=N(\delta_{j+1}, \Omega)\le N(\delta, \Omega) \le N(\delta_{j+2}, \Omega)=N_{j+2},\quad \delta_{j+2}\le \delta \le \delta_{j+1}.
+\end{equation}
+Thus,
+\begin{equation}
+\delta_{j+1}\sqrt{\log N_{j+1}}\le 2\int^{\delta_{j+1}}_{\delta_{j+2}} \sqrt{ \log N(\delta, \Omega) }d\delta.
+\end{equation}
+Consequently,
+\begin{equation}
+\begin{split}
+\mathbb{E}\left [ \sup_{x\in \Omega} X_x - X_{x_0}\right]
+&\le 12\sqrt{\nu} \int^{\delta\over 2}_{\delta_{J+1}}\sqrt{\log N(\mu, \Omega) }d\mu
+\\
+&\le 12\sqrt{\nu} \int^{\delta\over 2}_{0}\sqrt{\log N(\mu, \Omega) }d\mu.
+\end{split}
+\end{equation}
+\end{proof}
+\begin{remark}
+Dudley's Entropy Integral \eqref{eq:dudley} still holds for an infinite set $\mathcal{T}$.
+\end{remark}
+
+\fi
+\begin{theorem}\label{th:dudley}
+(Dudley's theorem) Suppose $\Omega$ is a bounded set. Let $\left\{X_x: x \in \Omega\right\}$ be a collection of random variables such that 
+$$
+\mathbb{E}\left[ e^{\lambda (X_x - X_{x'})}\right]\le e^{\nu\lambda^2 d^2(x, x')\over 2},
+$$
+with metric $d$ on$\Omega$.
+Then, for any $x_0\in \Omega$,
+\begin{equation}\label{eq:dudley}
+\mathbb{E}\left[\sup _{x \in \Omega} X_x-X_{x_0}\right] \leq 12\sqrt{\nu}\int_0^{\delta\over 2} \sqrt{\log N(\mu, \Omega)} d \mu
+\end{equation}
+is the $\displaystyle \delta=\sup_{x\in \Omega} d(x, x_0)$.
+\end{theorem}
+\begin{proof}
+Let $\hat{\Omega}=\{\hat x_1, \cdots, \hat x_N\}$ be a minimal $\epsilon$-covering of $\Omega$ and N be the covering number. There exist $\hat x, \hat x_0\in \hat{\Omega}$ such that
+$$
+d(x, \hat x)\le \epsilon,\quad d(\hat x, \hat x_0)\le \epsilon.
+$$
+Thus,
+\begin{equation}
+X_x - X_{x_0}\le 2\sup_{d(y,y')\le \epsilon} (X_y - X_{y'}) + \sup_{\hat x\in \hat{\Omega}} (X_{\hat x} - X_{\hat x_0}).
+\end{equation} 
+Let $\displaystyle \hat \delta=\sup_{\hat x\in \hat \Omega} d(\hat x, \hat x_0)$.
+Consider a sequence of triangulation $\hat{\mathcal{T}}_j$ such that 
+$$
+\sup_{\hat x, \hat x'\in\hat{\mathcal{T}}_j}d(\hat x, \hat x')\le \hat \delta_j=2^{-j}\hat \delta.
+$$
+Denote the number of elements in $\hat{\mathcal{T}}_j$ by $N_j$.
+Define a mapping $\Pi_j: \hat{\mathcal{T}}\rightarrow \hat{\mathcal{T}}_j$ with
+$$
+d(\hat x, \Pi_j \hat x)\le \hat \delta_j\quad \forall \hat x\in \hat \Omega.
+$$
+Since $\hat \Omega$ is finite, there exists a positive integer $J$ such that for all $\hat x\in \hat \Omega$,
+$$
+\Pi_{J+1}(\hat x)=\hat x.
+$$
+Thus,
+$$
+X_{\hat{x}}=X_{\Pi_0 \hat{x}} + \sum_{j=0}^J (X_{\Pi_{j+1}(\hat{x})} - X_{\Pi_{j}(\hat{x})}).
+$$
+By definition, $N_0=1$.
+For any $\hat x$, let $\Pi_0 (\hat{x})=\hat{x}_0$, and
+$$
+\mathbb{E}\left [ \sup_{\hat{x}\in \hat  \Omega } X_{\Pi_0 (\hat{x})} - X_{\hat{x}_0}\right]\leq \sum_{j=1}^J \mathbb{E}\left [ \sup_{\hat{x}\in \hat \Omega} (X_{\Pi_{j+1} (\hat x)} - X_{\Pi_j (\hat x)})\right]
+$$
+By the triangle inequality, for any $\hat x\in \hat \Omega$,
+$$
+d(\Pi_j(\hat x), \Pi_{j+1}(\hat x))\le \hat \delta_{j+1} + \hat \delta_{j}\le 3\hat \delta_{j+1}.
+$$
+Note that for every integer $j$,
+$$
+\# \{(\Pi_j(\hat x), \Pi_{j+1}(\hat x)): \hat x\in \hat \Omega\} \le N_{j+1}^2.
+$$
+Since $\left\{X_{\hat x}: \hat x \in \hat \Omega\right\}$ be a zero-mean sub-Gaussian process, by Lemma \ref{lm:dudley0},
+\begin{equation}
+\begin{split}
+\mathbb{E}\left [ \sup_{\hat x\in \hat \Omega} (X_{\Pi_{j+1} (\hat x)} - X_{\Pi_j (\hat x)})\right]
+&\le \sqrt{2 \nu \log N}d(\Pi_j(\hat x), \Pi_{j+1}(\hat x)) 
+\\
+&\le 6\delta_{j+1}\sqrt{\nu \log N_{j+1}}.
+\end{split}
+\end{equation}
+Hence, summing over $j$,
+\begin{equation}
+\begin{split}
+\mathbb{E}\left [ \sup_{\hat x\in \hat \Omega} X_{\hat x} - X_{\hat x_0}\right]
+&\le \sum_{j=1}^J \mathbb{E}\left [ \sup_{\hat x\in\hat  \Omega} (X_{\Pi_{j+1} (\hat x)} - X_{\Pi_j (\hat x)})\right]
+\\
+&\le \sum_{j=1}^J 6\hat \delta_{j+1}\sqrt{\nu \log N_{j+1}}
+\\
+& = 6\sqrt{\nu}\sum_{j=1}^J \hat \delta_{j+1}\sqrt{\log N_{j+1}}.
+\end{split}
+\end{equation}
+Note that 
+\begin{equation}
+N_{j+1}=N(\hat \delta_{j+1}, \hat \Omega)\le N(\hat \delta, \hat \Omega) \le N(\hat{\delta}_{j+2}, \hat \Omega)=N_{j+2},\quad \hat \delta_{j+2}\le \hat \delta \le \delta_{j+1}.
+\end{equation}
+Thus,
+\begin{equation}
+\hat \delta_{j+1}\sqrt{\log N_{j+1}}\le 2\int^{\hat \delta_{j+1}}_{\hat \delta_{j+2}} \sqrt{ \log N(\hat \delta, \hat \Omega) }d\delta.
+\end{equation}
+Consequently,
+\begin{equation}
+\begin{split}
+\mathbb{E}\left [ \sup_{\hat x\in \hat \Omega} X_{\hat x} - X_{\hat x_0}\right]
+&\le 12\sqrt{\nu} \int^{\hat \delta\over 2}_{\hat \delta_{J+1}}\sqrt{\log N(\mu, \hat \Omega) }d\mu
+\\
+&\le 12\sqrt{\nu} \int^{\hat \delta\over 2}_{0}\sqrt{\log N(\mu, \hat \Omega) }d\mu
+\\
+&\leq 12\sqrt{\nu}\int_{0}^{\delta\over 2} \sqrt{\log N(\mu, \Omega)} d \mu
+\end{split}
+\end{equation}  
+with   $\displaystyle \delta=\sup_{x\in  \Omega} d(x, x_0)$.  
+Thus,
+\begin{equation}
+\mathbb{E}\sup_{x\in \Omega} (X_{x} - X_{x_0})
+\leq 2\mathbb{E}\sup_{d(y,y')\le \epsilon} (X_y - X_{y'}) + 12\sqrt{\nu}\int_{0}^{\delta\over 2} \sqrt{\log N(\mu,\Omega)} d \mu
+\end{equation}
+Let $\epsilon\rightarrow 0$,
+\begin{equation}
+\mathbb{E}\sup_{x\in\Omega} (X_{x} - X_{x_0})
+\leq 12\sqrt{\nu}\int_{0}^{\delta\over 2} \sqrt{\log N(\mu,\Omega)} d \mu
+\end{equation}
+\end{proof}
+
+
+
+\begin{lemma}\label{logintegral}
+\begin{align} 
+\int_0^t\sqrt{\log {1\over u}} du\le  \sqrt{t(1-\log t)}.
+\end{align}
+\end{lemma}
+\begin{proof}
+Since $\sqrt{x}$ is a concave function,   by Jansen's inequality,
+\begin{align} 
+\int_0^t\sqrt{\log {1\over u}} du&\le \sqrt{-\int_0^t \log u du} = \sqrt{-t\log t + t}=\sqrt{t(1-\log t)}.
+\end{align}
+\end{proof}
+
+Define Rademacher variable $\sigma$ by
+\begin{equation}
+P(\sigma)=\left\{\begin{array}{cc}
+1 / 2 & \text { if } \sigma=-1 \\
+1 / 2 & \text { if } \sigma=+1 
+\end{array}\right.
+\end{equation}
+
+\begin{lemma}\label{th:rademacherprocess}
+Let $\sigma_{i}$ be a sequence of independent identically distributed Rademacher variables.
+\[
+\begin{aligned}
+\mathbb{E}_n^{X}\left[\sup _{x \in \Omega} \big | \frac{1}{n} \sum_{i=1}^{n} f\left(X_{i}, x\right)-\mathbb{E}[f]\big | \right] 
+& \leq \mathbb{E}_n^{X, Y, \sigma}\left[\sup _{x \in \Omega} \mid \frac{1}{n} \sum_{i=1}^{n} \sigma_{i}\left[f\left(X_{i}, x\right)-f\left(Y_{i}, x\right)\right]\big |\right].
+\end{aligned}
+\]
+\end{lemma}
+\begin{proof}
+\begin{equation}
+\begin{aligned} 
+\mathbb{E}_n^{X}\left[\sup _{x \in \Omega} \big | \frac{1}{n} \sum_{i=1}^{n} f\left(X_{i}, x\right)-\mathbb{E}[f]\big | \right] 
+&=\mathbb{E}_n^{X}\left[\sup _{x \in \Omega} \big |\frac{1}{n} \sum_{i=1}^{n} f\left(X_{i}, x\right)-\mathbb{E}_{Y_{i}} f\left(Y_{i}, x\right)\big |\right] 
+\\
+&=\mathbb{E}_n^{X}\left[\sup _{x \in \Omega} \big | \mathbb{E}_n^{Y} \frac{1}{n} \sum_{i=1}^{n}\left[f\left(X_{i}, x\right)-f\left(Y_{i}, x\right)\right]\big | \right] 
+\\
+& \leq \mathbb{E}_n^{X}\left[\sup _{x \in \Omega} \mathbb{E}_n^{Y}\big |\frac{1}{n} \sum_{i=1}^{n}\left[f\left(X_{i}, x\right)-f\left(Y_{i}, x\right)\right]\big |\right]
+\\
+& \leq \mathbb{E}_n^{X, Y}\left[\sup _{x \in \Omega} \big | \frac{1}{n} \sum_{i=1}^{n}\left[f\left(X_{i}, x\right)-f\left(Y_{i}, x\right)\right]\big |\right]
+\end{aligned}
+\end{equation}
+Consider the distribution of $f(X_{i}, x)-f(Y_{i}, x)$ and $\sigma_{i}(f(X_{i}, x)-f(Y_{i}, x))$. Define
+$$
+U_k=\{(X, Y): f(X,x)-f(Y,x)=k\}.
+$$
+For $f(X_{i}, x)-f(Y_{i}, x)$,
+\begin{equation}
+P(f(X_{i}, x)-f(Y_{i}, x)=k)=\sum_{(a, b)\in U_k} p(X_i=a)p(Y_i=b).
+\end{equation}
+For $\sigma_{i}(f(X_{i}, x)-f(Y_{i}, x))$,
+\begin{align}
+P(\sigma_{i}(f(X_{i}, x)-f(Y_{i}, x))=k)=&\sum_{(a, b)\in U_k} p(\sigma_i=1)p(X_i=a)p(Y_i=b) \\
+&+ \sum_{(a, b)\in U_k} p(\sigma_i=-1)p(X_i=b)p(Y_i=a)\\
+=&\sum_{(a, b)\in U_k} p(X_i=a)p(Y_i=b).
+\end{align}
+This implies that the distribution of the difference $f\left(X_{i}, x\right)-f\left(Y_{i}, x\right)$ is the same as the distribution of$\sigma_{i}(f(X_{i}, x)-f(Y_{i}, x))$ so we obtain
+\[
+\begin{aligned}
+\mathbb{E}_n^{X}\left[\sup _{x \in \Omega} \big | \frac{1}{n} \sum_{i=1}^{n} f\left(X_{i}, x\right)-\mathbb{E}[f]\big |\right] 
+& \leq \mathbb{E}_n^{X, Y, \sigma}\left[\sup _{x \in \Omega} \big | \frac{1}{n} \sum_{i=1}^{n} \sigma_{i}\left[f\left(X_{i}, x\right)-f\left(Y_{i}, x\right)\right]\big |\right].
+\end{aligned}
+\]
+
+
+
+\end{proof}
+
+
+
+\begin{lemma}\label{lm:rademacher}
+Suppose $\theta$ is a random variable and $\{\theta_i\}_{i=1}^n$ are $n$ samples of $\theta$. Let $\sigma_{i}$ be a sequence of independent identically distributed Rademacher variables. For $h(\theta, x)$, define
+$$
+X_x = \sum_{i=1}^n \sigma_ih(\theta_i, x),
+$$
+it holds that
+$$
+\mathbb{E}_\sigma\left[ e^{\lambda (X_x - X_{x'})}\right]\le e^{\lambda^2 d^2(x, x')\over 2},
+$$
+with $\displaystyle d^2(x, x') = \sum_{i=1}^n(h(\theta_i, x) - h(\theta_i, x'))^2$.
+\end{lemma}
+\begin{proof}
+For any $z$,
+$$
+{e^{z} + e^{-z}\over 2}=\sum_{i\ge 0} {z^{2i}\over (2i)!} \le \sum_{i\ge 0} {z^{2i}\over 2^i i!} = e^{z^2\over 2}.
+$$
+Let $z_i= \lambda  (h(\theta_i, x) - h(\theta_i, x'))$.
+\begin{align}  
+\displaystyle 
+\mathbb{E}_\sigma\left[ e^{\lambda (X_x - X_{x'})}\right]&=\mathbb{E}_\sigma\left[ e^{\lambda \sum_{i=1}^n \sigma_i(h(\theta_i, x) - h(\theta_i, x'))}\right]
+\\
+&=\prod_{i=1}^n \int e^{\lambda \sigma_i(h(\theta_i, x) - h(\theta_i, x'))} P(\sigma_i) d\sigma_i
+\\
+&=\prod_{i=1}^n  {e^{z_i} + e^{-z_i}\over 2}  \le \prod_{i=1}^n  e^{z_i^2\over 2}  
+\\ 
+&= e^{{1\over 2}\lambda^2  \sum_{i=1}^n(h(\theta_i, x) - h(\theta_i, x'))^2}.
+\end{align}
+\end{proof}
+\newpage
+\begin{remark}\label{remark:supest}
+It holds that
+\begin{align}
+\mathbb{E}_n^{X}\left[\sup _{x \in \Omega} \mid \frac{1}{n} \sum_{i=1}^{n} f\left(X_{i}, x\right)-\mathbb{E}[f]\right]  \leq {12\over n}\int_0^{\delta\over 2} \sqrt{\log N(\mu, \Omega)} d \mu
+\end{align}
+with $\displaystyle \delta^2=\sup_{x\in \Omega} d^2(x, x_0) = \sup_{x\in \Omega}\sum_{i=1}^n(f(X_i, x) - f(Y_i, x))^2$.
+ \end{remark}
+\begin{enumerate}
+\item By Lemma \ref{th:rademacherprocess}, 
+\[
+\begin{aligned}
+\mathbb{E}_n^{X}\left[\sup _{x \in \Omega} \mid \frac{1}{n} \sum_{i=1}^{n} f\left(X_{i}, x\right)-\mathbb{E}[f]\right] 
+& \leq \mathbb{E}_n^{X, Y, \sigma}\left[\sup _{x \in \Omega} \mid \frac{1}{n} \sum_{i=1}^{n} \sigma_{i}\left[f\left(X_{i}, x\right)-f\left(Y_{i}, x\right)\right]\right].
+\end{aligned}
+\]
+with a sequence of independent identically distributed Rademacher variables $\sigma_{i}$.
+\item Let $$
+X_x = \sum_{i=1}^n \sigma_i\left[f\left(X_{i}, x\right)-f\left(Y_{i}, x\right)\right],
+$$
+By Lemma \ref{lm:rademacher}, it holds that
+$$
+\mathbb{E}_\sigma\left[ e^{\lambda (X_x - X_{x'})}\right]\le e^{\lambda^2 d^2(x, x')\over 2},
+$$
+with $\displaystyle d^2(x, x') = \sum_{i=1}^n(h(X_i, Y_i, x) - h(X_i, Y_i, x'))^2$ and $h(X_i, Y_i, x) = f\left(X_{i}, x\right)-f\left(Y_{i}, x\right)$, which satisfies the assumption in Theorem \ref{th:dudley}.
+\item Let $\displaystyle \delta=\sup_{x\in \Omega} d(x, x_0)$. By Theorem \ref{th:dudley},  for any $x_0\in \mathcal{T}$,
+\begin{equation} 
+\mathbb{E}\left[\sup _{x \in \Omega} X_x-X_{x_0}\right] \leq {12\over n}\int_0^{\delta\over 2} \sqrt{\log N(\mu, \Omega)} d \mu,
+\end{equation} 
+ furthermore,
+\begin{equation} 
+\mathbb{E}_n^{X}\left[\sup _{x \in \Omega} \mid \frac{1}{n} \sum_{i=1}^{n} f\left(X_{i}, x\right)-\mathbb{E}[f]\right]  \leq {12\over n}\int_0^{\delta\over 2} \sqrt{\log N(\mu, \Omega)} d \mu,
+\end{equation} 
+\end{enumerate}
+
+\section{Maximum norm error estimates ReLU DNN}
+\begin{lemma}\label{lm:Cstratifyrange1}
+Suppose $\Omega$ is bounded, say $\|x\|_{\ell_p}\le T$, and $f\in \mathcal B^{m+1, q}(\Omega)$.
+%$$
+% \int_{\mathbb{R}^{d}} |\hat{f}(\theta)|\|\theta\|_{\ell_1}^{m+1} d\theta<\infty.
+%$$
+There exist $\theta_j=(z_j, t_j, \omega_j)$ with $\|\bar \omega_j\|_{\ell_1}=1$, $t\in [0,T]$,  $\beta_j\in [-1,1]$ such that 
+$$
+f_n(x)= \sum_{|\alpha|\le m}{1\over \alpha!}D^\alpha f(0) x^\alpha + {2\nu\over m!n}\sum_{j=1}^{n}\beta_j (\bar \theta_j\cdot x - t_j)_+^m
+$$ 
+with $\nu=\int_{\{-1,1\}\times [0,T]\times \mathbb{R}^{d}} \rho(\theta)d\theta$ and $\rho(\theta)$  defined in \eqref{eq:straglam} 
+satisfies the following estimate
+\begin{equation}
+\|f - f_n \|_{C(\Omega)} \leq C\sqrt{d} n^{-{1\over 2}-{1\over d}}\|f\|_{\mathcal B^{m+1, q}(\Omega)}.
+\end{equation}   
+\end{lemma}
+\begin{proof}
+According to Lemma \ref{lem:stratifiedapprox}, there exists a partition $G=G_1\cup \cdots \cup G_M$ such that
+$$
+|t -t'| + \|\bar\omega - \bar\omega'\|_{\ell_1}\leq \epsilon \sim M^{-{1\over d}},\quad \forall 1\le i\le M.
+$$
+with $\theta=(z, t, \omega)\in G$. By \eqref{eq:straglam},
+$$
+g(\theta, x)= (z\bar \omega\cdot x - t)_+^m {\rm sgn} s(zt,\omega),\quad s(zt,\omega)= 
+\begin{cases}
+(-1)^{m+1\over 2}\cos(z\|\omega\|_{\ell_1}t + b(\omega)) & m \text{ is odd}
+\\
+(-1)^{m+2\over 2}\sin(z\|\omega\|_{\ell_1}t + b(\omega)) & m \text{ is even}.
+\end{cases}
+$$
+Thus,
+$$
+|g(\theta,x) - g(\theta',x)|\le c_0\epsilon,\quad \theta, \theta'\in G_i.
+$$
+Let $n_i=\lceil \lambda(G_i) n\rceil$, $\displaystyle g_{n_i}^i={1\over n_i}\sum_{j=1}^{n_i}g(\theta_{i, j}, x)$ and 
+$$
+g_n(x) = \sum_{i=1}^M \lambda(G_i)g_{n_i}^i
+$$
+It follows that
+\begin{align} 
+|\mathbb{E}_G g -g_n(x)| 
+&= |\sum_{i=1}^M \lambda(G_i)(\mathbb{E}_{G_i} g - g_{n_i}^i)|
+\\
+&\le {1\over n}\sum_{i=1}^M \sum_{j=1}^{n_i}|\mathbb{E}_{G_i} g - g(\theta_{i, j},x)|.
+\end{align} 
+Let $\sigma_{i,j}$ be a sequence of independent identically distributed Rademacher variables
+\begin{equation}
+P(\sigma_{i, j}=k)=\left\{\begin{array}{cc}
+1 / 2 & \text { if } k=-1 \\
+1 / 2 & \text { if } k=+1 \\
+0 & \text { otherwise }
+\end{array}.
+\right.
+\end{equation}
+By Lemma \ref{th:rademacherprocess},
+\begin{align}  
+\mathbb{E}_n\sup_x |\mathbb{E}_{G} g(x) - g_{n}(x)|\le & 
+{1\over n}\mathbb{E}_n\sup_x  |\sum_{i=1}^M\sum_{j=1}^{n_i} (\mathbb{E}_{G_i} g  - g(\theta_{ij}, x))|  
+\end{align} 
+According to Remark \ref{remark:supest},
+\begin{align}
+\mathbb{E}_n\sup_x |\mathbb{E}_{G} g(x) - g_{n}(x)|
+  \leq {24\over n }\int_0^{\delta\over 2} \sqrt{\log N(\mu, \mathcal{T})} d \mu
+\end{align}
+with 
+$$
+\displaystyle \delta^2= \sup_{x\in \mathcal{T}}\sum_{i=1}^M\sum_{j=1}^{n_i}(g(\theta_{ij}, x) - g(\theta_{ij}, x))^2 \le c^2\epsilon^2 \sum_{i=1}^M n_i 
+$$ 
+Let $h_{i, j}(x)= g(\theta_{ij}, x) - g(\theta_{ij}', x)$. Note that
+\begin{align}
+d^2(x, x') = \sum_{i=1}^M\sum_{j=1}^{n_i}(h_{i, j}(x) - h_{i, j}(x'))^2
+ \le c^2\epsilon^2  \|x -x'\|_\infty^2\sum_{i=1}^M n_i.
+\end{align}
+it follows that
+\begin{align} % requires amsmath; align* for no eq. number
+N(\mu, \Omega)\le \left ({2\over \|x -x'\|_\infty}\right)^d
+\le \left ({2c\epsilon\sqrt{\sum_{i=1}^M n_i}\over \mu}\right)^d.
+\end{align}
+By Lemma \ref{logintegral},
+\begin{align} % requires amsmath; align* for no eq. number
+\int_0^{\delta\over 2} \sqrt{\log N(\mu, \Omega)} d \mu 
+&\le \sqrt{d}\int_0^{c\epsilon\sqrt{\sum_{i=1}^M n_i}\over 2} \sqrt{\log {2c\epsilon\sqrt{\sum_{i=1}^M n_i}\over \mu}} d \mu
+\\
+& \le C\epsilon\sqrt{d\sum_{i=1}^M n_i} .
+\end{align}
+Thus,
+\begin{align}
+\mathbb{E}_n\sup_x |\mathbb{E}_{G} g(x) - g_{n}(x)|
+\le C\epsilon\sqrt{d\sum_{i=1}^M n_i\over n^2}
+\end{align}
+Since $\epsilon=n^{-1/d}$ and $\displaystyle M\le 4({5\over \epsilon})^d$,
+\begin{align}
+\mathbb{E}_n\sup_x |\mathbb{E}_{G} g(x) - g_{n}(x)|
+\le C\sqrt{d} n^{-{1\over 2}- {1\over d}}.
+\end{align}
+Consequently, there exists $g_n(x)$ such that
+$$
+\sup_x |\mathbb{E}_{G} g(x) - g_{n}(x)|\le C\sqrt{d} n^{-{1\over 2}- {1\over d}}.
+$$
+Namely, there exist $\beta_j\in [-1, 1]$, $\|\bar \omega_j\|_{\ell_1}=1$, $t_i\in [0,T]$ such that 
+$$
+f_n(x)= \sum_{|\alpha|\le m}{1\over \alpha!}D^\alpha f(0) x^\alpha + {2\nu\over m!n}\sum_{j=1}^{n}\beta_j (\bar \omega_j\cdot x - t_j)_+^m
+$$ 
+satisfies the following estimate
+\begin{equation}
+\sup_x |f - f_n| \leq C\sqrt{d} n^{-{1\over 2}-{1\over d}}\|f\|_{\mathcal B^{m+1, q}(\Omega)},\qquad k\le m.
+\end{equation}  
+%
+%
+%
+%------
+%
+%\begin{align}  
+%\mathbb{E}_n\sup_x |\mathbb{E}_{G} g(x) - g_{n}(x)|\le & 
+%{1\over n}\mathbb{E}_n\sup_x  |\sum_{i=1}^M\sum_{j=1}^{n_i} (\mathbb{E}_{G_i} g  - g(\theta_{ij}, x))| 
+%\\
+%\le &{2\over n}\mathbb{E}_n^{\theta_{ij}, \bar{\theta}_{ij}, \sigma_{ij}}\sup_x  |\sum_{i=1}^M\sum_{j=1}^{n_i} \sigma_{i,j} (g(\theta_{ij}, x)  - g(\bar\theta_{ij}, x))|   
+%\\
+%\le &{2\over n}\mathbb{E}_n^{\theta_{ij}, \bar{\theta}_{ij}, \sigma_{ij}}\sup_x  |\sum_{i=1}^M\sum_{j=1}^{n_i} \sigma_{i,j} h_{i, j}(x)|
+%\end{align} 
+%with $h_{i, j}(x) =  g(\theta_{i, j},x) - g(\bar\theta_{i, j}, x)$. 
+%Let $\displaystyle X_x = \sum_{i=1}^M\sum_{j=1}^{n_i} \sigma_{i,j} h_{i, j}(x)$ and
+%\begin{align}
+%d^2(x, x') = \sum_{i=1}^M\sum_{j=1}^{n_i}(h_{i, j}(x) - h_{i, j}(x'))^2
+% \le c^2\epsilon^2 (M+n)\|x -x'\|_\infty^2.
+%\end{align}
+%It follows from Lemma \ref{lm:rademacher} that
+%\begin{equation}
+%\mathbb{E}_n^{\sigma_{ij}}\left [ e^{\lambda (X_x - X_{x'})}\right]\le e^{\lambda^2d^2(x,x')\over 2},
+%\end{equation}
+%which satisfies the assumption in Theorem \ref{th:dudley}.
+%\begin{equation}
+%\mathbb{E}_n^{\sigma_{ij}}\sup_x  |\sum_{i=1}^M\sum_{j=1}^{n_i} \sigma_{i,j} h_{i, j}(x)|
+%=\mathbb{E}_n^{\sigma_{ij}}\sup_x X_x
+%\le 12 \int_0^{\delta\over 2} \sqrt{\log N(\mu, \mathcal{T})} d \mu
+%\end{equation}
+%with  $
+%\displaystyle \delta^2=\sup_{x\in \mathcal{T}} \sum_{i=1}^M\sum_{j=1}^{n_i}h_{i, j}^2(x) \le c^2\epsilon^2 (M+n).
+%$ 
+%%for $\theta_{i, j}, \theta_{i, j}'\in G_i$,
+%%$$
+%%|s_{i, j}(x)|\le m\epsilon, \quad \forall x.
+%%$$
+%%Since $|g(\theta, x) - g(\theta, x')\le L|x-x'|$ for any $\theta$,
+%%$$
+%%|h_{i, j}(x) - h_{i, j}(x')|\le \sup_x |\partial_xh_{i,j}||x-x'|\le c\epsilon \|x-x'\|_\infty.
+%%$$
+%%By , $\{h_{i,j}(x)\}$ satisfy the assumptions in Theorem \ref{th:dudley}, which leads to 
+%%\begin{align}  
+%%\mathbb{E}_n\sup_x |\mathbb{E}_{G} g(x) - g_{n}(x)|\le & 
+%%{1\over n}\mathbb{E}_n\sup_x  |\sum_{i=1}^M\sum_{j=1}^{n_i} (\mathbb{E}_{G_i} g  - g(\theta_{ij}, x))| 
+%%\\
+%%\le &{2\over n}\mathbb{E}_n\sup_x  |\sum_{i=1}^M\sum_{j=1}^{n_i} \sigma_{i,j} (g(\theta_{ij}, x)  - g(\bar\theta_{ij}, x))|  
+%%\\
+%%\le &{2\over n}\mathbb{E}_n\sup_x  |\sum_{i=1}^M\sum_{j=1}^{n_i}   h_{i,j}(x)|. 
+%%\\
+%%\leq & {12\over n} \int_0^{\delta\over 2} \sqrt{\log N(\mu, \mathcal{T})} d \mu
+%%\end{align} 
+%%and
+%%\begin{align}
+%%d^2(x, x') = \sum_{i=1}^M\sum_{j=1}^{n_i}(h_{i, j}(x) - h_{i, j}(x'))^2
+%% \le c^2\epsilon^2 (M+n)\|x -x'\|_\infty^2.
+%%\end{align}
+%Thus,  
+%\begin{align} % requires amsmath; align* for no eq. number
+%N(\mu, \mathcal{T})\le \left ({2\over \|x -x'\|_\infty}\right)^d
+%\le \left ({2c\epsilon\sqrt{M+n}\over \mu}\right)^d.
+%\end{align}
+%By Lemma \ref{logintegral},
+%\begin{align} % requires amsmath; align* for no eq. number
+%\int_0^{\delta\over 2} \sqrt{\log N(\mu, \mathcal{T})} d \mu 
+%&\le \sqrt{d}\int_0^{c\epsilon\sqrt{M+n}\over 2} \sqrt{\log {2c\epsilon\sqrt{M+n}\over \mu}} d \mu
+%\\
+%& \le C\epsilon\sqrt{(M+n)d} .
+%\end{align}
+%Thus,
+%\begin{align}
+%\mathbb{E}_n\sup_x |\mathbb{E}_{G} g(x) - g_{n}(x)|
+%\le C\epsilon\sqrt{d(M+n)\over n^2}
+%\end{align}
+%Since $\epsilon=n^{-1/d}$ and $M\le 4({5\over \epsilon})^d$,
+%\begin{align}
+%\mathbb{E}_n\sup_x |\mathbb{E}_{G} g(x) - g_{n}(x)|
+%\le C\sqrt{d} n^{-{1\over 2}- {1\over d}}.
+%\end{align}
+%Consequently, there exists $g_n(x)$ such that
+%$$
+%\sup_x |\mathbb{E}_{G} g(x) - g_{n}(x)|\le C\sqrt{d} n^{-{1\over 2}- {1\over d}}.
+%$$
+%Namely, there exist $\beta_j\in [-2^d,2^d]$, $\|\bar \theta_j\|_{\ell_1}=1$, $t_i\in [0,T]$ such that 
+%$$
+%f_n(x)= \sum_{|\alpha|\le m}{1\over \alpha!}D^\alpha f(0) x^\alpha + {1\over m!n}\sum_{j=1}^{n}\beta_j (\bar \theta_j\cdot x - t_j)_+^m
+%$$ 
+%satisfies the following estimate
+%\begin{equation}
+%\sup_x |f - f_n| \leq C\sqrt{d} n^{-{1\over 2}-{1\over d}},\qquad k\le m.
+%\end{equation}  
+\end{proof}
+
+\begin{lemma}\label{lm:Cstratifypm1}
+Suppose $\Omega$ is bounded, say $\|x\|_{\ell_p}\le T$, and $f\in \mathcal B^{m+1, q}(\Omega)$.
+There exist $\theta_j=(z_j, t_j, \omega_j)$ with $\|\bar \omega_j\|_{\ell_1}=1$, $t\in [0,T]$,  $\beta_j\in \{-1,1\}$ such that 
+$$
+f_n(x)= \sum_{|\alpha|\le m}{1\over \alpha!}D^\alpha f(0) x^\alpha + {\nu\over m!n}\sum_{j=1}^{n}\beta_j (\bar \theta_j\cdot x - t_j)_+^m
+$$ 
+with $\nu=\int_{\{-1,1\}\times [0,T]\times \mathbb{R}^{d}} \rho(\theta)d\theta$ and $\rho(\theta)$  defined in \eqref{eq:straglam} 
+satisfies the following estimate
+\begin{equation}
+\|f - f_n \|_{C(\Omega)} \leq C{\sqrt{d} \over m!}N^{-{1\over 2}-{1\over d+2}}\|f\|_{\mathcal B^{m+1, q}(\Omega)}.
+\end{equation}   
+\end{lemma}
+\begin{proof}
+According to Lemma \ref{lem:stratifiedapprox}, there exists a partition $G=G_1\cup \cdots \cup G_M$ such that
+$$
+|t -t'| + \|\bar\omega - \bar\omega'\|_{\ell_1}\leq \epsilon \sim  M^{-{1\over d}},\quad \forall 1\le i\le M.
+$$
+with $\theta=(z, t, \omega)\in G$. By \eqref{eq:straglam},
+$$
+g(\theta, x)= (z\bar \omega\cdot x - t)_+^m {\rm sgn} s(zt,\omega),\quad s(zt,\omega)= 
+\begin{cases}
+(-1)^{m+1\over 2}\cos(z\|\omega\|_{\ell_1}t + b(\omega)) & m \text{ is odd}
+\\
+(-1)^{m+2\over 2}\sin(z\|\omega\|_{\ell_1}t + b(\omega)) & m \text{ is even}.
+\end{cases}
+$$
+Thus,
+$$
+|g(\theta,x) - g(\theta',x)|\le c_0\epsilon,\quad \theta, \theta'\in G_i.
+$$
+Let  $\theta_{i,j} \in G_i(1\leq j\leq n_i)$,  $n_i$ equal $\lceil \lambda(G_i)n\rceil$ and $\lfloor \lambda(G_i)n\rfloor$ with probabilities chosen to make its mean equal to $\lambda(G_i)n$ and $m_i=n_i + \mathbb{I}(n_i=0)$. Then
+\begin{align} 
+\sum_{i=1}^M m_i&=\sum_{i=1}^M n_i\mathbb{I}(n_i>0) + \sum_{i=1}^M n_i\mathbb{I}(n_i=0)
+\\
+&\le \sum_{i=1}^M (n\lambda(G_i) + 1)\mathbb{I}(n_i>0) + \sum_{i=1}^M \mathbb{I}(n_i=0)
+\\
+&\le  n\sum_{i=1}^M \lambda(G_i)\mathbb{I}(n_i>0) + M
+\le n+M.
+\end{align} 
+Define $\displaystyle N=\sum_{i=1}^Mn_i$  and
+$$
+r_{m,n}(x)= {1\over N}\sum_{i=1}^M {n_i\over m_i} \sum_{j=1}^{m_i} g(x,\theta_{i,j}).
+$$
+By the definition of $m_i$, $\displaystyle {n_i\over m_i}=0$ or $1$.  This means that $f_n(x) $ is in the form of  $\displaystyle {1\over N}\sum_{i=1}^N\beta_i g(x,\theta_i)$ with $\beta_i\in \{-1, 1\}$. Define
+$$
+\bar{r}_{m,n}(x)= \sum_{i=1}^M {n_i\over N}\mathbb{E}_{G_i}g.
+$$
+Since
+$
+\displaystyle r_m(x)=\mathbb{E}_G g= \sum_{i=1}^M \lambda(G_i) \mathbb{E}_{G_i}g,
+$  
+\begin{align}  
+r_{m,n} - r_m  &= r_{m,n} - \bar{r}_{m,n} + \bar{r}_{m,n} - f_m
+\\
+&= {1\over N}\sum_{i=1}^M {n_i\over m_i} \sum_{j=1}^{m_i} \big (g(x,\theta_{i,j}) - \mathbb{E}_{G_i}g \big ) + {1\over N}\sum_{i=1}^M (n_i - \lambda(G_i)N)  \mathbb{E}_{G_i}g.\label{f1}
+\end{align} 
+Consider the first term in \eqref{f1}. By Remark \eqref{remark:supest},
+\begin{align}  
+\mathbb{E}_n \left[ \sup_{x\in \Omega}{1\over N}\sum_{i=1}^M {n_i\over m_i} \sum_{j=1}^{m_i} \big (g(x,\theta_{i,j}) - \mathbb{E}_{G_i}g \big )\right] \le {12\over N}\int_0^{\delta_1} \sqrt{\log N_1(\mu, \Omega)}d\mu
+\end{align} 
+with $\displaystyle \delta_1^2=\sup_{x\in \Omega} \sum_{i=1}^M {n_i\over m_i} \sum_{j=1}^{m_i} \big (g(x,\theta_{i,j}) - g(x,\theta_{i,j}')\big )^2\le Nc_0^2\epsilon^2$. Let $h_{i, j}(x)= g(\theta_{ij}, x) - g(\theta_{ij}', x)$. Note that
+\begin{align}
+d^2(x, x') = \sum_{i=1}^M {n_i\over m_i} \sum_{j=1}^{m_i}(h_{i, j}(x) - h_{i, j}(x'))^2
+ \le c^2N\epsilon^2  \|x -x'\|_\infty^2.
+\end{align}
+it follows that
+\begin{align} % requires amsmath; align* for no eq. number
+N_1(\mu, \Omega) \le \left ( {2\over \|x -x'\|_\infty} \right)^d
+\le \left ( {2c\epsilon\sqrt{N} \over \mu}\right)^d.
+\end{align}
+By Lemma \ref{logintegral},
+\begin{align}  
+\mathbb{E}_n \left[ \sup_{x\in \Omega}{1\over N}\sum_{i=1}^M {n_i\over m_i} \sum_{j=1}^{m_i} \big (g(x,\theta_{i,j}) - \mathbb{E}_{G_i}g \big )\right] \le {12\over N}\int_0^{\delta_1} \sqrt{\log N_1(\mu, \Omega)}d\mu
+\le {24c\epsilon \sqrt{d}\over \sqrt{N}}.\label{eq:dud1}
+\end{align} 
+Consider the second term in \eqref{f1}.
+$$
+\mathbb{E}_n\sup_{x\in \Omega}\left |\sum_{i=1}^M (n_i - \lambda(G_i)N)  \mathbb{E}_{G_i}g \right |\le \mathbb{E}_n\sup_{x\in \Omega}\left |\sum_{i=1}^M \sigma_i(n_i - \lambda(G_i)N)  \mathbb{E}_{G_i}g \right |
+$$
+Let $\tilde h_i(x) =(n_i - \lambda(G_i)N)  \mathbb{E}_{G_i}g$ and 
+$$
+\delta_2^2 = \sum_{i=1}^M (\tilde h_i(x) - \tilde h_i(x'))^2\le M\|x-x'\|_\infty^2
+$$
+with $|n_i - \lambda(G_i)N|\le 1$ and $|\mathbb{E}_{G_i}g(x) - \mathbb{E}_{G_i}g(x')|\le \|x-x'\|_\infty$. It follows from Remark \eqref{remark:supest} that
+$$
+\mathbb{E}_n\left [\sup_{x\in \Omega}{1\over N}\sum_{i=1}^M (n_i - \lambda(G_i)N)  \mathbb{E}_{G_i}g\right ]\le  {12\over N}\int_0^{\delta_2} \sqrt{\log N_2(\mu, \Omega)}d\mu,
+$$
+where $\delta_2\le \sqrt{M}$ and $N_2(\mu, \Omega)\le ({2\sqrt{M}\over \mu})^d$. Thus,
+\begin{align} 
+\mathbb{E}_n\left [\sup_{x\in \Omega}{1\over N}\sum_{i=1}^M (n_i - \lambda(G_i)N)  \mathbb{E}_{G_i}g\right ]\le  {24\sqrt{dM}\over N}.\label{eq:dud2}
+\end{align}
+A combination of \eqref{eq:dud1} and \eqref{eq:dud2} gives
+\begin{align} 
+\mathbb{E}_n\sup_{x\in \Omega} |r_{m,n} - r_m |\le {24c\epsilon \sqrt{d}\over \sqrt{N}} + {24\sqrt{dM}\over N}.
+\end{align}
+Choose
+$
+\displaystyle M= c^2\epsilon^2 N,
+$
+$\displaystyle \mathbb{E}_n\sup_{x\in \Omega} |f_n - f |$ is at most
+$
+\displaystyle {48c\epsilon \sqrt{d}\over \sqrt{N}}.
+$
+Since $M \sim \epsilon^{-d}$,  we have
+$
+N\sim \epsilon^{-(d+2)}
+$
+and 
+$
+\epsilon\sim N^{-{1\over d+2}}
+$
+Thus,
+\begin{align} 
+\mathbb{E}_n\sup_{x\in \Omega} |f_n - f |\le {\nu\over m!}\mathbb{E}_n\sup_{x\in \Omega} |r_{m,n} - r_m| \lesssim {\sqrt{d} \over m!}N^{-{1\over 2}-{1\over d+2}}\|f\|_{\mathcal B^{m+1, q}(\Omega)},
+\end{align}
+which completes the proof. 
+\end{proof}
+\begin{remark}
+Similar to Theorem \ref{est:stratify}, the estimates in Lemma \ref{lm:Cstratifyrange1} and \ref{lm:Cstratifypm1} also holds for the $C^k$-norm of the errors.
+
+\end{remark}
+
+

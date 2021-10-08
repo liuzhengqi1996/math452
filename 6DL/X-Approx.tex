@@ -1,0 +1,660 @@
+%\section{A result on expectation}
+%\begin{lemma}   \label{MC} 
+%Let $\lambda\ge 0$ be a probability density function such that 
+%\begin{equation}
+%  \label{density}
+%\int_{\mathbb R^d}\lambda(\omega)dx =1.
+%\end{equation}
+%\begin{equation}
+%  \label{E}
+%\mathbb{E}g:=\int_{\mathbb{R}^d}
+%  g(\omega)\lambda(\omega)d\omega
+%\end{equation}
+%and
+%\begin{equation}
+%  \label{En}
+%\mathbb{\bar E}h:=\int_{\mathbb{R}^d\times \mathbb{R}^d\times\ldots\times \mathbb{R}^d}
+%h(\omega_1,\omega_2,\ldots,\omega_n) \lambda(\omega_1) \lambda(\omega_n)\ldots \lambda(\omega_n)
+%d\omega_1d\omega_2\ldots d\omega_n.
+%\end{equation}
+%
+%Then for any $g\in L^\infty(\mathbb{R}^d)$, we have
+%  \begin{equation}
+%   \mathbb{\bar E}(\mathbb{E}g-\frac1n\sum_{i=1}^n
+%    g(\omega_i))^2=\frac{1}{n}(\mathbb{E}(g-\mathbb{E}(g))^2) 
+%\le \frac{1}{n}\mathbb{E}(g^2)\le \frac{1}{n}\|g\|^2_{L^\infty},
+%  \end{equation}
+%  where 
+%\end{lemma}
+%\begin{proof}
+% \begin{equation}
+%    \label{eqn}
+%    \begin{aligned}
+%      &\quad \mathbb{\bar E}\left(\mathbb{E} g-\frac1n\sum_{i=1}^ng(\omega_i)\right)^2 \\
+%  &=\frac{1}{n^2} \mathbb{\bar E}\left(n\mathbb{E} g-\sum_{i=1}^ng(\omega_i)\right)^2 \\
+%  &=\frac{1}{n^2} \mathbb{\bar E}\left(\sum_{i=1}^n(\mathbb{E} g-g(\omega_i))\right)^2 \\
+%  &=\frac{1}{n^2} \mathbb{\bar E}\sum_{i,j=1}^n(\mathbb{E} g-g(\omega_i))(\mathbb{E} g-g(\omega_j))\\
+%  &=\frac{1}{n^2} \mathbb{\bar E}\sum_{i=1}^n(\mathbb{E} g-g(\omega_i))^2\\
+%&+\frac{1}{n^2} \mathbb{\bar E}\sum_{i\neq  j}^n((\mathbb{E}g)^2-\mathbb{E}(g)(g(\omega_i)+
+%g(\omega_j))+g(\omega_i)g(\omega_j)))
+%    \end{aligned}
+%  \end{equation}
+%We note that
+%$$
+%\mathbb{\bar E} g(\omega_i)=\mathbb{\bar E} g(\omega_j) =\mathbb E(g) 
+%$$
+%and, for $i\neq j$, 
+%$$
+%\mathbb{\bar E} ( g(\omega_i)g(\omega_j)) =\mathbb{\bar E} (
+%g(\omega_i))\mathbb{\bar E}(g(\omega_j))
+%=[\mathbb E(g)]^2.
+%$$
+%Thus
+% \begin{equation}
+%\mathbb{\bar E}\sum_{i\neq j}^n((\mathbb{E}g)^2-\mathbb
+%  E(g)(g(\omega_i)+ g(\omega_j))+(g(\omega_i)g(\omega_j)))=0.
+%  \end{equation}
+%Furthermore
+%$$
+%\mathbb{\bar E}(\mathbb{E} g-g(\omega_i))^2
+%=\mathbb{\bar E}(\mathbb{E} g-g(\omega))^2 
+%=[\mathbb{E} g]^2-2[\mathbb E g(\omega)]^2 +\mathbb E(g^2) 
+%=\mathbb E(g^2) -[\mathbb E(g)]^2 
+%\le\mathbb E(g^2) 
+%$$
+%Consequently
+% \begin{equation}
+%    \label{eqn}
+%    \begin{aligned}
+%      &\quad \mathbb{\bar E}\left(\mathbb{E} g-
+%      \frac1n\sum_{i=1}^ng(\omega_i)\right)^2 \\
+%      &=\frac{1}{n^2} \mathbb{\bar E}\left(n\mathbb{E} g-
+%      \sum_{i=1}^ng(\omega_i)\right)^2 \\
+%      &=\frac{1}{n^2} \mathbb{\bar E}\left(\sum_{i=1}^n(\mathbb{E}
+%      g-g(\omega_i))\right)^2 \\
+%      &=\frac{1}{n^2} \sum_{i=1}^n(\mathbb{\bar E}(\mathbb{E}      g-g(\omega_i))^2) \\
+%      &=\frac{1}{n}(\mathbb{E}(g-\mathbb{E}(g))^2) \\
+%      &=\frac{1}{n}(\mathbb{E}(g^2)-(\mathbb{E}(g))^2) \\
+%      &\le\frac1n \mathbb E(g^2)\\
+%      &\le\frac1n\|g\|^2_{L^\infty}
+%    \end{aligned}
+%  \end{equation}
+%\end{proof}
+%
+%The above result be extended to the following general case easily.
+%\begin{lemma} \label{MC1} Given $1\le i\le n$, let $\Omega $ be a
+%  probability space with a probability measure $\mu$ with density
+%  function $\lambda\ge 0$ ($1\le i\le n$), namely 
+%$$
+%\mu(G)=\int_G \lambda(\omega)d\mu, \quad 
+%\mu(\Omega)=1, \quad G\subset \Omega.
+%$$
+%Define
+%\begin{equation}
+%\label{Ei}
+%\mathbb{E}g:=\int_{\Omega}  g(\omega)\lambda(\omega)d\mu
+%\end{equation}
+%and
+%\begin{equation}
+%  \label{En}
+%\mathbb{\bar E}h:=\int_{\Omega\times\Omega\times\ldots\times\Omega}
+%h(\omega_1,\omega_2,\ldots,\omega_n) \lambda(\omega_1) \lambda(\omega_n)\cdots \lambda(\omega_n)
+%d\mu_1d\mu_2\ldots d\mu_n.
+%\end{equation}
+%Then for any $g\in L^\infty(\Omega)$, we have
+%  \begin{equation}
+%    \mathbb{\bar E}(\mathbb{E}g-\frac1n\sum_{i=1}^n
+%    g(\omega_i))^2=\frac{1}{n}(\mathbb{E}(g-\mathbb{E}(g))^2) 
+%\le \frac{1}{n}\|g\|^2_{L^\infty}.
+%  \end{equation}
+%\end{lemma} 
+%\section{Fourier transformation and Barron spaces}
+%Given a bounded domain $B\subset\mathbb R^d$, we consider the function
+%$$
+%f: B\mapsto \mathbb R
+%$$
+%Let 
+%$$
+%f^e: \mathbb R^d\mapsto \mathbb R
+%$$ 
+%be any extension of $f$ so that
+%$$
+%f^e|_B=f(x), \quad x\in B. 
+%$$
+%Most time, we will drop the superscript $``e"$ to still use $f$ to
+%denote an extension of $f$. 
+%
+%Consider the Fourier transform:
+%\begin{equation}
+%  \label{Fourier}
+%  \hat f(\omega)=\frac{1}{(2\pi)^d}\int_{\mathbb{R}^d}e^{-i\omega\cdot x}f(x)dx
+%  \quad \forall \omega \in \mathbb R^d,
+%\end{equation}
+%Using the Fourier inversion formula, we can have a Fourier
+%representation of $f(x)$ as follows
+%\begin{equation}
+%  \label{eqn1}
+%  f(x)=\int_{\mathbb{R}^d}e^{i\omega\cdot x}\hat{f}(\omega)d\omega
+%  \quad \forall x \in B,
+%\end{equation}
+%From \eqref{eqn1}, we have
+%\begin{equation}
+%  \label{f0}
+% f(x_B)=\int_{\mathbb{R}^d}e^{i\omega\cdot x_B}\hat{f}(\omega)d\omega.
+%\end{equation}
+%Let us write
+%\begin{equation}
+%  \label{theta-omega}
+%  \hat{f}(\omega)=e^{i\theta(\omega)}|\hat{f}(\omega)|.   
+%\end{equation}
+%Since $f(x)$ is real-valued, it follows from \eqref{eqn1} and
+%\eqref{f0} that, for $x, x_B\in B$
+%  \begin{equation}
+%    \label{eqn4.3}
+%    \begin{aligned}
+%f(x)-f(x_B)
+%&={\rm Re}\int_{\mathbb{R}^d}
+%(e^{i\omega\cdot x}-e^{i\omega\cdot x_B}) 
+%\hat{f}(\omega)d\omega \\
+%&={\rm Re}\int_{\mathbb{R}^d}
+%(e^{i\omega\cdot x}-e^{i\omega\cdot x_B})  
+% e^{i\theta
+%    (\omega)}|\hat{f}(\omega)|d\omega \\
+%    &=\int_{\mathbb{R}^d}(\cos(\omega\cdot
+%    x+\theta(\omega))-\cos(\omega\cdot x_B+\theta(\omega)))|\hat{f}(\omega)|d\omega \\
+%&=\int_{\mathbb{R}^d}(\cos(\omega\cdot(x-x_B)+\theta_B(\omega))-\cos(\theta_B(\omega)))|\hat{f}(\omega)|d\omega \\
+%&=\int_{\mathbb{R}^d}g(x,\omega)|\hat{f}(\omega)|d\omega \\
+%&=\|f\|_{B^m}\int_{\mathbb{R}^d}|\omega|_B^{-m}g(x,\omega)\lambda^{m}(\omega)d\omega 
+%%\\&=\int_{\mathbb{R}^d}\|f\|_{B^m}
+%%(\cos(\omega\cdot x+\theta(\omega))-\cos(\omega\cdot x_B+\theta(\omega)))\lambda(\omega)d\omega \\
+%%  &=\int_{\mathbb{R}^d} g(x,\omega)\lambda(\omega)d\omega,
+%\end{aligned}
+%  \end{equation}
+%where
+%$$
+%\theta_B(\omega)=\omega\cdot x_B+\theta(\omega)
+%$$
+%and $g: B\times \mathbb{R}^d\rightarrow \mathbb{R}$
+%is given by
+%\begin{equation}\label{gz}
+%  g(x,\omega):=
+%\cos(\omega\cdot (x-x_B)+\theta_B(\omega))  -\cos(\theta_B(\omega)),
+%\end{equation}
+%
+%\begin{equation}
+%\label{lambda}
+%\lambda^m(\omega)=\frac{|\omega|_B^m|\hat{f}(\omega)|}{\|f\|_B^m}
+%\end{equation}
+%is a  probability distribution density function. 
+%
+%We define 
+%\begin{equation}
+%\|f\|_{B^m}:=\int_{\mathbb R^d}|\omega|_B^m|\hat{f}(\omega)|d\omega,
+%\end{equation}
+%\begin{equation}
+%\|f\|_{B^m}:=\inf_{f^e|_B=f}\int_{\mathbb R^d}|\omega|_B^m|\hat{f^e}(\omega)|d\omega,
+%\end{equation}
+%where 
+%$$
+%|\omega|_B:=\sup\limits_{x\in B}|\omega\cdot(x-x_B)|
+%$$
+%We note that, if, for example,  $B=B_r=\{x:|x|\le r\}$, we then have $|\omega|_{B_r}
+%=r\cdot |\omega|$ if $x_B=0$.  In general
+%$$
+%|\omega|_B\le {\rm diam}(B)|\omega|. 
+%$$
+%
+%We then obtain the following result. 
+%\begin{lemma}
+%\label{lem2.2}
+%\begin{equation}
+%\frac{f(x)-f(x_B)}{\|f\|_{B^m}}
+%=\int_{\mathbb R^d} \frac{g(x,\omega)}{|\omega|^m}\lambda(\omega)d\omega =\mathbb E_\omega(\frac{g(x, \omega)}{|\omega|_B^m})
+%\end{equation}
+%and 
+%$g$ is given by \eqref{gz} and satisfies
+%\begin{equation}\label{g-bound1}
+%|g(x,\omega)|\le  \min(2,|\omega|_B)\quad \forall x\in B,  \omega\in \mathbb
+%R^d.  
+%\end{equation}
+%\end{lemma}
+%
+%\begin{theorem}
+%\label{thm:cos} For a probability measure $\mu$ on $B$ and every
+%  function $f$ with $\|\hat f\|_{L^1}< \infty$, there exist
+% $\omega_1,\ldots,\omega_n\in \mathbb R^d$ such that
+%\begin{equation}
+% \int_{B}\left|f(x)-f(x_B)-\frac{\|\hat f\|_{L^1}}{n}
+%    \sum_{i=1}^ng(x,\omega_i)\right|^2\/d\mu(x) \le \frac{4\|\hat f\|^2_{L^1}}{n}.
+%\end{equation}
+%\end{theorem}
+%\begin{theorem}
+%  \label{thm2.1} For a probability measure $\mu$ on $B$ and every
+%  function $f$ with $\|f\|_{B}< \infty$, there exist
+%  $\omega_1,\ldots,\omega_n\in \mathbb R^d$ such that
+%\begin{equation}
+%\int_{B}\left|f(x)-f(x_B)-\frac{\|f\|_{B}}{n} \sum_{i=1}^n\frac{g(x,\omega_i)}{|\omega_i|}\right|^2\/d\mu(x) \le \frac{\|f\|^2_B}{n}.
+%\end{equation}
+%\end{theorem}
+%\begin{proof}
+%Denote
+%$$
+%\tilde f(x)=\frac{f(x)-f(x_B)}{\|f\|_{B^m}}
+%$$
+%By Lemma \ref{MC} and Lemma \ref{lem2.2}, we have for $m=0,1$,
+%\begin{equation}
+%    \label{eqn3.10}
+%    \begin{aligned}
+%      &\quad \mathbb{\bar E}\left(\tilde f(x)-\frac1n\sum_{i=1}^n\frac{g(x,\omega_i)}{|\omega|_B^m}\right)^2 \\
+%      &=\mathbb{\bar E}(\mathbb{E}_\omega(\frac{g(x,\omega)}{|\omega|_B^m})-
+%      \frac1n\sum_{i=1}^n \frac{g(x,\omega_i)}{|\omega|_B^m})^2 \\
+%      &\le\frac{1}{n}\max_{x\in B, \omega\in \mathbb R^d}\frac{|g(x,\omega)|^2}{|\omega|_B^{2m}}\\
+%      &\le \frac{4^{1-m}}{n}
+%    \end{aligned}
+%\end{equation}
+%
+%By the Fubini's theorem,
+%  \begin{equation}
+% \label{eqn3.11}
+%  \begin{aligned}
+% &\quad  \mathbb{\bar E}\int_B(\tilde f(x)-\frac1n\sum_{i=1}^n\frac{g(x,\omega_i)}{|\omega_i|_B^m})^2 \mu(dx)\\
+% &=\int_B \mathbb{\bar E} (\tilde f(x)-\frac1n\sum_{i=1}^n\frac{g(x,\omega_i)}{|\omega_i|_B^m})^2 \mu(dx)\\
+%    &\le \frac{4^{1-m}}{n}.
+%  \end{aligned}
+%  \end{equation}
+%Therefore, there exists a sequence of $\{\omega_i\}_{i=1}^n$ where
+%$\omega_i\in \mathbb{R}^d$, such that 
+%$$
+%\int_B  (\tilde
+%f(x)-\frac1n\sum_{i=1}^n\frac{g(x,\omega_i)}{|\omega_i|_B^m})^2
+%\mu(dx)
+%\le \frac{4^{1-m}}{n}.
+%$$
+%This complete the proof. 
+%\end{proof}
+%Recalling \eqref{gz}, we have
+%\begin{eqnarray*}
+%f_n
+%&\equiv& f(0)+\frac{\| f\|_B}{n} \sum_{i=1}^n\frac{g(\cdot,\omega_i)}{|\omega_i|_B}\\
+%&=& f(0)+\frac1n \sum_{i=1}^n \frac{\|f\|_B}{|\omega_i|_B}(\cos(\omega_i\cdot x+\theta(\omega_i))  -\cos(\theta(\omega_i)))\\
+%&=& 
+%\frac1n \sum_{i=1}^n \frac{\|f\|_B}{|\omega_i|_B}(\cos(\omega_i\cdot
+%x+\theta(\omega_i))  +\left(
+%f(0)-\frac1n \sum_{i=1}^n \frac{\|f\|_B}{|\omega_i|_B}\cos(\theta(\omega_i)) \right)\\
+%&=& 
+%\sum_{i=1}^n a_i\cos(\omega_i\cdot x+b_i)  +c
+%\end{eqnarray*}
+%where
+%$$
+%a_i=\frac1n \frac{\|f\|_B}{|\omega_i|_B}, b_i=\theta(\omega_i), c=f(0)-\frac1n \sum_{i=1}^n \frac{\|f\|_B}{|\omega_i|_B}\cos(\theta(\omega_i)).
+%$$
+%
+%\begin{theorem}
+%  \begin{equation}
+%\min_{a_i,b_i,c\in \mathbb R^1, \omega_i\in \mathbb R^d}
+%\int_{B}|f(x)-\sum_{i=1}^n a_i\cos(\omega_i\cdot x+b_i)
+%-c|^2\mu(dx)\le \frac{4\|\hat f\|^2_{L^1(\mathbb R^d)}}{n}.
+%  \end{equation}
+% \end{theorem}
+
+\section{An improved analysis}
+\subsection{Heaviside Function}
+Define $g_i: [-1,1]\mapsto \mathbb R$ as
+follows:
+\begin{equation}
+  \label{psi}
+g_i(t)=\frac{1}{|\omega_i|_B}[\cos(|\omega_i|_Bt+\theta_B(\omega_i))  -\cos(\theta_B(\omega_i))],
+\end{equation}
+In view of \eqref{gz}, we have
+\begin{equation}
+  \label{gpsi}
+g_i(s_i)=\frac{g(x,\omega_i)}{|\omega_i|_B}, \quad s_i=\omega_i^B\cdot(x-x_B),\quad \omega^B=\frac{\omega}{|\omega|_B}
+\end{equation}
+Now, we take an integer
+\begin{equation}
+  \label{k}
+k\ge \sqrt{n}  
+\end{equation}
+and consider a partition of $[-1,1]$ with the following grid points
+$$
+t_j=jh_k, j=-k:k
+$$
+with 
+$$
+ h_k=\frac{1}{k}\le \frac{1}{\sqrt{n}}.
+$$
+We first take a piecewise constant interpolation for $g_i$ on $[0,1]$ to get
+$$
+g_{i,k}(t)=(\Pi_kg_i)(t)=\sum_{j=0}^{k-1}g_i(t_j) M_j(t),   
+$$
+where
+$$
+M_j(t)=M_0(\frac{t-t_j}{h_k})
+$$
+and
+\begin{equation}
+  \label{cardinal}
+M_0(x)=
+\left\{
+  \begin{array}{ll}
+0 & x\le0 \\
+1 & 0< x\le1    \\
+0 & x > 1    
+  \end{array}
+\right.
+\end{equation}
+We note that
+$$
+M_0(x)=H(x)-H(x-1)
+$$
+where $H$ is the Heaviside function
+Thus
+$$
+M_0(\frac{t-t_{j}}{h_k})
+=H(\frac{t-t_{j}}{h_k})-H(\frac{t-t_{j}}{h_k}-1)=H(\frac{t-t_{j}}{h_k})-H(\frac{t-t_{j+1}}{h_k})
+\equiv H_{j}(t)-H_{j+1}(t).
+$$
+Thus, since $g_i(t_0)=0, H_k=0$, we have
+\begin{equation}  \label{gi0}
+g_{i,k}(t)=\sum_{j=0}^{k-1}g_i(t_j) M_j(t)
+=\sum_{j=1}^{k-1}(g_i(t_j) - g_i(t_{j-1})) H_{j}(t), \quad t\in [0,1]
+\end{equation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Now we consider
+\begin{equation}
+h_i(t) = g_i(-t), \quad t\in [0,1].
+\end{equation}
+Similar to \eqref{gi0}, we have
+$$
+(\Pi_kh_i)(t)=\sum_{j=1}^{k-1}(h_i(t_j) - h_i(t_{j-1}))H_j(t)=
+=\sum_{j=1}^{k-1}(g_i(-t_j) - g_i(-t_{j-1}))H_j(t)
+$$
+Namely
+$$
+(\Pi_k g_i)(-t)=\sum_{j=1}^{k-1}(g_i(-t_j) - g_i(-t_{j-1}))H_j(t), \quad t\in [0,1]
+$$
+or
+\begin{equation}\label{gi1}
+(\Pi_k g_i)(t)=\sum_{j=1}^{k-1}(g_i(-t_j) - g_i(-t_{j-1}))H_j(-t), \quad t\in [-1,0]
+\end{equation}
+By combining \eqref{gi0} and \eqref{gi1}, we get a piecewise constant
+interpolation of $g_i$ on $[-1,1]$ as follows:
+\begin{eqnarray}
+g_{i,k}(t)&=&
+\sum_{j=1}^{k-1}(g_i(-t_j) - g_i(-t_{j-1}))H_j(-t)+\sum_{j=1}^{k-1}(g_i(t_j) - g_i(t_{j-1})) H_{j}(t)\nonumber \\ 
+&=&\sum_{j=1}^{k-1}[a_{ij}^-H_j(-t)+a_{ij}^+H_{j}(t)] \label{gih}
+\quad t\in [-1,1]
+\end{eqnarray}
+where 
+$$
+a_{ij}^{\pm}=g_i(\pm t_j) - g_i(\pm t_{j-1})
+$$
+It is easy to see that
+\begin{equation}
+|g_i(t)-g_{i,k}(t)|\le h_k, \quad t\in [-1,1].
+\end{equation} 
+
+\begin{equation}
+\|\frac1n \sum_{i=1}^n \frac{g(\cdot,\omega_i)}{|\omega_i|_B}-f^*\|_{L^2(\mu,B)}\le h_k
+\end{equation}
+where
+\begin{equation}
+  \label{fstar}
+f^*(x)=
+\frac1n\sum_{i=1}^ng_{i,k}(\omega_i^B\cdot (x-x_B)).
+\end{equation}
+By the approximation in last section, we have 
+\begin{equation}
+  \|\tilde f-f^*\|_{L^2(\mu,B)}\le \frac{2}{\sqrt{n}}
+\end{equation}
+Let us rewrite
+$$
+f^*(x)
+=\sum_{i=1}^n\sum_{j=1}^{k-1}[\gamma_{ij}^- f_{ij}^-+ \gamma_{ij}^+f_{ij}^+]
+$$
+where
+$$
+\gamma_{ij}^{\pm}=\frac{|a^\pm_{ij}|}{nd_i}, 
+f^\pm_{i,j}=d_i\/{\rm sign}(a^\pm_{ij})H_j(\pm \omega_i^B\cdot (x-x_B))
+$$
+and 
+$$
+d_i=\sum_{j=1}^{k-1}(|a^-_{ij}|+|a^+_{ij}|)\le 2
+$$
+By definition
+\begin{equation}
+  \label{gammaij}
+\sum_{i=1}^n\sum_{j=1}^{k-1}[\gamma_{i,j}^-+\gamma_{i,j}^+]=1.
+\end{equation}
+With re-numeration as
+$$
+p_\ell=\gamma_{ij}^{\pm}, f_\ell = f_{ij}^{\pm}, 1\le \ell \le N=2n(k-1)
+$$
+We have
+$$
+f^*(x)=\sum_{\ell=1}^N p_\ell f_\ell
+$$
+Consider 
+$$
+\mathcal N=\{1,2,\ldots, N\}
+$$
+and 
+$$
+\bar f: \mathcal N\mapsto \mathbb R^1
+$$
+such that
+$$
+\bar  f(\ell)=f_{\ell}, \ell\in \mathcal N
+$$
+With the probability measure
+$$
+\mu(\mathcal M)=\sum_{m\in \mathcal M}p_m \quad \mathcal M\subset\mathcal N.
+$$
+By definition. 
+$$
+\mathbb E(\bar  f) = f^*(x).
+$$
+By the basic result on expectation in Lemma \ref{MC1}, we have
+$$
+\sum_{\ell_1,\ldots \ell_n=1}^Np_{\ell_1}\cdots p_{\ell_n}\left(f^*(x)-
+{1\over n}\sum_{i=1}^n f_{\ell_i}\right)^2
+=\mathbb E_{\mathcal N^n} \left(\mathbb E(\bar f)-{1\over
+    n}\sum_{i=1}^n  \bar  f(\ell_i)\right)^2\\
+\le\frac1n \|\bar  f\|_{\infty}^2 \le\frac4n.
+$$
+By taking the $L^2(\mu,B)$ on the above inequality, we get
+$$
+\sum_{\ell_1,\ldots \ell_n=1}^Np_{\ell_1}\cdots p_{\ell_n}\|f^*-{1\over n}\sum_{i=1}^n f_{\ell_i}\|_{L^2(\mu,B)}^2
+\le\frac4n.
+$$
+Thus, there exisit $\ell_1^*, \ldots, \ell_n^*\in \mathcal N$ such that
+$$
+\|f^*-{1\over n}\sum_{i=1}^n f_{\ell_i^*}\|_{L^2(\mu,B)}^2
+\le\frac4n.
+$$
+where
+$$
+f_n(x)={1\over n}\sum_{i=1}^n f_{\ell_i^*}(x).
+$$
+Then we have 
+\begin{equation}
+\|\tilde f-f_n\|^2_{L^2(\mu,B)}\le \frac{9}{n}.
+\end{equation}
+Consequently
+\begin{equation}
+\left\|f(x)-f(x_B)-\|f\|_Bf_n\right\|^2_{L^2(\mu,B)}\le \frac{9\|f\|^2_B}{n}.
+\end{equation}
+
+\subsection{Piecewise linear function}
+The proof here is almost the same as the proof for Heaviside function in the last part. 
+
+Now we take a piecewise linear interpolation for $g_i$ on $[0,1]$, since $g_i(t_0)=0$ , we get
+$$
+g_{i,k}(t)=(\Pi_kg_i)(t)=\sum_{j=1}^{k}[g_i(t_{j})-g_i(t_{j-1})]\sigma_{j-1}(t),   \quad t\in [0,1]
+$$
+where
+$$
+\sigma_j(t)=M_0(\frac{t-t_j}{h_k})
+$$
+and
+\begin{equation}
+\label{cardinal}
+M_0(x)=
+\left\{
+\begin{array}{ll}
+0 & x\le0 \\
+x & 0< x\le1    \\
+1 & x > 1    
+\end{array}
+\right.
+\end{equation}
+%We note that
+%$$
+%M_0(x)=ReLU(x)-ReLU(x-1)
+%$$
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Consider
+\begin{equation}
+h_i(t) = g_i(-t), \quad t\in [0,1].
+\end{equation}
+Similarly, we have
+$$
+(\Pi_kh_i)(t)=\sum_{j=1}^{k}(h_i(t_j) - h_i(t_{j-1}))\sigma_{j-1}(t)=
+=\sum_{j=1}^{k}(g_i(-t_j) - g_i(-t_{j-1}))\sigma_{j-1}(t)
+$$
+Namely
+$$
+(\Pi_k g_i)(-t)=\sum_{j=1}^{k}(g_i(-t_j) - g_i(-t_{j-1}))\sigma_{j-1}(t), \quad t\in [0,1]
+$$
+or
+\begin{equation}\label{gi1}
+(\Pi_k g_i)(t)=\sum_{j=1}^{k}(g_i(-t_j) - g_i(-t_{j-1}))\sigma_{j-1}(-t), \quad t\in [-1,0]
+\end{equation}
+Combine together we get a piecewise linear
+interpolation of $g_i$ on $[-1,1]$ as follows:
+\begin{eqnarray}
+g_{i,k}(t)&=&
+\sum_{j=1}^{k}(g_i(-t_j) - g_i(-t_{j-1}))\sigma_{j-1}(-t)+\sum_{j=1}^{k}(g_i(t_j) - g_i(t_{j-1}))\sigma_{j-1}(t)\nonumber \\ 
+&=&\sum_{j=1}^{k}[a_{ij}^-\sigma_{j-1}(-t)+a_{ij}^+\sigma_{j-1}(t)] \label{gih}
+\quad t\in [-1,1]
+\end{eqnarray}
+where 
+$$
+a_{ij}^{\pm}=g_i(\pm t_j) - g_i(\pm t_{j-1})
+$$
+%It is easy to see that
+%\begin{equation}
+%|g_i(t)-g_{i,k}(t)|\le h_k, \quad t\in [-1,1].
+%\end{equation} 
+%\begin{equation}
+%\|\frac1n \sum_{i=1}^n \frac{g(\cdot,\omega_i)}{|\omega_i|_B}-f^*\|_{L^2(\mu,B)}\le h_k
+%\end{equation}
+%where
+%\begin{equation}
+%\label{fstar}
+%f^*(x)=
+%\frac1n\sum_{i=1}^ng_{i,k}(\omega_i^B\cdot (x-x_B)).
+%\end{equation}
+%
+%By Theorem \ref{jones}, we have 
+%\begin{equation}
+%%\|\tilde f-f^*\|_{1,B}\le \frac{C_1(d,B)}{\sqrt{n}}
+%  \|\tilde f-f^*\|_{L^2(\mu,B)}\le \frac{2}{\sqrt{n}}
+%\end{equation}
+%here $C_1(d,B)=\sqrt{\mu(B)}[\sqrt{(d+{\rm diam}(B))}+{\rm diam}(B)(1+d)]$.
+
+
+%Let us rewrite
+%$$
+%f^*(x)
+%=\sum_{i=1}^n\sum_{j=1}^{k}[\gamma_{ij}^- f_{ij}^-+ \gamma_{ij}^+f_{ij}^+]
+%$$
+%where
+%$$
+%\gamma_{ij}^{\pm}=\frac{|a^\pm_{ij}|}{nd_i}, 
+%f^\pm_{i,j}=d_i\/{\rm sign}(a^\pm_{ij})\sigma_{j-1}(\pm \omega_i^B\cdot (x-x_B))
+%$$
+%and 
+%$$
+%d_i=\sum_{j=1}^{k}(|a^-_{ij}|+|a^+_{ij}|)\le 2
+%$$
+%By definition
+%\begin{equation}
+%\label{gammaij}
+%\sum_{i=1}^n\sum_{j=1}^{k}[\gamma_{i,j}^-+\gamma_{i,j}^+]=1.
+%\end{equation}
+%With re-numeration as
+%$$
+%p_\ell=\gamma_{ij}^{\pm}, f_\ell = f_{ij}^{\pm}, 1\le \ell \le N=2nk
+%$$
+%We have
+%$$
+%f^*(x)=\sum_{\ell=1}^N p_\ell f_\ell
+%$$
+%Consider 
+%$$
+%\mathcal N=\{1,2,\ldots, N\}
+%$$
+%and 
+%$$
+%\bar f: \mathcal N\mapsto \mathbb R^1
+%$$
+%such that
+%$$
+%\bar f(\ell)=f_{\ell}, \ell\in \mathcal N
+%$$
+%With the probability measure
+%$$
+%\lambda(\mathcal M)=\sum_{m\in \mathcal M}p_m \quad \mathcal M\subset\mathcal N.
+%$$
+%By definition. 
+%$$
+%\mathbb E(\bar f) = f^*(x).
+%$$
+%
+%By the basic result on expectation:
+%\begin{equation}
+%\begin{aligned}
+%&\sum_{\ell_1,\ldots \ell_n=1}^Np_{\ell_1}\cdots p_{\ell_n}\left((f^*(x)-
+%{1\over n}\sum_{i=1}^n f_{\ell_i})^2\right)\\
+%=&\mathbb E_{\mathcal N^n} \left(\mathbb E(\bar f)-{1\over
+%	n}\sum_{i=1}^n  \bar f(\ell_i)\right)^2
+%\le\frac1n \|\bar f\|_{\infty}^2 \le\frac{4}{n}.
+%\end{aligned}
+%\end{equation}
+%
+%By taking the $L^2(\mu,B)$ on the above inequality, we get
+%$$
+%\sum_{\ell_1,\ldots \ell_n=1}^Np_{\ell_1}\cdots p_{\ell_n}\|f^*-{1\over n}\sum_{i=1}^n f_{\ell_i}\|_{L^2(\mu,B)}^2
+%\le\frac4n.
+%$$
+%Thus, there exisit $\ell_1^*, \ldots, \ell_n^*\in \mathcal N$ such that
+%$$
+%\|f^*-f_n(x)\|_{L^2(\mu,B)}^2
+%\le\frac4n.
+%$$
+%where
+%$$
+%f_n(x)={1\over n}\sum_{i=1}^n f_{\ell_i^*}(x).
+%$$
+%Then we have 
+%\begin{equation}
+%\|\tilde f-f_n\|^2_{L^2(\mu,B)}\le \frac{9}{n}.
+%\end{equation}
+
+%Consequently
+%\begin{equation}
+%\left\|f(x)-f(x_B)-\|f\|_Bf_n\right\|^2_{L^2(\mu,B)}\le \frac{9\|f\|^2_B}{n}.
+%\end{equation}
+
+Follow the procedure in last section, and notice that $\sigma(x)=ReLU(x)-ReLU(x-1)$, we obtain the following theorem.
+
+
+\begin{theorem}
+	For a probability measure $\mu$ on B and every function with $\|f\|_B<\infty$, there exists $\omega_1,\dots,\omega_n\in\mathbb{R}^d$ such that 
+$$
+\left\|f(x)-f_n(x)\right\|^2_{L^2(\mu,B)}\le \frac{C\|f\|^2_B}{n}.
+$$
+where $f_n(x)=\sum_{i=1}^{n}a_iReLU(\omega_i x+b_i)+c$.
+\end{theorem}

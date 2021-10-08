@@ -1,0 +1,176 @@
+\section{Universal kernels(Li Jiang)}
+
+\begin{definition}
+	Let $X$ be a non-empty set. Then  a function $k:X\times X \rightarrow \mathbb{K}$ is called a \textbf{kernel} on $X$ if there exists a $\mathbb{K}$-Hilbert space $H$ and a map $\Phi:X\rightarrow H$ such that for all $x,x' \in X$ we have
+	\begin{equation}
+	k(x,x') = \langle \Phi(x'),\Phi(x) \rangle.
+	\end{equation}
+	We call $\Phi$ a \textbf{feature map} and $H$ a \textbf{feature space} of $k$.
+\end{definition}
+
+Denote
+\begin{equation}
+K_X = {\rm span} \{k(x,\cdot), x\in X\}.
+\end{equation}
+
+\begin{definition}[Universal Kernels]
+	A continuous kernel $k$ on a compact metric space $X$ is called \textbf{universal} if $K_X$ is dense in $C(X)$, i.e., for every function $g\in C(X)$ and all $\epsilon>0$ there exists an $f\in K_X$ such that
+	\begin{equation}
+	\|f-g\|_{\infty} \leq \epsilon.
+	\end{equation} 
+\end{definition}
+
+Given any \textbf{feature map} $\Phi$ and  a \textbf{feature space} $H$ of $k$, we denote
+\begin{equation}
+S_{\Phi,H} = {\rm span} \{\Phi(x): x\in X\},
+\end{equation}
+and
+\begin{equation}
+F_{\Phi,H} = \{f:  \exists w\in H, f(x) = \langle w, \Phi(x) \rangle_H, \forall x\in X\}.
+\end{equation}
+
+\begin{lemma}
+	\begin{equation}
+		K_X = \{f:  \exists w\in S_{\Phi,H}, f(x) = \langle w, \Phi(x) \rangle_H, \forall x\in X\}.
+	\end{equation}
+\end{lemma}
+
+\begin{lemma}
+	\begin{equation}
+	F_{\Phi,H} = \{f:  \exists w\in \overline{S_{\Phi,H}}, f(x) = \langle w, \Phi(x) \rangle_H, \forall x\in X\}.
+	\end{equation}
+\end{lemma}
+
+\begin{proof}
+	We only need to notice that
+	\begin{equation}
+	H = \overline{S_{\Phi,H}} \oplus \overline{S_{\Phi,H}}^{\perp}.
+	\end{equation} 
+	Then for any $w\in H$, there exists a $w_1 \in \overline{S_{\Phi,H}}$, and a $w_2 \in \overline{S_{\Phi,H}}^{\perp}$ such that $w = w_1 + w_2$. Notice that $\langle w_2, \Phi(x) \rangle_H = 0,~\forall x\in X$. So we have
+	\begin{equation}
+		\langle w, \Phi(x) \rangle_H = \langle w_1, \Phi(x) \rangle_H,~\forall x \in X.
+	\end{equation}
+\end{proof}
+%Easy to observe that there is a surjective between $F_{\Phi,H}$ and $\overline{S_{\Phi,H}}$.
+
+%\begin{lemma}
+%	For any two pairs $(\Phi,H)$ and $(\Phi',H')$, there is an isomorphism between $\overline{S_{\Phi,H}}$ and $\overline{S_{\Phi',H'}}$.
+%\end{lemma}
+
+%\begin{lemma}
+%	Let $X\neq \emptyset$ and $k$ be a continuous kernel over $X$ with feature space $H$ and feature map $\Phi: X\rightarrow H$, then $\Phi$ must be continuous.
+%\end{lemma}
+%
+%\begin{proof}
+%	\begin{equation}
+%	\|\Phi(x) - \Phi(x')\|_H^2 = k(x,x) + k(x',x') - k(x,x') - k(x',x).
+%	\end{equation}
+%	So the continuity of kernel implies the continuity of feature map $\Phi$.
+%\end{proof}
+
+\begin{lemma}
+	Let $X$ be a compact metric space and $k$ be a continuous kernel over $X$ with feature space $H$ and feature map $\Phi: X\rightarrow H$, then we have
+	\begin{equation}
+	K_X \subset F_{\Phi,H} \subset \overline{K_X}.
+	\end{equation}
+\end{lemma}
+
+\begin{proof}
+	$K_X \subset F_{\Phi,H} $ is a direct corollary of the preceding 2 lemmas. So we only need to show that $F_{\Phi,H} \subset \overline{K_X}$.\\
+	Given any $f\in F_{\Phi,H}$, there exists a $w\in \overline{S_{\Phi,H}}$ such that $f(\cdot) = \langle w,\Phi(\cdot) \rangle_H$. Choose a sequence $\{w_n\}$ in $S_{\Phi,H}$ which satisfies $w_n$ converges to $w$ in $H$, then easy to observe that $f_n(\cdot) = \langle w_n,\Phi(\cdot) \rangle_H\in K_X$. Notice that
+	\begin{equation}
+		|f_n(x) - f(x)| \leq \|w_n - w\|_H \sqrt{k(x,x)}
+	\end{equation}
+	Denote $C = \sup_{x\in X} \sqrt{k(x,x)} < \infty$, then 
+	\begin{equation}
+		\|f_n - f\|_{u} \leq C \|w_n - w\|_H,
+	\end{equation}
+	so $f_n$ converges to $f$ in $C(X)$, which implies $F_{\Phi,H} \subset \overline{K_X}$.
+\end{proof}
+
+\begin{corollary}
+	$K_X$ is dense in $C(X)$ if and only if there exists a pair $\Phi,H$ such that $F_{\Phi,H}$ is dense in $C(X)$.
+\end{corollary}
+
+
+
+According to the last theorem, we know that given $H$ and $\Phi$ as the feature space and feature map of kernel $k$, then we only need to prove that for every function $g\in C(X)$ and all $\epsilon>0$ there exists an $\omega\in H$ such that 
+\begin{equation}
+\|\langle \omega,\Phi(\cdot) \rangle - g\|_{\infty} \leq \epsilon.
+\end{equation} 
+
+
+
+\begin{theorem}
+	Let $X$ be a compact metric space and $k$ be a continuous kernel on $X$. Suppose that we have a feature map $\Phi: X\rightarrow l_2$ of $k$. We write $\Phi_n: X\rightarrow \mathbb{R}$ for its n-th component, i.e., $\Phi(x) = (\phi_n(x))_{n\in \mathbb{N}}$, $x\in X$. If $\mathcal{A}:= {\rm span} \{\phi_n: n\in \mathbb{N}\}$ is dense in $C(X)$, then $k$ is universal.
+\end{theorem}
+
+\begin{proof}
+	We only need to notice that  $\mathcal{A}\subset F_{\Phi,H} $.
+\end{proof}
+
+
+
+\begin{corollary}[Universal Taylor kernels].
+	Fix an $r\in (0,+\infty]$ and a $C^\infty$ function $f:(-r,r) \rightarrow \mathbb{R}$ that can be expanded into its Taylor series at 0, i.e., 
+	\begin{equation}
+	f(t) = \sum_{n = 0}^\infty a_n t^n, ~~t\in (-r,r).
+	\end{equation}
+	Let $X:= \{x\in \mathbb{R}^d: \|x\|_2 < \sqrt{r}\}$. If we have $a_n>0$ for all $n\geq 0$, then $k$ given by
+	\begin{equation}
+	k(x,x') := f(\langle x,x'\rangle),~~x,x'\in X,
+	\end{equation}
+	is a universal kernel on every compact subset of $X$.
+\end{corollary}
+
+\begin{proof}
+	Suppose that $X_0$ is an arbitrary compact subset of $X$.\\
+	Notice that
+	\begin{align*}
+	k(x,x') &= \sum_{n = 0} a_n (\sum_{j = 1}^d x_j x_j')^n\\
+	&= \sum_{n =0}^\infty a_n \sum_{\sum_{i = 1}^d j_i= n,~j_i\geq0} \frac{n!}{\prod_{i = 1}^d j_i!} \prod_{i = 1}^d x_i^{j_i}\prod_{i = 1}^d (x'_i)^{j_i}\\
+	&= \sum_{j_1,\cdots,j_d\geq0} a_{j_1+\cdots+j_d} \frac{(j_1+\cdots+j_d)!}{\prod_{i = 1}^d j_i!} \prod_{i = 1}^d x_i^{j_i}\prod_{i = 1}^d (x'_i)^{j_i}
+	\end{align*}
+	Denote that $c_{j_1,\cdots,j_d} = \sqrt{a_{j_1+\cdots+j_d} \frac{(j_1+\cdots+j_d)!}{\prod_{i = 1}^d j_i!}}$, $\phi_{j_1,\cdots,j_d} = c_{j_1,\cdots,j_d} \prod_{i = 1}^d x_i^{j_i}$, and define feature map $\Phi: X_0 \rightarrow l_2$ as
+	\begin{equation}
+	\Phi(x) := (\phi_{j_1,\cdots,j_d}(x))_{j_1,\cdots,j_d\geq 0}
+	\end{equation}
+	Because $c_{j_1,\cdots,j_d} > 0$ for all $j_1,\cdots,j_d\geq0$, so $\mathcal{A}:= {\rm span} \{\phi_{j_1,\cdots,j_d}: j_1,\cdots,j_d\geq0\}$ is the d-variable polynomial space. According to the Stone-Weierstrass approximation theorem, we know $\mathcal{A}$ is dense in $C(X)$.
+\end{proof}
+
+
+\begin{corollary}
+	Exponential kernel $k_{\gamma}(x,x') = e^{\langle x,x' \rangle}$ is universal.
+\end{corollary}
+
+\begin{lemma}
+	Let $X$ be a compact metric space and $k$ be a universal kernel on $X$. Then $k(x,x)>0$ for all $x\in X$, and the \textbf{normalized kernel} $k^*$: $X\times X \rightarrow \mathbb{R}$ defined by 
+	\begin{equation}
+	k^*(x,x') := \frac{k(x,x')}{\sqrt{k(x,x)k(x',x')}},~~x,x'\in X,
+	\end{equation}
+	is universal.
+\end{lemma}
+
+
+\begin{corollary}
+	Gaussian RBF kernel $k_{\gamma}(x,x') = e^{-\frac{\|x-x'\|_2^2}{\gamma^2}}$ is universal.
+\end{corollary}
+
+\begin{theorem}[Stone-Weierstra$\beta$]
+	Let $(X,d)$ be a compact metric space and $\mathcal{A}\subset C(X)$ be an algebra. Then $\mathcal{A}$ is dense in $C(X)$ if both $\mathcal{A}$ does not vanish, i.e., for all $x\in X$, there exists an $f\in \mathcal{A}$ with $f(x)\neq 0$, and $\mathcal{A}$ separates points, i.e., for all $x,y\in X$ with $x\neq y$, there exists an $f\in \mathcal{A}$ with $f(x)\neq f(y)$.
+\end{theorem}
+
+\begin{theorem}
+	Let $X$ be a compact metric space and $k$ be a continuous kernel on $X$ with $k(x,x)>0$ for all $x\in X$. Suppose that we have an injective feature map $\Phi: X\rightarrow l_2$ of $k$. We write $\phi_n: X\rightarrow \mathbb{R}$ for its n-th component, i.e., $\Phi(x) = (\phi_n(x))_{n\in \mathbb{N}}$, $x\in X$. If $\mathcal{A}:= {\rm span} \{\phi_n: n\in \mathbb{N}\}$ is an algebra, then $k$ is universal.
+\end{theorem}
+
+\begin{proof}
+	We only need to verify that $\mathcal{A}$ is dense in $C(X)$, thus we only need to verify $\mathcal{A}$ satisfies the conditions in Stone-Weierstra$\beta$ theorem. \\
+	Notice that for all $x\in X$, we have
+	\begin{equation}
+	\|\Phi(x)\|_{l2}^2 = \sum_{n=1}^{\infty} \phi_n^2(x) = k(x,x) >0.
+	\end{equation}
+	So for all $x\in X$, there is at least one $\phi_n$ such that $\phi_n(x) \neq 0$.\\
+	Also, because $\Phi$ is injective, we know for any $x\neq y$, $\Phi(x)\neq \Phi(y)$, which implies there exists a $\phi_n$ such that $\phi_n(x) \neq \phi_n(y)$.
+	
+\end{proof}

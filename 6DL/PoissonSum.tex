@@ -1,0 +1,51 @@
+% Qingguo put the Poisson summation formula here in this file:  statement and sketch of proof
+
+\begin{theorem}
+Let $f \in L^{1}(\mathbb{R})$ and $f$ is continuous. Then we have for almost all $(x, \omega ) \in \mathbb{R} \times \hat{\mathbb{R}}$ that
+$$
+T \sum_{n \in \mathbb{Z}} f(x+n T) e^{-2 \pi i \omega (x+n T)}=\sum_{n \in \mathbb{Z}} \hat{f}\left(\omega +\frac{n}{T}\right) e^{2 \pi i n x / T}
+$$
+where both sides converge absolutely.
+
+In addition,  let $\Lambda$ be the lattice in $\mathbb{R}^{d}$ consisting of points with integer coordinates. 
+For a function $f$ in $L^{1}\left(\mathbb{R}^{d}\right)$ and $f$ is continuous, we have 
+$$
+\sum_{\omega  \in \Lambda} f(x+\omega )=\sum_{\nu \in \Lambda} \hat{f}(\omega ) e^{2 \pi i x \cdot \omega }.
+$$
+where both series converge absolutely and uniformly on $\Lambda$. 
+\end{theorem} 
+
+\begin{proof}
+We just give a proof of a simple case that $f: \mathbb{R} \rightarrow \mathbb{C}$ is a Schwarz function (see Definition \ref{def:schwarz}).
+Let:
+$$
+F(x)=\sum_{n \in \mathbb{Z}} f(x+n).
+$$
+Then $F(x)$ is 1-periodic (because of absolute convergence), and has Fourier coefficients:
+$$
+\begin{aligned}
+\hat{F}_{\omega } &=\int_{0}^{1} \sum_{n \in \mathbb{Z}} f(x+n) e^{-2 \pi i \omega x} \mathrm{~d} x \\
+&=\sum_{n \in \mathbb{Z}} \int_{0}^{1} f(x+n) e^{-2 \pi i \omega  x} \mathrm{~d} x \quad \text { because } f \text { is Schwarz, so convergence is uniform}\\
+&=\sum_{n \in \mathbb{Z}} \int_{n}^{n+1} f(x) e^{-2 \pi i\omega  x} \mathrm{~d} x \\
+&=\int_{\mathbb{R}} f(x) e^{-2 \pi i \omega  x} \mathrm{~d} x\\
+&=\hat{f}(k)\\
+\end{aligned}
+$$
+ where $\hat{f}$ is the Fourier transform of $f$.
+ 
+
+Therefore by the definition of the Fourier series of $f:$
+$$
+F(x) =\sum_{\omega  \in \mathbb{Z}} \hat{f}(k) e^{2\pi i \omega x}.
+$$
+Choosing $x=0$ in this formula:
+$$
+\sum_{n \in \mathbb{Z}} f(n)=\sum_{\omega  \in \mathbb{Z}} \hat{f}(\omega )
+$$
+as required.
+\end{proof}
+
+
+
+
+

@@ -1,0 +1,133 @@
+\newpage
+\section{ResNet}
+\subsection{ResNet architecture for Cifar}
+\begin{enumerate}
+\item Initialization of inputs
+$$
+f \in \mathbb{R}^{3\times 32\times 32}
+$$
+%%%%%%%%First Layer%%%%%%%%%
+\item First layer
+$$f^0=f\in \mathbb{R}^{3\times 32\times 32} \quad \theta^0 \in \mathbb{R}^{3\times 16\times 3\times 3}$$
+$$f^{1,0}= \sigma(\theta^{0} \ast (f^0))\in \mathbb{R}^{16 \times 32\times 32}$$
+%%%%%%%%%%%%%   32*32 mesh size %%%%%%%%%%%%%%%
+\item $32\times 32$ mesh size\\
+
+1st block:\quad input\quad $f^{1,0}\in \mathbb{R}^{16\times 32\times 32}$,\quad $\theta^{1,1,1} \in \mathbb{R}^{16\times 16\times 3\times 3}$,\quad $\theta^{1,1,2} \in \mathbb{R}^{16\times 16\times 3\times 3}$
+$$f^{1,1,1}=\sigma (\theta^{1,1,1} \ast (f^{1,0}))\in \mathbb{R}^{16\times 32\times 32}$$
+$$f^{1,1,2}=\sigma (\theta^{1,1,2} \ast (f^{1,1,1}))\in \mathbb{R}^{16\times 32\times 32}$$
+\quad\quad\quad\quad\quad output\quad $f^{1,1}=f^{1,0}+f^{1,1,2} \in \mathbb{R}^{16\times 32\times 32}$
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\ \hspace*{\fill} \\
+2st block:\quad input\quad $f^{1,1}\in \mathbb{R}^{16\times 32\times 32}$,\quad $\theta^{1,2,1} \in \mathbb{R}^{16\times 16\times 3\times 3}$,\quad $\theta^{1,2,2} \in \mathbb{R}^{16\times 16\times 3\times 3}$
+$$f^{1,2,1}=\sigma (\theta^{1,2,1} \ast (f^{1,1}))\in \mathbb{R}^{16\times 32\times 32}$$
+$$f^{1,2,2}=\sigma (\theta^{1,2,2} \ast (f^{1,2,1}))\in \mathbb{R}^{16\times 32\times 32}$$
+\quad\quad\quad\quad\quad output\quad $f^{1,2}=f^{1,1}+f^{1,2,2} \in \mathbb{R}^{16\times 32\times 32}$
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\ \hspace*{\fill} \\
+3st block:\quad input\quad $f^{1,2}\in \mathbb{R}^{16\times 32\times 32}$,\quad $\theta^{1,3,1} \in \mathbb{R}^{16\times 16\times 3\times 3}$,\quad $\theta^{1,3,2} \in \mathbb{R}^{16\times 16\times 3\times 3}$
+$$f^{1,3,1}=\sigma (\theta^{1,3,1} \ast (f^{1,3}))\in \mathbb{R}^{16\times 32\times 32}$$
+$$f^{1,3,2}=\sigma (\theta^{1,3,2} \ast (f^{1,3,1}))\in \mathbb{R}^{16\times 32\times 32}$$
+\quad\quad\quad\quad\quad output\quad $f^{1,3}=f^{1,3}+f^{1,3,2} \in \mathbb{R}^{16\times 32\times 32}$
+$$\cdots\cdots$$
+$\nu_1$ block:\quad input\quad $f^{1,\nu_1-1}\in \mathbb{R}^{16\times 32\times 32}$,\quad $\theta^{1,\nu_1,1} \in \mathbb{R}^{16\times 16\times 3\times 3}$,\quad $\theta^{1,\nu_1,2} \in \mathbb{R}^{16\times 16\times 3\times 3}$
+$$f^{1,\nu_1,1}=\sigma (\theta^{1,\nu_1,1} \ast (f^{1,\nu_1-1}))\in \mathbb{R}^{16\times 32\times 32}$$
+$$f^{1,\nu_1,2}=\sigma (\theta^{1,\nu_2,2} \ast (f^{1,\nu_1,1}))\in \mathbb{R}^{16\times 32\times 32}$$
+\quad\quad\quad\quad\quad output\quad $f^{1,\nu_1}=f^{1,\nu_1-1}+f^{1,\nu_1,2} \in \mathbb{R}^{16\times 32\times 32}$
+%%%%%%%%%%%%%   16*16 mesh size %%%%%%%%%%%%%%%
+\\ \hspace*{\fill} \\
+\item $16\times 16$ mesh size\\
+1st block:\quad input\quad $f^{1,\nu_1}\in\mathbb{R}^{16\times 32\times 32}$,\quad$\theta^{2,0} \in \mathbb{R}^{16\times 32\times 3\times 3}$ $\theta^{2,1,1} \in \mathbb{R}^{16\times 32\times 3\times 3}$,$\quad \theta^{2,1,2} \in \mathbb{R}^{32\times 32\times 3\times 3}$
+$$f^{2,0}=\sigma (\theta^{2,0} \ast_2 (f^{1,\nu_1}))\in \mathbb{R}^{32\times 16\times 16}$$
+$$f^{2,1,1}=\sigma (\theta^{2,1,1} \ast_2 (f^{1,\nu_1}))\in \mathbb{R}^{32\times 16\times 16}$$
+$$f^{2,1,2}=\sigma (\theta^{2,1,2} \ast (f^{2,1,1}))\in \mathbb{R}^{32\times 16\times 16}$$
+\quad\quad\quad\quad\quad output\quad $f^{2,1}=f^{2,0}+f^{2,1,2} \in \mathbb{R}^{32\times 16\times 16}$
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\ \hspace*{\fill} \\
+2st block:\quad input\quad $f^{2,1}\in \mathbb{R}^{32\times 16\times 16}$,\quad $\theta^{2,2,1} \in \mathbb{R}^{32\times 32\times 3\times 3}$,\quad $\theta^{2,2,2} \in \mathbb{R}^{32\times 32\times 3\times 3}$
+$$f^{2,2,1}=\sigma (\theta^{2,2,1} \ast (f^{2,1}))\in \mathbb{R}^{32\times 16\times 16}$$
+$$f^{2,2,2}=\sigma (\theta^{2,2,2} \ast (f^{2,2,1}))\in \mathbb{R}^{32\times 16\times 16}$$
+\quad\quad\quad\quad\quad output\quad $f^{2,2}=f^{2,1}+f^{2,2,2} \in \mathbb{R}^{32\times 16\times 16}$
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\ \hspace*{\fill} \\
+3st block:\quad input\quad $f^{2,2}\in \mathbb{R}^{32\times 16\times 16}$,\quad $\theta^{2,3,1} \in \mathbb{R}^{32\times 32\times 3\times 3}$,\quad $\theta^{2,3,2} \in \mathbb{R}^{32\times 32\times 3\times 3}$
+$$f^{2,3,1}=\sigma (\theta^{2,3,1} \ast (f^{2,3}))\in \mathbb{R}^{32\times 16\times 16}$$
+$$f^{2,3,2}=\sigma (\theta^{2,3,2} \ast (f^{2,3,1}))\in \mathbb{R}^{32\times 16\times 16}$$
+\quad\quad\quad\quad\quad output\quad $f^{2,3}=f^{2,3}+f^{2,3,2} \in \mathbb{R}^{32\times 16\times 16}$
+$$\cdots\cdots$$
+$\nu_2$ block:\quad input\quad $f^{2,\nu_2-1}\in \mathbb{R}^{32\times 16\times 16}$,\quad $\theta^{2,\nu_2,1} \in \mathbb{R}^{32\times 32\times 3\times 3}$,\quad $\theta^{2,\nu_2,2} \in \mathbb{R}^{32\times 32\times 3\times 3}$
+$$f^{2,\nu_2,1}=\sigma (\theta^{2,\nu_2,1} \ast (f^{2,\nu_2-1}))\in \mathbb{R}^{32\times 16\times 16}$$
+$$f^{2,\nu_2,2}=\sigma (\theta^{2,\nu_2,2} \ast (f^{2,\nu_2,1}))\in \mathbb{R}^{32\times 16\times 16}$$
+\quad\quad\quad\quad\quad output\quad $f^{2,\nu_2}=f^{2,\nu_2-1}+f^{2,\nu_2,2} \in \mathbb{R}^{32\times 16\times 16}$
+%%%%%%%%%%%%%   8*8 mesh size %%%%%%%%%%%%%%%
+\\ \hspace*{\fill} \\
+\item $8\times 8$ mesh size\\
+1st block:\quad input\quad $f^{2,\nu_2}\in\mathbb{R}^{32\times 16\times 16}$,\quad$\theta^{3,0} \in \mathbb{R}^{32\times 64\times 3\times 3}$ $\theta^{3,1,1} \in \mathbb{R}^{32\times 64\times 3\times 3}$,$\quad \theta^{3,1,2} \in \mathbb{R}^{64\times 64\times 3\times 3}$
+$$f^{3,0}=\sigma (\theta^{3,0} \ast_2 (f^{2,\nu_2}))\in \mathbb{R}^{64\times 8\times 8}$$
+$$f^{3,1,1}=\sigma (\theta^{3,1,1} \ast_2 (f^{2,\nu_2}))\in \mathbb{R}^{64\times 8\times 8}$$
+$$f^{3,1,2}=\sigma (\theta^{3,1,2} \ast (f^{3,1,1}))\in \mathbb{R}^{64\times 8\times 8}$$
+\quad\quad\quad\quad\quad output\quad $f^{3,1}=f^{3,0}+f^{3,1,2} \in \mathbb{R}^{64\times 8\times 8}$
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\ \hspace*{\fill} \\
+2st block:\quad input\quad $f^{3,1}\in \mathbb{R}^{64\times 8\times 8}$,\quad $\theta^{3,2,1} \in \mathbb{R}^{64\times 64\times 3\times 3}$,\quad $\theta^{3,2,2} \in \mathbb{R}^{64\times 64\times 3\times 3}$
+$$f^{3,2,1}=\sigma (\theta^{3,2,1} \ast (f^{3,1}))\in \mathbb{R}^{64\times 8\times 8}$$
+$$f^{3,2,2}=\sigma (\theta^{3,2,2} \ast (f^{3,2,1}))\in \mathbb{R}^{64\times 8\times 8}$$
+\quad\quad\quad\quad\quad output\quad $f^{3,2}=f^{3,1}+f^{3,2,2} \in \mathbb{R}^{64\times 8\times 8}$
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\ \hspace*{\fill} \\
+3st block:\quad input\quad $f^{3,2}\in \mathbb{R}^{64\times 8\times 8}$,\quad $\theta^{3,3,1} \in \mathbb{R}^{64\times 64\times 3\times 3}$,\quad $\theta^{3,3,2} \in \mathbb{R}^{64\times 64\times 3\times 3}$
+$$f^{3,3,1}=\sigma (\theta^{3,3,1} \ast (f^{3,3}))\in \mathbb{R}^{64\times 8\times 8}$$
+$$f^{3,3,2}=\sigma (\theta^{3,3,2} \ast (f^{3,3,1}))\in \mathbb{R}^{64\times 8\times 8}$$
+\quad\quad\quad\quad\quad output\quad $f^{3,3}=f^{3,3}+f^{3,3,2} \in \mathbb{R}^{64\times 8\times 8}$
+$$\cdots\cdots$$
+$\nu_3$ block:\quad input\quad $f^{3,\nu_3-1}\in \mathbb{R}^{64\times 8\times 8}$,\quad $\theta^{3,\nu_3,1} \in \mathbb{R}^{64\times 64\times 3\times 3}$,\quad $\theta^{3,\nu_3,2} \in \mathbb{R}^{64\times 64\times 3\times 3}$
+$$f^{3,\nu_3,1}=\sigma (\theta^{3,\nu_3,1} \ast (f^{3,\nu_3-1}))\in \mathbb{R}^{64\times 8\times 8}$$
+$$f^{3,\nu_3,2}=\sigma (\theta^{3,\nu_3,2} \ast (f^{3,\nu_3,1}))\in \mathbb{R}^{64\times 8\times 8}$$
+\quad\quad\quad\quad\quad output\quad $f^{3,\nu_3}=f^{3,\nu_3-1}+f^{3,\nu_3,2} \in \mathbb{R}^{64\times 8\times 8}$
+\\ \hspace*{\fill} \\
+\item Fully connect
+$$f^{3,\nu_3} \in \mathbb{R}^{64\times 8\times 8}$$
+$$f = R_{global~avg} \ast(\sigma(f^{3,\nu_3})) \in \mathbb{R}^{64}$$
+$$\theta_{fc} \in \mathbb{R}^{num~class\times 64}$$
+$$output = \theta_{fc}\times f \in \mathbb{R}^{num~class}$$
+\end{enumerate}
+The following table summarizes the architecture:\\
+\\ \hspace*{\fill} \\
+\begin{tabular}{| l | c | c | r |}
+\hline
+output map size &  $32\times 32$  & $16\times 16$  & $8\times 8$ \\
+\hline
+layers          &    $1+2n$       &   $2n$         &   $2n$      \\
+\hline
+filters         &       16        &     32         &     64      \\
+\hline
+\end{tabular}
+
+
+\subsection{The ResNet for cifar experiments setting}
+\begin{enumerate}
+\item network:3 mesh size blocks that each has an equal number of layers($\nu_1=\nu_2=\nu_3=n$)
+\item optimization method:SGD,use a weight decay of $10^{-4}$ and a Nesterov momentum of 0.9.
+\item batch size:$128$
+\item start with a learning rate of $0.1$, divide it by $10$ at $32k$($91$epoch) and $48k$($137$epoch) iterations, and terminate training at $64k$($183$epoch) iterations,which is determined on a $45k/5k$ train/val split.
+\item weight initialization: Kaiming method.
+\end{enumerate}
+
+\subsection{ResNet Classification Results on CIFAR}
+\begin{tabular}{| l | c | c | c | r |}
+\hline
+Method    &   n   & Layers   & Params   & C10+        \\
+\hline
+ResNet    &   3   &   20     &  0.27M   & 8.75(91.25)  \\  
+\hline
+ResNet    &   5   &   32     &  0.46M   & 7.51(92.49)  \\ 
+\hline
+ResNet    &   7   &   44     &  0.66M   & 7.17(92.83)  \\ 
+\hline
+ResNet    &   9   &   56     &  0.85M   & 6.97(93.03)  \\ 
+\hline
+ResNet    &   18  &   110    &  1.7M    & 6.43(93.57)  \\    
+\hline
+ResNet    &   200 &   1202   &  19.4M   & 7.93(92.07)  \\ 
+\hline        
+\end{tabular}

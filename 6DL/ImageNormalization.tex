@@ -1,0 +1,382 @@
+\section{Data normalization in DNNs and CNNs}
+The goal of data normalization is twofold:
+\begin{enumerate}
+\item Data normalization is the organization of data to appear similar across all records and fields.
+\item It increases the cohesion of entry types leading to cleansing, lead generation, segmentation, and higher quality data.
+\end{enumerate}
+Data normalization includes eliminating unstructured data and redundancy (duplicates) in order to ensure logical data storage. When data normalization is done correctly, you will end up with standardized information entry.
+
+In this chapter, we use superscript $i$, $j$, $l$ and $\nu$ to represent the $i$-th data, the $j$-th channel, the $l$-th depth and the $\nu$-th iteration step, respectively.
+
+\subsection{Data normalization in DNNs}
+Consider that we have the all training data as
+\begin{equation}\label{eq:trainingdata}
+(X,Y) := \{(x^i, y^i)\}_{i=1}^N,
+\end{equation}
+for $x^i \in \mathbb{R}^d$ and $y^i \in \mathbb{R}^k$. Here superscripte $i$ represents the $i$-th data.
+
+Before we input every data into a DNN model, we will apply the following normalization
+for all data $x_i$ for each component. The notation $x \sim X$ means that $x$ is a discrete random variable on $X$
+with probability
+\begin{equation}\label{key}
+\mathbb P( x = x^i ) = \frac{1}{N},
+\end{equation}
+for any $x^i \in X$. The expectation and the variance are 
+\begin{equation}\label{key}
+\mu_X =\mathbb{E}_{x \sim X}[x] = \frac{1}{N}\sum_{i=1}^N x^i, 
+\quad  \sigma_X= \mathbb{V}_{x\sim X}[x] = \frac{1}{N} \sum_{i=1}^N ( x^i - \mu_X)^T( x^i - \mu_X).
+\end{equation}
+Define new data
+\begin{equation}\label{eq:normlizationData}
+\tilde x^i = \frac{x^i - \mu_X }{\sqrt{\sigma_X}},
+\end{equation}
+where 
+$
+x^i , \tilde x^i , \mu_X, \sigma_X \in \mathbb{R}^d.
+$
+Finally, we will have a ``new'' data set 
+\begin{equation}\label{key}
+\tilde X = \{\tilde x^1, \tilde x^2, \cdots, \tilde x^N \},
+\end{equation}
+with unchanged label set $Y$. 
+To be specific, we rewrite the equation \eqref{eq:normlizationData} into an elementwise form. 
+Let denote
+\begin{equation}\label{key}
+x^{i,j} \longleftrightarrow \text{ the j-th component of data } x^i.
+\end{equation}
+Then we have following formula of for all $j = 1, 2, \cdots, d$
+\begin{equation}\label{key}
+\tilde x^{i,j}  = \frac{x^{i,j} - \mu_X^j }{\sqrt{\sigma_X^j}},
+\end{equation}
+where $\mu_X=(\mu_X^1,\mu_X^2,\cdots, \mu_X^d)\in \mathbb{R}^d$, $\sigma_X=(\sigma_X^1,\sigma_X^2,\cdots, \sigma_X^d)\in \mathbb{R}^d$ and
+\begin{equation}\label{key}
+\mu_X^j =\mathbb{E}_{x \sim X}[x^j] = \frac{1}{N}\sum_{i=1}^N x^{i,j}, 
+\quad  \sigma_X^j = \mathbb{V}_{x\sim X}[x^j] = \frac{1}{N} \sum_{i=1}^N ( x^{i,j} - \mu_X^j)^2.
+\end{equation}
+Here we note that, by normalizing the data set, we have the next properties 
+for new data $\tilde x=(\tilde x^1, \tilde x^2, \cdots, \tilde x^N) \in \tilde X$ with component $j = 1,2,\cdots,d$,
+\begin{equation}\label{key}
+\mathbb{E}_{\tilde X}[\tilde x] = \frac{1}{N} \sum_{i=1}^N \tilde x^i = 0, 
+\end{equation}
+and 
+\begin{equation}\label{key}
+\mathbb{V}_{\tilde X}[\tilde x] = \frac{1}{N} \sum_{i=1}^N (\tilde x^i - \mathbb{E}_{\tilde X}[\tilde x] )^T (\tilde x^i - \mathbb{E}_{\tilde X}[\tilde x] )= 1.
+%\begin{pmatrix}
+%1\\1\\\vdots\\1 
+%\end{pmatrix} \in \mathbb{R}^d.
+\end{equation}
+%\begin{equation}\label{key}
+%\mathbb{E}_{\tilde X}[[\tilde x]_j] = \frac{1}{N} \sum_{i=1}^N [\tilde x_i]_j = 0,
+%%\begin{pmatrix}
+%%0\\0\\\vdots\\0 
+%%\end{pmatrix} \in \mathbb{R}^d,
+%\end{equation}
+%and 
+%\begin{equation}\label{key}
+%\mathbb{V}_{\tilde X}[[\tilde x]_j] = \frac{1}{N} \sum_{i=1}^N ([\tilde x_i]_j - \mathbb{E}_{\tilde X}[[\tilde x]_j] )^2 = 1.
+%%\begin{pmatrix}
+%%1\\1\\\vdots\\1 
+%%\end{pmatrix} \in \mathbb{R}^d.
+%\end{equation}
+
+For the next sections in this chapter, without special notices, we use $X$ data set
+as the normalized one as default. 
+
+
+\subsection{Data normalization for images in CNNs}
+For images, we have a color image data set $(X,Y) := \{(x^i, y^i)\}_{i=1}^N$.
+%where
+%\begin{equation}\label{key}
+%x^i \in \mathbb{R}^{3 \times m\times n}.
+%\end{equation}
+We further denote these the $(s,t)$ pixel value for data $x_i$ at channel $j$ as:
+\begin{equation}\label{key}
+x^{i,j}_{s,t} \longleftrightarrow (s,t) \text{ pixel value for } x^i \text{ at channel } j,
+\end{equation}
+where $1\le i \le N, 1\le j\le 3, 1\le s \le m$, and  $1\le t\le n$.
+
+Then, the normalization for $x^i$ is defined by
+\begin{equation}\label{key}
+\tilde x^{i,j}_{s,t} = \frac{x^{i,j}_{s,t} - \mu_X^j }{\sqrt{\sigma_X^j}},
+\end{equation}
+where %$\bm 1 \in \mathbb{R}^{m\times n}$ with all elements equal to $1$ and
+$
+x^{i,j}_{s,t}, \tilde x^{i,j}_{s,t}, \mu_X^j, \sigma_X^j \in \mathbb{R}.
+$
+This means that we need to normalize the data for each channel. Here
+\begin{equation}\label{key}
+\mu_X^j = \frac{1}{m\times n\times N} \sum_{ 1 \le i \le N} \sum_{1\le s \le m, 1 \le t \le n} x^{i,j}_{s,t}.
+\end{equation}
+There are two common choices of $\sigma_X^j$:
+\begin{enumerate}
+\item Batch normalization also uses the 
+formula below to compute the variance in CNN for each channel.
+\begin{equation}\label{key}
+\sigma_X^j = \frac{1}{ N \times m\times n} \sum_{ 1 \le i \le N} \sum_{1\le s \le m, 1 \le t \le n} (x^{i,j}_{s,t} -\mu_X^j )^2.
+\end{equation}
+% we confirmed with Lian by both numerical test and code checking that BN also use the above 
+%formula to compute the variance in CNN for each channel.
+\item
+Another way to compute the variance over each channel is to compute the standard deviation on each channel for every data,
+and then average them in the data direction.
+\begin{equation}\label{key}
+\sqrt{\tilde \sigma_X^j} = \frac{1}{ N} \sum_{ 1 \le i \le N}  \left( \frac{1}{m\times n}\sum_{1\le s \le m, 1 \le t \le n} (x^{i,j}_{s,t} - \mu_i^j )^2 \right)^{\frac{1}{2}},
+\end{equation}
+where
+$\displaystyle 
+\mu_i^j  = \frac{1}{m\times n} \sum_{1\le s \le m, 1 \le t \le n} x^{i,j}_{s,t}.
+$
+\end{enumerate}
+
+\begin{example}[Comparison of $\sqrt{[\sigma_X]_j}$ and  $\sqrt{[\tilde \sigma_X]_j}$ on CIFAR10.]
+
+
+On CIFAR10, both ways share the same $\mu_X$ as
+\begin{equation}\label{key}
+\mu_X = \begin{pmatrix}
+0.49140105 & 0.48215663 & 0.44653168
+\end{pmatrix}.
+\end{equation}
+But they had different standard deviation estimates:
+\begin{equation}
+\begin{aligned}
+\sqrt{\sigma_X^j} &= \begin{pmatrix}
+0.24703284 & 0.24348499 & 0.26158834
+\end{pmatrix} \\
+%\sqrt{[\bar \sigma_X]_j} &= \begin{pmatrix}
+%0.12835675 & 0.12578563 & 0.1533168
+%\end{pmatrix} \\
+\sqrt{\tilde \sigma_X^j} &= \begin{pmatrix}
+0.20220193 & 0.19931635 & 0.20086373
+\end{pmatrix} 
+\end{aligned}
+\end{equation}
+This numerical shows that the two normalization are different.
+\end{example}
+
+\endinput
+
+
+\subsubsection{Data normalization for images}
+For images, consider we have a color image data set $(X,Y) := \{(x_i, y_i)\}_{i=1}^N$ where
+\begin{equation}\label{key}
+x_i \in \mathbb{R}^{3 \times m\times n}.
+\end{equation}
+We further denote these the $(s,t)$ pixel value for data $x_i$ at channel $j$ as:
+\begin{equation}\label{key}
+[x_i]_{j;st} \longleftrightarrow (s,t) \text{ pixel value for } x_i \text{ at channel } j,
+\end{equation}
+where $1\le i \le N, 1\le j\le 3, 1\le s \le m$, and  $1\le j\le n$.
+
+Then, the normalization for $x_i$ is defined by
+\begin{equation}\label{key}
+[\tilde x_i]_{{j;st}} = \frac{[x_i]_{{j;st}} - [\mu_X]_j }{\sqrt{[\sigma_X]_j}},
+\end{equation}
+where %$\bm 1 \in \mathbb{R}^{m\times n}$ with all elements equal to $1$ and
+\begin{equation}\label{key}
+[x_i]_{{j;st}}, [\tilde x_i]_{{j;st}}, [\mu_X]_j, [\sigma_X]_j \in \mathbb{R}.
+\end{equation}
+Here 
+\begin{equation}\label{key}
+[\mu_X]_j = \frac{1}{m\times n\times N} \sum_{ 1 \le i \le N} \sum_{1\le s \le m, 1 \le t \le n} [x_i]_{j;st}.
+\end{equation}
+and 
+\begin{equation}\label{key}
+[\sigma_X]_j = \frac{1}{ N \times m\times n} \sum_{ 1 \le i \le N} \sum_{1\le s \le m, 1 \le t \le n} ([x_i]_{j;st} -[\mu_X]_j )^2.
+\end{equation}
+In batch normalization, they also adopt this form.
+
+
+\subsection{Batch normalization for CNN}
+For simplicity, then have the following BN scheme for CNN
+\begin{equation}\label{def:BNeq-traningCNN}
+\begin{aligned}
+[\mu^\ell_{\mathcal B_t}]_{j} & \leftarrow \frac{1}{m \times m_\ell \times n_\ell }\sum_{i=1}^m \sum_{1\le s\le m_\ell, 1\le t \le n_\ell} [f^\ell(x_i)]_{j;st}  &&\text{ mean on channel }j \\
+[\sigma^\ell_{\mathcal B_t}]_{j}^2 & \leftarrow \frac{1}{m \times m_\ell \times n_\ell }\sum_{i=1}^m \sum_{1\le s\le m_\ell, 1\le t \le n_\ell} ([f^\ell(x_i)]_{j;st}-[\mu_{\mathcal B_t}]_j)^2   &&\text{ variance on channel }j\\
+[\hat f^\ell (x)]_{j;st} & \leftarrow \frac{[f^\ell(x)]_{j,st}-[\mu^\ell_{\mathcal B_t}]_j}{\sqrt{[\sigma^\ell_{\mathcal B_t}]_j^2+\epsilon}}   &&\text{ normalize }\\
+[{\rm BN}_{\mathcal B_t}(\tilde f^{\ell})]_{j;st} &:= [\tilde f^\ell(x)]_{j;st}  \leftarrow [\gamma^\ell]_j [\hat f^\ell (x)]_{j;st} + [\beta^\ell]_{j} 
+&&\text{ scale and shift on channel}
+\end{aligned}
+\end{equation}
+
+
+\subsection{Different methods in computing ``standard deviation'' in one channel}
+Now basically, we have the following three different ways to 
+compute the $\sqrt{[\sigma_X]_j}$, different ways correspond to different
+assumption for data distribution in one channel.
+
+\subsubsection{1: Whiting via covariance matrix}
+For simplicity, we assume data set $ X = \{ x_i~:~ i = 1:N\} \subset \mathbb{R}^d$ 
+sampled from a random vector $x$, then the whiting processing for these data set is
+\begin{equation}\label{key}
+\tilde x_i = {\rm Cov}^{-\frac{1}{2}}(X)(x_i - \mu),
+\end{equation}
+where
+\begin{equation}\label{key}
+\mu = \frac{1}{N} \sum_{i} x_i \approx \mathbb{E}[x] \in \mathbb{R}^d,
+\end{equation}
+and
+\begin{equation}\label{key}
+{\rm Cov}(X) = \frac{1}{N} \sum_{i} (x_i - \mu) (x_i - \mu)^T \approx \mathbb{E}[(x-\mathbb{E}[x])(x-\mathbb{E}[x])^T]\in \mathbb{R}^{d\times d}.
+\end{equation}
+This processing makes
+\begin{equation}\label{key}
+\tilde \mu = \frac{1}{N} \sum_{i} \tilde x_i = 0 \in \mathbb{R}^d,
+\end{equation}
+and 
+\begin{equation}\label{key}
+{\rm Cov}(\tilde X) = \frac{1}{N} \sum_{i} (\tilde x_i - \tilde \mu) (\tilde x_i - \tilde \mu)^T = I \in \mathbb{R}^{d\times d}.
+\end{equation}
+
+\subsection{2: Normalizing via diagonal matrix}
+%If we make the assumption that all components of the random vector $x$ are independent. 
+%Then, this means that 
+%\begin{equation}\label{key}
+% \mathbb{E}[(x-\mathbb{E}[x])(x-\mathbb{E}[x])^T] \text{ is a diagonal matrix. } 
+%\end{equation}\\
+Here we just want the result that each marginal distribution for $x$ share the same variance, that
+is 
+\begin{equation}\label{key}
+\mathbb{V}[[x]_i] = \mathbb{V}[[x]_j].
+\end{equation}
+
+This leads us the following element-wise version of normalization:
+\begin{equation}\label{norm-D}
+\tilde x_i = D^{-\frac{1}{2}}{(x_i - \mu)},
+\end{equation}
+where
+\begin{equation}\label{key}
+\mu = \frac{1}{N} \sum_{i} x_i \approx \mathbb{E}[x] \in \mathbb{R}^d,
+\end{equation}
+and
+\begin{equation}\label{key}
+D = \frac{1}{N} {\rm Diag}(\sum_{i} (x_i - \mu) \odot (x_i - \mu) ).
+\end{equation}
+
+This leads to
+\begin{equation}\label{key}
+\tilde \mu = \frac{1}{N} \sum_{i} \tilde x_i = 0 \in \mathbb{R}^d,
+\end{equation}
+and 
+\begin{equation}\label{key}
+ \frac{1}{N} \sum_{i} (\tilde x_i - \tilde \mu) \odot (\tilde x_i - \tilde \mu) = (1,1,\cdots,1)^T,
+\end{equation}
+which means that $[\tilde x]_i$ and $[\tilde x]_j$ share the same variance as two random variable.
+
+\blue{This normalization is already OK for the assumption of weight initialization in Xaviar's analysis.}
+
+Thus, we may understand all other method as an approximated or modified version for the \eqref{norm-D}.
+
+\subsection{Version 1:  keep $\mu \in \mathbb{R}^d$ but $D$ as a scaler by scaler variance.}
+\begin{equation}\label{norm-D}
+\tilde x_i = D^{-\frac{1}{2}}{(x_i - \mu)},
+\end{equation}
+here 
+\begin{equation}\label{key}
+\mu = \frac{1}{N} \sum_{i} x_i \approx \mathbb{E}[x] \in \mathbb{R}^d,
+\end{equation}
+and
+\begin{equation}\label{key}
+D = \frac{1}{N}  \sum_{i} \|x_i - \mu\| = \frac{1}{N} \sum_{i} ( \sum_{j} \frac{1}{d}([x_i]_j - [\mu]_j) )^{\frac{1}{2}}.
+\end{equation}
+
+\subsubsection{Version 2: let $\mu$  and $D$ both scaler by averaging over all components of $x$.}
+In continuous, for mean
+\begin{equation}\label{key}
+\mu = \frac{1}{d} \sum_t \mathbb{E}[[x]_t],
+\end{equation}
+this leads to the statistics 
+\begin{equation}\label{key}
+\frac{1}{N \times d} \sum_{i} \sum_{t} [x_i]_t.
+\end{equation}
+For ``variance'',
+\begin{equation}\label{key}
+\sigma =  \frac{1}{d} \sum_t \mathbb{E}[([x]_t - \mathbb{E}[[x]_t])^2],
+\end{equation}
+then this leads to
+\begin{equation}\label{key}
+\frac{1}{N \times d} \sum_{i} \sum_{t} ([x_i]_t - \mathbb{E}[[x_i]_t])^2.
+\end{equation}
+This is different from what we did in BN.
+
+However, if we further take $\mathbb{E}[[x_i]_t] = $ some scaler, then it is natural to take  
+\begin{equation}\label{key}
+\mathbb{E}[[x_i]_t] = \mathbb{E}[[x_i]_s] = \frac{1}{N \times d} \sum_{i} \sum_{t} [x_i]_t.
+\end{equation}
+Then for multi-channel image data, we have:
+\begin{equation}\label{key}
+[\sigma_X]_j = \frac{1}{ N \times m\times n} \sum_{ 1 \le i \le N} \sum_{1\le s \le m, 1 \le t \le n} ([x_i]_{j;st} -[\mu_X]_j )^2.
+\end{equation}
+This scheme is adopted in BN.
+
+\subsubsection{Version 3:   let $\mu$  scale but compute $D^{\frac{1}{2}}$ directly}
+In continuous, for mean
+\begin{equation}\label{key}
+\mu = \frac{1}{d} \sum_t \mathbb{E}[[x]_t],
+\end{equation}
+this leads to the statistics 
+\begin{equation}\label{key}
+\frac{1}{N \times d} \sum_{i} \sum_{t} [x_i]_t.
+\end{equation}
+This is the same with before.
+
+For standard deviation,
+\begin{equation}\label{key}
+\sigma^{\frac{1}{2}} =  \mathbb{E} (\frac{1}{d} \sum_t [([x]_t - \mathbb{E}[[x]_t])^2])^{\frac{1}{2}},
+\end{equation}
+then this leads to
+\begin{equation}\label{key}
+\frac{1}{N \times d} \sum_{i} \sum_{t} ([x_i]_t - \mathbb{E}[[x_i]_t])^2.
+\end{equation}
+Then for CNN, we got
+\begin{equation}\label{key}
+\sqrt{[\tilde \sigma_X]_j} = \frac{1}{ N} \sum_{ 1 \le i \le N} \sqrt{[\tilde \sigma_{X_i}]_j}  =\frac{1}{ N} \sum_{ 1 \le i \le N}  \left( \frac{1}{m\times n}\sum_{1\le s \le m, 1 \le t \le n} ([x_i]_{j;st} -[\mu_{X_i}]_j )^2 \right)^{\frac{1}{2}}.
+\end{equation}
+The most commonly used standard deviation for CIFAR10 in Pytorch adopts this way.
+
+
+
+\subsection{Let $ [\bar x_i]_j  = \frac{1}{m\times n} \sum_{s,t} [x_i]_{j;st} \sim \bar D$ on $\mathbb{R}$ for all $i$ index.}
+Then, this leads to the following scheme for $\sqrt{[\sigma_X]_j}$ 
+\begin{equation}
+[\bar \sigma_X]_j = \frac{1}{ N } \sum_{ 1 \le i \le N} ([\bar x_i]_{j} -[\mu_X]_j )^2,
+\end{equation}
+where $[\bar x_i]_j  = \frac{1}{m\times n} \sum_{s,t} [x_i]_{j;st}$.
+
+This formula seems better in mathematics.
+
+However, how to understand this from the normalization viewpoint? 
+
+
+
+
+
+\subsection{Comparison of $\sqrt{[\sigma_X]_j}, \sqrt{[\bar \sigma_X]_j}$ and  $\sqrt{[\tilde \sigma_X]_j}$ on CIFAR10.}
+
+They share the same $\mu_X$ as
+\begin{equation}\label{key}
+\mu_X = \begin{pmatrix}
+0.49140105 & 0.48215663 & 0.44653168
+\end{pmatrix}.
+\end{equation}
+But they had different standard deviation estimates:
+\begin{equation}
+\begin{aligned}
+\sqrt{[\sigma_X]_j} &= \begin{pmatrix}
+0.24703284 & 0.24348499 & 0.26158834
+\end{pmatrix} \\
+\sqrt{[\bar \sigma_X]_j} &= \begin{pmatrix}
+0.12835675 & 0.12578563 & 0.1533168
+\end{pmatrix} \\
+\sqrt{[\tilde \sigma_X]_j} &= \begin{pmatrix}
+0.20220193 & 0.19931635 & 0.20086373
+\end{pmatrix} 
+\end{aligned}
+\end{equation}
+
+I am very strange about this, because we could also do like the following:
+\begin{equation}\label{key}
+\sqrt{[\sigma_X]_j} = \frac{1}{ m\times n} \sum_{1\le s \le m, 1 \le t \le n} \left( \frac{1}{m} \sum_{ 1 \le i \le N}  ([x_i]_{j;st} -[\mu_X]_j )^2 \right)^{\frac{1}{2}}.
+\end{equation}
+
+

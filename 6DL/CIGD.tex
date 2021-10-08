@@ -1,0 +1,634 @@
+\chapter{Incremental Gradient Methods} 
+
+\section{Kaczmarz Algorithm and MSC for Linear Problem}
+%Now we have the problem with data $\{X^i, Y^i\}_{i=1}^N$ with $X^i \in \mathbb{R}^n$ and $Y^i \in \mathbb{R}$. One way to fit those data is to use linear regression, i.e 
+%\begin{problem}Find $W^{*} \in \mathbb{R}^{n}$ and $\theta^{*} \in \mathbb{R}$ s.t:
+%\begin{equation}
+%(W^*,\theta^*) = \mathop{\arg\min}_{W \in \mathbb{R}^{n},\theta \in \mathbb{R}} \sum_{i=1}^N\|X^i \cdot W + \theta - Y^i\|^2.
+%\end{equation}
+%\end{problem}
+
+%Now, we can note $\tilde{W} = (W, \theta)$ and $\tilde{X}^i = (X^i, 1)$ so, we can reform the problem by:
+%\begin{problem}Find $\tilde{W}^{*} \in \mathbb{R}^{n+1}$  s.t:
+%\begin{equation}\label{equ:splitform-opt}
+%\tilde{W}^* = \mathop{\arg\min}_{\tilde{W \in \mathbb{R}^{n+1}}} \sum_{i=1}^N\|\tilde{X}^i \cdot \tilde{W} - Y^i\|^2.
+%\end{equation}
+%\end{problem}
+
+%And if we note a matrix $A \in \mathbb{R}^{N \times (n+1)}$ with i-th row of $A$, $A_i = \tilde{X}^i$ and $b = (Y^1, \cdots, Y^N)^{T} \in \mathbb{R}^N$, then the problem can be reformed as:
+%\begin{problem}Find $\tilde{W}^{*} \in \mathbb{R}^{n+1}$  s.t:
+%\begin{equation}\label{equ:matrixform-opt}
+%\tilde{W}^* = \mathop{\arg\min}_{\tilde{W} \in \mathbb{R}^{n+1}} \|A \tilde{W} - b\|^2.
+%\end{equation}
+%\end{problem}
+%And it is equivalent to solve the next normal equation:
+%\begin{problem} $\tilde{W}^{*} \in \mathbb{R}^{n+1}$  is the solution of \ref{equ:matrixform-opt} iff:
+%\begin{equation}\label{equ:matrixform-equ}
+%A^TA \tilde{W}^* = A^Tb.
+%\end{equation}
+%\end{problem}
+
+%So, it is easy to see that the gradient descent method for \ref{equ:splitform-opt} and \ref{equ:matrixform-opt} is exact the gradient descent method for the equation \ref{equ:matrixform-equ}.
+\subsection{Least square problem}
+The general least square problem is:
+\begin{problem}\label{pro:standerLS}
+	Find ${x}^{*} \in \mathbb{R}^{n}$  s.t:
+	\begin{equation}\label{equ:leastsquare}
+	{x}^* = \mathop{\arg\min}_{{x} \in \mathbb{R}^{n}} \frac{1}{2}\|A {x} - b\|^2 \Leftrightarrow {x}^* = \mathop{\arg\min}_{{x} \in \mathbb{R}^{n}} \sum_{i=1}^n \frac{1}{2}(A_i \cdot {x} - b_i)^2,
+	\end{equation}
+	with $A \in \mathbb{R}^{m\times n}$ and $\rm{rank}(A) = n$, and $A_i$
+	is the i-th row of $A$, but we take it as an column vector.
+\end{problem}
+If we take $f_i = \frac{1}{2}(A_i \cdot {x} - b_i)^2$, then we can use the general incremental gradient descent method to solve the above problem. So the iterative step is:
+\begin{equation}\label{equ:IGDforLS}
+x_{t+1} = x_t - \eta_t \nabla f_{i_t}(x_t) = x_t - \eta_t (A_{i_t} \cdot x_t - b_{i_t})A_{i_t}.
+\end{equation}
+The only difference is the way to choose $i_t$, if we take:
+\begin{align}
+\mathbb{P}(i_t = s) = \frac{1}{m}, \quad s = 1:m,  \\
+i_1, \cdots, i_T \quad \text{are independent},
+\end{align}
+we will get SGD. If we take 
+\begin{equation}
+i_t \equiv t \mod(m), \quad i_t \in 1:m,
+\end{equation}
+we will get the cycle incremental gradient method. 
+
+\newpage
+
+\subsection{Kaczmarz algorithm}
+First, Kaczmarz algorithm is proposed for consistent problem i.e. $Ax
+= b$ has solution for $A \in \mathbb{R}^{m\times n}$. So the solution
+can be expressed as:
+
+$$
+A^T=  (A_1,\ldots, A_m)
+$$
+
+$$
+A= 
+\begin{pmatrix}
+A_1^T\\
+\vdots\\
+A_m^T
+\end{pmatrix}
+$$
+
+\begin{equation}
+\bigcap_{i=1}^m \{x \in \mathbb{R}^n ~:~ A_i \cdot x = b_i\}
+\end{equation}
+Use this structure, a simple idea is to set that $x_{t+1} - x_{t} \in  \{x \in \mathbb{R}^n ~:~ A_i \cdot x = b_i\}$ in \ref{equ:IGDforLS}. This lead to:
+\begin{equation}\label{equ:KacamarzAlgo}
+x_{t+1} = x_t -  \frac{1}{\|A_{i_t}\|^2}(A_{i_t} \cdot x_t - b_{i_t})A_{i_t}. 
+\end{equation}
+
+\begin{eqnarray*}
+(A_{i_t} \cdot x_t - b_{i_t})A_{i_t}
+&=&A_{i_t} (A_{i_t}^T x_t - b_{i_t})
+=A_{i_t} (Ax_t -b)\cdot e_{i_t}=A_{i_t} e_{i_t}^T(Ax_t -b)\\
+& =& (e_{i_t}A_{i_t}^T)^T(Ax_t -b)
+=(e_{i_t}e_{i_t}^TA)^T(Ax_t -b) \\
+&=&A^Te_{i_t}e_{i_t}^T(Ax_t -b) 
+=[e_{i_t}^T(Ax_t -b)] A^Te_{i_t}
+\end{eqnarray*}
+
+or 
+$$
+x_{t+1} - x_{t} \in  {\rm range}(A^Te_t)
+$$
+Recall
+$$
+y_{t+1} - y_{t} \in  {\rm range}(e_t)
+$$
+and
+$$
+(y_{t+1} , e_t)_{AA^T} = (b,e_t)
+$$
+$$
+(x_{t+1}, A^Te_t) = (b,e_t)=(x,A^Te_t)
+$$
+If 
+$$
+x_{t+1} - x_{t}=\eta=\alpha A^Te_t
+$$
+then
+$$
+(x_{t}+\alpha A^Te_t, A^Te_t) = (b,e_t)
+$$
+$$
+(A(x_{t}+\eta), e_t) = (b,e_t)
+$$
+or, find $\eta\in V_t$ such that 
+$$
+(A(x_{t}+\eta)-b, e_t) = 0.
+$$
+
+and
+$$
+\alpha=\frac{1}{(A^Te_t, A^Te_t)}(b-Ax_t,e_t)
+$$
+Let 
+$$
+V_t={\rm range}(A^Te_t), 
+$$
+and, consider the $\ell^2$ projection
+$$
+Q_t:  \mathbb R^m\mapsto V_t
+$$
+then
+$$
+Q_t(x_{t+1} - x)=0.
+$$
+
+Another way(in Prof. Xu's paper about random MSC) to connect Kaczmarz and MSC is to solve:
+\begin{equation}\label{norm}
+AA^T y = b,\quad x=A^Ty
+\end{equation}
+then we use G-S for the above equation, and then multiply $A^T$ for the iteration process and get the Kaczmarz process.
+
+Apply Gauss-Seidel to \eqref{norm}, 
+$$
+y_{t+1} = y_t -  \frac{1}{\|A_{i_t}\|^2}e_{i_t}^T(AA^Ty_t - b) e_{i_t}. 
+$$
+and
+$$
+A^Ty_{t+1} =A^T y_t -  \frac{1}{\|A_{i_t}\|^2}e_{i_t}^T(AA^Ty_t - b) A^Te_{i_t}. 
+$$
+$$
+x_{t+1} =x_t -  \frac{1}{\|A_{i_t}\|^2}e_{i_t}^T(Ax_t - b) A^Te_{i_t}. 
+$$
+
+\subsection{Relationship between IGD and Kaczmarz}
+Consider the least square problem
+$$
+\|Ax-b\|=\min.
+$$
+In some case, the solution satisfies 
+$$
+A^TAx^*=A^Tb. 
+$$
+If we write 
+$$
+f(x)=\|Ax-b\|^2=\sum_{i=1}^mf_i(x)
+$$
+Then the IGD algorithm for the above form is:
+\begin{equation}\label{equ:IGDforLS}
+x_{t+1} = x_t - \eta_t \nabla f_{i_t}(x_t) = x_t - \eta_t (A_{i_t} \cdot x_t - b_{i_t})A_{i_t}.
+\end{equation}
+but the Kaczmarz algorithm for this problem is:
+\begin{equation}\label{equ:KacamarzAlgo}
+x_{t+1} = x_t -  \frac{1}{\|A_{i_t}\|^2}(A_{i_t} \cdot x_t - b_{i_t})A_{i_t}. 
+\end{equation}
+
+The IGD for the above problem is equivalent to apply damped
+Gauss-Seidel method to the normal equation
+\begin{equation}
+\label{normA}
+AA^Ty=b  
+\end{equation}
+\begin{enumerate}
+	\item If the above problem is consistent, then the IGD method would
+	converge to a solution of the above problem.  But the solution of
+	equation \eqref{normA} may not be the least square solution???
+	
+	\item If the above problem \eqref{normA} is inconsistent, if the IGD
+	converges to something, say $\tilde x$, then 
+	$$
+	Ax-b\perp \mathbb R^m?
+	$$
+	\item But we know SGD (with diminishing learning rate) always converge
+	to the original least square?
+\end{enumerate}
+
+{\bf{Juncai's simple answers}:}
+\begin{enumerate}
+	\item If the above problem is consistent, i.e. $Ax = b$ has solution( this solution will be unique if $\rm{rank}(A) = n$), then it is not sure to say what $y_t$ for \eqref{normA} will converges to, but we can make sure that $A^T y_t$ will converges to $x^*$ i.e. the solution for $Ax = b$.
+	
+	\item If \eqref{normA} is inconsistent, then $Ax = b$ is also inconsistent. So the SGD with diminishing stepsize will convergence to the solution for $A^TA x = A^Tb$, and the means that a special damped random G-S type MSC will convergence into a high dimension affine space like $y^* + \rm{ker}(A^T)$ such that $A^T y^* = x^*$.
+	
+	\item For inconsistent case( if $b \neq 0$, the inconsistent for $Ax=b$ and $AA^Ty = b$ is equivalent). The Kaczmarz algorithm and the IGD for $\min \frac{1}{2}\|Ax - b\|^2$ is different with the ``special" choice for the stepsize $\eta_t$, is should be a random variable! Because in Kaczmarz algorithm, it is same to choose 
+	\begin{equation}
+	\eta_t = \frac{1}{\|A_{i_t}\|^2},
+	\end{equation}
+	in the IGD algorithms for  $\min \frac{1}{2}\|Ax - b\|^2$. If we didn't want such special choice for $\eta_t$, the Kaczmarz algorithm is equal to choose $\eta_t = 1$ for 
+	\begin{equation}
+	\min \frac{1}{2}\|D^{-1}(Ax - b)\|^2 = \min \frac{1}{2} \|Ax-b\|^2_{\rm{diag}(AA^T)^{-1}},
+	\end{equation}
+	where $D = \rm{diag}(AA^T)^{\frac{1}{2}}$.
+	
+	\item For inconsistent system, use $\min \frac{1}{2}\|Ax - b\|^2$ as example, the stander SGD method fort this problem will not converges without diminishing stepsize because:
+	\begin{equation}
+	\mathbb{E}\|x_{t+1} - x^*\|^2 \ge (1 - 2 \lambda_{max}(A^TA) \eta_t) \mathbb{E}\|x_t - x^*\|^2 + \eta_t^2 (\min_i \|A_i\|^2)\|Ax^* - b\|^2.
+	\end{equation}
+	And it seems that the above inequality can be extended to general convex problem see 
+	
+	\item If $AA^T y = b$ is inconsistent, then the damped G-S without diminishing(Kaczmarz for Ax = b)  cannot converges to anything. Because, we can can assume that will converges to some thing like $y^*$, then by taking limit in both side of the next damped G-S 
+	\begin{equation}
+	\lim_{t} y_{t+1} = \lim_t (y_t -  \frac{1}{\|A_{i_t}\|^2}e_{i_t}^T(AA^Ty_t - b) e_{i_t}). 
+	\end{equation}
+	this will lead to that 
+	$$
+	AA^Ty^* - b = 0,
+	$$
+	this is contrary to the inconsistent assumption. Here, even we multiply $A^T$ in both side, we can know that $A^T y_t$ will converges to nothing. We can use the same idea to proof this, if it converges, then
+	$$
+	Ax^* - b = 0,
+	$$
+	and because of the fact that $A x = b$ is also inconsistent if $AA^T y = b$ is inconsistent. 
+\end{enumerate}
+
+
+\subsection{A special case: A is SPD}
+If $A \in \mathbb{R}^n$ is a SPD matrix, the next problem: 
+\begin{problem}\label{pro:standerLS}
+	Find ${x}^{*} \in \mathbb{R}^{n}$  s.t:
+	\begin{equation}\label{equ:spd-opt-equ}
+	{x}^* = \mathop{\arg\min}_{{x} \in \mathbb{R}^{n}} \frac{1}{2}\|A {x} - b\|^2 \Leftrightarrow {x}^* = \mathop{\arg\min}_{{x} \in \mathbb{R}^{n}} \sum_{i=1}^n\frac{1}{2\|A_i\|^2}(A_i \cdot {x} - b_i)^2 \Leftrightarrow Ax^{*} = b
+	\end{equation}
+	here $A_i$ is the i-th row of $A$, but we take it as an column vector. 
+\end{problem}
+So the incremental gradient method  with $f_i = \frac{1}{2\|A_i\|^2}(A_i \cdot {x} - b_i)^2$ for a single step can be taken as:
+\begin{equation}
+x_{t+1} = x_t - \eta_t \nabla f_{i_t}(x_t) = x_t - \eta_t \frac{(A_{i_t} \cdot x_t - b_{i_t})}{\|A_{i_t}\|^2}A_{i_t}.
+\end{equation}
+
+Then we can prove that, incremental gradient method for both cycle or random type is linear convergence. The crucial point is $Ax^* = b$, so we will have
+\begin{equation}
+\nabla f_i(x) = \frac{A_i \cdot (x - x^*)}{\|A_i\|^2}A_i.
+\end{equation}
+
+If we take $\eta_t = 1$, then this method is the Kaczmarz algorithm to solve least squares problem. 
+
+\subsubsection{MSC for linear problems}
+Now we would like to discuss the relation between the Karczmarz
+algorithm above and the method of subspace correction for solving $Ax
+= b$.
+
+If $A \in \mathbb{R}^{n \times n}$ is a SPD matrix,  we now consider the subspace correction method to solve 
+\begin{equation}\label{equ:SPD}
+Ax = b,
+\end{equation}
+with the space decomposition 
+\begin{equation}
+\mathbb{R}^n = \rm{span}\{A_i, i = 1, \cdots, n\},
+\end{equation}
+where $A_i$ is the same as above. 
+
+For the subspace correction method, the correction formula for subspace $V_i = \rm{span}\{A_i\}$ is:
+\begin{equation}
+x_{new} = x_{old} + I_i \bm{A}_i^{-1} Q_i r(x_{old}),
+\end{equation}
+where $P_i$ and $I_i$ are the projection(restriction) and interpolation operator w.r.t subspace $V_i$, and $\bm{A}_i$ is the inverse of the restricted problem in $V_i$, $r(x_{old}) = b - Ax_{old}$ is the residual. 
+
+So we can investigate a single step in MSC for this equation under this space decomposition as:
+\begin{equation}
+x_{k+1} = x_k - \frac{A_i^T(Ax_k - b)}{A_i^T A A_i}A_i,
+\end{equation}
+here we can rewrite it as:
+\begin{equation}\label{equ:MSC}
+x_{k+1} = x_k - \frac{(A_i, x_k - x^*)_A}{\|A_i\|^2_A}A_i.
+\end{equation}
+
+So the relationship between those two methods is that, we need to change the inner product. For the stander problem \ref{pro:standerLS}, 
+\begin{equation}
+f_i = \frac{(A_i \cdot x - b_i)^2}{2\|A_i\|^2} = \frac{(A_i, x - x^*)^2}{2\|A_i\|^2},
+\end{equation}
+and this is equivalent to solve $Ax = b$, but in fact this is also equivalent to define $f_i$ as:
+\begin{equation}\label{equ:newinnerpro}
+f_i = \frac{(A_i, x - x^*)_A^2}{2\|A_i\|_A^2},
+\end{equation}
+thus we have:
+\begin{equation}
+\nabla f_i = \frac{(A_i, x_k - x^*)_A}{\|A_i\|^2_A} A A_i.
+\end{equation}
+
+So we have, the incremental gradient method with $f_i$ defined by \ref{equ:newinnerpro} is have the next relation with the MSC \ref{equ:MSC}. 
+\begin{equation}
+-A^{-1} \nabla f_i(x) = I_i \bm{A}_i^{-1}Q_i r(x),
+\end{equation}
+
+\begin{lemma}
+	Steepest descent direction under the inner product of $(\cdot, \cdot)_A$ for $f_i$ is $- A^{-1} \nabla f_i$. 
+\end{lemma}
+\begin{proof}
+	If we assume the next descent direction is $d$, for the first order approximation for $f_i$ we have:
+	\begin{equation}
+	|(\nabla f_i, d)| = |(A^{-1} \nabla f_i, A d)| = |(A^{-1} \nabla f_i, d)_A| \le \|A^{-1} \nabla f_i\|_A \|d\|_A.
+	\end{equation}
+	So, under the inner product $(\cdot, \cdot)_A$ to get equality in above inequality, we just need $ d $ and $A^{-1} \nabla f_i$ is parallel. 
+\end{proof}
+
+All in all, we have the next relation between MSC for $Ax = b$ with decomposition $\mathbb{R}^n = \rm{span}\{A_i, i = 1, \cdots, n\}$and gradient or incremental gradient method for $\min \sum_i f_i$ with 
+$f_i = \frac{(A_i, x - x^*)_A^2}{2\|A_i\|_A^2}$ and descent under the inner production of $(\cdot, \cdot)_A$. 
+\begin{itemize}
+	\item The PSC for $Ax = b$ is equal to the gradient descent for $\min \sum_i f_i$.
+	\item The SSC for $Ax = b$ is equal to the cycle incremental gradient descent for $\min \sum_i f_i$.
+	\item The random SSC for $Ax = b$ is equal to the SGD for $\min \sum_i f_i$.
+\end{itemize}
+
+\subsubsection{convergence analysis}
+Just use the stander MSC analysis and the newly proposed random MSC theory by Prof. Xu, we can analysis the random SSC as:
+\begin{equation}
+\mathbb{E} \|x_{t+1} - x^*\|_A^2 \le (1 - \frac{\delta_t}{n})\mathbb{E} \|x_{t} - x^*\|_A^2.
+\end{equation}
+For the SGD for $\sum_i f_i$ under metric $(\cdot,\cdot)_A$, to analysis its convergence performance, we should also use the inner product $(\cdot,\cdot)_A$, so this can be covered by the above result naturally. 
+
+
+
+\section{SGD with small step size and weak convergence for linear case}
+Now we start our problem with solving 
+\begin{equation}
+\min \frac{1}{2}\|Ax - b\|^2,
+\end{equation}
+with $A \in \mathbb{R}^{m \times n}$ and $\rm{rank}(A) = n$.
+Here we note $f_i = \frac{1}{2}(A_i^T x - b_i)$ with $A_i$ is the i-th row of A. So we write the general SGD for the above problem as:
+\begin{algorithm}\caption{General SGD}
+	\label{alg:gSGD}
+	\begin{equation}\label{equ:sgd-iteration}
+	x_{t+1} = x_{t} - \eta_t \nabla f_{i_t}(x_t), \quad t = 0:T,
+	\end{equation}
+	\begin{equation}
+	\mathbb{P}(i_t = s) = p_i, \quad s = 1:m,
+	\end{equation}
+	\begin{equation}
+	i_1, \cdots, i_T \quad \text{are independent}.
+	\end{equation}
+\end{algorithm}
+
+So now, we would like to discuss the relation for tanditional SGD and Kaczmarz algorithm under the general SGD framework and weak convergence property for inconsistent case.
+
+\subsection{Kaczmarz algorithm}
+If we take:
+\begin{equation}
+\eta_t = \frac{1}{\|A_{i_t}\|^2},
+\end{equation}
+as an {\bf random variable} without diminishing, then this is the general random Kaczmarz. 
+
+\subsection{Weak convergence}
+Here the result is:
+\begin{theorem}
+	For those next two choice of $\eta_t$ and $p_i$, 
+	\begin{itemize}
+		\item Traditional SGD for LS:
+		\begin{equation}
+		\eta_t = \eta \quad p_i = \frac{1}{m}.
+		\end{equation}
+		\item Random damped Kaczmarz for LS:
+		\begin{equation}
+		\eta_t = \frac{\eta}{\|A_{i_t}\|^2} \quad p_i = \frac{\|A_i\|^2}{\|A\|_F^2}.
+		\end{equation}
+	\end{itemize}
+	We have the weak convergence without diminishing step size to $x^*$ as the solution of $\min \frac{1}{2}\|Ax - b\|^2$, i.e.
+	\begin{equation}
+	\lim_{t \to \infty}\|\mathbb{E}x_t - x^*\|^2  = 0.
+	\end{equation}
+\end{theorem}
+
+\begin{proof}
+	For the first case:
+	\begin{align}
+	\mathbb{E}( x_{t+1}| x_t) &= x_t - \mathbb{E}(\eta_t \nabla f_{i_t}(x_t) | x_t) \\
+	&= x_t - \frac{\eta}{m}A^T(b - Ax_t)
+	\end{align}
+	Take $\mathbb{E}_{x_t}$ on both side of the above equation, we have:
+	\begin{align}
+	\mathbb{E}_{x_t}\mathbb{E}( x_{t+1}| x_t) &= \mathbb{E}x_{t+1} 
+	= \mathbb{E}x_t - \frac{\eta}{m}A^T(A\mathbb{E}x_t - b) \\
+	&= \mathbb{E}x_t - \frac{\eta}{m}A^TA( \mathbb{E}x_t - x^*)
+	\end{align}
+	So we have:
+	\begin{align}
+	\|\mathbb{E}x_{t+1} - x^*\|
+	= \|(I - \frac{\eta}{m}A^TA)\| \|(\mathbb{E}x_t - x^*)\|
+	\end{align}
+	Similarly for the second case, we have:
+	\begin{align}
+	\|\mathbb{E}x_{t+1} - x^*\|
+	= \|(I - \frac{\eta}{\|A\|_F^2}A^TA)\| \|(\mathbb{E}x_t - x^*)\|
+	\end{align}
+\end{proof}
+
+
+\begin{theorem}
+	For the next choice of $\eta_t$ and $p_i$, 
+	\begin{equation}
+	\eta_t = \eta \quad p_i = \frac{\|A_i\|^2}{\|A\|_F^2}.
+	\end{equation}
+	this weak convergence to 
+	\begin{equation}
+	\frac{1}{2}\|Ax - b\|^2_{D}
+	\end{equation}
+	with 
+	\begin{align}
+	D = \rm{diag}(\|A_1\|^2, \ldots, \|A_m\|^2) = \rm{diag}(AA^T).
+	\end{align}
+	
+	And for the next choice of $\eta_t$ and $p_i$,
+	\begin{equation}
+	\eta_t = \frac{\eta}{\|A_{i_t}\|^2} \quad p_i = \frac{1}{m}.
+	\end{equation}
+	this weak convergence to 
+	\begin{equation}
+	\frac{1}{2}\|Ax - b\|^2_{G}
+	\end{equation}
+	with 
+	\begin{align}
+	G = \rm{diag}(\|A_1\|^{-1}, \ldots, \|A_m\|^{-1}) = D^{-1}.
+	\end{align}
+\end{theorem}
+This means that, even the general SGD method for $\min \frac{1}{2}\|Ax-b\|^2$ with constant step size and non-uniform will weak converges to a solution for another problem. The similar situation happens to damped Kaczmarz. {\bf All this happened because of the face that
+	\begin{equation}
+	\mathbb{E} \nabla f_i \neq \nabla f.
+	\end{equation}}
+
+
+\section{Exact and nearly exact interpolation case}
+
+For general deep learning problem, the object function is like:
+\begin{problem}
+	Find $W^* \in \mathbb{R}^n$ such that:
+	\begin{equation}
+	W^* \in \mathop{\arg\min}_{W} \frac{1}{m}\sum_{i=1}^mf_i(W) = \mathop{\arg\min}_{W} \frac{1}{m}\sum_{i=1}^m \|f(W;X^i) - Y^i\|^2.
+	\end{equation}
+\end{problem}
+
+Interpolation means that:
+\begin{equation}
+\min_{W} \frac{1}{m}\sum_{i=1}^mf_i(W) = 0,
+\end{equation}
+with $f_i(W) =  \|f(W;X^i) - Y^i\|^2$.For simple expression, we use $f_i(x)$ not $f_i(W)$.
+
+As we know, even for general convex problem, SGD method connot to be proved convergence with small constant step size. But here, we extend assumptions with similar to exact interpolation case like:
+\begin{assumption}\label{assum:ideal}
+	$f_i \ge 0$ satisfies the next conditions:
+	\begin{itemize}
+		\item $ f$ satisfies the $\lambda$-strong convex property.
+		\item $\nabla f_i$ is Lipschitz continuous with constant $H$.
+		\item We can interpolate every point exactly, i.e.
+		\begin{equation}
+		x^* = \mathop{\arg\min}_{x} \sum_{i=1}^mf_i(x)  \in \mathop{\arg\min}_{x} f_i(x), \quad \forall i  =  1:m.
+		\end{equation}
+	\end{itemize}
+\end{assumption}
+
+So, in some degree this means that:
+\begin{equation}
+x^* = \cap_{i=1}^m \mathop{\arg\min}_{x} f_i(x).
+\end{equation}
+and this can be seen as the generalization of the consistence in linear regression problem. 
+\begin{theorem}
+	Under the assumption \ref{assum:ideal}, we can prove the SGD method \ref{alg:SGD} with small constant step size $\eta$ has the linear convergence, i.e 
+	\begin{equation}
+	\mathbb{E}\|x_t - x^*\|^2 \le \delta^t \|x_0 - x^*\|^2,
+	\end{equation}
+	for some constant $ 0 < \delta < 1$.
+\end{theorem}
+
+\begin{proof}
+	For SGD method, we have:
+	\begin{align}
+	\mathbb{E} \|x_{t+1} - x^*\|^2 &\le \mathbb{E} \|x_t - x^*\|^2  - 2 \eta_t \mathbb{E} (\nabla f_{i_t}(x_t) \cdot (x_t - x^*)) + \eta_t^2 \mathbb{E} \|\nabla f_{i_t}(x_t)\|^2\\ 
+	&= \mathbb{E} \|x_t - x^*\|^2  - 2 \eta_t \mathbb{E} (\nabla f(x_t) \cdot (x_t - x^*))  + \eta_t^2 \mathbb{E} \|\nabla f_{i_t}(x_t)\|^2 \\
+	&\le \mathbb{E} \|x_t - x^*\|^2 - 2\eta_t \lambda \mathbb{E}\|x_t - x^*\|^2 + \eta_t^2 \mathbb{E}\|\nabla f_{i_t}(x_t) - \nabla f_{i_t}(x^*)\|^2 \\
+	&\le (1- 2\eta_t \lambda + \eta_t^2 H^2) \mathbb{E}\|x_t - x^*\|^2.
+	\end{align} 
+	So if 
+	\begin{equation}
+	\eta_t < \frac{2\lambda}{H^2}, 
+	\end{equation}
+	then we have $1- 2\eta_t \lambda + \eta_t^2 H^2 = \delta < 1$, which finishes this proof.
+\end{proof}
+
+This result can be taken as an extension for the convergence result for random Kacamarz algorithm for consistent system. 
+
+
+In many cases, the third assumption in assumption \ref{assum:ideal} is hard to satisfy. But in many applications, we found that, we don't need real diminishing stepsize to preserve the convergence, we just need some even not very small stepsize or decrease it just few steps to make $\sum_i f_i$ becomes convergence or just very small oscillation in the last of iterations.  Here we try to gives another reasonable assumption to explain why those happens:
+\begin{assumption}\label{assum:nearideal}
+	$f_i \ge 0$ satisfies the next conditions:
+	\begin{itemize}
+		\item $ f$ satisfies the $\lambda$-strong convex property.
+		\item $\nabla f_i$ is Lipschitz continuous with constant $H$.
+		\item For the minimizer $x^*$, we have the near consistent property:
+		\begin{equation}
+		\sum_{i}^m\frac{1}{m}\|\nabla f_i(x^*)\| \le \epsilon,
+		\end{equation}
+		here $\epsilon$ is a small positive constant. 
+	\end{itemize}
+\end{assumption}
+
+\begin{theorem}
+	Under the assumption \ref{assum:nearideal}, we can prove the SGD method \ref{alg:SGD} with step size $\eta_t$ has the next properties, i.e 
+	\begin{equation}
+	\mathbb{E}\|x_t - x^*\|^2 \le (1- 2\eta_t \lambda + \eta_t^2 H^2) \mathbb{E} \|x_{t-1} - x^*\|^2 + (\eta_t \epsilon)^2.
+	\end{equation}
+\end{theorem}
+\begin{proof}
+	For SGD method, we have:
+	\begin{align}
+	\mathbb{E} \|x_{t+1} - x^*\|^2 &\le \mathbb{E} \|x_t - x^*\|^2  - 2 \eta_t \mathbb{E} (\nabla f_{i_t}(x_t) \cdot (x_t - x^*)) + \eta_t^2 \mathbb{E} \|\nabla f_{i_t}(x_t)\|^2\\ 
+	&= \mathbb{E} \|x_t - x^*\|^2  - 2 \eta_t \mathbb{E} (\nabla f(x_t) \cdot (x_t - x^*))  + \eta_t^2 \mathbb{E} \|\nabla f_{i_t}(x_t)\|^2 \\
+	&\le \mathbb{E} \|x_t - x^*\|^2 - 2\eta_t \lambda \mathbb{E}\|x_t - x^*\|^2 + \eta_t^2 \mathbb{E}\|\nabla f_{i_t}(x_t) - \nabla f_{i_t}(x^*)\|^2 +  (\eta_t \epsilon)^2\\
+	&\le (1- 2\eta_t \lambda + \eta_t^2 H^2) \mathbb{E}\|x_t - x^*\|^2 + (\eta_t \epsilon)^2.
+	\end{align}
+\end{proof}
+
+By using supermartingale convergence theorem, fro diminishing stepsize one can prove that:
+\begin{theorem}
+	Take $\eta_t$ as diminishing stepsize with $\sum_t \eta_t = \infty$ and $\sum_t \eta^2_t < \infty$, then
+	$\mathbb{E}\|x_t - x^*\|$ converges. 
+\end{theorem}
+But it seems hard to find the convergence rate.  And for constant stepsize:
+\begin{theorem}
+	For constant stepsize, if $\eta_t = \eta$ is a constant and small enough, then 
+	\begin{equation}
+	\mathbb{E} \|x_{t} - x^*\|^2 \le \delta^t \|x_0 - x^*\| + \frac{1 - \delta^t}{1- \delta}(\eta\epsilon)^2.
+	\end{equation}
+\end{theorem}
+
+\subsection{Inconsistent case}
+Like the inconsistent case in linear regression, we can have the next assumption:
+\begin{assumption}\label{assum:inconsistent}
+	$f_i \ge 0$ satisfies the next conditions:
+	\begin{itemize}
+		\item $ f$ satisfies the $\lambda$-strong convex property.
+		\item $\nabla f_i$ is Lipschitz continuous with constant $H$.
+		\item We have the next inconsistent property: there exist a $\delta > 0$ such that 
+		\begin{equation}
+		\min_{x } \sum_i^m \|\nabla f_i(x)\|^2 \ge \delta.
+		\end{equation}
+	\end{itemize}
+	In fact, the last assumption is exactly the inverse of the consistent case. 
+\end{assumption}
+Then we can prove that, without the diminishing stepsize, the problem cannot converges.
+\begin{theorem}
+	We have the next estimate for the iteration process:
+	\begin{equation}
+	\mathbb{E}\|x_{t+1} - x^*\|^2 \ge (1 - 2\eta_t H)\mathbb{E} \|x_t - x^*\|^2 + \eta_t^2 \frac{\delta}{m}.
+	\end{equation}
+\end{theorem}
+
+
+
+\section{Deep learning cases}
+\subsection{``consistent" cases: separable!}
+As we will see, the third assumption in \ref{assum:ideal} makes the key role in proving the convergence. Here we would like to show that, in some cases in deep learning, this will happen. Now we can consider a simple example as one dimension function interpolate with artificial neural network. So we have the data set $(x^i, y^i)$ with $i = 1, \cdots, m$. As we know, if we use the ReLU function 
+\begin{equation}
+\rm{ReLU}(x) = \max\{0,x\},
+\end{equation} 
+the one-dimension artificial neural network can cover the piecewise linear function. So for a general ANN model from $\mathbb{R}$ to $\mathbb{R}$, $f(W;x)$ can fixed all data $(x_i, y_i)$ exactly. Thus, we have 
+\begin{equation}
+0 \le \min_W \sum_i^m f_i = 0 = \sum_i^m \min_W (f(W;x^i) - y^i)^2,
+\end{equation}
+so this satisfy the third assumption in \ref{assum:ideal}.
+
+\subsection{near consistent case}
+Here we can talk about the near consistent assumption in assumption \ref{assum:nearideal}. Because of the powerful expression power for ANN, even you cannot interpolate those data exactly, we can use the next analysis to show some reasonableness for our assumption. 
+
+To be added...
+
+%When we consider about ANN for classification problem, first we would like to divide our data into $C$ classes: 
+%\begin{equation}
+%S_k := \{i :Y_i = e_k\}, k = 1,\cdots,C. 
+%\end{equation}
+%Let us define $\hat{x}^k$ by 
+%\begin{equation}
+%\hat{x}^k \in \mathop{\arg\min}_{x} f_i
+%\end{equation}
+
+
+Here in real classification application like ImageNet problem, because even the Top 5 error is not zero, which means that $f_i(x^*)$ cannot be very close to $\min f_i$, especially for those $i$ that is classified into wrong classes.
+
+
+\section{SGD as smoother}
+%\subsection{GD and G-S}
+%An interesting result is that, in fact the convergence result for both traditional subspace correction(Jacobi or G-S) and the gradient descent method, they both converges linearly like:
+%\begin{equation}
+%\|x_k - x^*\|_{*}^2 \le \delta^k \|x_0 - x^*\|_{*}^2.
+%\end{equation}
+%So the general behaviour for GD likes G-S very much, the most important properties is that: it convergence very fast at beginning and then slow. Here is a typical performance for GD in small deep learning problem:
+%\begin{figure}[!htb]        
+%	\center{\includegraphics[width=8cm] {NN_GD.png}}        
+%	\caption{Gradient descent for a small deep learning model for MNISET}      
+%	\label{Kernels}
+%\end{figure}
+
+\subsection{SGD and GD}
+The most important properties for SGD is that if you take expectation for SGD then you get SD. So in some degree, SGD may works like GD, but the convergence result for SGD is not good as GD, because now we only have:
+\begin{equation}
+\mathbb{E}\|x_k - x^*\|^2 \le \frac{M}{k}.
+\end{equation}
+However, in recent paper by using stochastic differential equation to analysis SGD, they show a special case with 
+\begin{equation}
+\min_{x \in \mathbb{R}} f(x) = f_1(x) + f_2(x),
+\end{equation}
+with $f_1(x) = (x - a)^2$ and $f_2(x) = (x - b)^2$. We know that $\alpha = \frac{a+b}{2}$ is the solution for this problem. If we take the stepsize for SGD(learning rate) as a constant $\eta$, so we get an approximation SDE system:
+\begin{align}
+d X_t = -2(X_t - \alpha )dt + 2\sqrt{\eta}dB_t, \quad X_0 = x_0.
+\end{align}
+So we can solve the above system and get 
+\begin{align}
+X_t \sim \mathcal{N}(\alpha + (x_0 - \alpha)e^{-2t}, \eta(1 - e^{-4t})).
+\end{align}
+So in the beginning, the variance is small, thus the behaviour of SGD resembles GD and has the same convergence rate as GD. {\bf However, as the SGD requires only one evaluation of the gradient at each iteration, it is exactly twice as fast as GD in the beginning.}
+
+So we think that, GD often works like G-S very much, as converges fast in the beginning. And SGD with small constant learning rate in the first few steps has the same performance for GD and even faster w.r.t the computational cost. So, SGD can be a good smoother in some sense. 

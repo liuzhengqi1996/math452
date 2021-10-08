@@ -1,0 +1,139 @@
+\chapter{Preface}
+This manuscript is devoted to a mathematical introduction to deep
+neural networks (DNN) through the lens of finite element and multigrid
+methods.  Deep neural networks is the core tool in the most important class of
+machine learning, namely deep learning, that have been successfully
+applied to many artificial intelligence (AI) tasks such as image
+classification and natural language processing.  Despite of its great
+success in practical applications, deep learning has thus far very
+limited mathematical theories.
+%
+On the other hand, finite element and multigrid methods are two major
+numerical methods for solving partial differential equations arising
+from science and engineering.  Both finite element and multigrid
+method also have rich mathematical theories.
+%
+In this manuscript, we will introduce and study deep neural networks
+through the lens of finite element and multigrid methods in many
+different ways.  After we give brief introduction to finite element
+method, general iterative methods and then multigrid method, we will
+then introduce shallow neural network as a natural generalization of
+finite element method.  More specifically, we will illustrate that the
+most widely used deep neural network, ReLU-DNN, is identically the
+same as the set of all linear finite element functions.  We will
+further derive convolutional neural networks (CNN) as some simple
+variations of multigrid method.
+
+With the aforementioned mathematical relationships between deep neural
+networks and finite element and multigrid method, this manuscript will
+provide an easy introduction to machine learning, especially deep
+learning to readers with background in numerical analysis, especially
+numerical partial differential equations.  On the other hand, this
+set of notes will be a good references for readers who are mainly working in
+the applications of deep learning but wish to gain some mathematical
+understanding the relevant machine learning models.
+
+While there is a vast and rapidly growing literature in machine
+learning and especially deep learning, there are relatively very few
+books in deep learning, see, for examples,
+\cite{goodfellow2016deep,deng2014deep,nielsen2015neural}.
+This manuscript will be the first manuscript to present deep neural networks
+from more a mathematical viewpoint.  
+
+The reading of this book requires some basic knowledge of
+multivariable calculus, linear algebra, and numerical analysis.  Some
+chapters, especially those chapters involving approximation theory of
+DNN require some basic knowledge of real analysis, functional analysis
+and approximation theory.  Some special efforts have been made to make
+the presentations self-contained. 
+
+The manuscript currently, as the first draft, consists of 16
+chapters.   The first three chapters cover some basics of machine
+learning. 
+
+Chapter 1 gives some mathematical discussions of the concept of
+linearly separable sets and two linear models, namely logistic
+regression and support vector machine (SVM).
+
+Chapter 2  gives a brief introduction to machine learning for its
+application to image classification, and also simple
+descriptions of some popular data sets, including MNIST, CIFAR and
+ImageNet.  
+
+Chapter 3 discusses some optimization algorithms, including the widely
+used gradient descent method, stochastic gradient descent method and
+some convergence theory.
+
+Chapter 4
+
+
+Chapter 5 introduces the basic artificial neural network, deep neural
+network (DNN) from the view of the finite element methods and gives a
+discussion about the relation between the linear finite element and
+the general ReLU DNN.
+
+Chapters 6-8 discusses some iterative methods and
+preconditioning techniques for a general system of equation which is
+widely used in FEM and deep learning.  Especially, iterative methods
+based on expanded systems are given in Chapter 7 to illustrate the
+effectiveness of over-parameterization in the solution of quadratic
+optimization. 
+
+Chapter 9 discusses a special class of multigrid algorithm for solving
+2nd order elliptic boundary value problem on the unit square
+discretized by piecewise linear finite element function.  One special
+feature of such a presentation is the the multigrid method and its
+relevant components are given in terms of discrete convolutions that
+are used in machine learning.
+
+Chapter 10 gives some simple descriptions of  
+convolutional operations and some examples of convolution filters and
+convolutional neural network (CNN) models.
+
+Chapter 11 presents a special class of convolutional neural networks, namely
+MgNet, by making some minor modification of the multigrid method
+presented in Chapter 8.  Such a special derivation of MgNet directly
+from multigrid method is hoped to give some mathematical insight to
+the convolutional neural network for which mathematical understanding
+is still very limited.
+
+Chapter 12 discusses basic initialization and normalization
+techniques that are used in deep learning. 
+
+
+Chapter 12 presents some error estimates and adaptivity of finite
+element methods. These results will be used by and compared with the corresponding
+error estimates for neural networks in the later chapters. 
+
+Chapter 13-15 discusses the approximation properties of shallow neural
+networks, including the qualitative approximation and some asymptotic
+approximation properties.  The materials in these chapters are
+relatively more theoretical than the other chapters. 
+
+Chapter 16 discuss some applications of deep neural network  functions
+in the numerical solution of partial differential equations. 
+
+This manuscript is based on notes accumulated from the lectures given in the following two
+summer schools:
+(1) Summer school on numerical methods of partial differential
+equations, Guangzhou, China, 2017; (2)
+MATH 497: Deep Learning Alogrithms and Analysis, PSU, United States, 2020
+and also the following courses offered at Penn State
+(1) MATH 497: An Introduction to Deep Learning in Summer 2019; 
+(2) MATH 597: Deep Learning in  Spring 2019;
+(3) MATH 556: Finite Element Methods in Fall 2018; and
+(4) MATH 597: Hierarchical Algorithms and Deep Learning in Fall 2017  
+
+Many of my former students, postdocs and collaborators have helped in
+the preparations of the aforementioned lectures and in particular the
+set of notes, including Jianhong Chen, Juncai He, Qingguo Hong, Li
+Jiang, Limin Ma, Jonathan Siegel and Lian Zhang.  I would also like to
+acknowledge that support by the Verne M. William Professorship Fund
+from Penn State University and the National Science Foundation (Grant
+No. DMS-1819157) for the research related to this manuscript. 
+
+\bigskip
+
+\noindent Jinchao Xu
+
+\noindent December 2020 State College

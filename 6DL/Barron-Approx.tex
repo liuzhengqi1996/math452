@@ -1,0 +1,1003 @@
+
+\section{Barron theory of approximation}
+%\subsection{A DL function class}
+\subsection{Approximation result for cosine as activation function}
+For clarity, let us give a brief introduction of the approximation
+result based on the results in Jones \cite{jones1992simple}, Barron \cite{barron1993universal} and some
+modification in Xu \cite{xu2017approximation}.
+
+Given $d$ and $n$, consider the following nonlinear space in $\mathbb
+R^d$:
+\begin{equation}
+	\label{Vn}
+	V_n=\left\{v: v(x)=\sum_{j=1}^n{a_j\over n}\cos(\omega_j\cdot x+b_j)+c,
+	\mbox{ with }
+	a_j, b_j, c\in\mathbb R, \omega_j\in\mathbb R^d
+	\right\}.
+\end{equation}
+\begin{theorem} \label{jones} Given a bounded domain $B\subset\mathbb R^d$, a probability measure $\mu$ on $B$ 
+	and a function $f:\mathbb R^d\mapsto\mathbb R$ whose Fourier
+	transform $\hat f$ satisfying $\|\hat f\|_{L^1(\mathbb R^d)}<\infty$.
+	Then, for any $n\ge 1$,  there exists $f_n\in V_n$  such that
+	\begin{equation}
+		\|f-f_n\|_{L^2(B)}\le \frac{2\|\hat f\|_{L^1(\mathbb R^d)}}{\sqrt{n}},
+	\end{equation}
+	where $f_n(x)=\sum_{j=1}^n{a_j\over n}\cos(\omega_j\cdot x+b_j)+c$ satisfying
+	\begin{equation}
+		\label{abc}
+		a=  \|\hat f\|_{L^1(\mathbb R^d)}, \quad |b_j|\le \pi, \quad |c|\le \|f\|_{0,\infty,B}+\|\hat f\|_{L^1(\mathbb R^d)}.
+	\end{equation}
+\end{theorem}
+\begin{proof}\small
+	Consider the Fourier transform:
+	\begin{equation}
+	  \label{Fourier}
+	  \hat f(\omega)=\frac{1}{(2\pi)^d}\int_{\mathbb{R}^d}e^{-i\omega\cdot x}f(x)dx
+	  \quad \forall \omega \in \mathbb R^d.
+	\end{equation}
+	We write  
+	$\hat{f}(\omega)=e^{i\theta(\omega)}|\hat{f}(\omega)|$. By Fourier inversion formula,
+	\begin{equation}
+		\label{eqn1}
+		f(x)=\int_{\mathbb{R}^d}e^{i\omega\cdot x}\hat{f}(\omega)d\omega
+		=\int_{\mathbb{R}^d}e^{i(\omega\cdot x+\theta(\omega))}|\hat{f}(\omega)|d\omega.
+	\end{equation}
+Since $f(x)$ is real-valued, it implies that, for $x, x_B\in B$
+	  \begin{equation}
+		\label{key}
+		\begin{aligned}
+			f(x)-f(x_B)
+			&={\rm Re}\int_{\mathbb{R}^d}
+			(e^{i\omega\cdot x}-e^{i\omega\cdot x_B}) 
+			\hat{f}(\omega)d\omega \\
+			&={\rm Re}\int_{\mathbb{R}^d}
+			(e^{i\omega\cdot x}-e^{i\omega\cdot x_B})  
+			e^{i\theta
+				(\omega)}|\hat{f}(\omega)|d\omega \\
+			&=\int_{\mathbb{R}^d}(\cos(\omega\cdot
+			x+\theta(\omega))-\cos(\omega\cdot x_B+\theta(\omega)))|\hat{f}(\omega)|d\omega \\
+			&=\int_{\mathbb{R}^d}(\cos(\omega\cdot(x-x_B)+\theta_B(\omega))-\cos(\theta_B(\omega)))|\hat{f}(\omega)|d\omega \\
+			&=\int_{\mathbb{R}^d}g(x,\omega)|\hat{f}(\omega)|d\omega \\
+			&=\|f\|_{B^m}\int_{\mathbb{R}^d}|\omega|_B^{-m}g(x,\omega)\lambda^m(\omega)d\omega 
+		\end{aligned}
+	\end{equation}
+where
+$$
+\theta_B(\omega)=\omega\cdot x_B+\theta(\omega),\quad|\omega|_B:=\sup\limits_{x\in B}|\omega\cdot(x-x_B)|
+$$
+and $g: B\times \mathbb{R}^d\rightarrow \mathbb{R}$
+is given by
+\begin{equation}\label{gz}
+	g(x,\omega):=
+	\cos(\omega\cdot (x-x_B)+\theta_B(\omega))  -\cos(\theta_B(\omega)),
+\end{equation}
+and
+$$
+\|f\|_{B^m}:=\int_{\mathbb R^d}|\omega|_B^m|\hat{f}(\omega)|d\omega,\quad\lambda^m(\omega)=\frac{|\omega|_B^m|\hat{f}(\omega)|}{\|f\|_{B^m}}.
+$$
+here $\lambda^m$ is a  probability distribution density function. 
+
+
+	Using $\lambda=\lambda^0$, we define the expectation $\mathbb E$ and
+	$\mathbb{\bar E}$ for $u: \mathbb R^d\mapsto \mathbb R$ and
+	$v: (\mathbb R^d)^n\equiv\mathbb R^d\times\cdots\times\mathbb R^d\mapsto \mathbb R$
+	$$
+	\mathbb E(u)\equiv\int_{\mathbb R^d}u(\omega)\lambda(\omega)d\omega,  \quad
+	\mathbb{\bar E}(v)\equiv\int_{(\mathbb
+		R^d)^n}v(\omega_1,\cdots,\omega_n)
+	\lambda(\omega_1)\cdots\lambda(\omega_n)d\omega_1\cdots d\omega_n .
+	$$
+	Denote$\tilde f(x)=\frac{f(x)-f(x_B)}{\|f\|_{B}}$, by
+	Lemma~\ref{MC} and a direct (and standard) calculation
+	$$
+	\mathbb{\bar E}(\tilde f(x)-\frac1n\sum_{j=1}^ng(x,\omega_j))^2 
+	=\mathbb{\bar E}(\mathbb{E}[g(x,\cdot)]-
+	\frac1n\sum_{j=1}^n g(x,\omega_j))^2 
+	\le\frac{1}{n}\max_{x\in B, \omega\in \mathbb R^d}|g(x,\omega)|^2
+	\le \frac{4}{n}.
+	$$
+	Integrating both sides on B, then by Fubini's Theorem we should have
+	$$
+	\mathbb{\bar E}\int_B(\tilde f(x)-\frac1n\sum_{j=1}^ng(x,\omega_j))^2 d\mu(x)
+	\le \frac{4}{n}.
+	$$
+	Thus $\exists$ $ \omega_j^*\in \mathbb{R}^d$ such that 
+	$$
+	\int_B  (\tilde f(x)-\frac1n\sum_{j=1}^ng(x,\omega_j^*))^2d\mu(x)\le \frac{4}{n}.
+	$$
+	The desired result then follows easily. 
+\end{proof}
+To prove an $H^1$ estimate, we use the following density function
+$$
+\lambda_1(\omega)=\lambda^1=\frac{|\omega|_B|\hat f(\omega)|}{\int_{\mathbb R^d}|\omega|_B|\hat f(\omega)|}.
+$$
+Similarly, we have
+$$
+\tilde f(x)\equiv \frac{f(x)-f(x_B)}{\int_{\mathbb R^d}|\omega|_B|\hat f(\omega)|}
+=
+\int_{\mathbb{R}^d}\frac{g(x,\omega)}{|\omega|_B}\lambda_1(\omega)d\omega.
+$$
+It follows that
+$$
+\partial_k\tilde f(x)
+=
+\int_{\mathbb{R}^d}\frac{\partial_kg(x,\omega)}{|\omega|_B}\lambda_1(\omega)d\omega.
+$$
+We note that
+$$
+\max_{x\in B, \omega\in \mathbb R^d}
+\frac{|g(x,\omega)|}{|\omega|_B}\le 1.
+$$
+Also, by the definition of $|\omega|_B$, we know there exists $x_\omega\in B$ such that:
+$$
+|\omega|_B=\sup\limits_{x\in B}|\omega\cdot(x-x_B)|\ge|\omega||x_\omega-x_B|\ge|\omega|\frac12\mathrm{dist}(x_B,\partial B).
+$$
+Thus
+$$
+\max_{x\in B, \omega\in \mathbb R^d}
+\frac{|\partial_kg(x,\omega)|}{|\omega|_B}\le \frac{2}{\mathrm{dist}(x_B,\partial B)}.
+$$
+Setting
+$$
+v_n=\frac1n\sum_{j=1}^n\frac{g(x,\omega_j)}{|\omega_j|_B}.
+$$
+By a similar argument, we obtain
+$$
+\mathbb{\bar E}
+\int_B\left((\tilde f(x)-v_n(x))^2
++\sum_{k=1}^d (\partial_k\tilde f(x)-\partial_kv_n(x))^2
+\right) d\mu(x)
+\le \frac{1}{n}[C(d,B)]^2 .
+$$
+where
+$
+C(d,B)=[\frac{4d}{{\rm{dist}^2(x_B,\partial B)}}+1]^{1/2}.
+$
+This implies that $\exists$ $ \omega_j^*\in \mathbb{R}^d$ such that  
+$$
+\left\|\tilde f(\cdot)-{1\over n}\sum_{j=1}^n\frac{g(\cdot,\omega_j^*)}{|\omega_j^*|_B}\right\|_{1,B}^2
+\le \frac{[C(d,B)]^2}{n}.
+$$
+\begin{theorem}  \label{thm:DLH1}
+	Given a bounded domain $B\subset\mathbb R^d$, a probability measure $\mu$ on B
+	and a function $f:\mathbb R^d\mapsto\mathbb R$ whose Fourier
+	transform $\hat f$ satisfying $\|f\|_{B^1}<\infty$.
+	%$\|\widehat{\nabla f}\|_{L^1(\mathbb R^d)}<\infty$.
+	Then, for any $n\ge 1$,  there exists $f_n\in V_n$  such that
+	\begin{equation}
+		\|f-f_n\|_{H^1(B)}\le \frac{C(d,B)}{\sqrt{n}})\|f\|_{B^1}.
+	\end{equation}
+	where 
+	\begin{equation}
+		\label{un}
+		f_n(x)=\sum_{j=1}^na_j\cos(\omega_j\cdot x+b_j)+c \mbox{ for some }
+		a_j,b_j,c\in \mathbb R, \omega_j\in\mathbb R^d.
+	\end{equation}
+\end{theorem}
+
+One remarkable fact is that Theorem \ref{thm:DLH1} holds in any spatial
+dimension and any bounded domain $B$ of any geometric shape.
+Theorem \ref{thm:DLH1} is only interesting when $d\ge 2$.  For $d=1$,
+we can prove much stronger results easily.  For example, if $u$
+is sufficiently smooth, for any $m\ge 1$, we can find functions $u_n$
+in the form of \eqref{un} such that 
+\begin{equation}
+	\label{uun1}
+	\|u-u_n\|_{1,B}\le \frac{C_1(m,u)}{n^{m}}.  
+\end{equation}
+\newpage 
+
+
+\section{An improved analysis}
+\subsection{Heaviside Function}
+Define $g_i: [-1,1]\mapsto \mathbb R$ as
+follows:
+\begin{equation}
+	\label{psi}
+	g_i(t)=\frac{1}{|\omega_i|_B}[\cos(|\omega_i|_Bt+\theta_B(\omega_i))  -\cos(\theta_B(\omega_i))],
+\end{equation}
+In view of \eqref{gz}, we have
+\begin{equation}
+	\label{gpsi}
+	g_i(s_i)=\frac{g(x,\omega_i)}{|\omega_i|_B}, \quad s_i=\omega_i^B\cdot(x-x_B),\quad \omega^B=\frac{\omega}{|\omega|_B}
+\end{equation}
+Now, we take an integer
+\begin{equation}
+	\label{k}
+	k\ge \sqrt{n}  
+\end{equation}
+and consider a partition of $[-1,1]$ with the following grid points
+$$
+t_j=jh_k, j=-k:k
+$$
+with 
+$$
+h_k=\frac{1}{k}\le \frac{1}{\sqrt{n}}.
+$$
+We first take a piecewise constant interpolation for $g_i$ on $[0,1]$ to get
+$$
+g_{i,k}(t)=(\Pi_kg_i)(t)=\sum_{j=0}^{k-1}g_i(t_j) M_j(t),   
+$$
+where
+$$
+M_j(t)=M_0(\frac{t-t_j}{h_k})
+$$
+and
+\begin{equation}
+	\label{cardinal}
+	M_0(x)=
+	\left\{
+	\begin{array}{ll}
+		0 & x\le0 \\
+		1 & 0< x\le1    \\
+		0 & x > 1    
+	\end{array}
+	\right.
+\end{equation}
+We note that
+$$
+M_0(x)=H(x)-H(x-1)
+$$
+where $H$ is the Heaviside function
+Thus
+$$
+M_0(\frac{t-t_{j}}{h_k})
+=H(\frac{t-t_{j}}{h_k})-H(\frac{t-t_{j}}{h_k}-1)=H(\frac{t-t_{j}}{h_k})-H(\frac{t-t_{j+1}}{h_k})
+\equiv H_{j}(t)-H_{j+1}(t).
+$$
+Thus, since $g_i(t_0)=0, H_k=0$, we have
+\begin{equation}  \label{gi0}
+	g_{i,k}(t)=\sum_{j=0}^{k-1}g_i(t_j) M_j(t)
+	=\sum_{j=1}^{k-1}(g_i(t_j) - g_i(t_{j-1})) H_{j}(t), \quad t\in [0,1]
+\end{equation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Now we consider
+\begin{equation}
+	h_i(t) = g_i(-t), \quad t\in [0,1].
+\end{equation}
+Similar to \eqref{gi0}, we have
+$$
+(\Pi_kh_i)(t)=\sum_{j=1}^{k-1}(h_i(t_j) - h_i(t_{j-1}))H_j(t)=
+=\sum_{j=1}^{k-1}(g_i(-t_j) - g_i(-t_{j-1}))H_j(t)
+$$
+Namely
+$$
+(\Pi_k g_i)(-t)=\sum_{j=1}^{k-1}(g_i(-t_j) - g_i(-t_{j-1}))H_j(t), \quad t\in [0,1]
+$$
+or
+\begin{equation}\label{gi1}
+	(\Pi_k g_i)(t)=\sum_{j=1}^{k-1}(g_i(-t_j) - g_i(-t_{j-1}))H_j(-t), \quad t\in [-1,0]
+\end{equation}
+By combining \eqref{gi0} and \eqref{gi1}, we get a piecewise constant
+interpolation of $g_i$ on $[-1,1]$ as follows:
+\begin{eqnarray}
+	g_{i,k}(t)&=&
+	\sum_{j=1}^{k-1}(g_i(-t_j) - g_i(-t_{j-1}))H_j(-t)+\sum_{j=1}^{k-1}(g_i(t_j) - g_i(t_{j-1})) H_{j}(t)\nonumber \\ 
+	&=&\sum_{j=1}^{k-1}[a_{ij}^-H_j(-t)+a_{ij}^+H_{j}(t)] \label{gih}
+	\quad t\in [-1,1]
+\end{eqnarray}
+where 
+$$
+a_{ij}^{\pm}=g_i(\pm t_j) - g_i(\pm t_{j-1})
+$$
+It is easy to see that
+\begin{equation}
+	|g_i(t)-g_{i,k}(t)|\le h_k, \quad t\in [-1,1].
+\end{equation} 
+
+\begin{equation}
+	\|\frac1n \sum_{i=1}^n \frac{g(\cdot,\omega_i)}{|\omega_i|_B}-f^*\|_{L^2(\mu,B)}\le h_k
+\end{equation}
+where
+\begin{equation}
+	\label{fstar}
+	f^*(x)=
+	\frac1n\sum_{i=1}^ng_{i,k}(\omega_i^B\cdot (x-x_B)).
+\end{equation}
+By the approximation in last section, we have 
+\begin{equation}
+	\|\tilde f-f^*\|_{L^2(\mu,B)}\le \frac{2}{\sqrt{n}}
+\end{equation}
+Let us rewrite
+$$
+f^*(x)
+=\sum_{i=1}^n\sum_{j=1}^{k-1}[\gamma_{ij}^- f_{ij}^-+ \gamma_{ij}^+f_{ij}^+]
+$$
+where
+$$
+\gamma_{ij}^{\pm}=\frac{|a^\pm_{ij}|}{nd_i}, 
+f^\pm_{i,j}=d_i\/{\rm sign}(a^\pm_{ij})H_j(\pm \omega_i^B\cdot (x-x_B))
+$$
+and 
+$$
+d_i=\sum_{j=1}^{k-1}(|a^-_{ij}|+|a^+_{ij}|)\le 2
+$$
+By definition
+\begin{equation}
+	\label{gammaij}
+	\sum_{i=1}^n\sum_{j=1}^{k-1}[\gamma_{i,j}^-+\gamma_{i,j}^+]=1.
+\end{equation}
+With re-numeration as
+$$
+p_\ell=\gamma_{ij}^{\pm}, f_\ell = f_{ij}^{\pm}, 1\le \ell \le N=2n(k-1)
+$$
+We have
+$$
+f^*(x)=\sum_{\ell=1}^N p_\ell f_\ell
+$$
+Consider 
+$$
+\mathcal N=\{1,2,\ldots, N\}
+$$
+and 
+$$
+\bar f: \mathcal N\mapsto \mathbb R^1
+$$
+such that
+$$
+\bar  f(\ell)=f_{\ell}, \ell\in \mathcal N
+$$
+With the probability measure
+$$
+\mu(\mathcal M)=\sum_{m\in \mathcal M}p_m \quad \mathcal M\subset\mathcal N.
+$$
+By definition. 
+$$
+\mathbb E(\bar  f) = f^*(x).
+$$
+By the basic result on expectation in Lemma \ref{MC}, we have
+$$
+\sum_{\ell_1,\ldots \ell_n=1}^Np_{\ell_1}\cdots p_{\ell_n}\left(f^*(x)-
+{1\over n}\sum_{i=1}^n f_{\ell_i}\right)^2
+=\mathbb E_{\mathcal N^n} \left(\mathbb E(\bar f)-{1\over
+	n}\sum_{i=1}^n  \bar  f(\ell_i)\right)^2\\
+\le\frac1n \|\bar  f\|_{\infty}^2 \le\frac4n.
+$$
+By taking the $L^2(\mu,B)$ on the above inequality, we get
+$$
+\sum_{\ell_1,\ldots \ell_n=1}^Np_{\ell_1}\cdots p_{\ell_n}\|f^*-{1\over n}\sum_{i=1}^n f_{\ell_i}\|_{L^2(\mu,B)}^2
+\le\frac4n.
+$$
+Thus, there exisit $\ell_1^*, \ldots, \ell_n^*\in \mathcal N$ such that
+$$
+\|f^*-{1\over n}\sum_{i=1}^n f_{\ell_i^*}\|_{L^2(\mu,B)}^2
+\le\frac4n.
+$$
+where
+$$
+f_n(x)={1\over n}\sum_{i=1}^n f_{\ell_i^*}(x).
+$$
+Then we have 
+\begin{equation}
+	\|\tilde f-f_n\|^2_{L^2(\mu,B)}\le \frac{9}{n}.
+\end{equation}
+Consequently
+\begin{equation}
+	\left\|f(x)-f(x_B)-\|f\|_Bf_n\right\|^2_{L^2(\mu,B)}\le \frac{9\|f\|^2_B}{n}.
+\end{equation}
+
+\subsection{Heaviside to piecewise constant projection}
+We first take a piecewise constant interpolation for $t$ on $[0,1]$ to get
+$$
+\Pi_k^0 g (t)=\sum_{j=0}^{k-1}g(t_j) M_j(t),   
+$$
+where 
+$ 
+	M_j(t)=M_0(\frac{t-t_j}{h_k}),
+	\quad 
+	M_0(x)=
+	\left\{
+	\begin{array}{ll}
+		0 & x\le0 \\
+		1 & 0< x\le1    \\
+		0 & x > 1    
+	\end{array}.
+	\right.
+$
+We note that
+$$
+M_0(x)=H(x)-H(x-1)
+$$
+where $H$ is the Heaviside function.
+Thus
+$$
+M_j(t)
+=H(\frac{t-t_{j}}{h_k})-H(\frac{t-t_{j}}{h_k}-1)=H(\frac{t-t_{j}}{h_k})-H(\frac{t-t_{j+1}}{h_k})
+\equiv H_{j}(t)-H_{j+1}(t).
+$$
+Thus, since $H_k=0$, we have
+\begin{equation}  \label{gi0}
+\Pi_k^0 g(t)=\sum_{j=0}^{k-1}g(t_j) (H_{j}(t)-H_{j+1}(t))
+	=g(0) + \sum_{j=1}^{k-1}(g(t_j) - g(t_{j-1})) H_{j}(t).
+\end{equation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Now we consider
+$ h(t) = g(-t)$.
+Similar to \eqref{gi0}, we have
+$$
+(\Pi_k^0 h)(t)=\sum_{j=1}^{k-1}(h(t_j) - h(t_{j-1}))H_j(t)
+=\sum_{j=1}^{k-1}(g(-t_j) - g(-t_{j-1}))H_j(t),
+$$
+namely 
+\begin{equation}\label{gi1}
+	\Pi_k^0 g(t)=\sum_{j=1}^{k-1}(g(-t_j) - g(-t_{j-1}))H_j(-t), \quad t\in [-1,0]
+\end{equation}
+Thus, the piecewise constant
+interpolation of $g$ on $[-1,1]$ as follows:
+\begin{eqnarray}
+	\Pi_k^0 g(t)&=&
+	\sum_{j=1}^{k-1}(g_i(-t_j) - g_i(-t_{j-1}))H_j(-t)+\sum_{j=1}^{k-1}(g_i(t_j) - g_i(t_{j-1})) H_{j}(t)\nonumber \\ 
+	&=&\sum_{j=1}^{k-1}[a_{ij}^-H_j(-t)+a_{ij}^+H_{j}(t)]  \label{gih0}
+	\quad t\in [-1,1]
+\end{eqnarray}
+where 
+$
+a_{ij}^{\pm}=g_i(\pm t_j) - g_i(\pm t_{j-1}).
+$
+
+
+\subsection{Heaviside Function 2}
+Recall $|\omega|_B=\sup_{x} |\omega \cdot (x-x_B)|$ and
+$$
+g(x,\omega) = \cos (\omega\cdot (x-x_B) +\theta_B(\omega)) - \cos(\theta_B(\omega)).
+$$
+Let $t={\omega\cdot (x-x_B)\over |\omega|_B}\in [-1, 1]$ and 
+$$
+g(t, \omega)= \cos(|\omega|_Bt+\theta_B(\omega))  -\cos(\theta_B(\omega)).
+$$
+Define $g_i: [-1,1]\mapsto \mathbb R$ as
+follows:
+\begin{equation}
+\label{psi}
+g_i(t)=\frac{1}{|\omega_i|_B}g(t,\omega_i)=\frac{1}{|\omega_i|_B}\big (\cos(|\omega_i|_Bt+\theta_B(\omega_i))  -\cos(\theta_B(\omega_i))\big ).
+\end{equation}
+Note that
+$$
+g(x,\omega) = |\omega|_B g_i\big ({\omega\cdot (x-x_B)\over |\omega|_B}\big ).
+$$
+Thus,
+$$
+g_i(t)=\frac{g(x,\omega_i)}{|\omega_i|_B}.
+$$
+
+\noindent{\bf Step 1: Approximate $f$ by cosine functions} 
+
+Since 
+$$
+f(x)=\int_{\mathbb R} g(x,\omega)|\hat f(\omega)|d\omega = \int_{\mathbb R} {g(x,\omega)\over |\omega|_B} |\omega|_B|\hat f(\omega)|d\omega
+$$
+Let $\lambda(\omega) = {|\omega|_B|\hat f(\omega)|\over \int_{\mathbb R} |\omega|_B|\hat f(\omega)|d\omega}$. Thus,
+$$
+f(x)=\int_{\mathbb R} {g(x,\omega)\over |\omega|_B}\lambda(\omega)d\omega
+$$
+By \eqref{MC}, there exist $\{\omega_i^\ast\}_{i=1}^n$ such that
+$$
+	\|\frac1n \sum_{i=1}^n \frac{g(x,\omega_i^\ast)}{|\omega_i^\ast|_B}-f(x)\|_{L^2(\mu,B)}\le \frac{1}{\sqrt{n}},
+$$
+namely,
+\begin{equation}\label{eqmc1}
+	\|\frac1n \sum_{i=1}^n g_i^\ast (t)-f(x)\|_{L^2(\mu,B)}\le \frac{1}{\sqrt{n}}
+\end{equation}
+with 
+$$\displaystyle g_i^\ast (t)=\frac{1}{|\omega_i^\ast |_B}g({\omega\cdot (x-x_B)\over |\omega|_B},\omega_i^\ast).
+$$
+
+\noindent{\bf Step 2: Approximate cosine function by Heaviside functions} 
+
+Consider a partition of $t\in [-1,1]$ with the following grid points
+$$
+t_j=jh_k, j=-k:k
+$$
+with 
+$
+h_k=\frac{1}{k}\le \frac{1}{\sqrt{n}}.
+$
+Denote the piecewise constant interpolation of $g_i$ on $[-1,1]$ by $g_{i,k}$ with
+\begin{equation}\label{pro:intererror}
+	|g_i(t)-g_{i,k}(t)|\le h_k, \quad t\in [-1,1].
+\end{equation} 
+By \eqref{gih0},
+\begin{eqnarray}
+	g_{i,k}(t)&=&
+	\sum_{j=1}^{k-1}(g_i(-t_j) - g_i(-t_{j-1}))H_j(-t)+\sum_{j=1}^{k-1}(g_i(t_j) - g_i(t_{j-1})) H_{j}(t)\nonumber \\ 
+	&=&\sum_{j=1}^{k-1}[a_{ij}^-H_j(-t)+a_{ij}^+H_{j}(t)] \label{gih}
+	\quad t\in [-1,1]
+\end{eqnarray}
+where 
+$
+a_{ij}^{\pm}=g_i(\pm t_j) - g_i(\pm t_{j-1}).
+$ 
+By \eqref{eqmc1},
+\begin{equation} \label{eq:gast}
+\begin{split}
+	\|\frac1n  \sum_{i=1}^n g_{i,k}^\ast(t)-f(x)\|_{L^2(\mu,B)}\le &
+	\|\frac1n  \sum_{i=1}^n (g_{i,k}^\ast(t)-g_i^\ast(t))\|_{L^2(\mu,B)} \\
+	&+ \|\frac1n  \sum_{i=1}^n g_{i}^\ast(t)-f(x)\|_{L^2(\mu,B)}\le
+	\frac{2}{\sqrt{n}}.
+\end{split}
+\end{equation}
+
+\noindent{\bf Step 3: Approximate $f(x)$ by Heaviside functions} 
+
+Let
+$$
+f^*(x) = \frac1n  \sum_{i=1}^n g_{i,k}^\ast(t)
+=\sum_{i=1}^n\sum_{j=1}^{k-1}[\gamma_{ij}^- f_{ij}^-+ \gamma_{ij}^+f_{ij}^+].
+$$ 
+where
+$
+d_i=\sum_{j=1}^{k-1}(|a^-_{ij}|+|a^+_{ij}|)\le 2,
+$   
+$
+\gamma_{ij}^{\pm}=\frac{|a^\pm_{ij}|}{nd_i}
+$ and
+$
+f^\pm_{i,j}=d_i\/{\rm sign}(a^\pm_{ij})H_j(\pm {\omega_i^\ast\cdot (x-x_B)\over |\omega_i^\ast|_B}).
+$
+Since
+$
+\displaystyle \sum_{i=1}^n\sum_{j=1}^{k-1}[\gamma_{i,j}^-+\gamma_{i,j}^+]=1,
+$
+with re-numeration as
+$$
+p_\ell=\gamma_{ij}^{\pm}, f_\ell = f_{ij}^{\pm}, 1\le \ell \le N=2n(k-1),
+$$
+we have
+$$
+f^*(x)=\sum_{\ell=1}^N p_\ell f_\ell.
+$$
+This implies that $f^\ast (x)$ is the expectation of $\bar f$, which is randomly chosen from $\{f_\ell\}_{\ell=1}^N$ with probability $p_\ell$. ($x$ is fixed.)
+$$
+f^\ast(x) = \mathbb{E} (\bar f).
+$$
+By \eqref{MC}, there exist $\{\ell_i\}_{i=1}^n$ such that
+$$
+\|f^\ast (x) - {1\over n}\sum_{i=1} f_{\ell_i}\|_{L^2(\mu,B)}\le {1\over \sqrt{n}}.
+$$
+A combination of \eqref{eq:gast} and the above inequality gives
+$$
+\|f - {1\over n}\sum_{i=1} f_{\ell_i}|\le |f(x) - f^\ast (x)\|_{L^2(\mu,B)} + \|f^\ast (x) - {1\over n}\sum_{i=1} f_{\ell_i}\|_{L^2(\mu,B)}\le{3\over \sqrt{n}}.
+$$
+ 
+\iffalse
+{\bf Outline of proof}
+\begin{enumerate}
+\item $f(x)=\int g(x,\omega)\lambda(\omega)d\omega$
+\item $\displaystyle {1\over n}\sum_{i=1}^n g(x,\omega_i)\rightarrow f(x)$ with accuracy $n^{-1/2}$, with
+\[
+	g(x,\omega_i)= \cos(\omega_i\cdot (x-x_B)+\theta_B(\omega_i))  -\cos(\theta_B(\omega_i)),
+\]
+\item $$
+\displaystyle f^\ast(x)={1\over n}\sum_{i=1}^n \sum_{j=1}^{k-1}[a_{ij}^-H_j(-{x-x_B\over h})+a_{ij}^+H_{j}({x-x_B\over h})] \rightarrow {1\over n}\sum_{i=1}^n g(x,\omega_i)
+$$ 
+with accuracy $k^{-1}$. Let $k=n^{1/2}$. The subscript $i$ relates to sample $\omega_i$ and $j$ relates to the partition of $x$.
+\item For any function $f$, there exist $\{\omega_i^\ast\}_{i=1}^n$ which determine the value of $a_{ij}^\pm$ such that
+$$
+|f(x) - f^\ast(x)|\le n^{-1/2}.
+$$
+\item Rewrite $f^\ast$ as
+$$
+f^\ast (x)=\sum_{l=1}^N p_lf_l \quad \mbox{ with } N=2n(k-1)
+$$
+with
+$
+\displaystyle p_l={|a_l|\over nd_l},
+$
+$
+\displaystyle f_l=d_l\/{\rm sign}(a_l)H_l(\omega_l^B\cdot (x-x_B)).
+$
+
+Let $\bar{f}$ be a random variable, $f_l$ with probability $p_l$. Then,
+$$
+f^\ast (x) = \mathbb{E}(\bar f).
+$$
+\end{enumerate}
+\fi
+\subsection{Piecewise linear function and ReLU}
+The proof here is almost the same as the proof for Heaviside function in the last part. 
+
+Now we take a piecewise linear interpolation for $g_i$ on $[0,1]$, since $g_i(t_0)=0$ , we get
+$$
+g_{i,k}(t)=(\Pi_k^1g_i)(t)=\sum_{j=1}^{k}[g_i(t_{j})-g_i(t_{j-1})]\sigma_{j-1}(t),   \quad t\in [0,1]
+$$
+where
+$$
+\sigma_j(t)=M_0(\frac{t-t_j}{h_k})
+$$
+and
+\begin{equation}
+	\label{cardinal}
+	M_0(x)=
+	\left\{
+	\begin{array}{ll}
+		0 & x\le0 \\
+		x & 0< x\le1    \\
+		1 & x > 1    
+	\end{array}
+	\right.
+\end{equation}
+%We note that
+%$$
+%M_0(x)=ReLU(x)-ReLU(x-1)
+%$$
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Consider
+\begin{equation}
+	h_i(t) = g_i(-t), \quad t\in [0,1].
+\end{equation}
+Similarly, we have
+$$
+(\Pi_k^1h_i)(t)=\sum_{j=1}^{k}(h_i(t_j) - h_i(t_{j-1}))\sigma_{j-1}(t)=
+=\sum_{j=1}^{k}(g_i(-t_j) - g_i(-t_{j-1}))\sigma_{j-1}(t)
+$$
+Namely
+$$
+(\Pi_k^1 g_i)(-t)=\sum_{j=1}^{k}(g_i(-t_j) - g_i(-t_{j-1}))\sigma_{j-1}(t), \quad t\in [0,1]
+$$
+or
+\begin{equation}\label{gi1}
+	(\Pi_k^1 g_i)(t)=\sum_{j=1}^{k}(g_i(-t_j) - g_i(-t_{j-1}))\sigma_{j-1}(-t), \quad t\in [-1,0]
+\end{equation}
+Combine together we get a piecewise linear
+interpolation of $g_i$ on $[-1,1]$ as follows:
+\begin{eqnarray}
+	g_{i,k}(t)&=&
+	\sum_{j=1}^{k}(g_i(-t_j) - g_i(-t_{j-1}))\sigma_{j-1}(-t)+\sum_{j=1}^{k}(g_i(t_j) - g_i(t_{j-1}))\sigma_{j-1}(t)\nonumber \\ 
+	&=&\sum_{j=1}^{k}[a_{ij}^-\sigma_{j-1}(-t)+a_{ij}^+\sigma_{j-1}(t)] \label{gih}
+	\quad t\in [-1,1]
+\end{eqnarray}
+where 
+$$
+a_{ij}^{\pm}=g_i(\pm t_j) - g_i(\pm t_{j-1})
+$$
+%It is easy to see that
+%\begin{equation}
+%|g_i(t)-g_{i,k}(t)|\le h_k, \quad t\in [-1,1].
+%\end{equation} 
+%\begin{equation}
+%\|\frac1n \sum_{i=1}^n \frac{g(\cdot,\omega_i)}{|\omega_i|_B}-f^*\|_{L^2(\mu,B)}\le h_k
+%\end{equation}
+%where
+%\begin{equation}
+%\label{fstar}
+%f^*(x)=
+%\frac1n\sum_{i=1}^ng_{i,k}(\omega_i^B\cdot (x-x_B)).
+%\end{equation}
+%
+%By Theorem \ref{jones}, we have 
+%\begin{equation}
+%%\|\tilde f-f^*\|_{1,B}\le \frac{C_1(d,B)}{\sqrt{n}}
+%  \|\tilde f-f^*\|_{L^2(\mu,B)}\le \frac{2}{\sqrt{n}}
+%\end{equation}
+%here $C_1(d,B)=\sqrt{\mu(B)}[\sqrt{(d+{\rm diam}(B))}+{\rm diam}(B)(1+d)]$.
+
+
+%Let us rewrite
+%$$
+%f^*(x)
+%=\sum_{i=1}^n\sum_{j=1}^{k}[\gamma_{ij}^- f_{ij}^-+ \gamma_{ij}^+f_{ij}^+]
+%$$
+%where
+%$$
+%\gamma_{ij}^{\pm}=\frac{|a^\pm_{ij}|}{nd_i}, 
+%f^\pm_{i,j}=d_i\/{\rm sign}(a^\pm_{ij})\sigma_{j-1}(\pm \omega_i^B\cdot (x-x_B))
+%$$
+%and 
+%$$
+%d_i=\sum_{j=1}^{k}(|a^-_{ij}|+|a^+_{ij}|)\le 2
+%$$
+%By definition
+%\begin{equation}
+%\label{gammaij}
+%\sum_{i=1}^n\sum_{j=1}^{k}[\gamma_{i,j}^-+\gamma_{i,j}^+]=1.
+%\end{equation}
+%With re-numeration as
+%$$
+%p_\ell=\gamma_{ij}^{\pm}, f_\ell = f_{ij}^{\pm}, 1\le \ell \le N=2nk
+%$$
+%We have
+%$$
+%f^*(x)=\sum_{\ell=1}^N p_\ell f_\ell
+%$$
+%Consider 
+%$$
+%\mathcal N=\{1,2,\ldots, N\}
+%$$
+%and 
+%$$
+%\bar f: \mathcal N\mapsto \mathbb R^1
+%$$
+%such that
+%$$
+%\bar f(\ell)=f_{\ell}, \ell\in \mathcal N
+%$$
+%With the probability measure
+%$$
+%\lambda(\mathcal M)=\sum_{m\in \mathcal M}p_m \quad \mathcal M\subset\mathcal N.
+%$$
+%By definition. 
+%$$
+%\mathbb E(\bar f) = f^*(x).
+%$$
+%
+%By the basic result on expectation:
+%\begin{equation}
+%\begin{aligned}
+%&\sum_{\ell_1,\ldots \ell_n=1}^Np_{\ell_1}\cdots p_{\ell_n}\left((f^*(x)-
+%{1\over n}\sum_{i=1}^n f_{\ell_i})^2\right)\\
+%=&\mathbb E_{\mathcal N^n} \left(\mathbb E(\bar f)-{1\over
+%	n}\sum_{i=1}^n  \bar f(\ell_i)\right)^2
+%\le\frac1n \|\bar f\|_{\infty}^2 \le\frac{4}{n}.
+%\end{aligned}
+%\end{equation}
+%
+%By taking the $L^2(\mu,B)$ on the above inequality, we get
+%$$
+%\sum_{\ell_1,\ldots \ell_n=1}^Np_{\ell_1}\cdots p_{\ell_n}\|f^*-{1\over n}\sum_{i=1}^n f_{\ell_i}\|_{L^2(\mu,B)}^2
+%\le\frac4n.
+%$$
+%Thus, there exisit $\ell_1^*, \ldots, \ell_n^*\in \mathcal N$ such that
+%$$
+%\|f^*-f_n(x)\|_{L^2(\mu,B)}^2
+%\le\frac4n.
+%$$
+%where
+%$$
+%f_n(x)={1\over n}\sum_{i=1}^n f_{\ell_i^*}(x).
+%$$
+%Then we have 
+%\begin{equation}
+%\|\tilde f-f_n\|^2_{L^2(\mu,B)}\le \frac{9}{n}.
+%\end{equation}
+
+%Consequently
+%\begin{equation}
+%\left\|f(x)-f(x_B)-\|f\|_Bf_n\right\|^2_{L^2(\mu,B)}\le \frac{9\|f\|^2_B}{n}.
+%\end{equation}
+
+Follow the procedure in last section, and notice that $\sigma(x)=ReLU(x)-ReLU(x-1)$, we obtain the following theorem.
+
+
+\begin{theorem}
+	For a probability measure $\mu$ on B and every function with $\|f\|_B<\infty$, there exists $\omega_1,\dots,\omega_n\in\mathbb{R}^d$ such that 
+	$$
+	\left\|f(x)-f_n(x)\right\|^2_{L^2(\mu,B)}\le \frac{C\|f\|^2_B}{n}.
+	$$
+	where $f_n(x)=\sum_{i=1}^{n}a_iReLU(\omega_i x+b_i)+c$.
+\end{theorem}
+
+
+
+
+
+%\section{Barron theory of approximation}
+%%\subsection{A DL function class}
+%\subsection{Approximation result for cosine as activation function}
+%For clarity, let us give a brief introduction of the approximation
+%result based results in Barron \cite{barron1993universal} and some
+%modification in Xu \cite{xu2017approximation}.
+%
+%Given $d$ and $n$, consider the following nonlinear space in $\mathbb
+%R^d$:
+%\begin{equation}
+%\label{Vn}
+%V_n=\left\{v: v(x)={a\over n}\sum_{j=1}^n\cos(\omega_j\cdot x+b_j)+c,
+%  \mbox{ with }
+%a, b_j, c\in\mathbb R, \omega_j\in\mathbb R^d
+%\right\}
+%\end{equation}
+%\begin{theorem}  Given a bounded domain $\Omega\subset\mathbb R^d$ 
+% and a function $u:\mathbb R^d\mapsto\mathbb R$ whose Fourier
+% transform $\hat u$ satisfying $\|\hat u\|_{L^1(\mathbb R^d)}<\infty$.
+%Then, for any $n\ge 1$,  there exists $u_n\in V_n$  such that
+%\begin{equation}
+%\|u-u_n\|_{L^2(\Omega)}\le \frac{2|\Omega|^{1\over 2}\|\hat u\|_{L^1(\mathbb R^d)}}{\sqrt{n}}.
+%\end{equation}
+%where $u_n(x)={a\over n}\sum_{j=1}^n\cos(\omega_j\cdot x+b_j)+c$ satisfying
+%\begin{equation}
+%\label{abc}
+%a=  \|\hat u\|_{L^1(\mathbb R^d)}, \quad |b_j|\le \pi, \quad |c|\le \|u\|_{0,\infty,\Omega}+\|\hat u\|_{L^1(\mathbb R^d)}
+%\end{equation}
+%\end{theorem}
+%\begin{proof}\small
+%We write  
+%$\hat{u}(\omega)=e^{i\theta(\omega)}|\hat{u}(\omega)|$. By Fourier inversion formula,
+%\begin{equation}
+%  \label{eqn1}
+%  u(x)=\int_{\mathbb{R}^d}e^{i\omega\cdot x}\hat{u}(\omega)d\omega
+%=\int_{\mathbb{R}^d}e^{i(\omega\cdot x+\theta(\omega))}|\hat{u}(\omega)|
+%\end{equation}
+%Since $u(x)$ is real-valued,  the above identity implies that,  for $x, x^*\in \Omega$
+%\begin{equation}    \label{eqn4.3}
+%u(x)-u(x^*)
+%={\rm Re}\int_{\mathbb{R}^d}
+%(e^{i\omega\cdot x}-e^{i\omega\cdot x^*})  
+% e^{i\theta
+%    (\omega)}|\hat{u}(\omega)|d\omega 
+%=\|\hat u\|_{L^1(\mathbb R^d)}\int_{\mathbb{R}^d}g(x,\omega)\lambda(\omega)d\omega 
+%  \end{equation}
+%where $g: \Omega\times \mathbb{R}^d\rightarrow \mathbb{R}$
+%and $\lambda:\mathbb R^d\mapsto\mathbb R$ is a  probability distribution density function: 
+%\begin{equation}\label{gz}
+%  g(x,\omega):=
+%\cos(\omega\cdot x+\theta(\omega))  -
+%\cos(\omega\cdot x^*+\theta(\omega)) , \quad
+%\lambda(\omega)=|\hat{u}(\omega)|/\|\hat u\|_{L^1(\mathbb R^d)}.
+%\end{equation}
+%Using $\lambda$, we define the expectation $\mathbb E$ and
+%$\mathbb{\bar E}$ for $u: \mathbb R^d\mapsto \mathbb R$ and
+%$v: (\mathbb R^d)^n\equiv\mathbb R^d\times\cdots\times\mathbb R^d\mapsto \mathbb R$
+%$$
+%\mathbb E(u)\equiv\int_{\mathbb R^d}u(\omega)\lambda(\omega)d\omega,  \quad
+%\mathbb{\bar E}(v)\equiv\int_{(\mathbb
+%  R^d)^n}v(\omega_1,\cdots,\omega_n)
+%\lambda(\omega_1)\cdots\lambda(\omega_n)d\omega_1\cdots d\omega_n  
+%$$
+%Denote$\tilde u(x)=[u(x)-u(x^*)]/\|\hat u\|_{L^1(\mathbb R^d)}$, by
+%\eqref{eqn4.3} and a direct (and standard) calculation
+%$$
+%\mathbb{\bar E}(\tilde u(x)-\frac1n\sum_{j=1}^ng(x,\omega_j))^2 
+%=\mathbb{\bar E}(\mathbb{E}[g(x,\cdot)]-
+%     \frac1n\sum_{j=1}^n g(x,\omega_j))^2 
+%\le\frac{1}{n}\max_{x\in \Omega, \omega\in \mathbb R^d}|g(x,\omega)|^2
+%\le \frac{4}{n}
+%$$
+%By Fubini's Theorem,
+%$\mathbb{\bar E}\int_\Omega(\tilde u(x)-\frac1n\sum_{j=1}^ng(x,\omega_j))^2 dx
+%\le \frac{4}{n}|\Omega|.
+%$
+%Thus $\exists$ $ \omega_j^*\in \mathbb{R}^d$ such that 
+%$$
+%\int_\Omega  (\tilde u(x)-\frac1n\sum_{j=1}^ng(x,\omega_j^*))^2dx\le \frac{4}{n}|\Omega|.
+%$$
+%The desired result then follows easily. 
+%\end{proof}
+%To prove an $H^1$ estimate, we use the following density function
+%$$
+%\lambda_1(\omega)=\frac{|\omega||\hat u(\omega)|}{\|\widehat{\nabla u}\|_{L^1(\Omega)}}
+%\quad
+%\|\widehat{\nabla u}\|_{L^1(\Omega)}=\int_{\mathbb R^d}|\omega||\hat u(\omega)|.
+%$$
+%Similar to equation \eqref{eqn4.3}, we have
+%$$
+%\tilde f(x)\equiv \frac{u(x)-u(x^*)}{\|\widehat{\nabla u}\|_{L^1(\Omega)}}
+%=
+%\int_{\mathbb{R}^d}\frac{g(x,\omega)}{|\omega|}\lambda_1(\omega)d\omega 
+%$$
+%It follows that
+%$$
+%\partial_k\tilde f(x)
+%=
+%\int_{\mathbb{R}^d}\frac{\partial_kg(x,\omega)}{|\omega|}\lambda_1(\omega)d\omega 
+%$$
+%We note that
+%$$
+%\max_{x\in \Omega, \omega\in \mathbb R^d}
+%\frac{|g(x,\omega)|}{|\omega|}\le {\rm diam}(\Omega), 
+%\quad
+%\max_{x\in \Omega, \omega\in \mathbb R^d}
+%\frac{|\partial_kg(x,\omega)|}{|\omega|}\le 1
+%$$
+%Setting
+%$$
+%v_n=\frac1n\sum_{j=1}^n\frac{g(x,\omega_j)}{|\omega_j|}
+%$$
+%By a similar argument, we obtain
+%$$
+%\mathbb{\bar E}
+%\int_\Omega\left((\tilde u(x)-v_n(x))^2
+%+\sum_{k=1}^d (\partial_k\tilde u(x)-\partial_kv_n(x))^2
+%\right) dx
+%\le \frac{1}{n}[C(d,\Omega)]^2 
+%$$
+%where
+%$
+%C(d,\Omega)=[|\Omega| ({\rm diam}(\Omega)+d)]^{1/2}.
+%$
+%This implies that $\exists$ $ \omega_j^*\in \mathbb{R}^d$ such that  
+%$$
+%\left\|\tilde u(\cdot)-{1\over n}\sum_{j=1}^n\frac{g(\cdot,\omega_j^*)}{|\omega_j^*|}\right\|_{1,\Omega}^2
+%\le \frac{[C(d,\Omega)]^2}{n}
+%$$
+%\begin{theorem}  \label{thm:DLH1}
+%Given a bounded domain $\Omega\subset\mathbb R^d$ 
+% and a function $u:\mathbb R^d\mapsto\mathbb R$ whose Fourier
+% transform $\hat u$ satisfying $\|\widehat{\nabla u}\|_{L^1(\mathbb R^d)}<\infty$.
+%Then, for any $n\ge 1$,  there exists $u_n\in V_n$  such that
+%\begin{equation}
+%\|u-u_n\|_{H^1(\Omega)}\le \frac{C(d,\Omega)}{\sqrt{n}})\|\widehat{\nabla u}\|_{L^1(\mathbb R^d)}
+%\end{equation}
+%where 
+%\begin{equation}
+%  \label{un}
+%u_n(x)=\sum_{j=1}^na_j\cos(\omega_j\cdot x+b_j)+c \mbox{ for some }
+%a_j,b_j,c\in \mathbb R, \omega_j\in\mathbb R^d.
+%\end{equation}
+%\end{theorem}
+% 
+%One remarkable fact is that Theorem \ref{thm:DLH1} holds in any spatial
+%dimension and any bounded domain $\Omega$ of any geometric shape.
+%Theorem \ref{thm:DLH1} is only interesting when $d\ge 2$.  For $d=1$,
+%we can prove much stronger results easily.  For example, if $u$
+%is sufficiently smooth, for any $m\ge 1$, we can find functions $u_n$
+%in the form of \eqref{un} such that 
+%\begin{equation}
+%  \label{uun1}
+%\|u-u_n\|_{1,\Omega}\le \frac{C_1(m,u)}{n^{m}}.  
+%\end{equation}
+%\newpage 
+
+
+% \subsection{Ritz optimization problem}
+%An optimized discretization based on machine learning amounts to solve a nonlinear problem even when the partial different equation is linear.   When adaptivity is considered, it is desirable to solve an optimization problem.  For example, for a standard linear partial differential equation such as
+%\begin{equation}
+%  \label{laplace}
+%-\Delta u=f  
+%\end{equation}
+%We will solve it by solving the optimization problem
+%\begin{equation}
+%\label{ritz}
+%\min_{v\in V}J(v)
+%\end{equation}
+%where
+%\begin{equation}
+%\label{ritz}
+%J(v)=\int_\Omega\left( {1\over 2}|\nabla v|^2 -fv\right)  
+%\end{equation}
+%The following identity can be easily verified:
+%\begin{equation}
+%  \label{JvH1}
+%|u-v|_1^2=2J(v)+|u|_1^2. 
+%\end{equation}
+%This means that 
+%\begin{equation}
+%\label{minmin}
+%\arg\min_{v}|u-v|_1^2=
+%\arg\min_{v}J(v)
+%\end{equation}
+%Using the approximation result, we get the following error estimate for the cosine based space:
+%\begin{equation}
+%  \label{cosError}
+%\min_{v}|u-v|_1\le \frac{2}{\sqrt{n}}\int_{\mathbb R^d}|\omega||\hat f(\omega)|d\omega.
+%\end{equation}
+%where the Fourier transform can be computed with any extension of $f$ onto the entire space $\mathbb R^d$. 
+%
+%Similarly, following error estimate for the ReLU based space:
+%\begin{equation}
+%  \label{ReLUError}
+%\min_{v}|u-v|_1\le \frac{2}{\sqrt{n}}\int_{\mathbb R^d}|\omega|^2|\hat f(\omega)|d\omega.
+%\end{equation}
+%it would be interesting to compare the space of the
+%approximation-class shown in \eqref{cosError} and \eqref{ReLUError}
+%with those used in the classic adaptive finite element methods (see
+%results by Nochetto et al).
+%
+%Recall the best error estimates from the classic adaptive finite
+%element methods is of the following form:
+%\begin{equation}
+%  \label{AFEM-error}
+%|u-u_n|_{1,\Omega}\le \frac{c}{n^{1\over d}}\|u\|_A
+%\end{equation}
+%for some norm $\|\cdot\|$ in approximation class $\mathcal A$.
+%
+%Comparing the error estimate in \eqref{AFEM-error} with those in
+%\eqref{cosError} or \eqref{ReLUError}, the ML-FEM appears to be much
+%better in terms of asymptotic order?
+%
+%In fact, according to the result by Lin, Xie and Xu, we have the
+%following lower bound for linear elements for smooth solution
+%discretized 
+%$$
+%|u-u_n|_{1,\Omega}\ge \frac{c(u)}{n^{1\over d}}
+%$$
+%as long as $u$ is not a linear polynomial. 
+%
+%
+%For linear model \eqref{laplace}, the optimization problem
+%\eqref{ritz} is a convex problem that has a unique solution.  But if
+%we use a nonlinear space $V$ the optimization problem \eqref{ritz}
+%become non-convex.  It is well-known that non-convex optimization
+%problem is hard to solve.  Therefore, the ML-FEM is only viable if the
+%non-convex optimization problem can be solved efficiently!
+

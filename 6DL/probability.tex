@@ -1,0 +1,318 @@
+
+We now glance over some of the very basic terminology from probability
+theory needed in our analysis.  Such basic notions are found in all
+standard introductory texts on probability, and for details that are
+missing in the exposition below, we refer to the book by Grimmett and
+Welsh~\cite{2014GrimmettG_WelshD-aa}.
+
+\section{Probability space and random variables}
+A triple $(\Omega, \mathcal{F}, P)$ is called a \emph{probability
+  space}; $\Omega$ is, in general, a set called \emph{sample space}
+which contains all conceptually possible outcomes of an experiment;
+$\mathcal{F}$ is a \emph{$\sigma$-algebra} of events (sets) on
+$\Omega$; $P$ is a countably-additive measure on $\Omega$ called
+\emph{probability}, i.e., a function
+$P: \mathcal{F} \mapsto \mathbb{R}$ such that $P(a) \geq 0$ for all
+$a \in \mathcal{F}$, $P(\Omega) = 1$, and
+$P(\sum_{n=1}^{\infty}a_n) = \sum_{n=1}^{\infty} P(a_n)$ whenever
+$a_1, a_2, \cdots$ are (pairwise) disjoint sets in $\mathcal{F}$.  For
+example, the \emph{uniform distribution} is defined by choosing
+$P(a) = |a|/|\Omega|$ where $|a|$ is the measure (cardinality) of $a$.
+
+Based on the probability space, given by the triple $(\Omega,
+\mathcal{F}, P)$, a \emph{discrete random variable} is a function $X:
+\Omega \mapsto \mathbb{R}$ such that $X^{-1}(b) := \{ \omega:
+X(\omega) \in b \} \in \mathcal{F}$ for every set $b$ in the image of
+$X$.
+% for every $B \in \mathcal{B}(\mathbb{R})$ where
+% $\mathcal{B}(\mathbb{R})$ is the Borel $\sigma$-algebra of
+% $\mathbb{R}$.
+Notice that, the sets $\{ X \in b \} = \{ \omega: X(\omega) \in b \} $
+are ``events'' (members of $\mathcal{F}$) and the corresponding
+probabilities are defined as $ P(X \in b) := P(X^{-1}(b))$.
+The \emph{expectation} $E(\cdot)$ is the average of a random variable. If
+$X \geq 0$ is a random variable on $(\Omega, \mathcal{F}, P)$ then we
+define its expectation to be $E(X) = \int X \mathrm{d} P$, which for
+a discrete random variable $X$ is:
+\begin{equation}
+E(X) = \sum_{x \in R(X)} x P(X=x) = \sum_{x} x P(X=x),
+\end{equation}
+
+\section{Conditional probability and conditional expectation}
+From now on, we focus on discrete random variables, as this is the setup we need. We say that two random variables $X$ and $Y$, are \emph{independent} if
+\begin{equation}
+P(X=x, Y=y) = P(X=x) P(Y=y),
+\end{equation}
+for all $x$ and $y$.  The \emph{conditional probability} of
+$X=x$ under the condition $Y=y$ is given by
+\begin{equation}
+P(X=x\,|\,Y=y) = \frac{P(X=x, Y=y)}{P(Y=y)}.
+\end{equation}
+Therefore, if $X$ and $Y$ are independent, we have
+\begin{equation}\label{eqn:indep}
+P(X=x\,|\,Y=y) = P(X=x).
+\end{equation}
+
+In general, we write, for $G \subset \Omega$,
+\begin{equation}
+E(X| G)
+= \sum_{x \in R(X)} x \frac{P(\omega\in G, X(\omega)=x)}{P(G)}=
+\sum_{x \in R(X)} x P(X=x|G).
+\end{equation}
+In particular, we write
+\begin{equation}
+E(X|Y=y)=E(X|G)
+\mbox{ if }
+G=\{Y=y\}.
+\end{equation}
+which is known as the \emph{conditional expectation} of $X$ given $Y =
+y$.
+Now, we introduce the conditional random variable $E(X|Y)$ as follows
+\begin{equation}
+E(X|Y)(\omega)=E(X|Y=Y(\omega)).
+\end{equation}
+Obviously
+\begin{equation}
+\{\omega\in \Omega: E(X|Y)=z\}=\bigcup_{y:  E(X|Y=y)=z}\{\omega\in \Omega:  Y(\omega)=y\}
+\end{equation}
+and, hence
+\begin{equation}
+P\{\omega\in \Omega:  E(X|Y) (\omega)=z\}=\sum_{y:   E(X|Y=y) =z}P\{\omega\in \Omega:  Y(\omega)=y\}
+\end{equation}
+namely
+\begin{equation}
+P( E(X|Y)=z)=\sum_{y:   E(X|Y=y)=z}P(Y=y).
+\end{equation}
+
+%and this allows us to further define a random variable
+%$E(X|Y): \Omega \mapsto \mathbb{R}$, called the \emph{conditional
+%  expectation} of $X$ with respect to $Y$:
+%\begin{equation}\label{e:ez}
+  % \left(  E(X|Y) \right) (\omega) = E(X| Y=Y(\omega)).
+%E(X|Y) = Z, \quad\mbox{where}\quad Z(\omega) = E(X| Y=Y(\omega)), \quad \omega\in \Omega.
+%\end{equation}
+% we denote by $E(X\,|\,Y)$ that function of the random variable $Y$
+% whose value at $Y = y$ is $E(X\,|\, Y=y)$,
+\begin{lemma} \label{lem:EXY}
+\begin{equation}\label{e:eee}
+E(X) = E(E(X\, | \, Y)).
+\end{equation}
+%Namely
+%\begin{equation}
+%E(X) = \sum_xx\sum_y P(X= x, \, Y = y)
+%\end{equation}
+\end{lemma}
+\begin{proof}
+Denote $Z=E(X|Y)$, it follows that
+\begin{align}
+E(E(X \, | \, Y))  = E(Z)
+&=\sum_z zP(Z=z)\\
+&= \sum_zz\sum_{y: w(y)=z}P( Y=y )  \\
+&= \sum_y w(y) P( Y = y )  \\
+ &  = \sum_y \left(  \sum_x x P(X = x \, | \, Y=y)  \right) P(Y = y) \\
+			           %& = \sum_y \sum_x x P(X= x \, | \, Y = y) P(Y = y) \\
+			           & = \sum_y \sum_x x P(X= x, \, Y = y) \\
+			           & = \sum_y \sum_x x P(Y= y \, | X = x) P(X = x) \\
+			           & = \sum_x x P(X = x) \left( \sum_y P(Y = y\, | X = x) \right) \\
+			           & = \sum_x x P(X = x) \\
+			           & = E(X).
+\end{align}
+\end{proof}
+
+\begin{lemma}
+\begin{equation}
+E(X) = \sum_xx\sum_y P(X= x, \, Y = y)
+\end{equation}
+\end{lemma}
+%This is easily verified by the definition of $E(X)$ and the fact that
+%\begin{equation}\label{e:mama-mia}
+%E(E(X\, | \, Y)) = \sum_{y} E(X\,|\, Y=y) P(Y = y).
+%\end{equation}
+
+\newpage
+
+\section{Central Limit Theorem}
+\begin{theorem}[Lindeberg--Levy Central Limit Theorem]
+  Suppose ${X_1, X_2, \dots}$ is a sequence of independent identical
+  distributed (i.i.d.) random variables with $E[X_i] = \mu$ and
+  $Var[X_i] = \sigma_2 < \infty$. Then as n approaches infinity, the
+  random variables $\sqrt{n}((\frac{1}{n}\sum_{i=1}^{n}X_i) - \mu)$
+  converge in distribution to a normal distribution $N(0,\sigma^2)$:
+\begin{align}
+\sqrt{n}((\frac{1}{n}\sum_{i=1}^{n}X_i) - \mu)&\stackrel{d}{\longrightarrow} \mathcal{N}(0,\sigma^2).
+\end{align}
+\end{theorem}
+
+\begin{lemma}[Levy's convergence theorem]
+Let $(F_n)$ be a sequence of distribution functions, and let $\psi_n$ denote the characteristic function of $F_n$. Suppose that $g(\theta):=lim_n \psi_n(\theta)$ exists for all $\theta \in \mathbb{R}$, and that $g(\cdot)$ is continuous at 0. Then $g=\psi_F$ for some distribution function F, and $F_n \stackrel{w}{\longrightarrow} F$.
+\end{lemma}
+
+
+\begin{proof}
+First let's denote
+\begin{align}
+Z_n=\frac{X_1+...+X_n-n\mu}{ \sqrt{n \sigma^2}}=\sum_{i=1}^{n} \frac{X_i-\mu}{ \sqrt{n \sigma^2}}=\sum_{i=1}^{n} \frac{Y_i}{ \sqrt{n }},
+\end{align}
+where  in the last step we defined the new random variables $Y_i=\frac{X_i-\mu}{ \sigma}$, each with zero mean and unit variance.
+
+Then we wanna to prove the characteristic function of $Z_n$ converges to the characteristic function of a random variable with standard normal distribution.
+The characteristic function of a random variable X is defined as
+\begin{align}
+\psi_X(\theta)=\mathbb{E}(e^{i\theta X})=\int_\mathbb{R}e^{i\theta X} f_X(x)dx,
+\end{align}
+where $f_X$ is the probability density function of X.
+
+Property 1. If a random variable X has moments up to k-th order, then the characteristic function $\psi_X$ is k times continuously differentiable on the entire real line. Moreover,
+\begin{align}
+\mathbb{E}[X^k]=(-i)^k \psi_X^k(0).
+\end{align}
+
+Property 2. If $X_1,...,X_n$ are independent random variables, and $a_1,...,a_n$ are some constants, then the characteristic function of the linear combination of the $X_i's$ is
+\begin{align}
+\psi_{a_1 X_1+...+a_n X_n}(\theta)=\psi_{X_1}(a_1\theta)...\psi_{X_n}(a_n\theta).
+\end{align}
+
+The characteristic function of $Z_n$ is given by
+\begin{align}
+\psi_{Z_n}(\theta)=\psi_{\sum_{i=1}^{n} \frac{Y_i}{ \sqrt{n }}}(\theta)=\psi_{Y_1}(\frac{\theta}{ \sqrt{n }})\cdot \psi_{Y_2}(\frac{\theta}{ \sqrt{n }})...\psi_{Y_n}(\frac{\theta}{ \sqrt{n }})=[\psi_{Y_1}(\frac{\theta}{ \sqrt{n }})]^n,
+\end{align}
+
+where in the last step we used the fact that all of the $Y_i$ are identically distributed. The characteristic function of $Y_1$ is, by Taylor's theorem,
+\begin{align}
+\psi_{Y_1}(\frac{\theta}{ \sqrt{n }})=1-\frac{\theta^2}{2n}+c\frac{\theta^3}{6n^{\frac{3}{2}}}+o(\frac{\theta^3}{n^{\frac{3}{2}}}), \theta  \rightarrow 0.
+\end{align}
+Therefore
+\begin{align}
+\psi_{Z_n}(\theta)=\bigg ( 1-\frac{\theta^2}{2n}+c\frac{\theta^3}{6n^{\frac{3}{2}}}+o(\frac{\theta^3}{n^{\frac{3}{2}}}) \bigg )^n \rightarrow e^{-\frac{1}{2}\theta^2}, n  \rightarrow \infty,
+\end{align}
+which converges to the characteristic function of a random variable with standard normal distribution.
+Hence as a corollary of the lemma,
+\begin{align}
+F_{Z_n}&\stackrel{w}{\longrightarrow} \mathcal{N}(0, 1).
+\end{align}
+Therefore
+\begin{align}
+\sqrt{n}((\frac{1}{n}\sum_{i=1}^{n}X_i) - \mu)&\stackrel{d}{\longrightarrow} \mathcal{N}(0,\sigma^2).
+\end{align}
+
+\end{proof}
+
+
+Here the normal distribution $N(0,\sigma^2)$ means $f(x)=\frac{1}{\sqrt{2\pi}}e^{-\frac{x^2}{2\pi}}$ in terms of the probability distribution function.
+
+A sequence $X_1, X_2$, ... of real-valued random variables is said to converge in distribution to a random variable X if
+$ \lim _{n\to \infty }F_{n}(x)=F(x)$,
+for every number $x \in \mathbb{R}$ at which F is continuous. Here $F_n$ and F are the cumulative distribution functions of random variables $X_n$ and X, respectively.
+
+\section{Random Walk and Brownian Motion}
+
+Define the random variable $X_i$ as follows. $X_i=1$ if the $i_{th}$ coin toss results in heads, and $X_i=-1$ if the $i_{th}$ coin toss results in tails. Thus,
+\begin{equation}
+  P(X_i=1)=P(X_i=-1)=\frac{1}{2}.
+\end{equation}
+We also have $E(X_i)=0$ and $\mbox{var}(X_i)=1$.
+
+Fix $ t \geq 0$, choose $\delta$ small enough as the time step s.t. $N=t/\delta\in \mathbb{N}$. Then the current location after $n_{th}$ step is defined as
+\begin{equation}
+  S_N(n \delta)= \sum_{i=1}^{n} X_i.
+\end{equation}
+Hence $S_N(t)=S_N(N \delta)= \sum_{i=1}^{N} X_i$ and $S_N(0)= 0$.
+
+Then we rescale $S_N(t)$ by
+\begin{equation}
+  \bar{S}_N(t)=\sqrt{\delta} S_N(t)=\sqrt{N\delta}\sqrt{N}\frac{S_N(t)}{N}
+  =\sqrt{t}\sqrt{N}\frac{\sum_{i=1}^{N} X_i}{N}
+\end{equation}
+It's known that $\{X_1,...,X_N\}$ is a sequence of independent and
+identically distributed random variables drawn from the same
+distribution, with $E(X_i)=0$ and $\mbox{var}(X_i)=1$.
+
+
+Then according to the central limit theorem, as $n$ approaches infinity,
+\begin{align}
+  \frac{\bar{S}_N(t)}{\sqrt{t}}&=\sqrt{N}\frac{\sum_{i=1}^{N} X_i}{N}\\\notag
+  &=\sqrt{N}(\frac{\sum_{i=1}^{N} X_i}{N}-0)\stackrel{d}{\longrightarrow} \mathcal{N}(0,1)\\
+  \bar{S}_N(t)&\stackrel{d}{\longrightarrow} \mathcal{N}(0,t).
+\end{align}
+If we denote
+\begin{equation}
+  W_t=\lim_{N\rightarrow \infty} \bar{S}_N(t)=\lim_{\delta\rightarrow 0} \sqrt{\delta} \sum_{i=1}^{N} X_i,
+\end{equation}
+then we want to prove  $W_t$ that we obtained is indeed a Brownian motion.
+\begin{definition}
+A continuous-time stochastic process $W_t$ is called Bronwian motion if
+\begin{enumerate}
+\item $W_0=0$
+\item $W_t$ is continuous a.s.
+\item $W_t \sim \mathcal{N}(0,t)$
+\item $W_t$ has independent increments
+\end{enumerate}
+\end{definition}
+
+\section{Brownian motion as the limit of random walk: proof}
+
+
+\subsection{Starting Points}
+\begin{align}
+  W_0&=\lim_{N\rightarrow \infty} \bar{S}_N(0)\\\notag
+     &=\lim_{N\rightarrow \infty} \sqrt{\delta} S_N(0)\\\notag
+     &=\lim_{N\rightarrow \infty} \sqrt{\delta} 0\\\notag
+     &=0\\\notag
+\end{align}
+
+\subsection{Continuity}
+\begin{align}
+   W_t&=\lim_{N\rightarrow \infty} \bar{S}_N(t)=\lim_{N\rightarrow \infty} \sqrt{\delta} S_N(t)\\
+   W_{t-\delta}&=\lim_{N\rightarrow \infty} \bar{S}_N(t-\delta)=\lim_{N\rightarrow \infty} \sqrt{\delta} S_N(t-\delta)\\
+   |W_{t-\delta}-W_t|&=|\lim_{N\rightarrow \infty} \sqrt{\delta} S_N(t-\delta)-\sqrt{\delta}S_N(t)|\\\notag
+   &=|\lim_{N\rightarrow \infty} \sqrt{\delta} S_N((N-1)\delta)-\sqrt{\delta}S_N(N \delta)|\\\notag
+   &=|\lim_{N\rightarrow \infty} \sqrt{\delta} X_{N}|\\\notag
+   &=\sqrt{\delta},
+\end{align}
+which tends to 0 as $\delta$ approaches 0. Therefore $W_t$ is continuous in time t.
+
+\subsection{Distribution Function}
+We have already proved that
+\begin{equation}
+   W_t \sim \mathcal{N}(0,t).
+\end{equation}
+
+\subsection{Independent Increments}
+Fix $ t,s \geq 0$, choose $\delta$ small enough as the time step s.t. $N_1=t/\delta$, $N_2=s/\delta\in \mathbb{N}$.
+\begin{align}
+   W_t&=\lim_{N_1\rightarrow \infty} \bar{S}_{N_1}(t)=\lim_{N_1\rightarrow \infty} \sqrt{\delta} S_{N_1}(t)\\
+   W_{t+s}&=\lim_{N_1+N_2\rightarrow \infty} \bar{S}_{N_1+N_2}(t+s)=\lim_{N_1+N_2\rightarrow \infty} \sqrt{\delta} S_{N_1+N_2}(t+s)\\
+   W_{t+s}-W_t&=\lim_{N_1,N_2\rightarrow \infty} \sqrt{\delta} S_{N_1+N_2}(t+s)-\sqrt{\delta} S_{N_1}(t)\\\notag
+   &=\lim_{N_1,N_2\rightarrow \infty} \sqrt{\delta} S_{N_1+N_2}((N_1+N_2)\delta)-\sqrt{\delta} S_{N_1}(N_1\delta)\\\notag
+   &=\lim_{N_1,N_2\rightarrow \infty} \sqrt{\delta} \sum_{i=1}^{N_1+N_2} X_i-\sqrt{\delta} \sum_{i=1}^{N_1} X_i\\\notag
+   &=\lim_{N_1,N_2\rightarrow \infty} \sqrt{\delta} \sum_{i=N_1+1}^{N_1+N_2} X_i\\\notag
+   &=\lim_{N_2\rightarrow \infty} \sqrt{\delta} \sum_{i=1}^{N_2} X_i\\\notag
+   &=\lim_{N_2\rightarrow \infty} \sqrt{\delta} S_{N_2}(N_2\delta)\\\notag\
+   &=\lim_{N_2\rightarrow \infty} \sqrt{\delta} S_{N_2}(s)\\\notag
+   &=\lim_{N_2\rightarrow \infty} \bar{S}_{N_2}(s)\\\notag
+   &=W_s.
+\end{align}
+Hence $W_{t+s}-W_t$  has the same distribution as $W_s$ for $\forall t,s \geq 0$.
+
+Then we want to prove for any positive integer n and any $0 = t_0 < t_1 <...< t_n$, the random variables $W_{t_{i+1}} - W_{t_{i}}$, i = 1, ..., n, are mutually independent. Moreover, it suffices to prove $W_{t_{i}}-W_{t_{i-1}}$ and $W_{t_{i+1}}-W_{t_{i}}$ are independent.
+
+If we define $t_{i}=N_{i}\delta$, by definition, $W_{t_{i-1}}=\lim_{\delta\rightarrow0}\sqrt{\delta}\sum\limits_{j=1}^{N_{i-1}}X_j$, $W_{t_{i}}=\lim_{\delta\rightarrow0}\sqrt{\delta}\sum\limits_{j=1}^{N_i}X_j$, $W_{t_{i+1}}=\lim_{\delta\rightarrow0}\sqrt{\delta}\sum\limits_{j=1}^{N_{i+1}}X_j$
+~\\So we have $$W_{t_{i}}-W_{t_{i-1}}=\lim_{\delta\rightarrow0}\sqrt{\delta}\sum\limits_{j=N_{i-1}+1}^{N_{i}}X_j=:Y_i$$
+$$W_{t_{i+1}}-W_{t_{i}}=\lim_{\delta\rightarrow0}\sqrt{\delta}\sum\limits_{j=N_{i}+1}^{N_{i+1}}X_j=:Y_{i+1}$$
+Then we want to prove $Y_{i}$ and $Y_{i+1}$ are independent, or equivalently, $P(Y_i<a, Y_{i+1}<b)=P(Y_i<a)P(Y_{i+1}<b)$
+~\\Proof: By definition, $$P(Y_i<a, Y_{i+1}<b)$$
+$$=P(\lim_{\delta\rightarrow0}\sqrt{\delta}\sum\limits_{j=n_{i-1}+1}^{n_{i}}X_j<a, \lim_{\delta\rightarrow0}\sqrt{\delta}\sum\limits_{j=n_{i}+1}^{n_{i+1}}X_j<b)$$
+$$=\lim_{\delta\rightarrow0}P(\sqrt{\delta}\sum\limits_{j=n_{i-1}+1}^{n_{i}}X_j<a, \sqrt{\delta}\sum\limits_{j=n_{i}+1}^{n_{i+1}}X_j<b)$$
+$$=\lim_{\delta\rightarrow0}P(\sqrt{\delta}\sum\limits_{j=n_{i-1}+1}^{n_{i}}X_j<a)P(\sqrt{\delta}\sum\limits_{j=n_{i}+1}^{n_{i+1}}X_j<x_{i+1})$$
+$$=P(Y_i<x_i)P(Y_{i+1}<b)$$
+
+Remark 1: Here we used the property that almost sure convergence implies convergence in probability and convergence in probability implies convergence in distribution.
+
+Remark 2:
+In this case, we construct a Bronwian motion with i.i.d. random variables $\{X_i\}$ where the domain for $X_i$ is  $\{-1,1\}$. Therefore the domain $\Omega$ for the random variables is $\{-1,1\}\times...\times\{-1,1\}\times...=\{-1,1\}^{\infty}$ in the notation of product space.
+
+Actually according to the Wiener's theroem, we construct a Bronwian motion with any i.i.d. random variables $\{X_i\}$. Here we assume nothing for the random variable as long as it's not determined. Suppose the probability space  for $X_i$ is  $(S, \sigma(S),P')$ . Hence the domain $\Omega$ for the random variables is $S\times...\times S\times...=S^{\infty}$.
+
+For any given time $t$, $W_t$ is a random variable. The value of $W_t$ is completely determined by the i.i.d. random variables $\{X_i\}$. Therefore the domain  for the $W_t$ is $\Omega=S^{\infty}$, where $S$ is the domain for $X_i$. The $\sigma$ -algebra   $\mathcal{F}=\sigma((A_1\times A_2\times ...\times A_n \times...):A_i\in \sigma(S))$. The measure  is $P(A_1\times A_2\times ...\times A_n \times...)=\Pi_{i=1}^{\infty}P'(A_i)$, where $P'$ is the measure on $S$. Therefore $(\Omega, \mathcal{F},P)$ is the probability space for a random variable $W_t$.
+
+

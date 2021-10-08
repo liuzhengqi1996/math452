@@ -1,0 +1,265 @@
+\chapter{Batch Normalization}
+In this chapter, we discuss the batch normalization (BN) technique. The aim of BN is to avoid gradient explosion or disappearance, which makes the training process unstable, i.e. the gradient is either too large or too small to be a reasonable update.
+
+\section{The Definition of Batch Normalization}
+BN can be applied to any layer of a neural network, where it normalizes, scales and shifts an internal computation result. It in fact includes two parts, one for the training procedure and one for the test.
+
+\subsection{Model w.r.t loss function: an idea to ``understand" BN}
+In fact, BN is just a new model, and then use the general SGD w.r.t mini-batch type! The new model of BN is like:
+\begin{equation}\label{BN-model}
+L(\Theta) = \sum_{i \in I} \frac{1}{|N|} \|\tilde {f}^J(x_i;\Theta) - y_i\|^2,
+\end{equation}
+as $I = \{1, 2,\cdots,N\}$ is the {\bf all data}.  
+We can rewrite it as:
+\begin{equation}\label{BN-model1}
+L(\Theta) = \mathbb{E}_{i} \|\tilde {f}^J(x_i;\Theta) - y_i\|^2.
+\end{equation}
+Now we define $\tilde {f}^J(x_i;\Theta)$ as:
+\begin{equation}
+\tilde f^j = \theta^j \circ \text{\text{BN}}_{I} ( g^j\circ\tilde f^{j-1}).
+\end{equation}
+or, as it may perform better in practice,
+\begin{equation}
+\tilde f^j = \theta^j \circ g^j \circ \text{\text{BN}}_{I} (\tilde f^{j-1}),
+\end{equation}
+So what we will explain is based the second form.
+At layer $j$, with a scaling factor $\gamma^j\in\mathbb{R}$ and a shifting $\beta^j \in \mathbb{R}$, $\text{BN}_I$ is defined as
+\begin{equation}
+\text{BN}_{I}(x)= \gamma^j\frac{x - \mu_I^j}{\sigma_I^j}+\beta^j \bm{1},
+\end{equation}
+where $\mu^j$ is the mean value and $\sigma^j$ is the standard deviation of the all date i.e.
+\begin{align}
+\mu_I^j &= \frac{\sum_{i\in I}  x_i }{|I|},\\
+\sigma_I^j  &= \sqrt{ \delta + \frac{ \sum_{i\in I} ( x_i - \mu_I^j)^2}{|I|-1} }.
+\end{align}
+where $\delta$ is an extra term for numerical stability, and the square in $(  x_i - \mu^j)^2$ is an element-wise square operation.
+
+Note that $\gamma^j$ and $\beta^j$ are parameters to be trained.
+
+If BN is added after the linear transformation, i.e.
+\begin{equation}
+\text{BN}_I(f^{j-1}(X_i))=\text{BN}_{I}(WX_i + b),
+\end{equation}
+the bias $b$ is in fact removed by BN, thus
+\begin{equation}
+\text{BN}_I(f^{j-1}(X_i))=\text{BN}_I(WX_i).
+\end{equation}
+
+
+\subsection{Training Process:  approximated SGD}
+Now to train BN model, we still use SGD, so we just sample a subset of data as $S \subset I$ and compute gradient on this mini-batch.  
+
+{\bf But to compute the $\mu^j_I$ is very expensive, and we can simply use the idea in statistics i.e use the sampled data $S$ to approximate $I$.} 
+
+So for every step, the corresponding object function to be take gradient can be written as:
+\begin{equation}
+	\sum_{i \in S} \|\tilde {f}^J(x_i) - y_i\|^2,
+\end{equation}
+where for each layer $\tilde f^j$,
+\begin{equation}
+\tilde f^j = \theta^j \circ \text{\text{BN}}_{S} ( g^j\circ\tilde f^{j-1}).
+\end{equation}
+or, as it may perform better in practice,
+\begin{equation}
+\tilde f^j = \theta^j \circ g^j \circ \text{\text{BN}}_{S} (\tilde f^{j-1}),
+\end{equation}
+So what we will explain is based the second form.
+
+At layer $j$, with a scaling factor $\gamma^j\in\mathbb{R}$ and a shifting $\beta^j \in \mathbb{R}$, $\text{BN}_S$ is defined as
+\begin{equation}
+\text{BN}_{S}(x)= \gamma^j\frac{x - \mu_S^j}{\sigma_S^j}+\beta^j \bm{1},
+\end{equation}
+where $\mu^j$ is the mean value and $\sigma^j$ is the standard deviation of the input mini-batch, i.e.
+\begin{align}
+\mu^j_I \approx \mu_S^j &= \frac{\sum_{i\in S}  x_i }{|S|},\\
+\mu_I^j \approx \sigma_S^j  &= \sqrt{ \delta + \frac{ \sum_{i\in S} ( x_i - \mu_S^j)^2}{|S|-1} }.
+\end{align}
+where $\delta$ is an extra term for numerical stability, and the square in $(  x_i - \mu^j)^2$ is an element-wise square operation.
+
+Note that $\gamma^j$ and $\beta^j$ are parameters to be trained.
+
+With the trainable parameters in $\text{BN}_S$, the derivative now becomes
+\begin{align}
+\frac{\partial \tilde f^j}{ \partial \theta^{j-1}} &= \theta^j \circ (g^j)' \circ \frac{\partial \text{BN}_{S} (\tilde f^{j-1})}{ \partial \theta^{j-1}} \\
+&=  \theta^j \circ (g^j)' \circ \left(\frac{\partial \text{BN}_{S} (\tilde f^{j-1})}{ \partial \mu^j}\frac{\partial \mu^j}{\partial \theta^j} + \frac{\partial \text{BN}_{S} (\tilde f^{j-1})}{ \partial \sigma^j}\frac{\partial \sigma^j}{\partial \theta^j} + \frac{\partial \text{BN}_{S} (\tilde f^{j-1})}{ \partial \tilde f^j}\frac{\partial \tilde f^j}{\partial \theta^j}  \right).
+\end{align}
+The gradient of $\gamma$ and $\beta$ are trivial. The back-propagation process can then be applied to optimize the model.
+
+\subsection{Testing Process: recover $\mu_I$ and $\sigma_I$ from all samples}
+Considering that a mini-batch is an approximation of the whole dataset, the mean value $\mu$ and standard deviation $\sigma$ of BN in each layer, should be the same, all being of the whole dataset.
+
+
+%at the testing time, they are replaced by those of the whole dataset, i.e.
+%\begin{align}\label{bnbatch}
+%	\mu_I&\approx \mu = \frac{1}{n_\mathcal{B}}\sum_{B\in\mathcal{B}}\mu_B,\\
+%	\sigma^2_I&\approx \sigma^2 = \frac{1}{n_\mathcal{B}}\sum_{B\in\mathcal{B}}\sigma^2_{\mathcal{B}},
+%\end{align}
+%where $\mathcal{B}$ is the set of all mini-batches.
+Thus, after optimizing the model,  use the moving average scheme as:
+\begin{equation}\label{BN-timeaverage}
+\mu_t=\rho*\mu_t+(1-\rho)*\bar\mu_{t-1} \quad \sigma_t=\rho*\beta_t+(1-\rho)*\bar\sigma_{t-1},
+\end{equation}
+with $\mu_t$ and $\sigma_t$ is the $\mu_{S_t}$ and $\sigma_{S_t}$ in step t. {\bf But we don't use the updated $\mu_{S_t}$ or $\sigma_{S_t}$ in training phase, we just note them and use for approximate the real $\mu_I$ and $\sigma_I$ in previous BN model.} 
+
+The parameters $\gamma$ and $\beta$ will be kept.
+
+\subsection{Implementation of batch normalization}
+Batch normalization (BN) can be viewed as a function $\text{BN}(x)$, where
+
+\begin{enumerate}
+	\item in 1D case, $x\in\mathbb{R}^{m\times C\times n}$,
+	\item in 2D case, $x\in\mathbb{R}^{m\times C\times H \times W}$,
+	\item in 3D case, $x\in \mathbb{R}^{m\times C\times D \times H \times W}$.
+\end{enumerate}
+What matters is $m$, the number of input samples, and $C$, the number of channels.
+
+$H$, $W$, $D$ means height, width, and depth respectively, in 2D or 3D case, and $n$ simply means the length of a sample in 1D case.
+
+Because only $m$ and $C$ are necessary for BN, we will denote $x_{i,c}$ as a tensor, where $i$, $c$ is the first and the second index of $x$, i.e. the dimension of $n$, $H$, $W$, $D$ are omitted.
+
+The definition of $\text{BN}(x)$, denoted as $y$, is
+\begin{equation}
+	\begin{aligned}
+		y&=\text{BN}(x),\\
+		y_{i,c}&=\gamma_c\frac{x_{i,c}-\text{mean}_i[x_{i,c}]}{\sqrt[]{\text{Var}_i[x_{i,c}]+\epsilon}}+\beta_c,
+	\end{aligned}
+\end{equation}
+where $\text{mean}_i[x_{i,c}]$ is the mean of $x_{i,c},\ i\in I$ and $\text{Var}_i[x_{i,c}]$ is the variance of $x_i, i\ \in I$. $\gamma_c,\beta_c\in\mathbb{R}$ are the trainable parameters, often called the scale and the shift, respectively. $\epsilon$ is used for numerical stability.
+
+In the training process, like all the other parameters such as $W$ and $b$, $\gamma,\beta$ will be updated with $\nabla_\gamma L$ and $\nabla_\beta L$, where $L$ is the loss function. 
+
+In practice, mean $\mu$ and var $\sigma$ are in fact the running estimates $\bar\mu$, $\bar\sigma$, i.e. 
+\begin{equation}
+	\begin{aligned}
+		&\text{Initialize running estimates, }&\bar\mu_0=0,\ \bar\sigma_0=1,\\
+		&\text{At time step t, compute mean and var, }&\mu_t=\text{mean}_i[x_{i,c}],\ \sigma_t=\text{Var}_i[x_{i,c}],\\
+		&\text{Update running estimates, }&\bar\mu_t=\rho*\mu_t+(1-\rho)*\bar\mu_{t-1},\\
+		&&\bar\sigma_t=\rho*\beta_t+(1-\rho)*\bar\sigma_{t-1},\\
+	\end{aligned}
+\end{equation}
+where $\rho$ is the momentum, $\rho\in(0,1)$ and $\rho\approx 0.1$ in practice.
+
+In the testing process, the final $\bar\mu$ and $\bar\sigma$ are used to normalize the input.
+
+BN is often used before activation functions, e.g. a one-hidden-layer neural network with BN can be written as
+\begin{equation}
+	\label{bn_1hidden}
+	f(x)=\theta_2\circ \text{ReLU1}\circ\text{BN}\circ\theta_1\circ x.
+\end{equation}
+
+\begin{figure}[htbp]
+	\centering{\includegraphics[width=10cm]{BN_NoBN.png}}
+	\caption{Comparison of BN on ResNet10, CIFAR-10}
+	\label{alo: large k}
+\end{figure}
+
+%{\bf For test phase}, to the $\hat \mu^j$ and $\hat \sigma^j$ are computed
+%by averaging those $\mu^j$ and $\sigma^j$ in training phase. In training phase, suppose we have those next training process with mini-batch $S_t$ for $t = 1:T$. So, after $T$ steps gradient descent, those $\theta^j$ have been trained well, and we get:
+%\begin{equation}
+%\mu^j_{t}, \sigma^j_t, \quad t = 1:T,
+%\end{equation}
+%So the test model is
+%\begin{equation}
+%f(x) = \hat{f}^J(x),
+%\end{equation}
+%with
+%\begin{equation}
+% \hat{f}^j(x) = \theta^j \circ g^j \circ \hat{\text{BN}}^j(\hat f^{j-1})
+%\end{equation}
+%for
+%\begin{equation}
+%\hat{\text{BN}}^j( \hat f^{j-1}(x_i) )= \frac{\hat f^{j-1}(x_i) - \hat \mu^j}{\hat \sigma^j},
+%\end{equation}
+%where
+%\begin{equation}
+%\hat \mu^j =\frac{\sum_{i=1}^T \mu^j_t }{T},
+%\end{equation}
+%and
+%\begin{equation}
+%\hat \sigma^j  = \frac{\sum_{i=1}^T \sigma^j_t }{T}.
+%\end{equation}
+%
+%In some situation, they may use the similar strategy like the momentum for SGD, then may get $\hat \mu^j$ and $\hat \sigma^j$ by: For $t= 1 :T$
+%\begin{equation}
+%\hat \mu^j = 0.9 \hat \mu^j + 0.1 \mu^j_t,
+%\end{equation}
+%and the similar operation for $\hat \sigma^j$
+
+\subsection{An example}
+Now consider a simple case in the Deep Learning Book, where
+\begin{enumerate}
+\item there's no activation function,
+\item all layers have only one neuron and no bias, i.e. $\theta(x) = wx$.
+\end{enumerate}
+$f$ is further defined to have $J$ layers, i.e.
+\begin{equation}
+	f(x) = w_J w_{J-1} \cdots w_2 w_1 x,
+\end{equation}
+with the loss function
+\begin{equation}
+	L(w_1, \cdots, w_J) = \sum_{i = 1}^N\frac{1}{2} (f(x_i) - y_i)^2.
+\end{equation}
+The gradients can then be computed as
+\begin{align}
+	\frac{\partial L}{\partial f(x_i)}&=f(x_i)-y_i,\\
+	\frac{\partial f}{\partial w_i}&=\frac{f(x)}{w_i}=x\prod_{j\neq i}w_j.
+\end{align}
+The problem is that, if $w_j,2\leq j\leq J$ are updated with $\epsilon\Delta w_j$, the update of $w_1$ would be 
+\begin{equation}
+	\frac{\partial f}{\partial w_1}=x\prod_{j\geq2}(w_j+\epsilon\Delta w_j),
+\end{equation}
+which multiplies the change of parameters, and when $J$ is larger, the effect is stronger. If the change is scaling up, this may introduce gradient explosion, or disappearance if it's scaling down.
+
+One may adjust the learning rate $\epsilon$ to moderate this effect, but this is hard in practice.
+
+%Now we suppose to decrease the value for $f$ by $0.1$ at $x$. With the first order approximation of $f$, we know that $f$ will decrease about
+%\begin{equation}
+%\epsilon \|\bm{g}\|^2,
+%\end{equation}
+%with
+%\begin{equation}
+%\bm{w} \leftarrow \bm{w} - \epsilon \bm{g}.
+%\end{equation}
+%
+%However, for really situation, we have
+%\begin{equation}
+%f(x) = (w_J - \epsilon g_J)\cdots(w_1 - \epsilon g_1)x.
+%\end{equation}
+%For one term in seconder approximation like:
+%\begin{equation}
+%\epsilon^2 g_1 g_2 \Pi_{i=3}^J w_i x.
+%\end{equation}
+%Because we connot control the value of $\Pi_{i=3}^J w_i x$, it can be very small or extremely large so {\bf it it very difficult to choose suitable learning rate.}
+
+With BN, the model is changed to
+\begin{equation}
+\tilde f(x) = w_J \tilde f^{J-1}(x),
+\end{equation}
+where the update is normalized.
+%with $\tilde f^{J-1}$ has the stander statistics( or $\gamma$ and $\eta$ by adaptivity). If we don't use \text{BN}, we know that for any $w_j$ with $j = 1:J-1$ can effect the $f(x)$ remarkably like $w_j = 0$ makes this network degeneration or $w_j = -w_j$ changes the prediction of $f(x)$ totally. Without normalization, nearly every update would have an extreme effect on the statistics of $f^{J-1}$.
+%
+%Now suppose that $x$ is drawn from a unit Gaussian i.e:
+%\begin{equation}
+%x \sim \mathcal{N}(0,1).
+%\end{equation}
+% Then the original method $f$ is also Gaussian but not unit it depended w.r.t $\bm{w}$:
+%\begin{equation}
+%f \sim \mathcal{N}(\mu({\bm{w}}),\sigma(\bm{w})).
+%\end{equation}
+%But if we use \text{BN}, here $\tilde h^{J-1}$ becomes unit Gaussian again, i.e
+%\begin{equation}
+%\tilde f^{J-1} \sim \mathcal{N}(0,1).
+%\end{equation}  So $\tilde f$ is an Gaussian only depends on $\omega_J$,
+%\begin{equation}
+%\tilde f \sim \mathcal{N}(\mu(w_J),\sigma(w_J)).
+%\end{equation}  which means we just need to trained $w_J$ all $w_j$ for $j=1:J-1$ make no sense for this model. So, what we only need to train is only $w_J$, this make the training process very fast.
+
+As it says in the book,
+\begin{quotation}
+	\emph{
+		Batch normalization has thus made this model significantly easier to learn. In this example, the ease of learning of course came at the cost of making the lower layers useless. In our linear example, the lower layers no longer have any harmful effect, but they also no longer have any beneficial effect. This is because we have normalized out the first and second order statistics, which is all that a linear network can influence. In a deep neural network with nonlinear activation functions, the lower layers can perform nonlinear transformations of the data, so they remain useful. Batch normalization acts to standardize only the mean and variance of each unit in order to stabilize learning, but allows the relationships between units and the nonlinear statistics of a single unit to change.}
+\end{quotation}
+
+%\input{6DL/XN}
+
+%\input{6DL/jinchao-XN}

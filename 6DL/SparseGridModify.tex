@@ -1,0 +1,182 @@
+\section{More refined sparse grid and improved estimates}
+This section presents a modified estimate \cite{bungartz2004sparse} of the approximation property of sparse grids. Recall 
+$$
+\mathcal V_{\mathbf{k}} = \mathcal V_{k_1} \bigotimes  \mathcal V_{k_2}\bigotimes\cdots \bigotimes  \mathcal V_{k_d},
+$$
+where $\mathbf{k}=(k_1,k_2,\cdots,k_d)$ is a multi-index. Let 
+$$
+\mathbf{I_l}=\{\mathbf{i}\in \mathbb{N}^d: \mathbf{1}\le \mathbf{i}\le 2^\mathbf{l}-1, i_j \text{ is odd for all }1\le j\le d\},
+$$
+and the hierarchical basis 
+$$
+\{\psi_\mathbf{k, i}^d: \mathbf{i}\in \mathbf{I_k}, |\mathbf{k}|_\infty\le J\}.
+$$ 
+
+
+
+
+Recall $\mathcal V_{\mathbf{k}}$ in \eqref{sparseVk}. Let
+$$
+R_J=\left\{\mathbf{k}: |\mathbf{k}|_1 - \frac25 \log_2\|2^{\mathbf{k}}\|_{l^2}\le J+d-1- \frac15 \log_2 (4^J +4d-4)\right\},
+$$
+\begin{equation}
+  \label{sparseVJ}
+S_J =\bigoplus_{\mathbf{k}\in R_J} \mathcal V_{\mathbf{k}}.  
+\end{equation}
+The following the result is analyzed in \cite{bungartz2004sparse}.
+ \begin{theorem}\Label{lm:modifySparse1}
+Suppose that  $u\in W^{2\mathbf{e}, \infty}(D_d)$,
+$$
+\inf_{\chi\in S_J} |v-\chi|_{1, D_d}\le C h_J \|u\|_{2\mathbf{e},\infty}.
+$$
+and the dimension of $S_J$ is $\mathcal{O}(de^dh_J^{-1})$.
+\end{theorem}
+\begin{proof}
+First, we prove that $S_J$ is a subspace of $S_{J,J+d-1}^d$.
+If $|\mathbf{k}|_{1}=J+d-1+i, i  \in \mathbb{N}$, we can prove 
+$$
+\|2^{\mathbf{k}}\|_{l^2}^2=\sum_{s=1}^{d} 4^{k_{s}}\le 4^{J+i}+4 d-4
+$$
+ by induction with respect to $d$. 
+% It is trivial when $d=1$. For $\mathbf{k}\in \mathbb{R}^d$ and $|\mathbf{k}|_{1}=J+d-1+i$, there exists $1\le j\le d$ such that $k_j\ge 1$, thus
+%\begin{equation}
+%\begin{split}
+%\sum_{s=1}^{d} 4^{k_{s}} &= \sum_{s=1, s\neq i}^{d} 4^{k_{s}} + 4^{k_{j}}\le 4^{J+i+1-k_j}+4 (d-1)-4 + 4^{k_j}\le 4^{J+i} + 4d-4.
+%\end{split}
+%\end{equation}
+For subspaces $\mathcal V_{\mathbf{k}}$ with $|\mathbf{k}|_{1}=J+d-1+i, i \in \mathbb{N},$ we have
+\begin{equation}
+\begin{split}
+|\mathbf{k}|_{1}-\frac{1}{5} \cdot \log _{2}\left(\sum_{s=1}^{d} 4^{k_{s}}\right) & \geq J+d-1+i-\frac{1}{5} \cdot \log _{2}\left(4^{J+i}+4 d-4\right) \\
+& \geq J+d-1+i-\frac{1}{5} \cdot \log _{2}\left(4^{i}\left(4^{J}+4 d-4\right)\right) \\
+&>J+d-1-\frac{1}{5} \cdot \log _{2}\left(4^{J}+4 d-4\right)
+\end{split}
+\end{equation}
+Therefore, no $\mathcal V_{\mathbf{k}}$ with $|\mathbf{k}|_{1}>J+d-1$ can belong to $V_J .$ Consequently,  
+\begin{equation}
+S_J\subset S_{J,J+d-1}^d,\qquad \left|S_J\right| \leq\left|S_{J,J+d-1}^d\right|.
+\end{equation}
+
+Then, we prove that  the dimension of $S_J$ is $\mathcal{O}(h_J^{-1})$. 
+Note that $\left|\mathcal V_{\mathbf{k}}\right| = 2^{|\mathbf{k}|_{1}-d}$. For any $\mathbf{k}\in R_J$ with $|\mathbf{k}|_{1}=J+d-1-i$, $ \sum_{j=1}^d 4^{k_j}\ge {4^J+4d-4\over 32^i}$. By \eqref{sparseVJ},
+\begin{equation}
+\begin{split}
+\mbox{dim}S_J&=\sum_{i=0}^{J-1}  \sum_{|\mathbf{k}|_{1}=J+d-1-i, \sum_{j=1}^d 4^{k_j}\ge {4^J+4d-4\over 32^i}} \mbox{dim}\mathcal V_{\mathbf{k}}
+\\
+&=2^{J-1} \cdot \sum_{i=0}^{J-1} 2^{-i}  \sum_{|\mathbf{k}|_{1}=J+d-1-i, \sum_{j=1}^d 4^{k_j}\ge {4^J+4d-4\over 32^i}}1
+\\
+& \leq 2^{J-1} \cdot \lim _{J \rightarrow \infty} \sum_{i=0}^{J-1} 2^{-i} \sum_{|\mathbf{k}|_{1}=J+d-1-i, \sum_{j=1}^d 4^{k_j}\ge {4^J+4d-4\over 32^i}}1
+\\
+&=2^{J-1} d \lim _{J \rightarrow \infty} \sum_{i=0}^{J-1} 2^{-i}  \left(\begin{array}{c}
+d-1+\lfloor 1.5 i\rfloor \\
+d-1
+\end{array}\right).
+\end{split}
+\end{equation} 
+Let $j=\lfloor 1.5 i\rfloor $. Since $\displaystyle\sum_{i=0}^{\infty} x^{i} \cdot\left(\begin{array}{c}k+i \\ k\end{array}\right)=(1-x)^{-k-1}$ for $k \in \mathbb{N}_{0}$ and $0<x<1$,
+\begin{equation}
+\begin{split}
+\mbox{dim}S_J
+& \leq 2^{J} \cdot \frac{d}{2} \cdot \sum_{j=0}^{\infty} 2^{-\frac{2}{3} j} \cdot\left(\begin{array}{c}
+d-1+j \\
+d-1
+\end{array}\right) 
+\\
+&=2^{J} \cdot \frac{d}{2} \cdot\left(1-2^{-\frac{2}{3}}\right)^{-d}
+\\
+& \leq 2^{J} \cdot \frac{d}{2} \cdot \mathrm{e}^{d}=\mathcal{O}(h_J^{-1}).
+\end{split}
+\end{equation} 
+Next we consider the approximation property of $S_J$. Let $\displaystyle u_J=\sum_{\mathbf{k}\in R_J}u_{\mathbf{k}}$. Note that 
+$$
+\left|u-u_J\right|_1 \leq\left|u-u_{J,J+d-1}\right|_1+\left|u_{J,J+d-1}-u_J\right|_1.
+$$
+By $\left|u-u_{J,J+d-1}\right|_1=O\left(h_{J}\right),$ we can restrict ourselves to $\left|u_{J,J+d-1}-u_J\right|_1.$ Note that  for $i \in \mathbb{N}_{0},$ 
+\begin{equation}
+\mathcal V_{\mathbf{k}}\subset S_J, \quad \mbox{if } |\mathbf{k}|_{1}=J+d-1-i \ \mbox{ and }\ |\mathbf{k}|_{\infty} \geq J-2.5 i.
+\end{equation}
+Note that 
+$$
+\left|u_{J,J+d-1}-u_J\right|_1\leq \sum_{\mathcal V_{\mathbf k} \in S_{J,J+d-1}^d \setminus S_J}\left|u_{\mathbf{k}}\right|_1
+\leq \sum_{i=0}^{i^{*}} \sum_{\left.|\mathbf{k}\right|_{1}=J+d-1-i,\left.|\mathbf{k}\right|_{\infty}<J-2.5 i}\left|u_{\mathbf{k}}\right|_1,
+$$
+where $i^*$ is the maximum value of $i$ for which the set of indices $\mathbf{k}$ with $|\mathbf{k}|_1=n+d-1-i$ with $|\mathbf{k}|_\infty<n-2.5i$. 
+Therefore, we obtain with \eqref{sparseuk} that
+\begin{equation*}
+\begin{aligned}
+ \sum_{\left.|\mathbf{k}\right|_{1}=J+d-1-i,\left.|\mathbf{k}\right|_{\infty}<J-2.5 i}\left|u_{\mathbf{k}}\right|_1
+ \leq \frac{|u|_{2\mathbf{e},\infty}}{2 \cdot 12^{(d-1) / 2}}  \sum_{\left.|\mathbf{k}\right|_{1}=J+d-1-i,\left.|\mathbf{k}\right|_{\infty}<J-2.5 i} 4^{-|\mathbf{k}|_{1}} \cdot\left(\sum_{j=1}^{d} 4^{k_{j}}\right)^{1 / 2}.
+ \end{aligned}
+\end{equation*}
+Since
+$
+\displaystyle \sum_{j=1}^{d} 4^{k_{j}}=\sum_{j=1}^{d} 2^{2k_{j}}\leq \left(\sum_{j=1}^{d} 2^{k_{j}}\right)^2,
+$
+\begin{equation*}
+\begin{aligned}
+ \sum_{\left.|\mathbf{k}\right|_{1}=J+d-1-i,\left.|\mathbf{k}\right|_{\infty}<J-2.5 i}\left|u_{\mathbf{k}}\right|_1 
+&\leq \frac{|u|_{2\mathbf{e},\infty}}{2 \cdot 12^{(d-1) / 2}} \cdot 4^{-J-d+1+i}  \sum_{\left.|\mathbf{k}\right|_{1}=J+d-1-i,\left.|\mathbf{k}\right|_{\infty}<J-2.5 i}\left(\sum_{j=1}^{d} 2^{k_{j}}\right)
+\\
+&\leq \frac{|u|_{2\mathbf{e},\infty}}{2 \cdot 12^{(d-1) / 2}} \cdot 4^{-J-d+1+i}  \sum_{j=1}^{J-1-\lfloor 2.5 i\rfloor} d \cdot\left(\begin{array}{c}
+J+d-2-i-j \\
+d-2
+\end{array}\right) \cdot 2^{j}
+\\
+&=\frac{|u|_{2\mathbf{e},\infty}}{2 \cdot 12^{(d-1) / 2}} 4^{-J-d+1+i} \sum_{k=1}^{J-1-\lfloor 2.5 i\rfloor} d\left(\begin{array}{c}
+d-2+\lfloor 1.5 i\rfloor+k \\
+d-2
+\end{array}\right) 2^{J-\lfloor 2.5 i\rfloor-k}
+\\
+&=\frac{d \cdot|u|_{2\mathbf{e},\infty}}{2 \cdot 12^{(d-1) / 2}} 4^{-(d-1)} 2^{-J-\left\lfloor\frac{i}{2}\right\rfloor} \sum_{k=1}^{J-1-\lfloor 2.5 i\rfloor}\left(\begin{array}{c}
+d-2+\lfloor 1.5 i\rfloor+k \\
+d-2
+\end{array}\right) 2^{-k} .
+\end{aligned}
+\end{equation*}
+Thus,
+\begin{equation*}
+\begin{aligned}
+\left|u_{J,J+d-1}-u_J\right|_1
+&\leq \frac{d \cdot|u|_{2\mathbf{e},\infty}}{2 \cdot 12^{(d-1) / 2}}  \cdot 4^{-(d-1)} \cdot 2^{-J} \cdot 2 \cdot 5^{d-1}\\
+&=\frac{d \cdot|u|_{2\mathbf{e},\infty}}{3^{(d-1) / 2} \cdot 4^{d-1}} \cdot\left(\frac{5}{2}\right)^{d-1} \cdot 2^{-J}\le Ch_J,
+\end{aligned}
+\end{equation*}
+which completes the proof.
+
+
+
+%\begin{equation*}
+%\begin{aligned}
+%\left|u_{J,J+d-1}-u_J\right|_1&\leq \sum_{\mathcal V_{\mathbf k} \in S_{J,J+d-1}^d \setminus S_J}\left|u_{\mathbf{k}}\right|_1
+%\\
+%&\leq \sum_{i=0}^{i^{*}} \sum_{\left.|\mathbf{k}\right|_{1}=J+d-1-i,\left.|\mathbf{k}\right|_{\infty}<J-2.5 i}\left|u_{\mathbf{k}}\right|_1 
+%\\
+%&\leq \frac{|u|_{2\mathbf{e},\infty}}{2 \cdot 12^{(d-1) / 2}} \cdot \sum_{i=0}^{i^{*}} \sum_{\left.|\mathbf{k}\right|_{1}=J+d-1-i,\left.|\mathbf{k}\right|_{\infty}<J-2.5 i} 4^{-|\mathbf{k}|_{1}} \cdot\left(\sum_{j=1}^{d} 4^{k_{j}}\right)^{1 / 2}
+%\\
+%&\leq \frac{|u|_{2\mathbf{e},\infty}}{2 \cdot 12^{(d-1) / 2}} \cdot 4^{-J-d+1} \cdot \sum_{i=0}^{i^{*}} 4^{i} \cdot \sum_{\left.|\mathbf{k}\right|_{1}=J+d-1-i,\left.|\mathbf{k}\right|_{\infty}<J-2.5 i}\left(\sum_{j=1}^{d} 2^{k_{j}}\right)
+%\\
+%&\leq \frac{|u|_{2\mathbf{e},\infty}}{2 \cdot 12^{(d-1) / 2}} \cdot 4^{-J-d+1} \cdot \sum_{i=0}^{i^{*}} 4^{i} \cdot \sum_{j=1}^{J-1-\lfloor 2.5 i\rfloor} d \cdot\left(\begin{array}{c}
+%J+d-2-i-j \\
+%d-2
+%\end{array}\right) \cdot 2^{j}
+%\\
+%&=\frac{|u|_{2\mathbf{e},\infty}}{2 \cdot 12^{(d-1) / 2}} 4^{-J-d+1} \sum_{i=0}^{i^{*}} 4^{i} \sum_{k=1}^{J-1-\lfloor 2.5 i\rfloor} d\left(\begin{array}{c}
+%d-2+\lfloor 1.5 i\rfloor+k \\
+%d-2
+%\end{array}\right) 2^{J-\lfloor 2.5 i\rfloor-k}
+%\\
+%&=\frac{d \cdot|u|_{2\mathbf{e},\infty}}{2 \cdot 12^{(d-1) / 2}} 4^{-(d-1)} 2^{-J} \sum_{i=0}^{i^{*}} 2^{-\left\lfloor\frac{i}{2}\right\rfloor} \sum_{k=1}^{J-1-\lfloor 2.5 i\rfloor}\left(\begin{array}{c}
+%d-2+\lfloor 1.5 i\rfloor+k \\
+%d-2
+%\end{array}\right) 2^{-k} 
+%\\
+%&\leq \frac{d \cdot|u|_{2\mathbf{e},\infty}}{2 \cdot 12^{(d-1) / 2}}  \cdot 4^{-(d-1)} \cdot 2^{-J} \cdot 2 \cdot 5^{d-1}\\
+%&=\frac{d \cdot|u|_{2\mathbf{e},\infty}}{3^{(d-1) / 2} \cdot 4^{d-1}} \cdot\left(\frac{5}{2}\right)^{d-1} \cdot 2^{-J}\le Ch_J,
+%\end{aligned}
+%\end{equation*}
+
+\end{proof}
+
+
+
+

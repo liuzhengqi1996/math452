@@ -1,0 +1,39 @@
+Let $\lambda\ge 0$ be a probability density function on a domain $G \subset
+\mathbb R^D (D\ge 1)$ such that
+\begin{equation}\label{density}
+\int_{G}\lambda(\theta)d\theta=1.
+\end{equation}
+We define the expectation and variance as follows
+\begin{equation}
+\label{E}
+\mathbb{E}g:=\int_{G}
+g(\theta)\lambda(\theta)d\theta,\qquad
+\mathbb{V} g: = \mathbb{E}((g - \mathbb{E} g)^2)= \mathbb{E}(g^2) - (\mathbb{E} g)^2.
+\end{equation}
+We note that 
+$$\displaystyle \mathbb{V} g\le \max_{\theta, \theta'\in G}(g(\theta) - g(\theta'))^2.
+$$
+For any subset $G_i\subset G$, let
+$$
+\lambda(G_i)=\int_{G_i}\lambda(\theta)d\theta, \qquad \lambda_i(\theta) = {\lambda(\theta)\over \lambda(G_i)}.
+$$
+It holds that
+$$
+\mathbb{E}_Gg= \sum_{i=1}^M \lambda(G_i) \mathbb{E}_{G_i}g.
+$$ 
+%For each $i$, sample $\theta_i$ is chosen randomly from the probability distribution in $G_i$ with probability $\lambda_i(\theta)$. 
+For any function $h(\theta_1,\cdots, \theta_N) : G_1\times G_2\cdots G_N \mapsto \mathbb{R}$, define 
+$$\mathbb{E}_{G_i}g=\int_{G_i}g(\theta)\lambda_i(\theta)d\theta$$
+ and
+\begin{equation}
+\label{En}
+\mathbb{E}_Nh:=\int_{G_1\times G_2\times\ldots\times G_N}
+h(\theta_1,\cdots,\theta_N) \lambda_1(\theta_1) \lambda_2(\theta_2)\ldots \lambda_N(\theta_N)
+d\theta_1d\theta_2\ldots d\theta_N.
+\end{equation}
+For the Monte Carlo method, let $G_i=G$ for all $1\le i\le n$, namely,
+\begin{equation} 
+\mathbb{E}_Nh:=\int_{G\times G\times\ldots\times G}
+h(\theta_1,\cdots,\theta_N) \lambda(\theta_1) \lambda(\theta_2)\ldots \lambda(\theta_N)
+d\theta_1d\theta_2\ldots d\theta_N.
+\end{equation}

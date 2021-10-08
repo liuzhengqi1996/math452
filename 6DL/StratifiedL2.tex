@@ -1,0 +1,66 @@
+\begin{lemma}\label{lem:stratifiedapprox}
+	Let 
+	\begin{equation}
+	\label{uv}
+	u(x)=\int_{G}g(x,\theta)\lambda(\theta)d\theta  
+	\end{equation}
+	with $\int_G \lambda(\theta) d\theta=1$. Given any positive integers $N$ and $M\le CN$, for  any decomposition of $G=\cup_{i=1}^M G_i$, there exists $\{\theta_i^\ast\}_{i=1}^N$ such that
+	\begin{equation} 
+	\|u-u_N|_{L^2(\Omega)} \leq N^{-1/2}\max_{1\le j\le M}\sup_{\theta_{j},\theta_{j}'\in G_j} \| g(x,\theta_j) - g(x,\theta_j')\|_{L^2(\Omega)} 
+	\end{equation}
+	where 
+	$$
+	u_N(x)= {1\over N}\sum_{i=1}^N\beta_i g(x,\theta_i^\ast)
+	$$ 
+	and $\beta_i\in [0,C+1]$.
+	\end{lemma}
+
+\begin{proof}
+Let $n_j=\lceil \lambda(G_j)n\rceil$ and $\theta_{i,j} \in G_j(1\leq i\leq n_j)$. Define 
+$$
+u_n(x)=\sum_{i=1}^M \lambda(G_i)g_{n_i}^i \quad \mbox{with}\quad g_{n_i}^i={1 \over n_i}\sum_{j=1}^{n_i} g(\theta_{i,j}).
+$$
+Since
+$
+u(x)=\mathbb{E}_G g,
+$
+by Lemma \ref{MC},
+\begin{equation}
+\begin{split}
+\mathbb{E}_n\| u - u_n \|_{L^2(\Omega)}^2=& 
+ \sum_{j=1}^{M}{\lambda^2(G_j) \over n_j}\mathbb{E}_{G_j}\|\mathbb{E}_{G_j} g -  g\|^2_{L^2(\Omega)}
+\\
+\le & \sum_{j=1}^{M} {\lambda^2(G_j)\over n_j}\sup_{\theta_{j},\theta_{j}'\in G_j} \| g(x,\theta_j) - g(x,\theta_j')\|^2_{L^2(\Omega)}.
+\end{split}
+\end{equation} 
+Since ${\lambda(G_j)\over n_j}\le {1\over n}$ and $\displaystyle \sum_{j=1}^M \lambda(G_j)=1$,
+\begin{equation}
+\mathbb{E}_n\| u - u_n \|_{L^2(\Omega)}^2\leq n^{-1}\max_{1\le j\le M}\sup_{\theta_{j},\theta_{j}'\in G_j} \| g(x,\theta_j) - g(x,\theta_j')\|^2_{L^2(\Omega)}.
+\end{equation}
+There exist $\{\theta_{i,j}^\ast\}$ such that $\theta_{i,j}^\ast\in G_i$ and 
+\begin{equation}
+\| u -  u_n \|_{L^2(\Omega)}^2\leq n^{-1} \max_{1\le j\le M}\sup_{\theta_{j},\theta_{j}'\in G_j} \| g(x,\theta_j) - g(x,\theta_j')\|^2_{L^2(\Omega)}.
+\end{equation}
+Suppose $\displaystyle N=\sum_{j=1}^M n_j$, $n\le N\le n+M\le (C+1)n$,
+$$
+u_N(x) =  {1\over N}\sum_{j=1}^{M}\frac{N\lambda(G_j)}{n_j}\sum_{i=1}^{n_j} g(x,\theta_{i,j}^\ast)
+ =  {1\over N}\sum_{j=1}^{M}\beta_{i,j}\sum_{i=1}^{n_j} g(x,\theta_{i,j}^\ast)
+$$ 
+with
+\begin{equation}
+\beta_{i,j}= \frac{N\lambda(G_j)}{n_j}\le \frac{\lambda(G_j)(C+1)n}{\lambda(G_j)n}\le C+1,
+\end{equation}
+which completes the proof. 
+\end{proof}
+\begin{remark}
+For the above lemma, there exists $\{\theta_i^\ast\}_{i=1}^N$ such that
+	\begin{equation} 
+	\|u-u_N\|_{L^2(\Omega)} \leq N^{-1/2}\max_{1\le j\le M}\sup_{\theta_{j},\theta_{j}'\in G_j} \| g(x,\theta_j) - g(x,\theta_j')\|_{L^2(\Omega)} 
+	\end{equation}
+	where 
+$$
+	u_N(x)= {C+1\over n}\sum_{i=1}^N\beta_i g(x,\theta_i^\ast)
+	$$ 
+	and $\beta_i\in [0,1]$.
+\end{remark}
+

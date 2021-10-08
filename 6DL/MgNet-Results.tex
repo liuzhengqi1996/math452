@@ -1,0 +1,73 @@
+\section{Image classification by MgNet}\label{sec:CNN-Results}
+In the following Table \ref{tab:MgNet-CIFAR10-Results}, Table \ref{tab:MgNet-CIFAR100-Results}, Table \ref{tab:MgNet-ImageNet-Results}, we summarize the test accuracy of MgNet on popular datasets CIFAR10, CIFAR100, ImageNet, respectively. For all MgNet models, we use take $c_f=c_u$.
+
+%\begin{table}[!htbp]
+%	\begin{center}
+%		\begin{tabular}{|c|c|c|c|}
+%			\hline
+%			Dataset     & Model                 & Test accuracy   & Number of parameters \tabularnewline
+%			\hline
+%			CIFAR10      &MgNet      &  96.00      &   8.2M      \tabularnewline
+%			\hline
+%			CIFAR100     &MgNet      &  79.94      &   8.3M      \tabularnewline
+%			\hline
+%			ImageNet     &MgNet      &  71.01      &   8.5M    \tabularnewline
+%			\hline
+%		\end{tabular}
+%	\end{center}
+%	\label{tab:MgNet-Results}
+%	\caption{Test accuracy of MgNet on popular datasets.}
+%\end{table}
+\newpage
+\begin{table}[!htbp]
+	\begin{center}
+		\begin{tabular}{|c|c|c|c|}
+			\hline
+			Dataset     & Model, [$\nu_1,\nu_2,...$], $c_u$                  &  Test accuracy   &  Number of parameters \tabularnewline
+			\hline
+			CIFAR10     &MgNet, [2,2,2,2], 256      &  96.00      &   8.2M      \tabularnewline
+			\hline
+			CIFAR10     &MgNet, [3,4,6,3], 256      &  95.98      &   8.3M      \tabularnewline
+			\hline
+			CIFAR10     &MgNet, [3,4,6,3], 512      &  96.48      &   33.1M     \tabularnewline
+			\hline
+		\end{tabular}
+	\end{center}
+	\label{tab:MgNet-CIFAR10-Results}
+	\caption{Test accuracy of MgNet on CIFAR10.}
+\end{table}
+
+
+\begin{table}[!htbp]
+	\begin{center}
+		\begin{tabular}{|c|c|c|c|}
+			\hline
+			Dataset     & Model, [$\nu_1,\nu_2,...$], $c_u$                  &  Test accuracy   &  Number of parameters \tabularnewline
+			\hline
+			CIFAR100     &MgNet, [2,2,2,2], 256            &  79.94      &   8.3M      \tabularnewline
+			\hline
+			CIFAR100     &MgNet, [2,2,2,2], 512            &  81.35      &   33.1M      \tabularnewline
+			\hline
+			CIFAR100     &MgNet, [2,2,2,2], 1024           &  82.46      &   132.2M      \tabularnewline
+			\hline
+		\end{tabular}
+	\end{center}
+	\label{tab:MgNet-CIFAR100-Results}
+	\caption{Test accuracy of MgNet on CIFAR100.}
+\end{table}
+
+\begin{table}[!htbp]
+	\begin{center}
+		\begin{tabular}{|c|c|c|c|}
+			\hline
+			Dataset     & Model, [$\nu_1,\nu_2,...$], $c_u$                  &  Test accuracy   &  Number of parameters \tabularnewline
+			\hline
+			ImageNet     &MgNet, [3,4,6,3], [64,128,256,512]          &  73.78      &   9.9M      \tabularnewline
+			\hline
+			ImageNet     &MgNet, [2,2,4,2], [128,256,512,1024]        &  77.58      &   38.5M      \tabularnewline
+			\hline
+		\end{tabular}
+	\end{center}
+\label{tab:MgNet-ImageNet-Results}
+\caption{Test accuracy of MgNet on ImageNet.}
+\end{table}

@@ -1,0 +1,40 @@
+\documentclass{beamer}
+
+\usepackage[utf8]{inputenc}
+\usetheme{default}
+
+\begin{document}
+
+\begin{frame}
+ \frametitle{Probability Concepts and Notation}
+ \begin{itemize}
+  \item Outcome Space $\Omega$
+  \item Events: Subsets of the outcome space $\Omega$
+  \item Probability distribution: Rule for assigning probabilities to events.
+ \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+ \frametitle{Random Variables}
+ \begin{itemize}
+  \item Random Variable: Function $X:\Omega\rightarrow \mathbb{R} (\mathbb{R}^d)$
+  \item Expectation: $\mathbb{E}(X) = \displaystyle\sum_{\omega\in \Omega} p(\omega)X(\omega)$
+  \item Variance: $\mathbb{V}(X) = \mathbb{E}(X^2) - \mathbb{E}(X)^2 = \mathbb{E}((X - \mathbb{E}(X))^2)$
+ \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+ \frametitle{Bayesian Concepts}
+ \begin{itemize}
+ \item Marginal Probability: $p(X) = \int_Y p(X~\text{and}~Y)dy$
+  \item Conditional Probability: $p(X|Y) = \frac{p(X~\text{and}~Y)}{p(Y)}$
+  \item Bayes' Law:
+  $p(Y|X)P(X) = P(X~\text{and}~Y) = p(X|Y)p(Y)$
+ \end{itemize}
+
+\end{frame}
+
+
+\end{document}

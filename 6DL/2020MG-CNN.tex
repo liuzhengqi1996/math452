@@ -1,0 +1,361 @@
+\documentclass[leqno,labelfig,psfigt,colorlinks]{svmono}
+%\openup8pt
+
+%\usepackage[a4paper,left=1cm,right=10cm,bindingoffset=5pt, asymmetric, reversemarginpar]{geometry}
+
+\makeatletter
+\providecommand*{\input@path}{}
+\edef\input@path{{./}{../}\input@path}% prepend
+\makeatother	
+
+\input{../Xmacros}
+\renewcommand{\blankpage}{}\renewcommand{\break}{}
+\usepackage{wrapfig}
+\usepackage{bbm}
+\usepackage{listings}
+\usepackage{natbib}
+\usepackage{color}
+\usepackage{cases}
+\usepackage{pythonhighlight}
+\usepackage{multirow}
+
+\usepackage{setspace}
+
+\usepackage{pdfpages}
+
+\usepackage{adjustbox}
+
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\brown}[1]{\textcolor{blue}{#1}}
+\newcommand{\green}[1]{\textcolor{green}{#1}}
+
+\makeatletter
+\newenvironment{breakablealgorithm}
+{% \begin{breakablealgorithm}
+	\begin{center}
+		\refstepcounter{algorithm}% New algorithm
+		\hrule height.8pt depth0pt \kern2pt% \@fs@pre for \@fs@ruled
+		\renewcommand{\caption}[2][\relax]{% Make a new \caption
+			{\raggedright\textbf{\ALG@name~\thealgorithm} ##2\par}%
+			\ifx\relax##1\relax % #1 is \relax
+			\addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##2}%
+			\else % #1 is not \relax
+			\addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##1}%
+			\fi
+			\kern2pt\hrule\kern2pt
+		}
+	}{% \end{breakablealgorithm}
+		\kern2pt\hrule\relax% \@fs@post for \@fs@ruled
+	\end{center}
+}
+\makeatother
+
+\usepackage{multirow}
+\usepackage{mathtools}
+
+
+\newtheorem{properties}[theorem]{Properties}
+%\graphicspath{{figures/}}
+\graphicspath{{../figures/}{figures/}{../}}
+
+\begin{document}
+
+\rhead{\hfill Jinchao Xu}
+\title{Multigrid and Convolutional Neural Networks
+%
+\thanks{This set of notes,  prepared by \copyright Jinchao Xu for teaching and research, is for 
+ communication within collaborators and friends
+only.  Not to be disseminated without written permission
+of the author.}
+}
+\author{Jinchao Xu\footnote{
+Department of Mathematics,
+The Pennsylvania State University, University Park, PA 16802,
+U.S.A. xu@math.psu.edu,  http://www.math.psu.edu/xu/}}
+\date{January 2021}
+
+\maketitle 
+
+\tableofcontents
+
+\setcounter{chapter}{-1}
+\chapter{Preface}
+This manuscript is devoted to a mathematical introduction to
+convolutional neural networks (CNN) which is one of the most important class
+of deep learning models that have been successfully applied to many AI
+tasks such as image classification and natural language processing.
+Our approach is to mathematically relate CNN with the multigrid
+method which is special class of iterative methods that have been
+successfully applied to the solution of large scale algebraic systems
+of equations arising from science and engineering, especially
+discretization of partial differential equations. 
+
+In Chapter 1, we give a brief introduction to machine learning for its
+application to image classification.  We also give simple descriptions
+of some popular data sets, including MNIST, CIFAR and ImageNet.  In
+Chapter 2, we give some mathematical discussions of the concept of
+linearly separable sets and two linear models, namely logistic
+regression and support vector machine (SVM), for data classification.
+In Chapter 3, we discuss a special class of multigrid algorithm for
+solving 2nd order elliptic boundary value problem on the unit square
+discretized by piecewise linear finite element function.  One special
+feature of such a presentation is the the multigrid method and its
+relevant components are given in terms of discrete convolutions that
+are used in machine learning.  In Chapter 4, we discuss the
+convolutional neural networks by using languages and terminologies
+from standard deep learning literature.  In Chapter 5, we present a
+special class of convolutional neural networks, namely MgNet, by
+making some minor modification of the multigrid method presented in
+Chapter 4.  Such a special derivation of MgNet directly from multigrid
+method is hoped to give some mathematical insight to the convolutional
+neural network for which mathematical understanding is still very
+limited.
+
+This set of notes are based on lectures given in the following courses
+at Penn State:
+\begin{enumerate}
+\item MATH 497: Deep Learning Alogrithms and Analysis, Summer 2020 
+\item MATH 497: An Introduction to Deep Learning, Summer 2019
+\item MATH 597: Deep Learning, Spring 2019 
+\item MATH 556: Finite Element Method, Fall 2018
+\item MATH 597: Hierarchical Algorithms and Deep Learning, Fall 2017
+\end{enumerate}
+and the following short courses:
+\begin{enumerate}
+\item Introduction to Deeping Learning Method, Short course for PKU Biostatistics Summer School, Peking University, August 19, 2020; 
+\item Machine Learning and Applications in Oil \& Gas Engineering, Short Course on AI applications in oilfields, Abu Dhabi National Oil Company, August 10-11, 2020;
+\item Finite Elements and Deep Neural Networks, Short Course on Computation and Applications of PDEs Based on Machine Learning, Tianyuan Mathematical Center in Northeast China, July 6-10, 2020;
+\item Multigrid and Deep Neural Network, Short course on International Multigrid Conference (IMG2019), Kunming, China, August 11-16, 2019.
+%\item Summer school on numerical methods of partial differential  equations, Guangzhou, China, 2017
+\end{enumerate}
+
+The videos of some of these lectures can be found in the following links: 
+\href{http://multigrid.org/index.php?id=pictures}{http://multigrid.org/index.php?id=pictures}
+
+Many of my former students, postdocs and collaborators have helped in
+the preparations of the aforementioned lectures and in particular the
+set of notes, including Jianhong Chen, Juncai He, Qingguo Hong, Li
+Jiang, Limin Ma, Jonathan Siegel and Lian Zhang.  I would also like to
+acknowledge that support by the Verne M. William Professorship Fund
+from Penn State University and the National Science Foundation (Grant
+No. DMS-1819157) for the research related to this manuscript. 
+
+\bigskip
+
+\noindent Jinchao Xu
+
+\noindent January 2021 State College
+
+\input{MG-CNN}
+\end{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\input{3FEM/1DMGvector}
+\input{multigrid}
+\input{2DFEM}
+\input{XuNet}
+\input{FEM-MG-CONV}
+\input{ReLU-multigrid}
+\input{NonlinearMG}
+
+\chapter{MgNet: a Unified Framework for CNN and MG}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{NonlinearMG}
+\input{6DL/mgnet}
+\input{6DL/mgnet_relation}
+
+\end{document}
+
+
+%\break
+\chapter{Machine Learning and Image Classification} 
+\input{BasicML}
+\input{ClassificationProblem}
+
+\chapter{Linear Machine Learning Models}
+%%%%%%%%%%%%%%%%%%%%%
+%%%LR and SVM%%%%%%
+\input{LinearModels}
+\input{IntroLR}
+\input{KL-CR-LR}
+%\input{DL-LRSVM-2}
+\input{binaryLRSVM}
+\input{DL-GD}
+%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Probability and Training Algorithms}
+%%%%%%%%%%%%%%%%%%%%%
+%%%Probability related topics%%%%%%
+\input{probability_intro}
+\input{BasicProb}
+\input{DL-LR-Prob}
+%\input{MLTheory}
+\input{DL-GD-Convergence}
+\input{ChSGD}
+%\input{momentum}
+%\input{pytorch-momentum}
+
+
+\chapter{Nonlinear Models}
+\input{NonlinearClassifiable}
+%\input{ProbNonlinear}
+
+
+\chapter{Polynomials, Finite Element and Neural Network Functions}
+\input{PolyWeierstrass}
+\input{3FEM/FEspaces}
+\input{3FEM/Nodal-Interpolation}
+\input{FEM2DNN}
+\input{WhyDeep}
+\input{DefineDNN}
+\input{DNN_Qualitative}
+
+
+\chapter{Convolutional Neural Networks}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{ConvolutionalOperator}
+\input{convolution-filter}
+\input{ClassicCNNs}
+\includepdf[pages=-,pagecommand={}]{497/handwritten_notes/MultidimensionalVariance.pdf}
+\input{initialization}
+\input{BN}
+\input{StatsNormalization}
+\input{ImageNormalization}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\chapter{Finite Element Method and Multigrid method in Convolution}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{3FEM/1Dvariational}
+\input{4MSC/smootherproperty}
+\input{4MSC/1Dtwogrid}
+\input{3FEM/1DMG}
+\input{multigrid}
+\input{2DFEM}
+\input{XuNet}
+\input{FEM-MG-CONV}
+\input{ReLU-multigrid}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{MgNet: a Unified Framework for CNN and MG}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{mgnet}
+\input{mgnet_summary}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\bibliographystyle{abbrv}\bibliography{ref,ref_mgcnn,../3FEM/3FEM}
+
+\end{document}
+
+\chapter{ Polynomials, Finite Element and Neural Network Functions}
+%%%%%%%%%%%%%%%%%%%%%
+%%%DNN and Approximation%%%%%%
+
+\input{NonlinearClassifiable}
+
+
+\input{PolyWeierstrass}
+
+\input{3FEM/FEspaces}
+\input{3FEM/Nodal-Interpolation}
+
+\input{4MSC/smootherproperty}
+\input{4MSC/1Dtwogrid}
+
+\input{3FEM/1DMG}
+%\input{MG-Recursion}
+
+\input{FEM2DNN}
+\input{WhyDeep}
+\input{DefineDNN}
+
+\input{DNN_Qualitative}
+
+
+%\chapter{An Introduction to Multigrid Methods}
+%%%%%%%%%%%%%%%MG%%%%%%%%%%%%%%%%%
+%\input{6DL/multigrid}
+%\input{6DL/FEM-MG-CONV}
+%\input{6DL/ReLU-multigrid}
+
+
+\bibliographystyle{abbrv}\bibliography{ref,ref_mgcnn,../3FEM/3FEM}
+
+\end{document}
+
+%\chapter{Basic Machine Learning: Support Vector Machine}
+%%%%%%%%%%%%%%%%%%%%%%
+%%%%LR and SVM%%%%%%
+%\input{DL-SVM-2}
+%\input{DL-LRSVM-2}
+%%%%%%%%%%%%%%%%%%%%%%
+
+
+\chapter{Topics Related to Probability}
+%%%%%%%%%%%%%%%%%%%%%
+%%%Training algorithms%%%%%%
+\input{BasicProb}
+\input{DL-LR-Prob}
+\input{MLTheory}
+%\input{}
+
+%%%%%%%%%%%%%%%%%%%%%
+
+
+\chapter{ Polynomials, Finite Element and Neural Network Functions}
+%%%%%%%%%%%%%%%%%%%%%
+%%%DNN and Approximation%%%%%%
+\input{6DL/PolyWeierstrass}
+\input{6DL/FEM2DNN}
+\input{6DL/DNN_Qualitative}
+%\input{6DL/SampleLemma}
+%\input{6DL/Representations}
+%\input{6DL/Barron-L2}
+%\input{6DL/Barron-Hk}
+%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Deep Neural Networks and Mathematical Properties}
+\input{6DL/WhyDeep}
+
+%%%%%%%%%%%%%%%%%%%CNN%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Convolutional Neural Networks}
+%%%%%%%%%%%%%%Qingguo%%%%%%%%%%%%%%%%%
+\input{Initialization}
+\input{BN}
+%\chapter{Supplemental Material: Convolution Filters}
+%%%%%%%%%%%%%%Juncai%%%%%%%%%%%%%%%%%%%
+%\input{convolution-filter}
+
+
+
+%%%%%%%%%%%%%%%%%%%CNN%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{An Introduction to Multigrid Methods}
+%%%%%%%%%%%%%%MG%%%%%%%%%%%%%%%%%
+\input{6DL/multigrid}
+\input{6DL/FEM-MG-CONV}
+%\input{6DL/ReLU-multigrid}
+
+
+
+\chapter{MgNet: a Unified Framework for CNN and MG}
+%%%%%%%%%%%%%Juncai and Qingguo%%%%%%%%%%%%%%%%%%%
+\input{mgnet}
+\input{mgnet_summary}
+
+
+%\chapter{More Knowledge of Training Neural Networks}
+%%%%%%%%%%%%%Juncai and Qingguo%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\bibliographystyle{abbrv}
+\bibliography{ref,ref_mgcnn,../3FEM/3FEM}
+
+\end{document}

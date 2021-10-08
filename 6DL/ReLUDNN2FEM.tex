@@ -1,0 +1,48 @@
+\section{General ReLU DNN as linear finite element functions}
+
+Here we will show that any ReLU DNN function can be viewed as linear finite element function. 
+Let us first consider a ReLU DNN function with $L$ hidden layers
+\begin{equation}\label{key}
+f(x) = \theta^{L}\circ \sigma \circ \theta^{L-1} \circ \sigma \cdots \circ \theta^1 \circ \sigma \circ \theta^0(x),
+\end{equation}
+for any $X \in \mathbb{R}^d$.
+Based on the property of ${\rm ReLU}$ activation function, we know that $f(x)$ is a continuous 
+piecewise linear function. More precisely, let us consider a closed bounded domain, for example $\Omega = [-1, 1]^d$ and 
+\begin{equation}\label{key}
+\left. f(x) \right|_{E_i} = \ell_i(x),  \quad \text{ for } i =1,2,\cdots M,
+\end{equation}
+for any $x\in \Omega$, where $\ell_i(x) = w_i x + b_i$ is a linear function on $\mathbb{R}^d$ and 
+$\{E_i\}_{i=1}^M$ are the domains which consist a partition of $\Omega$. 
+Furthermore, we know that the boundary of $E_i$ consists of some hyperplanes 
+of $d$-dimensional space and $E_i \cap E_j = \emptyset$ or $E_i \cap E_j $ belongs to
+hyperplanes of lower dimensional space.
+
+Then we have the following representation theory to represent any ReLU DNN function
+by linear finite element function.
+\begin{theorem}
+Any ReLU DNN function on $[-1,1]^d$ can be represent
+by a linear finite element function.
+\end{theorem}
+The proof of this theorem can be found in~\cite{he2020approximation}.
+
+
+Here we show a brief description of the main steps in the proof, which will appear in~\cite{he2020approximation}.
+\begin{enumerate}
+	\item Based on the discussion before, we have a partition of $\Omega$ as
+	\begin{equation}\label{key}
+	\Omega = \bigcup_{i=1}^M E_i.
+	\end{equation}
+	\item We can extend all the $d$-dimensional hyperplanes on the boundary of all $E_i$ to achieve
+	a fine partition of $\Omega$ noted as
+	\begin{equation}\label{key}
+	\Omega = \bigcup_{i=1}^{\tilde M} \tilde E_i,
+	\end{equation}
+	with an important feature that each $\tilde E_i$ is a convex n-dimensional polytope.
+	\item For these $\{\tilde E_i\}_{i=1}^{\tilde M}$, we can further partition each $\tilde E_i$
+	to be a collection of n-dimensional simples. Finally, we can rewrite the continuous
+	piecewise linear function $f(x)$ on a simplicial mesh of $\Omega$, which means that $f(x)$
+	will can be written as a linear finite element function.
+\end{enumerate}
+
+
+

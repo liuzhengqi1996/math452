@@ -1,0 +1,158 @@
+
+\subsection{Cosine functions as activation function}
+Let us use a simple example to motivate the spectral Barron space. Consider a bounded domain $\Omega\subset \mathbb
+R^d$ and a real function $u\in L^1(\Omega)$.
+Recall the Fourier transform of $u\in L^1(\mathbb{R})$ in Definition~\ref{def:fourier1} and \ref{def:fourier2}. 
+This gives the following integral representation of $u$ in terms of the cosine function
+\begin{equation}
+ \label{eq:reint}
+u(x)=Re\int_{\mathbb{R}^d} e^{2\pi i\omega\cdot x} \hat u(\omega)d\omega
+= \int_{\mathbb{R}^d}\cos (2\pi (\omega\cdot x + b(\omega))) |\hat u(\omega)|d\omega,
+\end{equation}
+where $ \hat u(\omega)= e^{2\pi ib(\omega)}|\hat u(\omega)|$. Let 
+\begin{equation}
+ \label{eq:2}
+g(x, \omega) = \cos(2\pi (\omega\cdot x + b(\omega)))\quad \mbox{ and }\quad 
+\rho(\omega)= |\hat u(\omega)| . 
+\end{equation}
+Thus, 
+\begin{equation}
+\label{int-rep}
+u(x)= \int_{\mathbb{R}^d}g(x,\omega) \rho(\omega)d\omega,   
+\end{equation}
+If
+$$
+\int_{\mathbb R^d} |\hat u(\omega)|d\omega <\infty,
+$$
+then $\|\rho\|_{L^1}<\infty$. By applying the Lemma \ref{lem:sample},
+there exist $\omega_i\in \mathbb R^d$
+such that
+\begin{equation}
+  \label{eq:3}
+\|u-u_N\|_{0,\Omega}\le N^{-1/2}\|\hat u\|_{L^1(\mathbb R^d)}.  
+\end{equation}
+where
+\begin{equation}\label{cosfn}
+u_N(x) = {\|\hat u\|_{L^1(\mathbb R^d)}\over N} \sum_{i=1}^N \cos (2\pi(\omega_i\cdot x + b(\omega_i)))
+\end{equation}
+More generally, we consider the approximation property in $H^m$-norm.
+By \eqref{eq:reint},
+\begin{equation} 
+\partial^\alpha u(x)= \int_{\mathbb{R}^d} \cos^{|\alpha|}(2\pi (\omega\cdot x + b(\omega)))\omega^\alpha |\hat u(\omega)|d\omega,  \quad \forall\ |\alpha|\le m.
+\end{equation}
+For any positive integer $m$, let 
+\begin{equation} \label{eq:gm}
+g_m(x,\omega)= {\cos (2\pi (\omega\cdot x + b(\omega)))\over  (1+ \|\omega\|)^m}\quad \mbox{and}\quad \rho_m(\omega)= (1+ \|\omega\|)^m|\hat u(\omega) |,
+\end{equation}
+where
+$$
+\| \rho_m\|_{L^1(\mathbb R^d)}=\int_{\mathbb R^d} (1+ \|\omega\|)^m|\hat u(\omega) | d\omega<\infty.
+$$
+Then, $\displaystyle u(x)=\int_{\mathbb R^d} g_m(x,\omega)\rho_m d\omega = \| \rho_m\|_{L^1(\mathbb R^d)}\mathbb{E}g_m(x,\omega)$. Define
+\begin{equation}
+u_N(x) = {\|\rho_m\|_{L^1(\mathbb R^d)}\over N} \sum_{i=1}^N g_m(x,\omega_i)
+= {\|\rho_m\|_{L^1(\mathbb R^d)}\over N} \sum_{i=1}^N {\cos (2\pi(\omega_i\cdot x + b(\omega_i)))\over (1+\|\omega_i\|)^m}.
+\end{equation}
+It holds that 
+$$
+\partial^\alpha (u(x) - u_N(x))={\|\rho_m\|_{L^1(\mathbb R^d)}\over N}\sum_{i=1}^N \mathbb{E} \partial^\alpha (g_m(x,\omega) -  g_m(x,\omega_i)).
+$$
+By Lemma \ref{MC},
+\begin{align}
+\mathbb{E}_N \sum_{|\alpha|\le m}\|\partial^\alpha (u(x) - u_N(x))\|_{0, \Omega}^2 
+&\le 
+\|\rho_m \|_{L^1(\mathbb R^d)}^2\mathbb{E}_N \sum_{|\alpha|\le m}\frac{1}{N^2}\sum_{i=1}^N \left (\mathbb{E} \partial^\alpha (g_m(x,\omega) -  g_m(x,\omega_i))\right )^2
+\\
+&\le 
+{\|\rho_m \|_{L^1(\mathbb R^d)}^2\over N}  \sum_{|\alpha|\le m}\mathbb{E} \left (\partial^\alpha g_m(x,\omega)\right)^2
+\end{align}
+Note that the definitions of $g_m$ and $\rho_m$ in \eqref{eq:gm} guarantee that 
+$$
+|\partial^\alpha g_m(x,\omega)|\le 1.
+$$
+Thus,
+$$
+\mathbb{E}_N \sum_{|\alpha|\le m}\|\partial^\alpha (u(x) - u_N(x))\|_{0, \Omega}^2 \lesssim {\|\rho_m \|_{L^1(\mathbb R^d)}^2\over N}.
+$$
+This implies that there exist
+$\omega_i\in \mathbb R^d$ such that
+\begin{equation}
+\label{cosHm}
+\|u-u_N\|_{H^m(\Omega)}\lesssim N^{-1/2}\int_{\mathbb{R}^d} (1+ \|\omega\|)^m|\hat u(\omega) | d\omega.  
+\end{equation}
+
+
+Given $v\in L^2(\Omega)$,   consider all the possible extension $v_E:
+\mathbb{R}^d \mapsto \mathbb{R}$ with $v_E |_{\Omega} = v$ and define
+the spectral  Barron norm for any $s\ge 1$:
+	\begin{equation}\label{barron-norm0}
+	\|v\|_{B^{s}(\Omega)} = \inf_{v_E |_{\Omega} = v} \int_{\mathbb{R}^d}(1+\|\omega\|)^s|\hat{v}_E(\omega)|d\omega
+	\end{equation}
+and  spectral  Barron space
+\begin{equation}
+  \label{Barron}
+	B^{s}(\Omega) = \{v\in L^2(\Omega): \|v\|_{B^{s}(\Omega)}<\infty\}.  
+\end{equation}
+
+In summary, we have 
+\begin{equation} 
+\|u-u_N\|_{H^m(\Omega)}\lesssim N^{-1/2}  \|u\|_{B^{m}(\Omega)},
+\end{equation}
+where $u_N$ is defined in \eqref{cosfn}.
+
+
+Specifically, we will consider the problem of approximating a function with bounded Barron norm \eqref{barron-norm0} in the Sobolev space $H^m(\Omega)$. Our first step will be to prove a lemma showing that the Sobolev norm is bounded by the Barron norm.
+
+\begin{lemma}\label{smoothness-lemma}
+ Let $m \geq 0$ be an integer and $\Omega\subset \mathbb{R}^d$ a bounded domain. Then for any Schwartz function $v$, we have
+ \begin{equation}\label{embend}
+ \|v\|_{W^{m,\infty}(\Omega)} \lesssim \|v\|_{{B}^m(\Omega)} \lesssim  \|v\|_{H^{m + {d\over 2}+\epsilon}(\Omega)},
+ \end{equation}
+ where $\epsilon$ is positive.
+\end{lemma}
+\begin{proof}
+Recall the inverse Fourier transform in Definition \ref{def:fourier1}
+$$
+v(x)=\int \hat{v}(\omega) e^{2 \pi i\omega \cdot x} d \omega.
+$$
+For any $|\alpha|\le m$,
+$$
+|\partial^\alpha v|=|(2\pi)^{|\alpha|}\int \hat{v}(\omega) \omega^\alpha e^{2 \pi i\omega \cdot x} d \omega|\le |(2\pi)^{|\alpha|}\int \hat{v}(\omega) \|\omega\|^\alpha e^{2 \pi i\omega \cdot x} d \omega| \lesssim \|v\|_{B^m(\Omega)},
+$$ 
+which proves $ \|v\|_{W^{m,\infty}(\Omega)} \lesssim \|v\|_{{B}^m(\Omega)}$.
+
+\iffalse
+ Let $\chi$ be a Schwartz function satisfying $\chi(x) = 1$ for $x\in \Omega$. Such a function exists because $\Omega$ is bounded. Let $\alpha$ be any multi-index with $|\alpha|\leq m$. Then we have
+ \begin{equation}
+  \|D^\alpha v\|_{L^2(\Omega)} \leq \|\chi D^\alpha u\|_{L^2(\mathbb{R}^d)} \leq \|\hat\chi * \widehat{D^\alpha v}\|_{L^2(\mathbb{R}^d)}
+ \end{equation}
+ Now we use Young's inequality to obtain
+ \begin{equation}
+  \|\hat\chi * \widehat{D^\alpha v}\|_{L^2(\mathbb{R}^d)} \leq \|\hat\chi\|_{L^2(\mathbb{R}^d)}\|\widehat{D^\alpha v}\|_{L^1(\mathbb{R}^d)} \leq \|\hat\chi\|_{L^2(\mathbb{R}^d)}\|v\|_{\mathcal{B}^m(\Omega)}.
+ \end{equation}
+ Combining this over all multi-indices $\alpha$, we get
+ \begin{equation}
+  \|u\|_{H^m(\Omega)} \lesssim \|v\|_{\mathcal{B}^m(\Omega)},
+ \end{equation}
+ as desired. \fi
+ 
+ A version of the second inequality
+  in \eqref{embend} and its proof 
+can be found in \cite{barron1993universal}. Below is a proof, by 
+definition and Cauchy-Schwarz
+  inequality, 
+\begin{align}
+\|v\|_{B^m(\Omega)} =& \inf_{v_E |_{\Omega} = v} \left(\int_{\mathbb{R}^d}(1+\|\omega\|)^m|\hat{v}_E(\omega)|d\omega \right)^2
+\\
+\le &  \int_{\mathbb{R}^d}(1+\|\omega\|)^{-d - 2\epsilon}d\omega  \inf_{v_E |_{\Omega} = v} 
+\int_{\mathbb{R}^d}(1+\|\omega\|)^{d + 2m + 2\epsilon} |\hat{v}_E(\omega)|^2d\omega  
+\\
+\lesssim &  \inf_{v_E |_{\Omega} = v} 
+\int_{\mathbb{R}^d}(1+\|\omega\|)^{d + 2m + 2\epsilon} |\hat{v}_E(\omega)|^2d\omega  
+\lesssim \|v\|_{H^{m + {d\over 2}+\epsilon}(\Omega)}.
+\end{align}
+
+
+\end{proof}
+
+

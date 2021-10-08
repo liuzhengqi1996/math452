@@ -1,0 +1,14 @@
+\section{Yuyan's study of SGD and Full GD}
+There is numerical tests for sgd of fgd, dataset is Mnist.
+\begin{center}
+	\resizebox{\textwidth}{!}{
+		\begin{tabular}{|l|r|r|r|r|r|}
+			\hline
+			Model $\backslash$ batch-size  &128(60 epoches)	&10000(60 epoches) &10000(120 epoches)&60000(60 epoches)	& 60000(120 epoches)  \\\hline
+			2layer DNN				     &92.57	&91.88	 &92.26	&90.08 &91.09  \\\hline
+			ResNet18 (channel 4-8-16-32) &99.20	&96.13 &98.19 &- &- \\ \hline
+			ResNet18 (channel 8-16-32-64)&99.40 &97.86 & 98.64 &- &-\\ \hline
+			LeNet						 &99.25 &99.12 &99.25  &- &-\\ \hline
+		\end{tabular}
+	}
+\end{center}

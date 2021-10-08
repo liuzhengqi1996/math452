@@ -1,0 +1,69 @@
+\section{Bottleneck structure in MgNet by using subspace correction}
+Recall the standard MgNet iteration
+\begin{equation}\label{eq:mgnetiteration}
+u^{\ell,i} = u^{\ell,i-1} + \sigma \circ B^{\ell,i} \ast \sigma ({f^\ell -  A^{\ell} \ast u^{\ell,i-1}}),
+\end{equation}
+which corresponds to the classical residual correction scheme in multigrid as
+\begin{equation}\label{key}
+u^{\ell,i} = u^{\ell,i-1} + B^{\ell,i} ({f^\ell -  A^{\ell} \ast u^{\ell,i-1}}).
+\end{equation}
+
+Now let us recall the subspace correction scheme on a fixed level (for example $\ell$-th level),
+we have the following iterative scheme 
+\begin{equation}\label{eq:bottleneckmgnet}
+u^{\ell,i} = u^{\ell,i-1} + P^{\ell,i} B^{\ell,i} R^{\ell,i}({f^\ell -  A^{\ell} \ast u^{\ell,i-1}}).
+\end{equation}
+
+Here let us recall the dimension of $f^\ell$ and $u^{\ell,i}$ as
+\begin{equation}\label{key}
+f^\ell, u^{\ell,i} \in \mathbb{R}^{c_\ell \times m_\ell \times n_\ell },
+\end{equation}
+which leads to the dimension of $B^{\ell,i}$ in standard MgNet in \eqref{eq:mgnetiteration} to be
+\begin{equation}\label{key}
+B^{\ell,i} \in \mathbb{R}^{c_\ell \times c_\ell \times 3 \times 3}.
+\end{equation}
+
+
+
+However, for a subspace correction scheme, we can take $R^{\ell,i}$ as the restriction operator as
+\begin{equation}\label{key}
+R^{\ell,i}: \mathbb{R}^{c_\ell \times m_\ell \times n_\ell } \mapsto \mathbb{R}^{ \alpha c_\ell \times m_\ell \times n_\ell },
+\end{equation}
+where $\alpha \in (0,1]$ so example $\alpha = \frac{1}{4}$. 
+A rational choice for $R^{\ell,i}$ and $P^{\ell,i}$ should be
+\begin{equation}\label{key}
+R^{\ell,i} \in \mathbb{R}^{\alpha c_\ell \times c_\ell \times 1 \times 1},
+\end{equation}
+and 
+\begin{equation}\label{key}
+P^{\ell,i} \in \mathbb{R}^{ c_\ell \times \alpha c_\ell \times 1 \times 1}.
+\end{equation}
+Of course, we can just take the $R^{\ell,i} = [P^{\ell.i}]^T$ based on the 
+theory of subspace corrections. 
+
+Then, the size of $B^{\ell,i}$ in \eqref{eq:bottleneckmgnet} can be reduced to
+\begin{equation}\label{key}
+B^{\ell,i} \in \mathbb{R}^{\alpha c_\ell \times\alpha c_\ell \times 3 \times 3}.
+\end{equation}
+Thus the dimension of all operations $R^{\ell,i}$, $P^{\ell,i}$ and $B^{\ell,i}$ will be
+\begin{equation}\label{key}
+\begin{aligned}
+&\alpha c_\ell \times c_\ell \times 1 \times 1 +  c_\ell \times \alpha c_\ell \times 1 \times 1 + \alpha c_\ell \times\alpha c_\ell \times 3  \times 3 \\ 
+&= ((3\alpha)^2 +  2\alpha) c_\ell^2\\
+&= \frac{17}{16} c_\ell^2 \quad ( \alpha = \frac{1}{4}),
+\end{aligned}
+\end{equation}
+which is much less than the size of $B^{\ell,i}$ in original MgNet in~\eqref{eq:mgnetiteration} which
+is $9c_\ell^2$.
+
+To follow the linear constrained model assumption, we may take the nonlinearity as
+ \begin{equation}\label{eq:bottleneckmgnet-1}
+ u^{\ell,i} = u^{\ell,i-1} +   \sigma \circ P^{\ell,i} \ast  \sigma \circ B^{\ell,i} \ast  \sigma \circ R^{\ell,i} \ast \sigma ({f^\ell -  A^{\ell} \ast u^{\ell,i-1}}).
+ \end{equation}
+ 
+ Following the similar derivation from MgNet to ResNet, we can also derive
+ the next "enhanced" bottleneck ResNet from \eqref{eq:bottleneckmgnet-1} as
+ \begin{equation}\label{key}
+  r^{\ell,i} = r^{\ell,i-1} -  A^\ell \ast \sigma \circ   P^{\ell,i} \ast  \sigma \circ B^{\ell,i} \ast  \sigma \circ R^{\ell,i} \ast \sigma (r^{\ell,i-1}).
+ \end{equation}
+

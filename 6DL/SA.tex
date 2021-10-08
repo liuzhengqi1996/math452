@@ -1,0 +1,189 @@
+\chapter{Stochastic Differential Equations and Training Algorithms}
+\input{6DL/Bayesian}
+\section{Simulated Annealing}
+Given a function $\phi(x)$, we want to find the global minimum of this funcion, that is, we need to find $x^*=argmin(\phi(x))$
+\subsection{Theorem}
+For stochastic process $X^T_t$ which satisfies a stochastic differential equation 
+$$dX_t^T=-\frac{1}{\gamma}\nabla\phi(X_t^T)dt+\frac{\sigma}{\gamma} dW_t$$
+where $T=\frac{\sigma^2}{2\gamma}$ and $\sigma$, $\gamma$ are constant.
+~\\We have 
+$$\mathop{lim}\limits_{t\rightarrow\infty, T\rightarrow 0}E(X^T_t)=x^*$$
+where $x^*=argmin (\phi(x))$
+\subsection{Proof}For a stochastic differential equation
+$$dX_t=A(X_t,t)dt+\sigma(X_t,t)dW_t \eqno{(1)}$$
+By Kolmogorov forward equation, we have the transition probability $P(x,t;x',0)$ satisfies 
+$$\frac{\partial}{\partial t}P(x,t;x',0)=L_t^{+}P(x,t;x',0) \eqno{(2)}$$
+where $L_t=A(X_t,t)\frac{\partial}{\partial x}+\frac{1}{2}\sigma^2(X_t,t)\frac{\partial^2}{\partial x^2}$ and $L_t^+$ is the adjoint of $L_t$.
+~\\By the definition of probability density function w.r.t. transition probability:
+$$f(x,t)=\int P(x,t;x',0)P(x')dx' \eqno{(3)}$$
+where $P(x')$ is the density function at $t=0$.
+~\\Combine equation (3) and (2), by simple computation, we get Fokker-Planck equation:
+$$\frac{\partial}{\partial t}f(x,t)=L_t^{+}f(x,t) \eqno{(4)}$$
+Now we set $A(x,t)=-\frac{1}{\gamma}\nabla\phi(x)$ and $\sigma(x,t)=\frac{\sigma}{\gamma}$ (constant)
+~\\Then the Fokker-Planck equation [or equation (4)] becomes:
+$$\frac{\partial f}{\partial t}=\frac{\partial}{\partial x}[\frac{1}{\gamma}\nabla\phi(x)\cdot f]+\frac{1}{2}\frac{\partial^2}{\partial x^2}(\frac{\sigma^2}{\gamma^2} f) \eqno(5)$$
+When it comes to a steady state, that is, the density function would not change according to time:
+$$\frac{\partial f}{\partial t}=0 \eqno(6)$$
+(In physics, we often set $t\rightarrow \infty$ to represent the steady state)
+~\\Combine equation (5) and (6), we get 
+$$\frac{\partial}{\partial x}[\frac{1}{\gamma}\nabla\phi(x)\cdot f]+\frac{1}{2}\frac{\partial^2}{\partial x^2}(\frac{\sigma^2}{\gamma^2} f)=0 \eqno(7)$$
+Solve this ODE, we have:
+$$f=\frac{e^{-\frac{2\gamma\phi(x)}{\sigma^2}}}{\int e^{-\frac{2\gamma\phi(x)}{\sigma^2}}dx} \eqno(8)$$
+We define $T=\frac{\sigma^2}{2\gamma}$ as the temperature. We call this steady state distribution equilibrium distribution at temperature T. So just by changing variables, we rewrite equation (8):
+$$f^T_{eq}=\frac{e^{-\frac{\phi(x)}{T}}}{\int e^{-\frac{\phi(x)}{T}}dx} \eqno(9)$$
+We denote $X_t^T$ as the stochastic process which satisfies
+$$dX_t^T=-\frac{1}{\gamma}\nabla\phi(X_t^T)dt+\frac{\sigma}{\gamma} dW_t \eqno(10)$$
+where $T=\frac{\sigma^2}{2\gamma}$ [Because we have set $A(x,t)=-\frac{1}{\gamma}\nabla\phi(x)$ and $\sigma(x,t)=\frac{\sigma}{\gamma}$ (constant)]
+~\\By previous argument, the density function of random variable $X_{\infty}^T$ is $f^T_{eq}$
+~\\By Laplace Method, which says that:
+~\\For  $\forall g\in C^{\infty}(\mathbb{R})$, we have 
+$$\int g\cdot f^T_{eq}\rightarrow \int g\cdot \delta(x-x^*)=g(x^*)~\ as ~\ T\rightarrow 0 \eqno(11)$$
+where $x^*=argmin (\phi(x))$
+~\\Because $g(x)=x\in C^{\infty}(\mathbb{R})$, we immediately get:
+$$E(X^T_\infty)=\int x\cdot f^T_{eq}\rightarrow\int x\cdot \delta(x-x^*)=x^* ~\ as ~\ T\rightarrow 0 \eqno(12)$$
+So we get:
+$$\mathop{lim}\limits_{t\rightarrow\infty, T\rightarrow 0}E(X^T_t)=x^* \eqno(13)$$
+So the basic idea of simulated annealing is to approximate $\mathop{lim}\limits_{t\rightarrow\infty, T\rightarrow 0}E(X^T_t)$
+\subsection{Algorithm of simulated annealing}
+Fix T=1, we fix a point $x_0$ and evolve the stochastic differential equation $dX_t^T=-\frac{1}{\gamma}\nabla\phi(X_t^T)dt+\frac{\sigma}{\gamma} dW_t$ [equation(10)]. When it comes to the steady state $(t>>1)$, we start sampling $\{x_1, x_2, x_3, ..., x_n\}$
+when n is large enough, we get $E(X^1_\infty)\approx\frac{1}{n}\sum\limits^n_{i=1}x_i$
+~\\Fix T=0.1, we set $x_0=\frac{1}{n}\sum\limits^n_{i=1}x_i$ and evolve the stochastic differential equation $dX_t^T=-\frac{1}{\gamma}\nabla\phi(X_t^T)dt+\frac{\sigma}{\gamma} dW_t$ [equation(10)]. When it comes to the steady state $(t>>1)$, we start sampling $\{x_1, x_2, x_3, ..., x_n\}$
+when n is large enough, we get $E(X^{0.1}_\infty)\approx\frac{1}{n}\sum\limits^n_{i=1}x_i$.
+~\\We keep lowering the temperature.
+~\\Finally, we get $T=\epsilon$ ($\epsilon<<1$). After doing sampling $\{x_1, x_2, x_3, ..., x_n\}$, we have $\frac{1}{n}\sum\limits^n_{i=1}x_i\approx E(X^{\epsilon}_\infty)\approx x^*$
+
+
+\subsection{From SGD (minibatch) to SA}
+We first consider the following lost function 
+$$ 
+F(x) = \frac{1}{N} \sum_{i=1}^N f_i(x),
+$$ 
+where $N$ is the number of data point. The Minibatch SGD is written
+as 
+\begin{equation} \label{equ:minibatch}
+x^{n+1} = x^n - \Delta t_{n} \nabla F_{B_n}(x^n),
+\end{equation}
+where 
+$$ 
+F_{B_n}(x) = \frac{1}{|B_n|} \sum_{j \in B_n} f_j(x).
+$$ 
+Now, we rewrite \eqref{equ:minibatch} as 
+\begin{equation} \label{equ:minibach-SA}
+X^{n+1} = X^n - \Delta t_{n} \nabla F(X^n) + \Delta {t}_n
+\underbrace{[\nabla F(X^n) - \nabla F_{B_n}(X^n)]}_{Y^n}. 
+\end{equation}
+
+\begin{equation} \label{equ:minibach-SA}
+X^{n+1} = X^n - a_{n} \nabla F(X^n) + a_n
+[\nabla F(X^n) - \nabla F_{B_n}(X^n)-\frac{b_n}{a_n}] + b_nW_n 
+\end{equation}
+\begin{equation} \label{equ:minibach-SA}
+X^{n+1} = X^n - a_{n} [\nabla F(X^n) + \xi_n] + b_nW_n 
+\end{equation}
+where
+$$
+a_n=\Delta t_n, \xi_n=\nabla F(X^n) - \nabla F_{B_n}(X^n)-\frac{b_n}{a_n}W_n.
+$$
+
+Let $p_i$ is the probability of choosing the $i$-th component to
+the minibatch. We note here that each component may be in the
+minibatch for more than once. Then, we have 
+$$ 
+\begin{aligned}
+\mathbb{E}(Y^n) &= \nabla F(X^n) - \mathbb{E} [\nabla F_{B_n}(X^n)] \\
+&= \frac{1}{N} \sum_{i=1}^N \nabla f_i(X^n) - \frac{1}{|B_n|}
+\mathbb{E}[\sum_{j\in B_n} \nabla f_j(X^n)] \\
+&= \frac{1}{N} \sum_{i=1}^N \nabla f_i(X^n) - \mathbb{E}[\nabla
+f(X^n)] \qquad (\text{independence}) \\
+&= \frac{1}{N} \sum_{i=1}^N \nabla f_i(X^n) - \sum_{i=1}^N p_i \nabla
+f_i(X^n).
+\end{aligned}
+$$ 
+Therefore, we have the following condition
+\begin{equation} \label{equ:mean-condition}
+\frac{1}{N}\sum_{i=1}^N \nabla f_i(x^n) = \mathbb{E}[\nabla f(X^n)].
+\end{equation}
+From the above condition, a simple choice is $p_i = \frac{1}{N}$,
+namely uniform distribution. Condition \eqref{equ:mean-condition}
+can also be written as $\mathbb{E}(Y^n) = 0$.
+
+Note that ${\rm Var}(Y^n) = \mathbb{E}[Y^n (Y^n)^T] - \mathbb{E}(Y^n)
+\mathbb{E}(Y^n)^T = \mathbb{E}[Y^n (Y^n)^T]$. For simplicity,
+we remove the dependence of $X^n$ in the following. Then, 
+$$ 
+\begin{aligned}
+{\rm Var}(Y^n) &= \mathbb{E}[ (\nabla F - \nabla F_{B_n})
+(\nabla F - \nabla F_{B_n})^T ]
+\\
+&= \mathbb{E}[\nabla F_{B_n} (\nabla F_{B_n})^T ] - \nabla F (\nabla
+F)^T \\
+&= \frac{1}{|B_n|^2} \mathbb{E}_{i_1} \mathbb{E}_{i_1} \cdots
+\mathbb{E}_{i_{|B_n|}}[ (\sum_{j=1}^{|B_n|} \nabla f_{i_j})
+(\sum_{j=1}^{|B_n|} \nabla f_{i_j})^T ] - \nabla F (\nabla F)^T \\
+&= \frac{1}{|B_n|^2} \mathbb{E}_{i_1} \mathbb{E}_{i_2} \cdots
+\mathbb{E}_{i_{|B_n|}}[ \sum_{j,r=1 , i\neq j}^{|B_n|} \nabla f_{i_j}
+(\nabla f_{i_r})^T] \\ 
+& ~~ + \frac{1}{|B_n|^2} \mathbb{E}_{i_1} \mathbb{E}_{i_2} \cdots
+\mathbb{E}_{i_{|B_n|}} [\sum_{j=1}^{|B_n|} \nabla
+f_{i_j} (\nabla f_{i_j})^T]- \nabla F (\nabla F)^T \\ 
+& = (1 - \frac{1}{|B_n|}) \mathbb{E}(\nabla f) [\mathbb{E}(\nabla
+f)]^T + \frac{1}{|B_n|} \mathbb{E}[ (\nabla f) (\nabla f)^T] -
+\nabla F (\nabla F)^T \\
+&= \frac{1}{|B_n|} \left( \mathbb{E}[(\nabla f) (\nabla f)^T] -
+\mathbb{E}(\nabla f) [\mathbb{E}(\nabla f)^T] 
+\right) \\
+&= \frac{1}{|B_n|} {\rm Var}(\nabla f).
+\end{aligned}
+$$ 
+
+\begin{remark}
+	Since the index here can be repeated, there is NO need that ${\rm
+		Var}(Y^n) = 0$ when $|B_n| = N$.
+\end{remark}
+
+In summary, we have 
+\begin{equation} \label{equ:summary}
+\mathbb{E}(Y^n) = 0, \qquad {\rm Var}(Y^n) = \frac{1}{|B_n|} {\rm
+	Var}(\nabla f).
+\end{equation}
+It is conceivable that the result can be extended to the expectation
+version of the lost function, namely, 
+$$ 
+F(x) = \mathbb{E}_{\xi} f(x, \xi).
+$$ 
+
+
+\subsection{Convergence result}
+In the SA scheme, 
+\begin{equation} \label{equ:SA}
+X^{n+1} = X^n - \Delta t_n \nabla F(X^n) + \sigma_n W_{\Delta t_n},
+\end{equation}
+the convergence is proven under the following condition: 
+$$ 
+\Delta t_n = \mathcal{O}(n), \qquad \sigma_n^2 =
+\mathcal{O}(\frac{1}{n \log\log n})
+$$ 
+Compare the variance of $\sigma_n W_{\Delta t_n}$ and $\Delta t_n
+Y^n$, we have 
+$$ 
+\sigma_n^2 \Delta t_n \approx \Delta t_n^2 {\rm Var}(Y^n),
+$$ 
+which implies that 
+$$ 
+\frac{1}{|B_n|} {\rm Var}(\nabla f) =
+\mathcal{O}(\frac{\sigma_n^2}{\Delta t_n}) =
+\mathcal{O}(\frac{1}{\log\log n}).
+$$ 
+We conclude that, if the SGD is stagnated, namely ${\rm Var}(\nabla
+f)$ stays the almost the same, we need to slowly increase the size of
+minibatch in the way that 
+\begin{equation} \label{equ:batch-size}
+|B_n| = \mathcal{O}(\log\log n).
+\end{equation}
+
+
+\begin{remark}
+	The above argument requires that $\nabla f(x, \xi)$ is Gaussian on
+	$\xi$ for any $x$. This assumption holds for linear Gaussian
+	regression. 
+\end{remark}

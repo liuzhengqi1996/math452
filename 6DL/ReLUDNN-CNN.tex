@@ -1,0 +1,114 @@
+%\chapter{Connection of 1D CNN and DNN}
+\section{1D CNN as DNN}
+First let us consider a CNN model for 1D date i.e. $x \in \mathbb{R}^d$ as:
+$$
+(v\ast x)_i = \sum_{k=1}^d w_{i-k+1}x_k, \quad \forall i = 1:d+s,
+$$
+with 
+$$
+v \in \mathbb{R}^s.
+$$
+This lead to a $(d+s)\times d$ Toeplitz type convolutional matrix $T^v$ defined by
+$$
+(T^v)_{i,j} = v_{i-k+1}, \quad i=1:d+s, k = 1:d.
+$$
+
+This kind of convolution can be think as ``padding" for not only data but also kernel.
+So, this will lead to an increasing of dimensional for output.
+
+Here, we consider ``restriction-activation'' functions as only activation functions,
+and alway only have one channel, so we have the CNN model  as:
+\begin{equation}\label{CNN_iteration_vector}
+f^j(x,\Theta^j) = v^j \ast( g \circ f^{j-1})(x,\Theta^{j-1}) + b^j \in \mathbb{R}^{d + (j+1) \times s }
+\end{equation}
+where
+\begin{equation}
+\Theta^j=(\Theta^{j-1},v^j), \quad \Theta^0=(v^0, b^0) 
+\end{equation}
+with 
+\begin{equation}
+f^0(x)=v^0 \ast x + b^0,
+\end{equation}
+and 
+\begin{equation}\label{CNN_finallayer}
+f(x; \Theta) = f^J.
+\end{equation}
+
+Then we say that, use CNN to approximate function is in the class:
+$$
+\mathcal{H} = \{ \sum_{i= 1}^{d_J} c_i f^J_i(x): c \in \mathbb{R}^{d_J}\},
+$$
+here $d_j = d + (j+1)\times s$, is the dimension of $f^j$. 
+
+Now let us consider, we have a one hidden layer DNN model as:
+$$
+f_{DNN} = \sum_{i=1}^m \alpha_k g( w_i x + b_k),
+$$ 
+then we can construct 
+$$
+W = [w_1, w_2, \cdots, w_m], \in \mathbb{R}^{1\times(md)},
+$$
+then we have the next decomposition as
+$$
+W\ast x = w^{\hat J-1} \cdots w^1\ast w^0 \ast x,
+$$
+for 
+$$
+\hat J \le \frac{md}{s-1} +2.
+$$
+
+Now, we have a new CNN model as:
+\begin{equation}\label{CNN_iteration_vector}
+f^j(x,\Theta^j) = v^j \ast \circ f^{j-1}(x,\Theta^{j-1}) + b^j \in \mathbb{R}^{d + (j+1) \times s }
+\end{equation}
+and 
+$$
+f^J(x,\Theta^J) = w^J \ast ( g\circ f^{J-1})(x,\Theta^{J-1}) \in \mathbb{R}^{d + (J+1) \times s },
+$$
+where
+\begin{equation}
+\Theta^j=(\Theta^{j-1},v^j), \quad \Theta^0=(v^0, b^0) 
+\end{equation}
+with 
+\begin{equation}
+f^0(x)=v^0 \ast x + b^0,
+\end{equation}
+and 
+\begin{equation}\label{CNN_finallayer}
+f(x; \Theta) = f^J.
+\end{equation}
+Then we can choose $w^j$ as delta i.e identity map for $j \ge \hat J$, and for the last model
+$$
+f_{CNN} = \sum_{i= 1}^{d_J} c_i f^J_i(x),
+$$
+we can have
+$$
+f_{CNN} = f_{DNN},
+$$
+by choosing $c$ coefficients and $b^j$ carefully. [As homework.]
+So all approximation properties for one hidden layer DNN can be reconstructed for CNN.
+
+\begin{theorem}
+	For one dimensional kernel, we have the decomposition as
+	$$
+	W\ast x = w^{\hat J-1} \cdots w^1\ast w^0 \ast x.
+	$$
+\end{theorem}
+\begin{proof}
+	This proof is in the literature of Daubechies 1992.  Let us define the symbol $\tilde w$ as a polynomial on $\mathbb{C}$ by 
+	$$
+	\tilde w (z) = \sum_{i=1}^s w_{i}z^{i-1}.
+	$$
+	The most important result is that
+	$$
+	\tilde w(z) \tilde v(z) = \widetilde{(w\ast v)}(z).
+	$$
+	Then we know that for any polynomial with real coefficients it can be decomposed as 
+	$$
+	\tilde W(z) = W_M \Pi_{k=1}^K\{z^2 - 2\alpha_kz + (\alpha_k^2 + \beta_k^2)\} \Pi_{2K+1}^{M-1}(z - \alpha_k).
+	$$
+	This means that, for $s \le 2$, we can combine the above decomposition with every $\tilde w^j(z)$ is a $s-1$-degree of polynomial ans
+	$$
+	\tilde W(z) = \tilde w^{\hat J-1}(z)\cdots \tilde w^{1}(z)\tilde w^{0}(z).
+	$$
+\end{proof}

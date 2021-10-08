@@ -1,0 +1,253 @@
+\newpage
+\section{Data Augmentation with Explicit Regularization Formula}
+
+\paragraph{Data Augmentation}
+I think data augmentation is some kind of regularization. 
+First we have,
+\begin{equation}\label{key}
+D_1 = \text{training set}, \quad D_2 = \text{test set},
+\end{equation}
+and the standard loss function:
+\begin{equation}\label{key}
+L(\theta) = \sum_{i=1}^N \ell( f(x_i; \theta), y_i) = N \mathbb{E}_{(x,y)\in D_1} \ell( f(x; \theta), y). 
+\end{equation}
+
+Let me write the FAA training process:
+\begin{itemize}
+	\item For k = 1:200 (epoch iteration)
+	\item Shuffle the data set, and for each training data $x_i \in D_1$, randomly choose one policy $\tau^k_i \in \mathcal T$, and then the training data becomes 
+	\begin{equation}\label{key}
+	\tilde \tau^{k}(D_1) = \{ \tau^k_i(x_i): x_i \in D_1 \},
+	\end{equation}
+	\item SGD and train.
+\end{itemize}
+
+
+Here, for CIFAR100, we have the next properties of augmentation policies:
+\begin{equation}\label{key}
+T = \# \mathcal T = 500,
+\end{equation}
+for each policy $\tau_i \in \mathcal T$,
+\begin{equation}\label{key}
+\tau_i(x) = \begin{cases}
+x, \quad \text{with probability}~(1-p^i_1)(1-p^i_2) \\
+T^i_1(x), \quad \text{with probability}~p^i_1(1-p^i_2) \\
+T^i_2(x), \quad \text{with probability}~(1-p^i_1)p^i_2 \\
+T^i_2(T^i_1(x)), \quad \text{with probability}~ p^i_1p^i_2
+\end{cases}
+\end{equation}
+
+A key observation is the expectation of the SGD with FAA or general data augmentation. Think about a mini-batch step:
+\begin{equation}\label{key}
+\theta^{k+1} = \theta^k - \eta \nabla \sum_{x\in \mathcal B_k} \ell(f(\tau(x)), y),
+\end{equation}
+where \blue{for every $x$, the transfer $\tau$ is a sample} from the next distribution:
+\begin{equation}\label{key}
+\mathbb P(\tau = \tau^i) = \frac{1}{T}, \forall i = 1, 2, \cdots, T,
+\end{equation}
+and
+\begin{equation}\label{key}
+\tau^i = \begin{cases}
+id, \quad \text{with probability}~(1-p^i_1)(1-p^i_2) \\
+T^i_1, \quad \text{with probability}~p^i_1(1-p^i_2) \\
+T^i_2, \quad \text{with probability}~(1-p^i_1)p^i_2 \\
+T^i_2\circ T^i_1, \quad \text{with probability}~ p^i_1p^i_2
+\end{cases}.
+\end{equation}
+
+Thus, we know the ``real'' loss function is:
+\begin{equation}\label{key}
+\tilde L(\theta)  = N T \mathbb{E}_{(x,y) \in D_1} \mathbb{E}_{\mathcal T} \mathbb{E}_{\tau} \left( \frac{\ell \left( f(\tau(x);\theta), y\right)}{P(\tau)}  \right)
+\end{equation}
+Our we can write them with details:
+\begin{equation}\label{key}
+\begin{aligned}
+\tilde L(\theta) = N T \frac{1}{N} \sum_{i=1}^N \big( \frac{1}{T}\sum_{t=1}^T \big( &(1-p^t_1)(1-p^t_2)\frac{\ell(f(x_i;\theta),y_i)}{\mathbb P(\tau= id)}  \\
+&+ p^t_1(1-p^t_2)  \frac{\ell(f(T^t_1(x_i);\theta),y_i)}{\mathbb P(\tau = T^t_1)} + (1-p^t_1)p^t_2 \frac{\ell(f(T^t_2(x_i);\theta),y_i)}{\mathbb P(\tau = T^t_2)}  \\
+&+  p^t_1p^t_2\frac{\ell(f(T^t_2 (T^t_1(x_i) );\theta),y_i)}{\mathbb P(\tau = T^t_2 \circ T^t_1)}   \big) \big).
+\end{aligned}
+\end{equation}
+
+
+
+
+Then, the FAA data augmentation can be understood as a ``direct'' SGD method to solve the above problem by sampling 
+\begin{equation}\label{key}
+\mathbb{E}_{(x,y) \in D_1} \quad  \mathbb{E}_{ \mathcal T} \quad \text{and} \quad \mathbb{E}_{\tau},
+\end{equation}
+one-by-one.
+
+So, the main difference here is we have a new loss function. For simplicity, if we think $p^t_1 \approx p_1$ and $p^t_1 \approx p_2$. 
+We will have the new loss function as:
+\begin{equation}\label{key}
+\begin{aligned}
+\tilde L(\theta) &=  NT \frac{1}{N}\sum_{i=1}^N \left(\ell(f(x_i;\theta),y_i) + \frac{1}{T}\left(\sum_1 + \sum_2 + \sum_{12}\right)  \right) \\
+&= T\sum_{i=1}^N \ell(f(x_i;\theta),y_i)  +  NT \frac{1}{N} \sum_{i=1}^N  \frac{1}{T} \sum_{t=1}^T \left(\sum_tL_1 + \sum_tL_2 +  \sum_{t}L_{12}\right) \\
+&=  T L(\theta) +NT(1-(1-p_1)(1-p_2)) \frac{1}{N} \sum_{i=1}^N  \frac{1}{T} \sum_{t=1}^T \left( \tilde P_1 \sum_tL_1 + \tilde P_2 \sum_tL_2 +\tilde P_{12} \sum_{t}L_{12}\right)  \\
+&= T L(\theta) +NT(1-(1-p_1)(1-p_2)) \mathbb{E}_{(x,y) \in D_1} \mathbb{E}_{ \bar{\mathcal T}} \mathbb{E}_{\bar \tau} \left( \frac{\ell \left( f(\bar T(x);\theta), y\right)}{\tilde{\mathbb P}(\bar \tau)}  \right)
+\end{aligned}.
+\end{equation}
+Here we have the new $\bar \tau^t$ defined as:
+\begin{equation}\label{key}
+\bar \tau^t(x) = \begin{cases}
+T^t_1(x), \quad \text{with probability}~\tilde{\mathbb{ P}}_1 = \frac{p_1(1-p_2)}{1-(1-p_1)(1-p_2)} \\
+T^t_2(x), \quad \text{with probability}~\tilde{\mathbb{ P}}_2 = \frac{(1-p_1)p_2}{1-(1-p_1)(1-p_2)}\\
+T^t_2(T^t_1(x)), \quad \text{with probability}~ \tilde{\mathbb{ P}}_{12} = \frac{p_1p_2}{1-(1-p_1)(1-p_2)}
+\end{cases}.
+\end{equation}
+
+Finally, we have the equivalent loss function as:
+\begin{equation}\label{key}
+\begin{aligned}
+\tilde L(\theta) &= L(\theta) + \frac{(1-(1-p_1)(1-p_2))}{T} NT\mathbb{E}_{(x,y) \in D_1} \mathbb{E}_{ \bar{\mathcal T}} \mathbb{E}_{\bar \tau} \left( \frac{\ell \left( f(\bar T(x);\theta), y\right)}{\tilde{\mathbb P}(\bar \tau)}  \right) \\
+&= L(\theta) + \blue{\frac{(1-(1-p_1)(1-p_2))}{T} } R(\theta; \blue{\bar{\mathcal T}}).
+\end{aligned}
+\end{equation}
+
+Then, we can understand these data augmentation as a regularization method with a ``direct'' SGD method which likes this batch normalization methods...
+
+Then we have the next observation:
+\begin{itemize}
+	\item This can help to explain why this can help to improve the generalization accuracy.
+	\item This also explain why the training accuracy dose not have good improvement.
+	\item This help to explain why FAA have a bigger gap than basic augmentation. (The parameter $T$ for FAA is bigger than basic one.)
+	\item Some possible numerical experiments:
+	\begin{itemize}
+		\item Different $T$ may have different scale of gap;
+		\item Modify $p_1$ and $p_2$ will have the similar result for $T$...
+	\end{itemize}
+	\item Because of the special form of regularization, I am trying to give some mathematical analysis on why the test accuracy
+	with FAA will drop. And how to design some numerical experiments to verify. 
+\end{itemize}
+
+
+
+\subsection{Preliminary numerical results}
+
+\subsubsection{Jianhong's results}
+There are $p_1$ and $p_2$. I set $p_1=p_2$ and choose different values of $p_1$ to investigate the effect of the augmentation. 
+
+Jianhong trained with basic and FAA augmentation and saved the model. Then Jianhong evaluated the training and test accuracy with different augmentation techniques for this model. 
+
+
+\subsection{CIFAR-100}
+\begin{table}[!htbp]
+	\centering
+	\caption{Training and test accuracy with different augmentation techniques on CIFAR-100}
+	\scalebox{0.7}{	\begin{tabular}{|c|c|c|c|c|c|c|c|}
+			\hline
+			p1	&	lambda	&	training accuracy	&	training+aug accuracy	&	test accuracy	&	test+faa accuracy	&	test+basic accuracy	&	test+basic+faa accuracy	\\\hline
+			0	&	0.00000	&	99.98	&	99.98	&	74.54	&	74.54	&	73.81	&	73.93	\\\hline
+			0.1	&	0.00042	&	99.96	&	98.49	&	75.40	&	74.13	&	74.79	&	73.46	\\\hline
+			0.2	&	0.00080	&	99.97	&	97.90	&	75.58	&	73.86	&	74.97	&	73.40	\\\hline
+			0.3	&	0.00113	&	99.97	&	97.57	&	76.59	&	74.51	&	75.80	&	73.21	\\\hline
+			0.4	&	0.00142	&	99.92	&	96.86	&	77.00	&	74.56	&	76.49	&	73.20	\\\hline
+			0.5	&	0.00167	&	99.93	&	96.46	&	76.79	&	73.77	&	76.27	&	72.43	\\\hline
+			0.6	&	0.00187	&	99.92	&	95.86	&	76.99	&	73.25	&	76.51	&	72.31	\\\hline
+			0.7	&	0.00202	&	99.92	&	95.27	&	77.24	&	73.38	&	76.68	&	72.04	\\\hline
+			0.8	&	0.00213	&	99.93	&	94.77	&	77.61	&	72.82	&	76.58	&	71.76	\\\hline
+			0.9	&	0.00220	&	99.82	&	94.20	&	77.67	&	72.73	&	77.27	&	71.07	\\\hline
+			1	&	0.00222	&	99.76	&	92.95	&	77.25	&	72.31	&	76.61	&	70.28	\\\hline
+	\end{tabular}}
+\end{table}
+
+
+\begin{table}[!htbp]
+	\centering
+	\caption{Training and test loss with different augmentation techniques on CIFAR-100}
+	\scalebox{0.8}{	\begin{tabular}{|c|c|c|c|c|c|c|c|}
+			\hline
+			p1	&	lambda	&	training loss	&	training+aug loss	&	test loss	&	test+faa loss	&	test+basic loss	&	test+basic+faa loss	\\\hline
+			0	&	0.00000	&	0.0043	&	0.2092	&	1.1758	&	1.1758	&	1.1376	&	1.1457	\\\hline
+			0.1	&	0.00042	&	0.0078	&	0.3749	&	1.0719	&	1.1314	&	1.0498	&	1.1153	\\\hline
+			0.2	&	0.00080	&	0.0068	&	0.4241	&	1.0650	&	1.1287	&	1.0409	&	1.1151	\\\hline
+			0.3	&	0.00113	&	0.0072	&	0.4607	&	1.0069	&	1.0998	&	0.9718	&	1.0948	\\\hline
+			0.4	&	0.00142	&	0.0087	&	0.5078	&	0.9931	&	1.0801	&	0.9637	&	1.0829	\\\hline
+			0.5	&	0.00167	&	0.0086	&	0.5362	&	0.9687	&	1.0964	&	0.9657	&	1.1228	\\\hline
+			0.6	&	0.00187	&	0.0106	&	0.5701	&	0.9569	&	1.1089	&	0.9605	&	1.1087	\\\hline
+			0.7	&	0.00202	&	0.0117	&	0.5989	&	0.9480	&	1.0921	&	0.9522	&	1.1137	\\\hline
+			0.8	&	0.00213	&	0.0126	&	0.6270	&	0.9602	&	1.1343	&	0.9400	&	1.1482	\\\hline
+			0.9	&	0.00220	&	0.0141	&	0.6526	&	0.9295	&	1.1231	&	0.9273	&	1.1637	\\\hline
+			1	&	0.00222	&	0.0199	&	0.7041	&	0.9240	&	1.1157	&	0.9159	&	1.1749	\\\hline
+	\end{tabular}}
+\end{table}
+
+
+
+\newpage
+\subsection{CIFAR-10}
+\begin{table}[!htbp]
+	\centering
+	\caption{Training and test accuracy with different augmentation techniques on CIFAR-10}
+	\scalebox{0.7}{	\begin{tabular}{|c|c|c|c|c|c|c|c|}
+			\hline
+			p1	&	lambda	&	training accuracy	&	training+aug accuracy	&	test accuracy	&	test+faa accuracy	&	test+basic accuracy	&	test+basic+faa accuracy	\\\hline
+			0	&	0.00000	&	100.00	&	99.99	&	94.37	&	94.37	&	94.17	&	94.34	\\\hline
+			0.1	&	0.00042	&	100.00	&	99.56	&	95.39	&	94.88	&	94.98	&	94.43	\\\hline
+			0.2	&	0.00080	&	100.00	&	99.18	&	95.73	&	94.88	&	95.03	&	94.04	\\\hline
+			0.3	&	0.00113	&	99.99	&	99.09	&	95.44	&	94.26	&	95.54	&	94.14	\\\hline
+			0.4	&	0.00142	&	100.00	&	98.93	&	95.56	&	94.43	&	95.61	&	93.95	\\\hline
+			0.5	&	0.00167	&	100.00	&	98.70	&	95.95	&	93.73	&	95.53	&	93.85	\\\hline
+			0.6	&	0.00187	&	100.00	&	98.63	&	95.65	&	93.83	&	95.46	&	93.26	\\\hline
+			0.7	&	0.00202	&	99.99	&	98.26	&	95.93	&	94.06	&	95.66	&	93.27	\\\hline
+			0.8	&	0.00213	&	99.99	&	98.17	&	95.77	&	93.03	&	95.68	&	92.99	\\\hline
+			0.9	&	0.00220	&	99.99	&	97.94	&	96.08	&	93.48	&	95.51	&	92.80	\\\hline
+			1	&	0.00222	&	99.98	&	97.76	&	95.98	&	92.80	&	95.49	&	91.99	\\\hline
+	\end{tabular}}
+\end{table}
+
+
+\begin{table}[!htbp]
+	\centering
+	\caption{Training and test loss with different augmentation techniques on CIFAR-10}
+	\scalebox{0.8}{	\begin{tabular}{|c|c|c|c|c|c|c|c|}
+			\hline
+			p1	&	lambda	&	training loss	&	training+aug loss	&	test loss	&	test+faa loss	&	test+basic loss	&	test+basic+faa loss	\\\hline
+			0	&	0.00000	&	0.0006	&	0.0833	&	0.2655	&	0.2655	&	0.2491	&	0.2463	\\\hline
+			0.1	&	0.00042	&	0.0010	&	0.1182	&	0.1748	&	0.1915	&	0.1802	&	0.1997	\\\hline
+			0.2	&	0.00080	&	0.0012	&	0.1409	&	0.1623	&	0.1841	&	0.1797	&	0.2036	\\\hline
+			0.3	&	0.00113	&	0.0011	&	0.1487	&	0.1714	&	0.2030	&	0.1668	&	0.2054	\\\hline
+			0.4	&	0.00142	&	0.0010	&	0.1630	&	0.1696	&	0.2086	&	0.1619	&	0.2075	\\\hline
+			0.5	&	0.00167	&	0.0011	&	0.1762	&	0.1583	&	0.2191	&	0.1543	&	0.2122	\\\hline
+			0.6	&	0.00187	&	0.0012	&	0.1840	&	0.1666	&	0.2230	&	0.1687	&	0.2278	\\\hline
+			0.7	&	0.00202	&	0.0011	&	0.1969	&	0.1587	&	0.2117	&	0.1578	&	0.2277	\\\hline
+			0.8	&	0.00213	&	0.0013	&	0.2028	&	0.1595	&	0.2324	&	0.1564	&	0.2311	\\\hline
+			0.9	&	0.00220	&	0.0013	&	0.2149	&	0.1540	&	0.2303	&	0.1552	&	0.2386	\\\hline
+			1	&	0.00222	&	0.0018	&	0.2268	&	0.1506	&	0.2424	&	0.1554	&	0.2559	\\\hline	\end{tabular}}
+\end{table}
+
+
+
+\subsubsection{Jianqing's results}
+The next table shows Jianqing's results for $p$ version for FAA with 450 sub-policies with 
+the basic data augmentation before standard FAA augmentation is applied.
+\begin{table}[!htbp]
+\centering
+\begin{tabular}{| l | c | c | c | c | r |}
+	\hline
+	p          & train acc & train+aug acc & test accuracy  &  test+aug acc & test acc drop\\
+	\hline
+	0.0          &  99.97   & 99.97       &  74.78         &   74.11            &   0.67  \\
+	\hline
+	0.1          &  99.97   & 98.53       &  76.44         &   74.56            &   1.88  \\
+	\hline
+	0.2          &  99.96   & 97.83       &  76.72         &   73.68            &   3.04  \\
+	\hline
+	0.3          &  99.96   & 97.35       &  76.75         &   73.92            &   2.83  \\
+	\hline
+	0.4          &  99.96   & 96.83       &  76.78         &   73.45            &   3.33  \\
+	\hline
+	0.5          &  99.96   & 96.66       &  77.07         &   72.61            &   4.46  \\
+	\hline
+	0.6          &  99.95   & 95.91       &  77.29         &   72.75            &   4.54  \\
+	\hline
+	0.7          &  99.93   & 95.51       &  77.67         &   72.59            &   5.08  \\
+	\hline
+	0.8          &  99.92   & 95.13       &  77.67         &   72.05            &   5.62  \\
+	\hline
+	0.9          &  99.91   & 94.27       &  77.68         &   71.25            &   6.43  \\
+	\hline
+	1.0          &  99.75   & 93.22       &  77.67         &   70.31            &   7.36  \\
+	\hline
+\end{tabular}
+\end{table}

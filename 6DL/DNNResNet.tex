@@ -1,0 +1,104 @@
+\subsection{ResNet and pre-act ResNet structure}
+Based on the notation for standard DNN structure, we now present
+the definition for ResNet type models in DNNs.
+
+\paragraph{ResNet}
+The ResNet can be written as
+\begin{equation}\label{ori-ResNet-dnn}
+\begin{cases}
+x^0 &= x, \\
+x^{\ell} &= \sigma \left( P^\ell x^{\ell-1} + \mathcal{F}^{\ell} (x^{\ell-1}) \right), \quad \ell = 1:L ,\\
+{\text{ResNet}}_{L}(x) &=   W^L x^{L}  + b^L.
+\end{cases}
+\end{equation}
+Here
+\begin{equation}\label{eq:F-ResNet}
+\mathcal{F}^{\ell}  \in  \dnn(n_\ell, m_\ell),
+\end{equation}
+or more precisely, 
+\begin{equation}\label{key}
+\mathcal{F}^{\ell}(x) = \xi^{\ell} \circ \sigma \circ \eta^{\ell} (x),
+\end{equation}
+where
+\begin{equation}\label{key}
+\eta^\ell: \mathbb{R}^{{\rm dim}_x} \mapsto \mathbb{R}^{n_\ell}, \quad \text{and} \quad \xi^{\ell}:  \mathbb{R}^{n_\ell} \mapsto \mathbb{R}^{m_\ell}.
+\end{equation}
+This kind of ResNet is consist with original ResNet CNN~\cite{he2016deep}, which is associated with a skip connection distant 2. 
+Here $P^i$ is use to fit the dimension as
+\begin{equation}\label{eq:P^i}
+P^\ell: \mathbb{R}^{{\rm dim}_{x^{\ell-1}}} \mapsto \mathbb{R}^{m_\ell}.
+\end{equation}
+In most cases, if ${\rm dim}_{x^{\ell-1}} = m_\ell$, then take $P^\ell = {\rm id}$.
+
+\paragraph{pre-act ResNet} 
+The pre-act ResNet~\cite{he2016identity} can be written as:
+\begin{equation}\label{ori-iResNet-dnn}
+\begin{cases}
+x^0 &= x, \\
+x^{\ell} &=  P^\ell x^{\ell-1} + \mathcal{F}^{\ell} \left( \sigma (x^{\ell-1}) \right), \quad \ell = 1:L ,\\
+{\text{pre-act ResNet}}_{L}(x) &=  W^L x^{L} + b^L.
+\end{cases}
+\end{equation}
+Here $\mathcal{F}^{\ell}$ and $P^\ell$ share the same setup as in ResNet.
+
+
+\subsection{A more general ResNet DNN}
+In some literature, the next ResNet type DNN is more popular.
+\begin{equation}\label{general-ResNet-dnn}
+\begin{cases}
+x^0 &= x, \\
+x^{\ell} &=  P^\ell x^{\ell-1} + \mathcal{F}^{\ell} \left( x^{\ell-1} \right), \quad \ell = 1:L ,\\
+{\text{gResNet}}_{L}(x) &=  W^L x^{L} + b^L.
+\end{cases}
+\end{equation}
+Here $\mathcal{F}^{\ell}$ may have a more general version compared with classical ResNet.
+For example, 
+\begin{equation}\label{key}
+\mathcal{F}^{\ell} = \sigma \circ \theta^\ell, \quad \text{and} \quad P^\ell = {\rm id},
+\end{equation}
+or
+\begin{equation}\label{key}
+\mathcal{F}^{\ell} \in \dnn(n^\ell_1, n^\ell_2, \cdots, n^\ell_{L_\ell}).
+\end{equation}
+
+
+\subsection{DNN type DenseNet}
+In fact, DenseNet might be simple for definition in DNN case. 
+
+Here use $\sigma \circ \theta$ type as example.
+\begin{equation}\label{ori-DenseNet-dnn}
+\begin{cases}
+x^0 &= x, \\
+x^{\ell} &=   \sigma \circ \theta^{\ell}([x^{\ell-1}, x^{\ell-2}, \cdots, x^0]) , \quad \ell = 1:L ,\\
+{\text{DenseNet}}_{L}(x) &=  W^L x^{L} + b^L.
+\end{cases}
+\end{equation}
+
+Here $[x^{\ell-1}, x^{\ell-2}, \cdots, x^0]$ means a long vector by collecting all 
+outputs from $x^0$ to $x^{\ell-1}$.
+
+%, thus to say
+%$$
+%{\rm dim}([f^{i-1}, f^{i-2}, \cdots, f^0]) = \sum_{i=0}^{i-1} n_i.
+%$$
+
+
+\endinput
+%\subsection{DNN type MgNet}
+%Similar with ResNet, we can rewrite MgNet.
+%
+%Here use $\theta \circ \sigma$ type as example.
+%\begin{equation}\label{ori-MgNetNet-dnn}
+%\begin{cases}
+%u^0 &= 0, \quad f^0 = \theta^0(x) \\
+%u^{\ell} &=  P^\ell u^{\ell-1} + \mathcal{F}^{i} (f^{i-1} - ) , \quad i = 1:J ,\\
+%{\rm MgNet}_{L} &= u^{L}.
+%\end{cases}
+%\end{equation}
+%Here
+%\begin{equation}\label{eq:F-MgNet}
+%\mathcal{F}^{i} (f^{i-1}) = \xi^{i} \left( f^{i-1} +  \sigma \circ \eta^{i} \circ \sigma(f^{i-1}) \right).
+%\end{equation}
+
+%\newpage
+%\input{juncai_dnn}

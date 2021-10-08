@@ -1,0 +1,162 @@
+\subsection{Classical DNN}
+First, we have a more comprehensive notation for classical DNN models.
+\begin{equation}\label{eq:DNNdef_J}
+\begin{aligned}
+{\rm{DNN}_J} :=\{& f:f=
+\theta^J \circ \sigma \circ \theta^{J-1} \cdots \sigma \circ \theta^0(x), \\
+&\theta^\ell \in \mathbb{R}^{n^{\ell+1} \times (n^\ell+1)}, \quad n^0 = d, \quad n^{J+1} = 1, \quad n^\ell \in \mathbb{N}^+\}.
+\end{aligned}
+\end{equation}
+
+Thus to say, we have the general two definition for DNN with
+\begin{itemize}
+\item  $\sigma \circ \theta$ type:
+\begin{equation}\label{eq:sigma+theta}
+\begin{aligned}
+f^0 &= x, \\
+f^{i+1} &= \sigma \circ \theta^{i}(f^i), \\
+{\rm DNN}_J &= \{\theta^J(f^J)\}.
+\end{aligned}
+\end{equation}
+
+\item $\theta \circ \sigma $ type:
+\begin{equation}\label{eq:theta+sigma}
+\begin{aligned}
+f^0 &= \theta^0(x), \\
+f^{i+1} &=  \theta^{i+1} \circ \sigma (f^i), \\
+{\rm DNN}_J &= \{f^J\}.
+\end{aligned}
+\end{equation}
+\end{itemize}
+
+\subsection{DNN type ResNet}
+For simplicity, we choose $\sigma \circ \theta$ type as example.
+
+\paragraph{ResNet}
+The ResNet can be written as
+\begin{equation}\label{ori-ResNet-dnn}
+\begin{cases}
+f^0 &= x, \\
+f^{i} &= \sigma \left( P^i f^{i-1} + \mathcal{F}^{ i} (f^{i-1}) \right), \quad i = 1:J ,\\
+{\rm ResNet}_{J} &= \{  \theta^J f^{J} \}.
+\end{cases}
+\end{equation}
+Here
+\begin{equation}\label{eq:F-ResNet}
+\mathcal{F}^{i} (f^{i-1}) = \xi^{i} \circ \sigma \circ \eta^{i} (f^{i-1}),
+\end{equation}
+means ResNet with skip connection distant 2. And $P^i$ is use to fit the dimension as
+\begin{equation}\label{eq:P^i}
+P^i: \mathbb{R}^{n_{i-1}} \mapsto \mathbb{R}^{n_i}.
+\end{equation}
+
+\paragraph{iResNet} 
+The iResNet can be written as:
+\begin{equation}\label{ori-iResNet-dnn}
+\begin{cases}
+f^0 &= x, \\
+f^{i} &=  P^i f^{i-1} + \mathcal{F}^{ i} (f^{i-1}) , \quad i = 1:J ,\\
+{\rm iResNet}_{J} &= \{  \theta^J f^{J} \}.
+\end{cases}
+\end{equation}
+Here
+\begin{equation}\label{eq:F-iResNet}
+\mathcal{F}^{i} (f^{i-1}) = \xi^{i} \circ \sigma \circ \eta^{i}  \circ \sigma (f^{i-1}),
+\end{equation}
+means iResNet with skip connection distant 2. 
+And $P^i$ is use to fit the dimension as in ResNet in \eqref{eq:P^i}.
+
+The only difference between ResNet and iResNet can be viewed as 
+putting a $\sigma$ in different places. 
+
+And we also need to notice that ${\rm ResNet}_J$ or  ${\rm iResNet}_J$
+are often called DNN with $2J$-th layers if the distance of skip connection
+is $2$ as in \eqref{eq:F-ResNet} and \eqref{eq:F-iResNet}.
+
+\subsection{DNN type MgNet}
+Similar with ResNet, we can rewrite MgNet.
+
+Here use $\theta \circ \sigma$ type as example.
+\begin{equation}\label{ori-MgNetNet-dnn}
+\begin{cases}
+f^0 &= 0, \quad f^0 = \theta^0(x) \\
+f^{i} &=  P^i f^{i-1} + \mathcal{F}^{ i} (f^{i-1}) , \quad i = 1:J ,\\
+{\rm iResNet}_{J} &= \{  f^{J} \}.
+\end{cases}
+\end{equation}
+Here
+\begin{equation}\label{eq:F-MgNet}
+\mathcal{F}^{i} (f^{i-1}) = \xi^{i} \left( f^{i-1} +  \sigma \circ \eta^{i} \circ \sigma(f^{i-1}) \right).
+\end{equation}
+
+\subsection{DNN type DenseNet}
+In fact, DenseNet might be simple for definition in DNN case. 
+
+Here use $\sigma \circ \theta$ type as example.
+\begin{equation}\label{ori-DenseNet-dnn}
+\begin{cases}
+f^0 &= x, \\
+f^{i} &=   \sigma \circ \theta^{i}([f^{i-1}, f^{i-2}, \cdots, f^0]) , \quad i = 1:J ,\\
+{\rm DenseNet}_{J} &= \{  \theta^J f^{J} \}.
+\end{cases}
+\end{equation}
+
+Here $[f^{i-1}, f^{i-2}, \cdots, f^0]$ means a long vector by collecting all 
+outputs from $f^0$ to $f^{i-1}$, thus to say
+$$
+{\rm dim}([f^{i-1}, f^{i-2}, \cdots, f^0]) = \sum_{i=0}^{i-1} n_i.
+$$
+
+
+\section{A Universal DNN Model}
+
+\subsection{Kailai's definition}
+A DNN is defined as a tuple $M=(\mathcal{S}, \mathcal{O}, s_0, F, \delta)$
+\begin{itemize}
+	\item $\mathcal{S}$ is a non-empty set of states.
+	\item $\mathcal{O}$ is a finite, non-empty set of parametrized operators.
+	\item $s_0\in \mathcal{S}$ is the initial input. 
+	\item $F\subset \mathcal{S}$ is the set of final states~(outputs). 
+	\item $\delta: 2^{\mathcal{S}}\times \mathcal{O} \rightarrow \mathcal{S}$ is the mapping function. 
+\end{itemize}
+and an acceptable ordered sequence $(\delta_1, \delta_2, \ldots, \delta_n)$, which maps $s_0$ to $\delta_n \circ \delta_{n-1} \circ \delta_1 (s_0) \in F$.
+
+\subsection{Juncai's definition}
+The idea is that, deep neural network comes from the composition of linear and 
+element-wise activation. 
+So, we define the basic component of our model as:
+\begin{equation}
+\mathcal L_{\sigma,1}(x) = Wx + b + \sigma(\tilde Wx + \tilde b),
+\end{equation}
+where 
+\begin{equation}
+x \in \mathbb{R}^d, \quad W, ~ \tilde W \in \mathbb{R}^{n \times d} \quad \text{and} \quad b,~ \tilde b \in \mathbb{R}^n.
+\end{equation}
+Then we try to define an important operator in the universal DNN model,
+known as $\mathcal L_{\sigma, \ell}(x^1, \cdots, x^k)$, by recursion of $\mathcal L_{\sigma,1}$. 
+For $x^i \in \mathbb{R}^{n_i}, i = 1:\ell$,  we have
+\begin{equation}
+\mathcal L_{\sigma, \ell}(x^1, \cdots, x^k) = \mathcal L_{\sigma,1}
+\left([\mathcal L_{\sigma, \ell-1}(\hat x^1), \mathcal L_{\sigma, \ell-1}(\hat x^2), \cdots, \mathcal L_{\sigma, \ell-1}(\hat x^k)]\right),
+\end{equation}
+where
+\begin{equation}
+\mathcal L_{\sigma, \ell-1}(\hat x^k) = \mathcal L_{\sigma, \ell-1} (x^1, \cdots, x^{k-1}, x^{k+1}, \cdots, x^\ell),
+\end{equation}
+and 
+\begin{equation}
+[\mathcal L_{\sigma, \ell-1}(\hat x^1), \mathcal L_{\sigma, \ell-1}(\hat x^2), \cdots, \mathcal L_{\sigma, \ell-1}(\hat x^k)],
+\end{equation}
+means to collect all the output of $\mathcal L_{\sigma, \ell-1}(\hat x^k)$ into one vector such 
+that it can be the input of $\mathcal L_{\sigma, 1}$.
+
+Then we define the $J-$layer universal DNN model by recursion as:
+\begin{equation}
+\begin{cases}
+f^{0} &= x,  \\
+f^{\ell} &= \mathcal L_{\sigma, \ell}(f^0,\cdots, f^{\ell-1}), \quad \ell = 1:J, \\
+f(x) &= W^J f^J + b^J. 
+\end{cases}
+\end{equation}
+
+

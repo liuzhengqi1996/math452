@@ -1,0 +1,37 @@
+% Lian will put the pytorch momentum here
+%\begin{theorem}
+%The averaged gradient (\ref{Ave_grad1}) and (\ref{Ave_grad2}) are equivalent to 
+%\begin{align}
+%&v_{t+1} = \mu v_t + \nabla f(x_t),\\
+%&x_{t+1} = x_{t} - \eta_t v_{t+1}.
+%\end{align}
+%\end{theorem}
+
+
+
+%There are two momentum methods in Pytorch:
+%
+%\begin{enumerate}
+%\item 
+%The default momentum method in Pytorch is 
+%\begin{align}
+%&v_{t+1} = \mu v_t + \nabla f(x_t),\\
+%&x_{t+1} = x_{t} - \eta v_{t+1}.
+%\end{align}
+%Here, $\mu,\eta$ are the momentum parameter and learning rate, respectively.
+%This is in contrast to Sutskever et. al. and other frameworks which employ an update of the form
+%\begin{align}
+%&v_{t+1} = \mu v_t + \eta \nabla f_{i_t}(x_t),\\
+%&x_{t+1} = x_{t} - v_{t+1}.
+%\end{align}
+%\item A modified Nesterov momentum in Pytorch (enable by --nesterov):
+%\begin{align}
+%&v_{t+1} = \mu v_t + \nabla f(x_t-\mu v_{t}),\\
+%&x_{t+1} = x_{t} - \eta v_{t+1}.
+%\end{align}
+%which is modified from Nesterov momentum
+%\begin{align}
+%&v_{t+1} = \mu v_t + \nabla f(x_t-\mu v_{t}),\\
+%&x_{t+1} = x_{t} - \eta v_{t+1}.
+%\end{align}
+%\end{enumerate}

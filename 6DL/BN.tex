@@ -1,0 +1,395 @@
+\newpage
+%!TEX root = 497Notes-Temple.tex
+\section{Batch Normalization in DNN and CNN} 
+Recall the classical (fully connected)  artificial deep neural network (DNN) $f^L$ in \eqref{compress-dnn}. We can define
+%\begin{equation}\label{key}
+%\mathcal{F}_\text{DNN}:= \{ f(x;\Theta) = \text{softmax} \circ f^J(x;\Theta) ~|~ x\in\mathbb{R}^n,\Theta \in \mathbb{R}^{\mathcal N} \}.
+%\end{equation}
+\begin{equation}\label{key}
+\rm{DNN}_L:= \{  f^L(x;\Theta) ~|~ \Theta \in \mathbb{R}^{\mathcal N} \}.
+\end{equation}
+Or, we have a more comprehensive notation for classical DNN models.
+\begin{equation}\label{eq:DNNdef_J}
+\begin{aligned}
+{\rm{DNN}_L} :=\{& f:f=
+\theta^L \circ \sigma \circ \theta^{L-1} \cdots \sigma \circ \theta^1(x), \\
+&\theta^\ell \in \mathbb{R}^{n^{\ell+1} \times (n^\ell+1)}, \quad n^0 = d, \quad n^{L} = 1, \quad n^\ell \in \mathbb{N}^+\}.
+\end{aligned}
+\end{equation}
+Generally speaking, a deep learning problem consists of the next few components:
+\begin{equation}\label{DL-process}
+\text{Data}  \rightarrow \text{Model} \rightarrow \text{Training} \rightarrow \text{Testing}.
+\end{equation}
+We will try to give a different explanation for batch normalization based on the above outline.
+
+
+\subsection{Ideas Behind the BN for DNN: Internal \mbox{Covariate} Shift in Training}
+The { Internal Covariate Shift} is defined in \cite{ioffe2015batch} as
+the change in the distribution of network activations 
+due to the change in network parameters during training.  
+
+For example, considering the training data with 
+$X=\{(x^i,y^i)~|~i=1,..,N\}\subset \mathcal{X} : =\{(x,y)~|~x,\in\mathbb{R}^n, y \in \mathbb{R}^c\}$,
+then output of $\nu$-th layer (the input of activation function in $\nu+1$-the layer) $\{f^\nu ({x^i}) \}_{i=1}^N$
+will satisfy different discrete distributions if you have different parameters $\Theta$ which  
+always happened during training process. 
+
+More intuitively, fixed distribution of inputs to a sub-network would have positive
+consequences for the layers {\em outside} the sub-network, as
+well. Consider a layer with a sigmoid activation function $f =
+\sigma(W x+b)$ where $x$ is the layer input, the weight matrix $W$ and
+bias vector $b$ are the layer parameters to be learned, and $\sigma(x) =
+\frac{1}{1+e^{-x}}$.  It is easy to see
+$$
+\sigma'(x) \to 0 \quad \text{if} \quad |x| \to \infty.
+$$
+This means that for all dimensions of $y = Wx+b$ except those with
+small absolute values, the gradient flowing down to $x$ will vanish
+and the model will train slowly. However, since $y$ is affected by
+$W, b$ and the parameters of all the layers below, changes to those
+parameters during training will likely move many dimensions of $y$
+into the saturated regime of the nonlinearity and slow down the
+convergence. This effect is amplified as the network depth
+increases. In practice, the saturation problem and the resulting
+vanishing gradients are usually addressed by using ${\rm ReLU}(x)=\max(x,0)$, careful initialization and small learning rates. 
+However, if we could ensure that the distribution of nonlinearity inputs
+remains more stable as the network trains, then the optimizer would be
+less likely to get stuck in the saturated regime, and the training
+would accelerate.
+
+In summary, the gradient vanishes in the following two situations:
+\begin{itemize}
+	\item Saturated problem:
+	$$
+	\sigma'(x) \to 0 \quad \text{for $x$ located in some saturated domain}.
+	$$
+	\item Instability from multiplication:
+	$$
+	\nabla_{W^1}  \ell(f^L(x^i;\Theta), y^i) \approx \Pi_{\ell=1}^L W^{\ell} {\rm Diag}(\sigma'(f^{\ell-1})) \to 0~ , \quad \text{ if $L$ is big}.
+	$$
+\end{itemize}
+
+
+
+Under this principle,  
+it has been long known \cite{lecun1998neural, wiesler2011convergence}
+that the network training converges faster if its inputs are whitened, i.e.,
+linearly transformed to have zero means and unit variances, and  decorrelated. 
+
+Thus to say, to improve the training,  one may seek to reduce the internal covariate shift.  
+By fixing the distribution of the layer inputs $f^\ell$ as the training progresses,
+it is expected to improve the training speed. As each layer
+observes the inputs produced by the layers below, it would be advantageous to
+achieve the same whitening of the inputs of each layer.  By whitening the
+inputs to each layer, BN would take a step towards achieving the fixed
+distributions of inputs that would remove the ill effects of the internal covariate shift. 
+
+
+Within this framework, whitening the layer inputs is expensive, as it requires
+computing the covariance matrix 
+\begin{equation}
+{\rm Cov}[f^\ell] = \mathbb E_{ x \in X} [f^\ell(x) [f^\ell(x)]^T]-\mathbb E_{ x \in X} [f^{\ell}(x)]\mathbb E_{ x \in X} [f^\ell(x)]^T
+\end{equation}
+and its inverse square root, to produce the whitened activations 
+\begin{equation}
+\tilde  f^\ell = \left({\rm Cov}[f^\ell \right)^{-1/2}\left(f^\ell-\mathbb E[f^\ell]\right),
+\end{equation}
+as well as the derivatives of these transforms for backpropagation. 
+However, this is impossible to take gradient for $\left({\rm Cov}[f^\ell] \right)^{-1/2}$
+w.r.t $\Theta$ as $ f^\ell = f^\ell(x; \Theta)$. 
+
+The original version is to do whitening in Batch i.e. $\mathbb E_{ x \in X} [\cdot ]$, that. This
+is why this is called Batch Normalization not mini-batch normalization which 
+is the practical version of batch normalization.
+
+\subsection{Practical batch normalization: assume i.i.d and add scale and shift }
+Since the full whitening of each layer's inputs is costly and not
+everywhere differentiable, BN makes two necessary simplifications. 
+
+\paragraph{Take batch normalization for each scalar feature (neuron).}
+
+The first is that instead of whitening the features in layer
+inputs and outputs {\bf jointly}, batch normalization will normalize each {\bf scalar feature (neuron)}
+independently, by making it have the mean of zero and the variance of
+1.   Assume the distribution of
+scalar features to be i.i.d. 
+
+
+For a layer with $n^\ell$-dimensional input $f^\ell = (f^\ell_1, \ldots,  f^\ell_{n^\ell})$, we
+will normalize each dimension 
+$$ \hat{f}^\ell_k = \frac{f^\ell_k-\mathbb E [ f^\ell_k]}{
+	\sqrt{{\rm Var}[f^\ell_k]}}$$
+where the expectation and variance are
+computed over the training data set. As shown in
+\cite{lecun1998neural}, such normalization speeds up convergence,
+even when the  features are not decorrelated.
+
+\paragraph{Add scale and shift into batch normalization.}
+Note that simply normalizing each input of a layer may change what the
+layer can represent. For instance, normalizing the inputs of a
+sigmoid would constrain them to the linear
+regime of the nonlinearity. To address this, we make sure that {\em the transformation inserted in
+	the network can represent the identity transform}.  To
+accomplish this, we introduce, for each activation $\hat f^\ell_k$, a pair of
+parameters $\gamma^\ell_k, \beta^\ell_k$, which scale and shift the
+normalized value: 
+\begin{equation}
+\tilde{f^\ell}_k  = \gamma^\ell_k \hat{f^\ell}_k +\beta^\ell_k.
+\end{equation}
+These parameters are learned along with the original model
+parameters, and restore the representation power of the
+network. Indeed, by setting $\gamma^\ell_k = \sqrt{{\rm Var}[f^\ell_k]}$ and
+$\beta^\ell_k = \mathbb E [f^\ell_k]$, we could recover the original activations, if that were the optimal thing to do.
+
+
+
+\subsection{Batch normalization for DNN}
+\paragraph{Definition of batch normalization operation based on the batch}
+Following the idea in \eqref{DL-process}, we consider that we have the all
+training data as
+\begin{equation}\label{eq:trainingdata}
+(X,Y) := \{x^i, y^i\}_{i=1}^N.
+\end{equation}
+Since the normalization is applied to
+each activation independently, let us focus on a particular activation $ f^\ell_k$ and omit $k$ as $f^\ell$ for clarity. 
+We have $N$ values of this activation
+in the batch,
+$$ X=\{x_1, \cdots, x_N\}.$$ 
+Let the normalized values be
+$\hat f^\ell$, and their linear transformations be $\tilde f^\ell$. 
+\begin{equation}\label{def:BNeq}
+\begin{aligned}
+\mu^\ell_{ X} & \leftarrow \mathbb{E}_{x \sim X} [f^\ell(x)] =  \frac{1}{N}\sum_{i=1}^N f^\ell(x^i) & \text{ batch mean}& \\
+\sigma^\ell_{ X} & \leftarrow \mathbb{E}_{x \sim X}  \left[(f^\ell(x)-\mathbb{E}_{x \sim X}[ f^\ell(x)])^2 \right] = \frac{1}{N}\sum_{i=1}^N (f^\ell(x^i)-\mu_{ X}^\ell)^2 &  \text{ batch variance}&\\
+\hat f^\ell (x) & \leftarrow \frac{f^\ell(x)-\mu^\ell_{ X}}{\sqrt{\sigma^\ell_{ X}+\epsilon}}   &\text{ normalize}&\\
+\tilde f^\ell(x)  & \leftarrow \gamma^\ell \hat f^\ell (x) + \beta^\ell 
+&\text{ scale and shift}&
+\end{aligned}
+\end{equation}
+Here we note that all these operations in the previous equation are defined  element-wise.
+Then at last, we define the batch normalization operation based on the batch set as
+\begin{equation}\label{eq:BNop}
+{\rm BN}_{X}({f^\ell(x)}) = \tilde f^\ell(x) := \gamma^\ell  \frac{f^\ell(x)-\mu^\ell_{ X}}{\sqrt{\sigma^\ell_{ X}+\epsilon}}  + \beta^\ell  ,
+\end{equation}
+where $\tilde f^\ell(x)$, $\mu^\ell_{ X}$ and $\sigma^\ell_{ X}$  are given above.
+
+\paragraph{Model with batch normalization}
+Then we have the new DNN model with batch normalization as:
+\begin{equation}\label{nn-BN0}
+\begin{cases}
+\tilde f^1(x^i)&= (\theta^1 (x^i) ),\\
+\tilde f^\ell &= \theta^{\ell} \circ \sigma \circ {\rm BN}_{ X}(\tilde f^{\ell-1}), \quad  \ell=2,...,L.
+\end{cases}
+\end{equation}
+%Here we would like to notice that all these input data 
+%$x_i \in X$, it is already normalized over all the original data set with 
+%the same fashion.
+%Thai is to say
+%$$
+%x_i = {\rm BN}_{\bar X}(\bar x_i),
+%$$
+%for the original data $\bar x_i \in \bar X$.
+For a more comprehensive notation, 
+we can use the next notation
+\begin{equation}
+\sigma_{\rm BN} := \sigma \circ {\rm BN}_{ X}.
+\end{equation}
+We can remove the basis $b^\ell$ in $\theta^\ell$, thus to say the real model we use should be
+\begin{equation}\label{nn-BN}
+\begin{cases}
+\tilde f^1(x^i)&= W^1 x^i ,\\
+\tilde f^\ell &= W^{\ell}  \sigma_{\rm BN}(\tilde f^{\ell-1}), \quad  \ell=2,...,L.
+\end{cases}
+\end{equation}
+Combine the two definitions, we note
+\begin{equation}
+\tilde \Theta := \{W, \gamma, \beta\},
+\end{equation}
+where
+$W = \{W^1, \cdots, W^l \}$, $\gamma := \{\gamma^2, \cdots, \gamma^L\}$ and $\beta := \{\beta^2, \cdots, \beta^L\}$. 
+Finally, we have the loss function  
+\begin{equation}\label{eq:loss-BN}
+\mathcal L(\tilde \Theta) = \mathbb{E}_{(x,y)\sim (X,Y)} \approx \frac{1}{N}\sum_{i=1}^N \ell(\tilde f^L(x^i; \tilde \Theta), y^i).
+\end{equation}
+A key observation in \eqref{eq:loss-BN} and the new BN model \eqref{nn-BN} is that
+\begin{equation}\label{eq:threeExpectation}
+\begin{aligned}
+\mu^\ell_{ X} 
+%& \leftarrow \frac{1}{N}\sum_{i=1}^N f^\ell(x_i)  
+&= \mathbb{E}_{x \sim X} [f^\ell(x)],\\
+\sigma^\ell_{ X}
+%& \leftarrow \frac{1}{N}\sum_{i=1}^N (f^\ell(x_i)-\mu_{ X})^2  
+&=  \mathbb{E}_{x \sim X}  \left[(f^\ell(x)-\mathbb{E}_{x \sim X}[ f^\ell(x)])^2 \right], \\
+\mathcal L(\tilde \Theta) 
+%&= \sum_{i=1}^N L(\tilde f^J(x_i; \tilde \Theta), y_i)   
+&=  \mathbb{E}_{(x,y)\sim (X,Y)}  \left[\ell(\tilde f^L(x^i; \tilde \Theta), y^i) \right].
+\end{aligned}
+\end{equation}
+Here we need to mention that
+$$
+x \sim X
+$$
+means $x$ subjects to the discrete distribution of all data $X$. 
+%For example:
+%$$
+%{p}_{X}(x = x_i) = \frac{1}{N}.
+%$$
+%or more mathematically we can use the Dirac distribution as:
+%$$
+%p_{X}(x) = \frac{1}{N} \sum_{i=1}^N\delta(x - x_i).
+%$$
+
+
+%Similar with the case from (batch) gradient descent to stochastic gradient descent.
+%Therefore, BN makes the second simplification: since we use mini-batches 
+%in stochastic gradient training, {\em each mini-batch produces estimates of the mean and variance} of each
+%activation for whole batch. 
+
+\subsection{Batch normalization: some ``modified" SGD training algorithm}
+Following the key observation in \eqref{eq:threeExpectation}, and recall the 
+similar case in SGD, we do the the sampling trick in \eqref{eq:loss-BN} and
+obtain the mini-batch SGD:
+\begin{equation}\label{eq:mini-batch-sample}
+x \sim X \approx x \sim \mathcal B,
+\end{equation}
+here $\mathcal B$ is a mini-batch of batch $X$ with $\mathcal B \subset X$.
+
+However, for problem in \eqref{eq:loss-BN}, it is very difficult to find some 
+subtle sampling method because of the composition of $\mu^\ell_{\mathcal X}$
+and $[\sigma^\ell_{\mathcal X}]$. However, one simple way for sampling 
+\eqref{eq:loss-BN} can be chosen as taking \eqref{eq:mini-batch-sample} for
+all the expectation case in \eqref{eq:loss-BN} and \eqref{eq:threeExpectation}. 
+This is to say, in training process ($t$-th step for example), once we choose $B_t \subset X$
+as the mini-batch, then the model becomes
+\begin{equation}\label{nn-BN-training}
+\begin{cases}
+\tilde f^1(x^i)&= W^1 x^i ,\\
+\tilde f^\ell &= W^{\ell}  \sigma_{\rm BN}(\tilde f^{\ell-1}), \quad  \ell=2,...,L.
+\end{cases}
+\end{equation}
+where
+\begin{equation}
+\sigma_{\rm BN} := \sigma \circ {\rm BN}_{\mathcal B_t},
+\end{equation}
+or we can say that $X$ is replaced by $\mathcal B_t$ in this case. 
+Here ${\rm BN}_{\mathcal B_t}$ is defined by
+\begin{equation}\label{def:BNeq-traning}
+\begin{aligned}
+\mu^\ell_{\mathcal B_t} & \leftarrow \frac{1}{m}\sum_{i=1}^m f^\ell(x^i) & \text{ mini-batch mean}& \\
+\sigma^\ell_{\mathcal B_t} & \leftarrow \frac{1}{m}\sum_{i=1}^m (f^\ell(x^i)-\mu_{\mathcal B_t})^2 &  \text{ mini-batch variance}&\\
+\hat f^\ell (x) & \leftarrow \frac{f^\ell(x)-\mu^\ell_{\mathcal B_t}}{\sqrt{\sigma^\ell_{\mathcal B_t}+\epsilon}}   &\text{ normalize}&\\
+{\rm BN}_{\mathcal B_t}(\tilde f^{\ell}) := \tilde f^\ell(x) & \leftarrow \gamma^\ell \hat f^\ell (x) + \beta^\ell 
+&\text{ scale and shift}&
+\end{aligned}
+\end{equation}
+Here batch normalization operation introduces some new parameters such as $\gamma$ and $\beta$. 
+Thus to say, for training phase, if we choose mini-batch as $\mathcal B_t$ in $t$-th training
+step, we need to take gradient  
+\begin{equation}
+\frac{1}{m}\nabla_{\tilde \Theta} \sum_{i \in \mathcal B_t} \ell(\tilde f^L(x^i; \tilde \Theta), y^i),
+\end{equation}
+which requires the gradient of $\mu_{B_t}^\ell$ or $[\sigma_{B_t}^\ell]$
+w.r.t $W^i$ for $i \le \ell$.
+To derive the new gradient formula for batch normalization step,
+$$
+\mu^\ell_{\mathcal B_t}, \quad \text{and} \quad \sigma^\ell_{\mathcal B_t},
+$$
+contain the output of $\tilde f^{\ell-1}$.  
+This is exact the batch normalization method described in \cite{ioffe2015batch}.
+
+
+\subsection{Final model  with BN in DNN after training}
+One key problem is that, in the batch normalization operator, we need to compute the mean and variance 
+in a data set (batch or mini-batch). However, in the inference step, we just input one data 
+into this DNN, how to compute the batch normalization operator in this situation. 
+
+Actually,  the $\gamma$ and $\beta$ parameter is fixed after training, the only problem is
+to compute the mean $\mu$ and variance $\sigma$. 
+All the mean $ \mu_{\mathcal B_t}  $ and variance $\sigma_{\mathcal B_t} $ during the training phase 
+are just the approximation of the mean and variance of whole batch i.e.  $ \mu_{X}  $ and $\sigma_{X}$ 
+as shown in \eqref{eq:threeExpectation}. 
+
+One natural idea might be just use the batch normalization operator w.r.t to the whole training data set, thus to say
+just compute $\mu_X$ and $\sigma_X$ by definition in \eqref{def:BNeq}.
+
+
+However, there are at least the next few problems:
+\begin{itemize}
+\item computation cost,
+\item ignoring the statistical approximation (don't make use of the $ \mu_{\mathcal B_t}  $ and  $\sigma_{\mathcal B_t} $ in training phase).
+\end{itemize}
+
+Considering that we have the statistical approximation for $ \mu_{X}  $ and $\sigma_{X}$
+during each SGD step, moving average might be a more straightforward way.
+Thus to say, we define the $\mu^\ell$ and $[\sigma^\ell]$ for the inference (test) phase
+as
+\begin{equation}
+\mu^\ell = \frac{1}{T}\sum_{t=1}^T \mu^\ell_{\mathcal B_t}, 
+\quad \sigma^\ell =\frac{1}{T} \frac{m}{m-1}\sum_{t=1}^T\sigma^\ell_{\mathcal B_t}.
+\end{equation}
+Here we take Bessel's correction for unbiased variance.
+The above moving average step is found in the original paper of batch normalization in \cite{ioffe2015batch}. 
+
+Another way to do this is to call the similar idea in momentum. 
+At each time step we update the running averages for mean and variance using an exponential decay based on the momentum parameter:    
+\begin{equation}
+\begin{aligned}
+\mu^\ell_{\mathcal B_t} &=\alpha \mu^\ell_{\mathcal B_{t-1}} + (1-\alpha)\mu^\ell_{\mathcal B_t} , \\
+\sigma^\ell_{\mathcal B_t} &=\alpha \sigma^\ell_{\mathcal B_{t-1}} + (1-\alpha)\sigma^\ell_{\mathcal B_t} .
+\end{aligned}
+\end{equation}
+$\alpha$ is close to $1$, we can take it as $0.9$ generally. Then we all take bath mean and variance as
+$\mu^\ell_X  \approx \mu^\ell_{\mathcal B_T}$  and $\sigma^\ell_X  \approx \sigma^\ell_{\mathcal B_T}$.
+
+Many people argue that the variance here should also use Bessel's correction.
+
+\subsection{Batch Normalization for CNN}
+One key idea in batch normalization is to do normalization with each scalar features (neurons) 
+separately along a mini-batch. 
+Thus to say, we need to identify what is neuron in CNN. 
+This is a historical problem, some people think neuron in CNN
+should be the pixel in each channel, some other people think that each channel is just 
+one neuron. Batch normalization chooses the later one. 
+One important reason for this choice is the fact of computation cost. 
+
+For convolutional layers, batch normalization additionally requires the normalization
+to  obey the convolutional property so that different elements
+of the same feature map, at different locations, are normalized in the
+same way. 
+To compute $\mu^\ell_{\mathcal B_t}$, we take mean of the set of all values in a feature map across both the
+elements of a mini-batch and spatial locations, so for a mini-batch
+of size $m$ and feature maps of size $m_\ell \times n_\ell$ (image geometrical size), 
+we use the effective mini-batch of size $ m m_\ell n_\ell$. 
+We learn a pair of parameters $\gamma_k$ and $\beta_k$ per feature map (k-th channel), rather than per activation.
+
+
+For simplicity, then have the following batch normalization scheme for CNN
+\begin{equation}\label{def:BNeq-traningCNN}
+\begin{aligned}
+\mu^{\ell, j}_{\mathcal B_t} & \leftarrow \frac{1}{m \times m_\ell \times n_\ell }\sum_{i=1}^m \sum_{1\le s\le m_\ell, 1\le t \le n_\ell} f^{\ell, j}_{s,t}(x^i)
+ &&\text{ mean on channel }j \\
+\sigma^{\ell, j}_{\mathcal B_t} & \leftarrow \frac{1}{m \times m_\ell \times n_\ell }\sum_{i=1}^m \sum_{1\le s\le m_\ell, 1\le t \le n_\ell}
+ (f^{\ell, j}_{s,t}(x^i) - \mu^{\ell, j}_{\mathcal B_t})^2   &&\text{ variance on channel }j\\
+\hat f^{\ell, j}_{s,t} (x) & \leftarrow \frac{f^{\ell, j}_{s, t}(x)] - \mu^{\ell, j}_{\mathcal B_t}}{\sqrt{\sigma^{\ell, j}_{\mathcal B_t} +\epsilon}}   &&\text{ normalize }\\
+[{\rm BN}_{\mathcal B_t}(\tilde f^{\ell})]_{j;st} &:= \tilde f^{\ell, j}_{s,t}(x)  \leftarrow \gamma^{\ell,j} \hat f^{\ell, j}_{s,t} (x)  + \beta^{\ell,j} 
+&&\text{ scale and shift on channel}
+\end{aligned}
+\end{equation}
+
+\subsection{Batch normalization for MgNet}
+When we train MgNet, we also adopt the batch normalization mechanism. 
+This means that, when we do training for MgNet, we
+apply the following basic block in MgNet
+\begin{equation}\label{key}
+u^{\ell,\nu} \leftarrow u^{\ell,\nu-1} + {\rm ReLU} \circ {\rm BN}_{\mathcal B_t} \circ B^{\ell,\nu}\ast {\rm ReLU} \circ {\rm BN}_{\mathcal B_t} ({f^\ell -  A^{\ell} \ast u^{\ell,\nu-1}}),
+\end{equation}
+or simply
+\begin{equation}\label{key}
+u^{\ell,\nu} \leftarrow u^{\ell,\nu-1} + {\rm ReLU}_{\rm BN} \circ B^{\ell,\nu}\ast {\rm ReLU}_{\rm BN} ({f^\ell -  A^{\ell} \ast u^{\ell,\nu-1}}),
+\end{equation}
+where
+\begin{equation}\label{key}
+{\rm ReLU}_{\rm BN} =  {\rm ReLU} \circ {\rm BN}_{\mathcal B_t}.
+\end{equation}
+
+

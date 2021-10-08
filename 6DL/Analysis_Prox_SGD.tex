@@ -1,0 +1,38 @@
+\section{Analysis of Unconstrained Stochastic Gradient Descent.}
+First, let's examine the case with $P = 0$ and let's make no assumptions about strong convexity. Assume $\|G(x, \xi)\| \leq M$ for all $x$ and $\xi$. Let $x_*$ denote any optimal solution of \eqref{eq:origpro}. Then we have
+\begin{eqnarray}
+\mathbb{E}[\|x_{k+1}-x_*\|^2]&=&\mathbb{E}[\|x_{k}-\gamma_k G(x_k,\xi_k)-x_*\|^2]  \nonumber \\
+&=&\mathbb{E}[\|x_{k}-x_*\|^2]- 2\gamma_k\mathbb{E}[\langle G(x_k,\xi_k), x_k-x_*\rangle ]+ \gamma_k^2 \mathbb{E}[\|\gamma_k G(x_k,\xi_k)\|^2] \nonumber \\
+&\leq&\mathbb{E}[\|x_{k}-x_*\|^2]- 2\gamma_k\mathbb{E}[\langle G(x_k,\xi_k), x_k-x_*\rangle ]+ \gamma_k^2 M^2 \nonumber \\
+&=&\mathbb{E}[\|x_{k}-x_*\|^2]- 2\gamma_k\mathbb{E}[\langle \nabla f(x_k), x_k-x_*\rangle ]+ \gamma_k^2 M^2 \label{eq:eqnproof5} \\
+&\leq& \mathbb{E}[\|x_{k}-x_*\|^2]- 2\gamma_k\mathbb{E}[f(x_k)-f(x_*)]+ \gamma_k^2 M^2 \label{eq:eqnproof6}
+\end{eqnarray}
+\eqref{eq:eqnproof5} follows because
+\begin{eqnarray}
+\mathbb{E}[\langle G(x_k,\xi_k), x_k-x_*\rangle ]&=&\mathbb{E}_{\xi_0,\ldots,\xi_{k-1}}[\mathbb{E}_{\xi_k}[\langle G(x_k,\xi_k), x_k-x_*\rangle\ |\ \xi_0,\ldots,\xi_{k-1} ]] \nonumber\\
+&=&\mathbb{E}_{\xi_0,\ldots,\xi_{k-1}}[\langle \nabla f(x_k), x_k-x_*\rangle\ |\ \xi_0,\ldots,\xi_{k-1} ] \\
+&=&\mathbb{E}[\langle \nabla f(x_k), x_k-x_*\rangle]
+\end{eqnarray}
+by the law of iterated expectation. \eqref{eq:eqnproof6} is a consequence of the inequality
+\begin{equation}
+\langle \nabla f(x_k), x_k-x_*\rangle \geq f(x_k)-f(x_*)
+\end{equation}
+which holds because $f$ is convex.
+
+Arranging the bound: by telescoping $k$ from $0$ to $n$,
+\begin{equation}
+2\gamma_k\mathbb{E}[f(x_k)-f(x_*)] \leq -\mathbb{E}[\|x_{k+1}-x_*\|^2-\|x_{k}-x_*\|^2] + \gamma_k^2 M^2,
+\end{equation}
+we have since $\|x_{n+1}-x_*\|^2\geq 0$
+\begin{equation}
+2\sum_{k=0}^n \gamma_k\mathbb{E}[f(x_k)-f(x_*)] \leq -\mathbb{E}[\|x_{n+1}-x_*\|^2-\|x_{0}-x_*\|^2] + M^2 \sum_{k=0}^{n} \gamma_k^2\leq D^2+M^2  \sum_{k=0}^{n} \gamma_k^2.
+\end{equation}
+Dividing by the sum of the $\gamma_k$, we have for any $n$
+\begin{equation}
+\frac{1}{\sum_{k=0}^n \gamma_k}\sum_{k=0}^n \gamma_k\mathbb{E}[f(x_k)-f(x_*)] \leq \frac{D^2+M^2  \sum_{k=0}^{n} \gamma_k^2}{2\sum_{k=0}^n \gamma_k}.
+\end{equation}
+where $D=\|x_0-x_*\|$. Let $\bar{x}:=(\sum_{k=0}^n \gamma_k)^{-1}\sum_{k=0}^n \gamma_k x_k$. Then, by convexity (Jensen's inequality), we have
+\begin{equation}
+\mathbb{E}[f(\bar{x})-f(x_*)] \leq \frac{D^2+M^2  \sum_{k=0}^{n} \gamma_k^2}{2\sum_{k=0}^n \gamma_k}.
+\end{equation}
+This is precisely the bound rate of convergence for deterministic subgradient descent.

@@ -1,0 +1,283 @@
+\section{Approximation Rates for Cosine Networks} 
+ 
+To begin, we remark that throughout this manuscript, we use the following convention for the Fourier transform
+\begin{equation}
+ \hat{f}(\xi) = \int_{\mathbb{R}^d} f(x)e^{-2\pi {\mathrm{i}\mkern1mu} \xi\cdot x}dx,
+\end{equation}
+for which the inverse transform is given by
+\begin{equation}
+ f(x) = \int_{\mathbb{R}^d} \hat{f}(\xi)e^{2\pi {\mathrm{i}\mkern1mu}    \xi\cdot x}d\xi.
+\end{equation}
+We find that this convention results in the cleanest arguments, avoiding the necessity to keep track of normalizing constants.
+
+In this section, we analyze the approximation properties of networks with a cosine activation function on the spectral Barron space $\mathcal{B}^s(\Omega)$. Specifically, consider approximating a function $f\in \mathcal{B}^s(\Omega)$ by a superposition of finitely many complex complex exponentials with coefficients that are bounded in $\ell^1$, i.e. by an element of the set
+\begin{equation}
+ \Sigma_{n,M} = \left\{\sum_{j=1}^n a_je^{2\pi {\mathrm{i}\mkern1mu}  \theta_j\cdot x}:~\theta_j\in \mathbb{R}^d,~a_j\in\mathbb{C},~\sum_{i=1}^n|a_i|\leq M\right\}.
+\end{equation}
+
+Alternatively, one can view this as the set of neural networks with a single hidden layer containing $n$ neurons with activation function $\sigma(x) = e^{2\pi {\mathrm{i}\mkern1mu}  x}$, whose weights are bounded in $\ell^1$.
+
+Equivalently, we can consider approximation by networks with a cosine activation function
+\begin{equation}
+  \Sigma^{\cos}_{n,M} = \left\{\sum_{i=1}^n a_i\cos(2\pi\theta_i\cdot x + b_i):~\theta_i\in \mathbb{R}^d,~b_i\in \mathbb{R},~\sum_{i=1}^n|a_i| \leq M\right\}.
+ \end{equation}
+This is because 
+\begin{equation}
+e^{2\pi {\mathrm{i}\mkern1mu}  \theta_i\cdot x} = \cos(2\pi\theta_i\cdot x) + i\cos\left(2\pi\theta_i\cdot x - \frac{\pi}{2}\right)\in \Sigma^{\cos}_{2,2}
+\end{equation}
+and
+\begin{equation}
+ \cos(2\pi\theta_i\cdot x) = \frac{1}{2}e^{2\pi {\mathrm{i}\mkern1mu}  \theta_i\cdot x} + \frac{1}{2}e^{-2\pi {\mathrm{i}\mkern1mu}  \theta_i\cdot x}\in \Sigma^d_{2,1}.
+\end{equation}
+Thus we have $\Sigma_{n,M}\subset \Sigma^{\cos}_{2n,2M}$ and $\Sigma^{\cos}_{n,M} \subset \Sigma_{2n,M}$ and so the rates obtained for both sets will be the same. In what follows, we consider $\Sigma_{n,M}$ for convenience in dealing with the Fourier transform.
+ 
+We begin with a key lemma showing that we only need frequencies lying on a lattice to represent functions $f$ with decaying Fourier transform on a bounded set.
+\begin{lemma}\label{fourier-representation-lemma-general}
+ Let $\Omega=[0,1]^d$ and $\mu:\mathbb{R}^d\rightarrow \mathbb{R}_+$ be a continuous weight function. Suppose that $\mu$ satisfies the following conditions
+ \begin{itemize}
+  \item $\mu(\xi + \omega) \leq \mu(\xi)\mu(\omega)$
+  \item There exists a $0 < \beta < 1$ and a $c > 0$ such that $\mu(\xi) \lesssim e^{c|\xi|^{\beta}}$.
+ \end{itemize}
+
+ Suppose that $f$ satisfies
+ \begin{equation}
+  \int_{\mathbb{R}^d} \mu(\xi)|\hat{f}(\xi)|d\xi = C_f < \infty.
+ \end{equation}
+
+ Then for any $L > 1$, there exists an $a\in L^{-1}[0,1]^d$ (which may depend on $f$) and coefficients $c_\xi$, such that for $x\in \Omega$
+ \begin{equation}
+  f(x) = \sum_{\xi\in L^{-1}\mathbb{Z}^d}c_\xi e^{2\pi {\mathrm{i}\mkern1mu}  (a+\xi)\cdot x}
+ \end{equation}
+ and
+ \begin{equation}
+  \sum_{\xi\in L^{-1}\mathbb{Z}^d} \mu(a+\xi)|c_\xi| \lesssim C_f.
+ \end{equation}
+
+\end{lemma}
+
+Note that the suppressed constant in the above lemma only depends upon $d,\mu$ and $L$, but not on $f$ or $a$. Furthmore, we note that from the proof below it follows that the suppressed constant depends exponentially on the dimension $d$.
+
+\begin{proof}
+ Since by assumption $L > 1$, there exists an $\epsilon$ such that $\Omega\subset [0,L-2\epsilon]^d$. We begin by constructing a cutoff function $\phi_\Omega$, which is identically $1$ on $\Omega$ and $0$ outside of $[-\epsilon, L-\epsilon]^d$. It will be important that the Fourier transform $\hat{\phi}_\Omega$ has sufficiently fast decay, so that
+ \begin{equation}
+  \int_{\mathbb{R}^d}\mu(\xi)|\hat{\phi}_\Omega(\xi)| < \infty.
+ \end{equation}
+ 
+ To construct this function, we follow closely the calculation made in \cite{johnson2015saddle}. Choose $\alpha > 1$ such that $\beta < 1-\alpha^{-1} < 1$ and consider the smooth one-dimensional bump function $g$ by \eqref{alpha-g}.
+ Let $g_d$ denote the $n$-dimensional function
+ \begin{equation}
+  g_d(x) = \frac{1}{C}\prod_{i=1}^d g(x_i),
+ \end{equation}
+ where the normalization constant $C$ is chosen so that $\int_{\mathbb{R}^d} g_d(x) = 1$. Then by \eqref{eq_181} we see that
+ \begin{equation}
+  |\hat{g}_d(\xi)|\lesssim e^{-c_\alpha\sum_{i=1}^d|\xi_i|^{1-\alpha^{-1}}} \lesssim e^{-c_{\alpha,d}\alpha|\xi|^{1-\alpha^{-1}}},
+ \end{equation}
+ for a new constant $c_{\alpha,d}$.
+ 
+ Finally, let $\Omega^\prime = [-\frac{\epsilon}{2}, L - \frac{3\epsilon}{2}]$ and define
+ \begin{equation}
+  \phi_\Omega = \left(4^d\epsilon^{-d}g_d\left(4\epsilon^{-1}x\right)\right)*\chi_{\Omega^\prime}(x).
+ \end{equation}
+ The compact support and normalization of $g_d$  implies that $\phi_\Omega|_\Omega = 1$ and $\phi_\Omega = 0$ outside of $[-\epsilon, L-\epsilon]^d$. Furthermore, we calculate
+ \begin{equation}
+  |\hat{\phi}_\Omega(\xi)| = \left|\hat{g}_d\left(\frac{\epsilon}{4}\xi\right)\widehat{\chi}_{\Omega^\prime}\right| \lesssim e^{-c_{\alpha,\Omega}|\xi|^{1-\alpha^{-1}}}
+ \end{equation}
+ for a constant $c_{\alpha,\Omega}$, since $\widehat{\chi}_{\Omega^\prime}$ is bounded. The growth condition on $\mu$, combined with $\beta < 1-\alpha^{-1} < 1$ means that
+ \begin{equation}\label{eq_205}
+  \int_{\mathbb{R}^d}\mu(\xi)|\hat{\phi}_\Omega(\xi)| < \infty.
+ \end{equation}
+ 
+ Now consider the function $h_f = \phi_\Omega f$. Evidently $h_f = f$ on $\Omega$ and $h_f$ is supported on $[-\epsilon,L-\epsilon]^d$. Notice further that $\hat{h}_f = \hat{\phi}_\Omega * \hat{f}$ and we calculate
+ \begin{equation}
+  \begin{split}
+  \int_{\mathbb{R}^d} \mu(\xi)|\hat{h}_f(\xi)|d\xi &\leq \int_{\mathbb{R}^d} \int_{\mathbb{R}^d}\mu(\xi) |\hat{\phi}_\Omega(\xi - \omega)||\hat{f}(\omega)| d\omega d\xi \\
+  &=\int_{\mathbb{R}^d} \left(\int_{\mathbb{R}^d}\mu(\xi + \omega) |\hat{\phi}_\Omega(\xi)|d\xi\right)|\hat{f}_e(\omega)| d\omega. 
+  \end{split}
+ \end{equation}
+ Now $\mu(\xi + \omega) \leq \mu(\xi)\mu(\omega)$, so that we get
+ \begin{equation}\label{eq_369}
+  \int_{\mathbb{R}^d} \mu(\xi)|\hat{h}_f(\xi)|d\xi \leq \left(\int_{\mathbb{R}^d}\mu(\xi) |\hat{\phi}_\Omega(\xi)|d\xi\right)\left(\int_{\mathbb{R}^d}\mu(\omega) |\hat{f}(\omega)|d\omega\right) \lesssim C_f,
+ \end{equation}
+ where the implied constant depends the value of the integral in \eqref{eq_205}.
+ 
+ We now rewrite the integral in \eqref{eq_369} as
+ \begin{equation}
+  \int_{\mathbb{R}^d} \mu(\xi)|\hat{h}_f(\xi)|d\xi = \int_{[0,L^{-1}]^d} \left(\sum_{\xi\in L^{-1}\mathbb{Z}^d} \mu(a+\xi)|\hat{h}_f(a+\xi)|\right)da \lesssim C_f.
+ \end{equation}
+ Certainly this means that there must exist an $a\in [0,L^{-1}]^d$ (depending on $f$) such that
+ \begin{equation}
+  \left(\sum_{\xi\in L^{-1}\mathbb{Z}^d} \mu(a+\xi)|\hat{h}_f(a+\xi)|\right) \lesssim C_f,
+ \end{equation}
+ where the implied constant only depends upon $L$ and $d$.
+ 
+ We proceed to apply the Poisson summation formula and the fact that $h_f$ is supported in $[-\epsilon,L-\epsilon]^d$ to conclude that for a.e. $x\in \Omega \subset [-\epsilon,L-\epsilon]^d$ we have
+ \begin{equation}
+  f(x) = h_f(x) = \sum_{\nu \in L\mathbb{Z}^d} h_f(x+\nu)e^{2\pi {\mathrm{i}\mkern1mu}  a\cdot \nu} = \sum_{\xi\in L^{-1}\mathbb{Z}^d}\hat{h}_f(a+\xi) e^{2\pi {\mathrm{i}\mkern1mu}  (a+\xi)\cdot x}. 
+ \end{equation}
+ Here we have applied the Poisson summation formula to the function $g(\nu) = h_f(x+\nu)e^{2\pi {\mathrm{i}\mkern1mu}  a\cdot \nu}$, whose Fourier transform is easily seen to be $\hat{g}(\xi) = \hat{h}_f(a+\xi) e^{2\pi {\mathrm{i}\mkern1mu}  (a+\xi)\cdot x}$.
+ 
+ Setting $c_\xi = \hat{h}_f(a+\xi)$ we obtain the desired result.
+\end{proof}
+
+We now apply Lemma \ref{fourier-representation-lemma-general} with $\mu(\xi) = (1 + |\xi|)^s$ to obtain the following corollary concerning the spectral Barron space $\mathcal{B}^s(\Omega)$.
+\begin{corollary}\label{fourier-representation-lemma}
+ Let $\Omega = [0,1]^d$ and $s \geq 0$. Let $f\in \mathcal{B}^s(\Omega)$. Then for any $L > 1$, there exists an $a\in L^{-1}[0,1]^d$ (potentially depending upon $f$) and coefficients $c_\xi$ such that
+ for $x\in \Omega$
+ \begin{equation}
+  f(x) = \sum_{\xi\in L^{-1}\mathbb{Z}^d}c_\xi e^{2\pi {\mathrm{i}\mkern1mu}  (a+\xi)\cdot x}
+ \end{equation}
+ and
+ \begin{equation}
+  \sum_{\xi\in L^{-1}\mathbb{Z}^d} (1+|a+\xi|)^s|c_\xi| \lesssim \|f\|_{\mathcal{B}^s(\Omega)}.
+ \end{equation}
+
+\end{corollary}
+\begin{proof}
+ This follows immediately from Lemma \ref{fourier-representation-lemma-general} given the characterization of $\mathcal{B}^s(\Omega)$ and the elementary fact that $(1 + |\xi + \omega|)\leq (1 + |\xi| + |\omega|) \leq (1 + |\xi|)(1 + |\omega|)$.
+\end{proof}
+
+
+Corollary \ref{fourier-representation-lemma} can be used to improve upon the $O(n^{-\frac{1}{2}})$ approximation rate of cosine networks obtained in \cite{jones1992simple} when $f\in \mathcal{B}^s(\Omega)$ for $s > 0$.
+
+\begin{theorem}\label{approximation-rate-theorem}
+ Let $\Omega = [0,1]^d$, $0\leq m\leq s$, and $f\in \mathcal{B}^s(\Omega)$. Then there is an $M\lesssim \|f\|_{\mathcal{B}^s(\Omega)}$ such that
+ \begin{equation}
+  \inf_{f_n\in \Sigma_{n,M}} \|f-f_n\|_{H^m(\Omega)} \lesssim \|f\|_{\mathcal{B}^s(\Omega)}n^{-\frac{1}{2} - \frac{s-m}{d}}.
+ \end{equation}
+
+\end{theorem}
+
+Note that the implied constant in the above theorem depends only upon $s,m$, and $d$, but not on $f$. Comparing this with the results in \cite{jones1992simple}, we obtain a dimension dependent improvement similar to what can be obtained using stratified sampling \cite{klusowski2018approximation} for rectified linear networks. However, the improvement in Theorem \ref{approximation-rate-theorem}, which is obtained via an entirely different argument, is greater and holds for cosine networks. We will consider rectified linear networks in the next section. Also, we note that for the Sobolev spaces $H^{\frac{d}{2} + s}(\Omega)$, this result already appears in \cite{petrushev1998approximation} . However, our results apply to the spectral Barron space $\mathcal{B}^s(\Omega)$, which is not quite comparable, but we do have $H^{\frac{d}{2} + s + \epsilon}(\Omega)\subset \mathcal{B}^s(\Omega)$ (see \cite{CiCP-28-1707} Lemma 2.5, for instance). Finally, as shown in Theorem \ref{fourier-lower-bound}, the rate in Theorem \ref{approximation-rate-theorem} is actually sharp.
+
+\begin{proof}
+ Choose $L > 1$. Note that all of the implied constants in what follows depend only upon $s,m,d$ and $L$, but not upon $f$. 
+ 
+ By Corollary \ref{fourier-representation-lemma}, there exists an $a\in L^{-1}[0,1]^d$ and coefficients $c_\xi$ such that
+  \begin{equation}\label{eq-580}
+  f(x) = \sum_{\xi\in L^{-1}\mathbb{Z}^d}c_\xi e^{2\pi {\mathrm{i}\mkern1mu}  (a+\xi)\cdot x},
+ \end{equation}
+ and (here the first estimate follows since $|a|\leq L^{-d}\sqrt{d}$)
+ \begin{equation}\label{eq_613}
+  \sum_{\xi\in L^{-1}\mathbb{Z}^d} (1+|\xi|)^s|c_\xi| \eqsim \sum_{\xi\in L^{-1}\mathbb{Z}^d} (1+|a+\xi|)^s|c_\xi|  \lesssim \|f\|_{\mathcal{B}^s(\Omega)}.
+ \end{equation}
+ Consider the slightly enlarged set $\Omega^\prime = [0,L]^d \supset \Omega$. On this larger set, we have for $\xi\neq\nu\in L^{-1}\mathbb{Z}^d$
+ \begin{equation}\label{orthogonality-condition}
+  \langle e^{2\pi {\mathrm{i}\mkern1mu}  (a+\xi)\cdot x}, e^{2\pi {\mathrm{i}\mkern1mu}  (a+\nu)\cdot x}\rangle_{H^k(\Omega^\prime)} = 0,
+ \end{equation}
+ so that the frequencies in the expansion \eqref{eq-580} form an orthogonal basis in $H^k(\Omega^\prime)$. Moreover, their lengths satisfy
+ \begin{equation}\label{length-estimate}
+  \|e^{2\pi {\mathrm{i}\mkern1mu}  (a+\xi)\cdot x}\|_{H^m(\Omega^\prime)} \lesssim (1+|a+\xi|)^m \eqsim (1+|\xi|)^m.
+ \end{equation}
+ Order the frequencies $\xi\in L^{-1}\mathbb{Z}^d$ such that
+ \begin{equation}
+   (1+|\xi_1|)^{2m-s}|c_{\xi_1}| \geq (1+|\xi_2|)^{2m-s}|c_{\xi_2}| \geq (1+|\xi_3|)^{2m-s}|c_{\xi_3}| \geq \cdots.
+ \end{equation}
+
+ For $n \geq 1$, let $S_n = \{\xi_1,\xi_2,...,\xi_n\}$ and set 
+ \begin{equation}
+  f_n = \sum_{\xi\in S_n}c_\xi e^{2\pi {\mathrm{i}\mkern1mu}  (a+\xi)\cdot x} \in \Sigma_{n,M}
+ \end{equation}
+ for $M\lesssim \|f\|_{\mathcal{B}^s}$ by \eqref{eq_613}.
+ 
+ We now estimate, using \eqref{orthogonality-condition} and \eqref{length-estimate},
+ \begin{equation}\label{eq_634}
+  \|f - f_n\|^2_{H^m(\Omega^\prime)} = \left\|\sum_{\xi\in S_n^c} c_\xi e^{2\pi {\mathrm{i}\mkern1mu}  (a+\xi)\cdot x} \right\|^2_{H^m(\Omega^\prime)} = \sum_{\xi\in S_n^c} |c_\xi|^2\|e^{2\pi {\mathrm{i}\mkern1mu}  (a+\xi)\cdot x}\|_{H^m(\Omega^\prime)}^2 \lesssim \sum_{\xi\in S_n^c} |c_\xi|^2(1+|\xi|)^{2m}.
+ \end{equation}
+ Using Hoelder's inequality, we get
+ \begin{equation}\label{eq_638}
+  \sum_{\xi\in S_n^c} |c_\xi|^2(1+|\xi|)^{2m} \leq \left(\sup_{\xi\in S_n^c} |c_\xi|(1+|\xi|)^{2m-s} \right)\left(\sum_{\xi\in S_n^c}|c_\xi|(1+|\xi|)^{s}\right)
+ \end{equation}
+ By \eqref{eq_613}, the second term above is $\lesssim \|f\|_{\mathcal{B}^s(\Omega)}$. For the first term, we note that \eqref{eq_613} implies that
+ \begin{equation}\label{eq_642}
+  \sum_{\nu\in S_n} |c_\nu|(1+|\nu|)^{2m-s}(1+|\nu|)^{2(s-m)}\lesssim \|f\|_{\mathcal{B}^s(\Omega)}.
+ \end{equation}
+ Now, by the definition of $S_n$, we have for every $\nu\in S_n$
+ \begin{equation}
+  \left(\sup_{\xi\in S_n^c} |c_\xi|(1+|\xi|)^{2m-s}\right) \leq |c_\nu|(1+|\nu|)^{2m-s},
+ \end{equation}
+ so that
+ \begin{equation}
+  \left(\sup_{\xi\in S_n^c} |c_\xi|(1+|\xi|)^{2m-s}\right)\sum_{\nu\in S_n}(1+|\nu|)^{2(s-m)} \leq \sum_{\nu\in S_n} |c_\nu|(1+|\nu|)^{2m-s}(1+|\nu|)^{2(s-m)}.
+ \end{equation}
+ By \eqref{eq_642}, we thus have
+ \begin{equation}
+  \left(\sup_{\xi\in S_n^c} |c_\xi|(1+|\xi|)^{2m-s}\right) \lesssim \|f\|_{\mathcal{B}^s(\Omega)}\left(\sum_{\nu\in S_n}(1+|\nu|)^{2(s-m)}\right)^{-1}.
+ \end{equation}
+ The sum $\sum_{\nu\in S_n}(1+|\nu|)^{2(s-m)}$ is over $n$ elements of the lattice $L^{-1}\mathbb{Z}^d$, from which it easily follows by comparison with an integral (see, for instance, \cite{erdos1989lattice}) that
+ \begin{equation}
+  \sum_{\nu\in S_n}(1+|\nu|)^{2(s-m)} \gtrsim n^{1+\frac{2(s-m)}{d}},
+ \end{equation}
+ and we obtain
+ \begin{equation}
+  \left(\sup_{\xi\in S_n^c} |c_\xi|(1+|\xi|)^{2m-s}\right) \lesssim \|f\|_{\mathcal{B}^s(\Omega)}n^{-1-\frac{2(s-m)}{d}}.
+ \end{equation}
+ Combining this with \eqref{eq_634} and \eqref{eq_638}, we get
+ \begin{equation}
+  \|f - f_n\|^2_{H^m(\Omega^\prime)} \lesssim \|f\|^2_{\mathcal{B}^s(\Omega)}n^{-1-\frac{2(s-m)}{d}}.
+ \end{equation}
+ Finally, since $\Omega^\prime \supset \Omega$, we get
+ \begin{equation}
+  \|f - f_n\|_{H^m(\Omega)} \leq \|f - f_n\|_{H^m(\Omega^\prime)} \lesssim \|f\|_{\mathcal{B}^s(\Omega)}n^{-\frac{1}{2}-\frac{(s-m)}{d}},
+ \end{equation}
+ which completes the proof.
+\end{proof}
+
+In Theorem \ref{approximation-rate-theorem}, we obtained arbitrarily high polynomial rates of convergence for sufficiently smooth functions. Next we generalize this by showing that if the Fourier transform decays at a superpolynomial rate, then we can obtain spectral (i.e. superpolynomial) convergence as well. We begin by introducing an exponential version of the spectral Barron spaces.
+\begin{definition}
+Let $\Omega\subset \mathbb{R}^d$ be a bounded domain and let $0 < \beta < 1$ and $c > 0$. The exponential spectral Barron space with parameters $\beta$ and $c$ is defined by
+\begin{equation}
+ \mathcal{B}_{\beta,c}(\Omega):=\left\{f:\Omega\rightarrow\mathbb{R}:\|f\|_{\mathcal{B}_{\beta,c}(\Omega)}:=\inf_{f_e|\Omega = f}\int_{\mathbb{R}^d}e^{c|\xi|^\beta}|\hat{f}_e(\xi)|d\xi < \infty\right\},
+\end{equation}
+where the infemum is taken over all extension $f_e\in L^1(\mathbb{R}^d)$.
+\end{definition}
+ The space $\mathcal{B}_{\beta,c}(\Omega)$ is quite restrictive, however there it still contains a relatively large class of functions. For example, it contains satisfied by any linear combination of Gaussians or any band-limited function, i.e. any function whose Fourier transform is compactly supported.
+
+For elements of $\mathcal{B}_{\beta,c}(\Omega)$, we can prove a superpolynomial convergence rate.
+\begin{theorem}\label{spectral-convergence-theorem}
+ Let $\Omega = [0,1]^d$, $0 < \beta < 1$, and $c > 0$.
+ Then for any $m \geq 0$, there exists a $c^\prime > 0$ such that for $f\in \mathcal{B}_{\beta,c}(\Omega)$ and $M\lesssim \|f\|_{\mathcal{B}_{\beta,c}(\Omega)}$ we have
+  \begin{equation}
+  \inf_{f_n\in \Sigma_{n,M}} \|f-f_n\|_{H^m(\Omega)} \lesssim \|f\|_{\mathcal{B}_{\beta,c}(\Omega)}e^{-c^\prime n^{d^{-1}\beta}}.
+ \end{equation}
+\end{theorem}
+Note that in this theorem the implied constant and the constant $c^\prime$ only depend upon $\beta,c,d$ and $m$, but not on $f$ or $n$.
+\begin{proof}
+ We use a similar argument to the proof of Theorem \ref{approximation-rate-theorem}. First, we apply Lemma \ref{fourier-representation-lemma-general} to the weight $\mu(\xi) = e^{c|\xi|^{\beta}}$, to obtain an $a\in L^{-1}[0,1]^d$ and coefficients $c_\xi$ such that
+  \begin{equation}
+  f(x) = \sum_{\xi\in L^{-1}\mathbb{Z}^d}c_\xi e^{2\pi {\mathrm{i}\mkern1mu}  (a+\xi)\cdot x}
+ \end{equation}
+ and
+ \begin{equation}\label{eq_361}
+  \sum_{\xi\in L^{-1}\mathbb{Z}^d}  e^{c|a+\xi|^{\beta}}|c_\xi| \lesssim \|f\|_{\mathcal{B}_{\beta,c}(\Omega)}.
+ \end{equation}
+ As in the proof of Theorem \ref{approximation-rate-theorem}, we note that the frequencies $e^{2\pi {\mathrm{i}\mkern1mu}  (a+\xi)\cdot x}$ are orthogonal on the enlarger set $\Omega^\prime = [0,L]^d$ and their norms are bounded by \eqref{length-estimate}.
+ 
+ This time, we order the frequencies $\xi\in L^{-1}\mathbb{Z}^d$ such that
+ \begin{equation}
+  (1+|\xi_1|)^{2k}e^{-c|a+\xi_1|^{\beta}}|c_{\xi_1}| \geq  (1+|\xi_2|)^{2k}e^{-c|a+\xi_2|^{\beta}}|c_{\xi_2}| \geq  (1+|\xi_3|)^{2k}e^{-c|a+\xi_3|^{\beta}}|c_{\xi_3}| \geq \cdots. 
+ \end{equation}
+ Choosing $S_n = \{\xi_1,...,\xi_n\}$ and setting
+ \begin{equation}
+  f_n(x) = \sum_{\xi\in S_n}c_\xi e^{2\pi {\mathrm{i}\mkern1mu}  (a+\xi)\cdot x} \in \Sigma_{n,M},
+ \end{equation}
+ with $M\lesssim \|f\|_{\mathcal{B}_{\beta,c}(\Omega)}$, we obtain, using the argument between equations \eqref{eq_634} and \eqref{eq_638}, that
+ \begin{equation}\label{eq_375}
+   \|f - f_n\|^2_{H^m(\Omega^\prime)} \leq \left(\sup_{\xi\in S_n^c} |c_\xi|(1+|\xi|)^{2m}e^{-c|a+\xi|^{\beta}} \right)\left(\sum_{\xi\in S_n^c}|c_\xi|e^{c|a+\xi|^{\beta}}\right).
+ \end{equation}
+ By \eqref{eq_361}, the second factor is $\lesssim \|f\|_{\mathcal{B}_{\beta,c}(\Omega)}$.
+ 
+ For the first factor, the argument between equations \eqref{eq_613} and \eqref{eq_642} implies that
+ \begin{equation}\label{eq_381}
+  \left(\sup_{\xi\in S_n^c} |c_\xi|(1+|\xi|)^{2m}e^{-c|a+\xi|^{\beta}} \right) \lesssim C_f\left(\sum_{\nu\in S_n} e^{2c|a+\nu|^{\beta}}(1 + |a + \nu|)^{-2m}\right)^{-1}.
+ \end{equation}
+ We now proceed to lower bound the sum on the right by considering its largest term. Since the sum is over $n$ elements of the lattice $a + L^{-1}\mathbb{Z}^d$, the longest vector, i.e. the largest length $|a+\xi|$ which occurs in the sum, must be $\gtrsim n^{\frac{1}{d}}$. In addition $(1 + |a + \xi|)^{2m} \lesssim e^{2\epsilon|a+\xi|^{\beta}}$ for any $\epsilon > 0$, so we see that there must exist a $c^\prime > 0$ such that
+ \begin{equation}
+  \left(\sum_{\nu\in S_n} e^{2c|a+\nu|^{\beta}}(1 + |a + \nu|)^{-2m}\right) \gtrsim e^{2c^\prime n^{\frac{\beta}{d}}}.
+ \end{equation}
+ Plugging this into \eqref{eq_381} and \eqref{eq_375} and using the fact that $\Omega^\prime \subset \Omega$, we get
+ \begin{equation}
+  \inf_{f_n\in \Sigma_{n,M}} \|f-f_n\|_{H^m(\Omega)} \lesssim \|f\|_{\mathcal{B}_{\beta,c}(\Omega)}e^{-c^\prime n^{\frac{\beta}{d}}},
+ \end{equation}
+ as desired.
+
+\end{proof}

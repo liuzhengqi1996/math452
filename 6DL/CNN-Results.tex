@@ -1,0 +1,56 @@
+\subsection{Image classification by CNN models}\label{sec:CNN-Results}
+In the following Table \ref{tab:CNN-Results}, we summarize the test accuracy of AlexNet, VGG, ResNet, pre-act ResNet on popular datasets CIFAR10, CIFAR100, ImageNet.
+
+\begin{table}[!htbp]
+	\begin{center}
+		\begin{tabular}{|c|c|c|c|}
+			\hline
+			Dataset     					& Model                     &  Test accuracy   &   Number of parameters \\
+			\hline
+			\multirow{2}*{CIFAR10}      
+			&AlexNet           			& 77.22	           &   61.2M                   \\
+			&VGG19      	            & 93.56            &   20.0M		                   \\
+			&ResNet18                   & 95.28            &   11.2M               \\
+			&pre-act ResNet18           & 95.08            &   10.2M               \\
+			\hline
+			\multirow{2}*{CIFAR100}     
+			&AlexNet                    & 43.87            &  61.2M                    \\
+			&VGG19      	            & 70.48            &  20.04	                    \\
+			&ResNet18                   & 77.54            &  11.2M                \\
+			&preact-ResNet18            & 77.29            &  11.2M                \\
+			\hline
+			\multirow{2}*{ImageNet}     
+			&AlexNet           			& 62.50            &  61.2M                    \\
+			&VGG19      	            & 71.30            &  20.04                    \\
+			&ResNet18                   & 72.12            &  11.2M                \\
+			&preact-ResNet18            & 72.34            &  11.2M                \\
+			\hline
+		\end{tabular}
+	\end{center}
+	\label{tab:CNN-Results}
+	\caption{Test accuracy of AlexNet, VGG, ResNet, pre-act ResNet on popular datasets.}
+\end{table}
+
+
+
+
+
+
+%
+%\begin{table}[!htbp]
+%	\begin{center}
+%			\begin{tabular}{|c|c|c|c|}
+%                \hline
+%                Dataset     & model        &  accuracy   &   parameters \tabularnewline
+%				\hline
+%                Cifar10     &ResNet18      &  95.28      &   11.2M      \tabularnewline
+%                \hline
+%                Cifar100    &ResNet18      &  77.54      &   11.2M      \tabularnewline
+%                \hline
+%                ImageNet    &ResNet18      &  72.12      &   11.2M      \tabularnewline
+%                \hline
+%             \end{tabular}
+%	\end{center}
+%	\label{tab:CNN-Results}
+%	\caption{Test accuracy of LeNet-5, AlexNet, VGG, ResNet, pre-act ResNet on popular datasets.}
+%\end{table}

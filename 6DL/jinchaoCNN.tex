@@ -1,0 +1,39 @@
+\subsection{Jinchao's summary}
+
+Some ideas:
+
+\begin{enumerate}
+\item Given structure of DNN or CNN, sampling of the parameters can be
+  viewed a dual sampling of the data variable.  This is because any
+  DNN function can be written as a combination or composition of the
+  functions of the following form
+$$
+\sigma(\omega\cdot x+b)
+$$
+
+\item CNN can be considered to be a multigrid algorithm for data
+  variables.  Given the observation above, it is also a ``dual''
+  multigrid algorithm for the parameter variables.   But somehow, in
+  CNN, only small subspace of the dual subspace are used because the
+  convolutional operation is a very special and low dimensional dual
+  operation.   In order to increase the dimension of the dual, more
+  layers and especially more channels have to be introduced. 
+
+\item Data space variables are not really independent variables.  For
+  a  2-D images, each image is a function of two variable which
+  represents the pixel locations. 
+
+\item Any 2D image function must have certain regularity. Thus a high
+  resolution image is intrinsically low dimensional.   There are some
+  underlying dimensions of the image data.  The different covolutions
+  and different channels are introduced to capture these low
+  dimensions. 
+
+\item When a random initialization, it has been observed that the
+  resulting DNN function is actually a relatively smooth function with
+  respect to data variables. 
+  But the finally trained NN model has to be high frequence functions
+  for data variable as it is very sensitive to data pertubation. 
+
+\item 
+\end{enumerate}

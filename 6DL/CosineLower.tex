@@ -1,0 +1,162 @@
+\section{Lower Bounds for Cosine Networks}\label{lower-bounds-section}
+In this section, we derive lower bounds which complement Theorems \ref{approximation-rate-theorem} and \ref{piecewise-poly-approx-theorem}.
+
+We begin with lower bounds on the approximation rate of cosine networks on $\mathcal{B}^s(\Omega)$. In particular, we show that the approximation rate of Theorem \ref{approximation-rate-theorem} cannot be substantially improved when $m = 0$, i.e. when we are approximating in $L^2(\Omega)$. We have the following result.
+\begin{theorem}\label{fourier-lower-bound}
+ Let $\Omega = [0,1]^d$ and $s\geq 0$. Then we have
+ \begin{equation}{\mathrm{i}\mkern1mu}
+  \limsup_{n\rightarrow \infty} \left[\sup_{\|f\|_{\mathcal{B}^s(\Omega)} \leq 1}\inf_{f_n\in\Sigma_{n,M}} \|f - f_n\|_{L^2(\Omega)}\right]n^{\frac{1}{2} + \frac{s}{d} + \epsilon} = \infty
+ \end{equation}
+ for any $M,\epsilon > 0$.
+\end{theorem}
+
+Lower bounds for the $\sigma_k$ activation function were obtained for $k=0$ obtained in \cite{makovoz1996random} and for $k\geq 1$ in \cite{klusowski2018approximation}. However, for $\sigma_k$ the lower bounds obtained do not match the best known rates. Closing this gap is currently an open problem. In contrast, Theorem \ref{approximation-rate-theorem} combined with Theorem \ref{fourier-lower-bound} gives the optimal approximation rate for cosine networks on the spectral Barron space $\mathcal{B}^s(\Omega)$.
+
+\begin{proof}
+ The argument is a modification of the methods in \cite{klusowski2018approximation,makovoz1996random}. The main new difficulty is in dealing with the non-compactness of the set $\{e^{2\pi{\mathrm{i}\mkern1mu} \theta\cdot x}:\theta\in \mathbb{R}^d\}\subset L^2(\Omega)$. 
+ 
+ Suppose to the contrary that for some $M,\epsilon > 0$, we have
+ \begin{equation}\label{eq_717}
+  \sup_{\|f\|_{\mathcal{B}^s(\Omega)} \leq 1}\inf_{f_n\in\Sigma_{n,M}} \|f - f_n\|_{L^2(\Omega)} \lesssim n^{-\frac{1}{2} - \frac{s}{d} - \epsilon}.
+ \end{equation}
+ For $R > 0$ consider the set $$S(R) = \{\phi_\omega(x) := (1+|\omega|)^{-s}e^{2\pi {\mathrm{i}\mkern1mu} \omega\cdot x}:~\omega\in \mathbb{Z}^d,~|\omega|_\infty \leq R\}.$$
+ In the following proof all of the implied constants are independent of $R$.
+ 
+ The elements $\phi_\omega\in S(R)$ are orthogonal in $L^2(\Omega)$ and satisfy $\|\phi_\omega\|_{L^2(\Omega)} = (1+|\omega|)^{-s} \gtrsim R^{-s}$. In addition, it is clear that $\|\phi_\omega(x)\|_{\mathcal{B}^s(\Omega)} \leq 1$.
+ 
+ We now make use of the following combinatorial fact which follows from Berge's theorem (see \cite{berge1973graphs,kainen1993quasiorthogonal}): given a set $S$ of size $n$, there exist at least $2^{cn}$ subsets of $S$ whose pairwise symmetric differences are at least $\frac{n}{4}$, where $c > 0$ is a universal constant (i.e. independent of $n$).
+ 
+ We apply this to the set $S(R)$ to see that there are subsets $S_1,...,S_N\subset S(R)$ with $N = 2^{cR^d}$, such that for any $i\neq j$, we have $|S_i - S_j| \geq \frac{1}{4}R^d$. Consider the elements $\phi_i\in \mathcal{B}^s(\Omega)$ defined by
+ \begin{equation}
+  \phi_i(x) = \frac{1}{R^d} \sum_{\phi_\omega\in S_i}\phi_\omega(x).
+ \end{equation}
+ We clearly have $\|\phi_i(X)\|_{\mathcal{B}^s(\Omega)} \leq 1$. Moreover, since $|S_i - S_j| \geq \frac{1}{4}R^d$, $\|\phi_\omega\|_{L^2(\Omega)} \gtrsim R^{-s}$, and the $\phi_\omega$ are orthogonal, we see that for $i\neq j$
+ \begin{equation}
+ \|\phi_i(x) - \phi_j(x)\|_{L^2(\Omega)} = \frac{1}{R^d}\left\|\sum_{\phi_\omega\in S_i-S_j}\phi_\omega(x)\right\|_{L^2(\Omega)} \gtrsim \frac{R^{-s}}{R^d}\sqrt{|S_i-S_j|} \geq \frac{R^{-s-\frac{d}{2}}}{2}.
+ \end{equation}
+ Thus, we have at least $N = 2^{cR^d}$ elements $\phi_i$ which satisfy $\|\phi_i(x)\|_{\mathcal{B}^s(\Omega)} \leq 1$, and such that every pair differs by at least $\delta \gtrsim R^{-s-\frac{d}{2}}$ in $L^2(\Omega)$. Note that we could also have obtained this from \cite{klusowski2018approximation}, Lemma 1 in section 2.2.
+ 
+ By \eqref{eq_717}
+ there exist $\phi_{i,n}\in \Sigma_{n,M}$ which satisfy
+ \begin{equation}
+  \|\phi_{i,n} - \phi_i\|_{L^2(\Omega)} \leq \frac{\delta}{6},
+ \end{equation}
+ for an $n$ which satisfies 
+ \begin{equation}
+n \lesssim \delta^{-\frac{2d}{d+2s+2d\epsilon}}\lesssim R^{\frac{d(2s+d)}{2s+d+2d\epsilon}} = R^{d-t},
+ \end{equation} 
+ where $t(s,d,\epsilon) > 0$.
+ 
+ Let $P_R$ denote the projection onto the space spanned by $S(R)$, i.e. onto the space spanned by the frequencies $e^{2\pi {\mathrm{i}\mkern1mu} \omega\cdot x}$ for $\omega\in \mathbb{Z}^d$, $|\omega|_\infty \leq R$. 
+ Consider the projection $P_R(e^{2\pi {\mathrm{i}\mkern1mu} \theta\cdot x})$ for $\theta\in \mathbb{R}^d$. We calculate
+ \begin{equation}\label{projection_calc}
+  \|P_R(e^{2\pi {\mathrm{i}\mkern1mu} \theta\cdot x})\|^2_{L^2(\Omega)} = \sum_{\substack{\omega\in \mathbb{Z}^d\\ |\omega|_\infty \leq R}} \left|\int_{[0,1]^d} e^{2\pi {\mathrm{i}\mkern1mu} (\theta - \omega)x}dx\right|^2 \leq \frac{1}{(2\pi)^{2d}}\sum_{\substack{\omega\in \mathbb{Z}^d\\ |\omega|_\infty \leq R}}\prod_{i=1}^d\frac{1}{|\theta_i - \omega_i|^2}.
+ \end{equation}
+ 
+ Choose $K$ large enough such that $\|P_R(e^{2\pi {\mathrm{i}\mkern1mu} \theta\cdot x})\|_{L^2(\Omega)} \leq \frac{\delta}{6M}$ as long as $|\theta|_\infty \geq K$. By \eqref{projection_calc}, this will be guaranteed if
+ \begin{equation}
+  K \geq R + \frac{6}{(2\pi)^d}\delta^{-1}MR^{\frac{d}{2}} \lesssim R^{s+d},
+ \end{equation}
+ and so we can choose $K\lesssim R^{s+d}$.
+
+ We proceed to truncate the $\phi_{i,n}\in \Sigma_{n,M}$ at frequencies with magnitude $K$. In particular, if
+ \begin{equation}
+  \phi_{i,n} = \sum_{j=1}^n a_{i,j}e^{2\pi {\mathrm{i}\mkern1mu} \theta_{i,j}\cdot x},
+ \end{equation}
+ we set $T^K_i = \{j:|\theta_{i,j}|_\infty \leq K\}$ and 
+ \begin{equation}
+ \phi^K_{i,n} = \sum_{j\in T^K_i} a_{i,j}e^{2\pi {\mathrm{i}\mkern1mu} \theta_{i,j}\cdot x}.
+ \end{equation}
+ Our choice of $K$ guarantees that
+ \begin{equation}
+  \|P_R(\phi_{i,n}^K) - P_R(\phi_{i,n})\|_{L^2(\Omega)} \leq \frac{\delta}{6},
+ \end{equation}
+ which implies that
+ \begin{equation}
+  \|P_R(\phi_{i,n}^K) - \phi_i\|_{L^2(\Omega)} \leq \|P_R(\phi_{i,n}^K) - P_R(\phi_{i,n})\|_{L^2(\Omega)} + \|P_R(\phi_{i,n} - \phi_i)\|_{L^2(\Omega)} \leq \frac{\delta}{6} + \frac{\delta}{6} = \frac{\delta}{3},
+ \end{equation}
+ since $P_r(\phi_i) = \phi_i$.
+ 
+ We now conclude that for $i\neq j$, we have
+ \begin{equation}\label{eq_779}
+ \begin{split}
+  \|\phi_{i,n}^K - \phi_{j,n}^K\|_{L^2(\Omega)} \geq \|P_R(\phi_{i,n}^K) - P_R(\phi_{j,n}^K)\|_{L^2(\Omega)} &\geq \|P_R(\phi_{i,n}^K) - \phi_i\|_{L^2(\Omega)}
++ \|\phi_j - \phi_i\|_{L^2(\Omega)} + \|P_R(\phi_{j,n}^K) - \phi_j\|_{L^2(\Omega)}\\
+& \geq \delta - \frac{\delta}{3} - \frac{\delta}{3} = \frac{\delta}{3}.
+\end{split}
+ \end{equation}
+ 
+ However, on the other hand, we calculate that
+ \begin{equation}
+  \|e^{2\pi {\mathrm{i}\mkern1mu} \theta_1\cdot x} - e^{2\pi {\mathrm{i}\mkern1mu} \theta_2\cdot x}\|^2_{L^2(\Omega)} = \int_{[0,1]^d} |1 - e^{2\pi {\mathrm{i}\mkern1mu} (\theta_1 - \theta_2)\cdot x}|^2dx \lesssim |\theta_1 - \theta_2|^2.
+ \end{equation}
+ We now cover the cube $C_K = \{\theta:|\theta|_\infty \leq K\}$ with $N_1$ frequencies $\nu_1,...,\nu_{N_1}$ such that for every $\theta\in C_K$, there exists an $i$ with 
+ \begin{equation}
+ \|e^{2\pi {\mathrm{i}\mkern1mu} \theta\cdot x} - e^{2\pi {\mathrm{i}\mkern1mu} \nu_i\cdot x}\|_{L^2(\Omega)} \leq \frac{\delta}{18M}.
+ \end{equation}
+ By the above calculation, this can be done with
+ \begin{equation}
+  N_1\lesssim (KM\delta^{-1})^d \lesssim R^{(2s+\frac{3}{2}d)d},
+ \end{equation}
+ where here we have taken into account the dependence of $K$ and $\delta$ on $R$.
+ 
+ Further, we consider the set $$A_M = \{\vec{a} = (a_1,...,a_n): \sum_{i=1}^n |a_i|\leq M\},$$
+ which we can cover with $N_2$ elements $\vec{a}_1,...,\vec{a}_{N_2}$ such that for every $\vec{a}\in A_M$, there is an index $i$ with $|\vec{a} - \vec{a}_i| \leq \frac{\delta}{18}$. We can do this with
+ \begin{equation}
+  N_2 \lesssim (M\delta^{-1})^{2n}\lesssim M^{2R^{d-t}}R^{2(s+\frac{d}{2})R^{d-t}},
+ \end{equation}
+ where the $2n$ is because the components of $\vec{a}$ can be complex and we have expanded $\delta$ and $n$ in terms of $R$.
+
+ Given a
+ \begin{equation}
+ \phi^K_{i,n} = \sum_{j\in T^K_i} a_{i,j}e^{2\pi {\mathrm{i}\mkern1mu} \theta_{i,j}\cdot x},
+ \end{equation}
+ we proceed to perturb each of the $\theta_{i,j}$ to one of the frequencies $\nu_i$ and the coefficients $a_{i,j}$ to one of the $\vec{a}_j$. By the preceding analysis, we can thus land at one of
+ \begin{equation}
+  \bar{N} = N_2N_1^n \lesssim R^{(2s+\frac{3}{2}d)dR^{d-t}}M^{2R^{d-t}}R^{2(s+\frac{d}{2})R^{d-t}}
+ \end{equation}
+ elements by perturbing $\phi^K_{i,n}$ by at most $M\frac{\delta}{18M} + \frac{\delta}{18} = \frac{\delta}{9}$. Since for $i\neq j$, $\phi^K_{i,n}$ and $\phi^K_{j,n}$ differ by at least $\frac{\delta}{3}$ from \eqref{eq_779}, we see that they must all land at distinct elements after this perturbation. This implies that
+ \begin{equation}
+  N = 2^{cR^d}\leq \bar{N} \lesssim R^{(2s+\frac{3}{2}d)dR^{d-t}}M^{2R^{d-t}}R^{2(s+\frac{d}{2})R^{d-t}}.
+ \end{equation}
+ Taking the logarithm and keeping only the dependence on $R$, we get
+ \begin{equation}
+  R^d \lesssim (\log(R) + 1)R^{d-t},
+ \end{equation}
+ which yields a contradiction by taking $R\rightarrow \infty$, since $t > 0$.
+
+\end{proof}
+
+Finally, we consider lower bounds for ReLU$^k$ notworks. In the following theorem, we show that the maximal rate of $k-m+1$ obtained in Theorem \ref{piecewise-poly-approx-theorem} cannot be improved upon when approximating from $\Sigma^k_{n}$ regardless of the level of smoothness $s$. The argument is relatively straightforward and simply reduces to the one-dimensional case.
+
+\begin{theorem}\label{relu-lower-bound}
+ Let $\Omega = [0,1]^d$, $s\geq 0$, $k\in \mathbb{Z}_{\geq 0}$, and $0\leq m\leq s$. 
+ Then there is a function $f\in \mathcal{B}^s(\Omega)$, such that
+ \begin{equation}
+  \inf_{f_n\in \Sigma^k_{n}} \|f - f_n\|_{H^m(\Omega)} \gtrsim n^{m-(k+1)}.
+ \end{equation}
+\end{theorem}
+\begin{proof}
+Consider the function
+ \begin{equation}
+  f(x) = e^{2\pi {\mathrm{i}\mkern1mu} x_1}\in \mathcal{B}^s(\Omega).
+ \end{equation}
+ This is a function of only one coordinate, which allows us to extend the lower bound in one dimension obtained in \cite{lin2014lower} to higher dimensions. 
+ Specifically, we make the following simple observation,
+ \begin{equation}
+  \|f - f_n\|^2_{H^m(\Omega)} \geq \int_{\mathbb{R}^{d-1}} \|e^{2\pi {\mathrm{i}\mkern1mu} x_1} - f_n(x_1,x_{>1})\|^2_{H^m([0,1],dx_1)} dx_{>1}.
+ \end{equation}
+ This holds since derivatives with respect to variables other than $x_1$ will only increase the norm.
+ 
+ Now, for each possible value of $x_{>1}$, $f_n(\cdot,x_{>1})$ is a one-dimensional piecewise polynomial function with at most $n$ breakpoints. Since $e^{2\pi {\mathrm{i}\mkern1mu} x_1}$ is not a piecewise polynomial function, the results in \cite{lin2014lower} imply that
+ \begin{equation}
+  \|e^{2\pi {\mathrm{i}\mkern1mu} x_1} - f_n(x_1,x_{>1})\|^2_{H^m([0,1],dx_1)} \gtrsim n^{-2(k-m+1)}.
+ \end{equation}
+ So we get
+ \begin{equation}
+  \|f - f_n\|^2_{H^m(\Omega)} \geq \int_{\mathbb{R}^{d-1}} \|e^{2\pi {\mathrm{i}\mkern1mu} x_1} - f_n(x_1,x_{>1})\|^2_{H^m([0,1],dx_1)} dx_{>1}\gtrsim n^{-2(k-m+1)},
+ \end{equation}
+ as desired.
+
+
+\end{proof}

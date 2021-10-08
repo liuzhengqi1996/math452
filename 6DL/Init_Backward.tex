@@ -1,0 +1,133 @@
+\subsection{Variance analysis in backward propagation phase}
+Recall the loss function
+$$
+L(\theta)=\mathbb{E}_{(x, y) \sim D} \ell \left(\operatorname{softmax}\left(f^{L}\right), y\right),
+$$
+where $ f^{L}(x; \theta) $  is the DNN function defined by 
+$$
+\left\{\begin{array}{l}f^{1}(x)=W^{1} x+b^{1} \\ f^{l}(x)=W^{l} \sigma\left(f^{l-1}(x)\right)+b^{l} \quad \forall l=2, \cdots L\end{array}\right. .
+$$
+Then we have the following backward propagation ("BP") formula
+$
+\frac{\partial L(\theta)}{\partial W^{l}}=\frac{\partial L}{\partial f^{l}} \cdot \frac{\partial f^{l}}{\partial W^{l}},
+$
+where 
+$\frac{\partial L}{\partial t^{l}} \in \mathbb{R}^{n_e}, \frac{\partial f}{\partial W^{l}} \in \mathbb{R}^{n_{e} \times\left(n_{e} \times n_{e-1}\right)}$. More Precisely,
+$$
+\frac{\partial L(\theta)}{\partial W_{s t}^{l}}=\sum\limits_{i=1}^{n_{l}}\left(\frac{\partial L(\theta)}{\partial f_{i}^{l}} \cdot \frac{\partial f_{i}^{l}}{\partial W_{s t}^{l}}\right).
+$$
+Assume that
+\begin{enumerate}
+\item $\left\{\frac{\partial L(\theta)}{\partial f_{i}^{l}} \cdot \frac{\partial f_{i}^{l}}{\partial W_{s t}^{L}}\right\}_{i=1}^{n_{e}}$ are independent
+\item For each i,   $ \frac{\partial L(\theta)}{\partial f_{i}^{l}}  $ and $\frac{\partial f_{i}^{l}}{\partial W_{s t}^{l}}$ are independent 
+\end{enumerate}
+Actually, we can not such make general assumptions as $L(\theta), f_{i}^{l}, \frac{\partial f_{i}^{l}}{\partial W_{st}} \frac{\partial L(\theta)}{\partial f_{i}^{l}}$   are all fixed. We still make these assumption here to get some idea of the choice of $W_{s t}^{l}$. 
+\begin{lemma}\label{th:idnormal2}
+If $\sigma =id$ and  the above assumption holds,
+$$\mathbb{V}\left[\frac{\partial L (\theta)}{\partial W_{s t}^{l}}\right] = \prod\limits_{j=l+1}^{L-1} n_{j} \mathbb{V}\left[W_{s t}^{j}\right] \left(\mathbb{V}\left[W_{s t}^{L}\right]\sum\limits_{k=1}^{n_{L}} \mathbb{E}\left[\left(\frac{\partial L(\theta)}{\partial f_{k}^{2}}\right)^{2}\right]\right) 
+\prod\limits_{j=2}^{l-1} n_{j} \mathbb{V}\left[W_{s t}^{j}\right] \left(\mathbb{V}\left[W_{s t}^{1}\right]\sum\limits_{R=1}^{d} \mathbb{E}\left[ X_{k}^{2}\right]\right).
+$$
+\end{lemma}
+\begin{proof}
+The assumption leads to
+\begin{equation}\label{normale0}
+\mathbb{V}\left[\frac{\partial L(\theta)}{\partial W_{st}^{l}}\right]=\sum\limits_{i=1}^{n_{l}}\left( \mathbb{E}\left[\left(\frac{\partial L(\theta)}{\partial f^{l}_{i}}\right)^{2}\right] \mathbb{E}\left[\left(\frac{\partial f_{i}^{l}}{\partial W_{s t}^{l}}\right)^{2}\right] - \left(\mathbb{E}\left[\frac{\partial L(\theta)}{\partial f_{i}^{l}}\right] \mathbb{E}\left[\frac{\partial f_{i}^{l}}{\partial W_{s t}^{l}}\right]\right)^{2}\right) .
+\end{equation}
+This implies that we only need to consider $ \mathbb{E}\left[\left(\frac{\partial L(\theta)}{\partial f_{i}^{l}}\right)^{2}\right] $ and  $ \mathbb{E}\left[\left(\frac{\partial f_{i}^{l}}{\partial W_{s t}^{l}}\right)^{2}\right]$.
+\begin{enumerate}
+\item Consider $ \mathbb{E}\left[\left(\frac{\partial L(\theta)}{\partial f_{i}^{l}}\right)^{2}\right] $. By chain rule:
+	$$
+	\begin{aligned} 
+	\frac{\partial L(\theta)}{\partial f_{i}^{l}} &=\frac{\partial L(\theta)}{\partial f^{l+1}}\cdot \frac{\partial f^{l+1}}{\partial f_{i}^{l}} =\sum_{j=1}^{n_{l+1}} \frac{\partial L(\theta)}{\partial f_{j}^{l+1}} \frac{\partial f_{j}^{l+1}}{\partial f_{i}^{l}}
+	 \\ &=\sum_{j=1}^{n_{l+1}} W_{j i}^{l+1} \sigma^{\prime}\left(f_{i}^{l}\right) \frac{\partial L(\theta)}{\partial f_{j}^{l+1}}=\sum\limits_{j=1}^{n_{l+1}} W_{j i}^{l+1} \frac{\partial L(\theta)}{\partial f_{j}^{l+1}}(\mbox{ if }\sigma=id)
+	\end{aligned} 
+	$$
+	Keep doing this:
+	$$
+	\frac{\partial L(\theta)}{\partial f^{l}}=\left[W^{l+1}\right]^{\top} \cdot\left[W^{l+2}\right]^{\top} \cdots\left[W^{L}\right]^{T} \frac{\partial L(\theta)}{\partial f^{L}}
+	$$
+	Assume the independence of $ \frac{\partial L(\theta)}{\partial f^{L}} $  with $W^{l+i}, i= 1,2, \dots$.
+	( Still we make this assumption although this can not be ture, as $ \frac{\partial L(\theta)}{\partial f^{l}} $ contains  $W^{l+i}$.) Then 
+	$$
+	\mathbb{E}\left[\frac{\partial L(\theta)}{\partial f_{i}^{l}}\right]=\sum\limits_{j} \mathbb{E}\left[W_{j i}^{l+1}\right] \mathbb{E}\left[\frac{\partial L(\theta)}{\partial f_{j}^{l }}\right]=0
+	$$
+	\begin{equation}\label{normale1}
+	\mathbb{E}\left[\left(\frac{\partial L(\theta)}{\partial f_{i}^{l}}\right)^{2}\right]=\mathbb{V}\left[{\frac{\partial L(\theta)}{\partial f_{i}^{l}}}\right]=\prod\limits_{j=l+1}^{L-1} n_{j} \mathbb{V}\left[W_{s t}^{j}\right] \cdot\left(\mathbb{V}\left[W_{s t}^{L}\right] \sum\limits_{i=1}^{n_{L}} \mathbb{E}\left[\left(\frac{\partial L( \theta)}{\partial f_{i}^{L}}\right)^{2}\right]\right)
+	\end{equation}
+    \item Consider $ \mathbb{E}\left[\left(\frac{\partial f_{i}^{l}}{\partial W_{s t}^{l}}\right)^{2}\right]
+    $. By definition, 
+    $
+    \frac{\partial f_{i}^{l}}{\partial W_{s t}^{l}}=\delta_{i s} \sigma\left(f_{t}^{l-1}\right)
+    $
+    namely, only
+	$
+	\frac{\partial f_{s}^{l}}{\partial W_{s t}^{l}} \not = 0,
+	$
+	and $\frac{\partial f_{s}^{l}}{\partial W_{s t}^{l}} = \sigma\left(f^{l-1}_{t}\right)$. If $ \sigma $=id, apply the forward results
+		\begin{enumerate}
+		\item Expectation: 
+		$$
+		\mathbb{E}\left[\left(\frac{\partial f_{s}^{l}}{\partial W_{s t}^{l}}\right)\right]=0.
+		$$
+		\item Variance:
+		\begin{equation}\label{normale2}
+		\begin{split}
+		\mathbb{E}\left[\left(\frac{\partial f_{s}^{l}}{\partial W_{s t}^{l}}\right)^{2}\right]& =\mathbb{E}\left[\left(f_{t}^{l-1}\right)^{2}\right]=\mathbb{V}\left[ f_{t}^{l-1}\right]
+		\\
+		&=\prod\limits_{j=2}^{l-1} n_{j-1} \mathbb{V}\left[W_{s t}^{j}\right] \cdot\left(\mathbb{V}\left[W_{s t}^{1}\right] \sum\limits_{k=1}^{d} \mathbb{E}\left[X_k^{2}\right]\right).
+		\end{split}
+		\end{equation}
+		\end{enumerate} 
+\end{enumerate}
+A combination of \eqref{normale0}, \eqref{normale1} and \eqref{normale2} completes the proof.
+\end{proof}
+
+Next we consider $ \mathbb{V}\left[\frac{\partial L(\theta)}{\partial W^{l} _{st}}\right] $.
+	\begin{equation*}
+	\begin{split} 
+	&\mathbb{V}\left[\frac{\partial L(\theta)}{\partial W^{l} _{st}}\right] =\mathbb{V}\left[\frac{\partial L (\theta)}{\partial f_{s}^{l}}\right] \cdot \mathbb{V}\left[f^{l-1}_{t}\right] 
+	\\
+	 =& \prod\limits_{j=l+1}^{L-1} n_{j} \mathbb{V}\left[W_{s t}^{j}\right] \left(\mathbb{V}\left[W_{s t}^{L}\right]\sum\limits_{k=1}^{n_{L}} \mathbb{E}\left[\left(\frac{\partial L(\theta)}{\partial f_{k}^{L}}\right)^{2}\right]\right) \times \prod\limits_{j=2}^{l-1} n_{j} V\left[W_{s t}^{j}\right] \left(\mathbb{V}\left[W_{s t}^{1}\right]\sum\limits_{R=1}^{d} \mathbb{E}\left[ X_{k}^{2}\right]\right),
+	\end{split}
+	\end{equation*}
+	where $ \mathbb{V}_{1}=\left(\mathbb{V}\left[W_{s t}^{1}\right]\sum\limits_{k=1}^{d} \mathbb{E}\left[ X_{k}^{2}\right]\right)	$,
+$  \mathbb{V}_{L}=\mathbb{V}\left[W_{s t}^{L}\right]\sum\limits_{k=1}^{n_{L}} \mathbb{E}\left[ (\frac{\partial L(\theta)}{\partial f_{k}^{L}})^{2}\right]$.
+
+
+We consider
+$$
+	\mathbb{V}\left[W_{s t}^{l}\right]=f\left(n_{l}, n_{l-1}\right).
+	$$
+ We summarize Lemma \ref{th:idnormal} and Lemma \ref{th:idnormal2} as below
+ \begin{enumerate}
+\item 
+$ 
+\mathbb{V}\left[f_{i}^{l}\right]  =\prod\limits_{j=2}^{l} n_{j-1} f\left(n_{j}, n_{j-1}\right)\left(\mathbb{V}\left[W_{s t}^{1}\right]\sum\limits_{k=1}^{d} \mathbb{E}\left[ X_{k}^{2}\right]\right) 
+$
+\item $\mathbb{V}\left[\frac{\partial L(\theta)}{\partial f_{i}^{2}}\right]= \prod\limits_{j=1+1}^{L-1} n_{j} f\left(n_{j}, n_{j-1}\right)\cdot\left(\mathbb{V}\left[W_{s t}^{L}\right] \sum\limits_{i=1}^{n_{L}} \mathbb{E}\left[\left(\frac{\partial L( \theta)}{\partial f_{i}^{l}}\right)^{2}\right]\right) 
+$
+\item $ \mathbb{V}\left[\frac{\partial L(\theta)}{\partial W^{l} _{st}}\right] = \prod\limits_{j=l+1}^{L-1}n_{j} \cdot f\left(n_{j}, n_{j-1}\right) \cdot \prod\limits_{j=2}^{l-1}n_{j-1}f\left(n_{j}, n_{j-1}\right) \times \mathbb{V}_{1} \times \mathbb{V}_{L}
+$
+\end{enumerate}
+Based on the equations above, we have different choice of $\mathbb{V}\left[W_{s t}^{l}\right]$
+\begin{enumerate}
+	\item If $f\left(n_{1}, n_{j-1}\right)=\frac{1}{n_{j-1}}$ (control $W[f_{i}^{l}]$), 
+	$\mathbb{V}\left[\frac{\partial L(\theta)}{\partial W_{s t}^{l}}\right]$ will decrease as $l$ grow up. (Notice that $n_{l}>n_{k}$ if $l>k$)
+	\item If $f\left(n_{j}, n_{j-1}\right)=\frac{1}{n_{j}}$ (control $V[\frac{\partial L(\theta)}{ \partial f_{i}^{L}} ]$),
+	$
+	\mathbb{V}\left[\frac{\partial L(\theta)}{\partial W_{s t}^{l}}\right]$	
+	 still decrease!
+	\item If $f\left(n_{j}, n_{j-1}\right)=\frac{2}{n_{j}+n_{j-1}}( \leq \frac{1}{\sqrt{n_{j} n_{j-1}}})$,
+	$
+	\mathbb{V}\left[\frac{\partial L (\theta)}{\partial W^{l}_{st}}\right]=\frac{\sqrt{n_{L-1}} \cdot \sqrt{n_{1}}}{\sqrt{n_{l}} \cdot \sqrt{n_{l-1}}} \times \mathbb{V}_{1} \times \mathbb{V}_{L}
+	$
+	decrease!
+\end{enumerate}
+	
+\paragraph{Question}
+Can we design some other choices of  $ \mathbb{V}\left[ W^{l} _{st}\right]$ such  that  $\mathbb{V} \left[\frac{\partial L(\theta)}{\partial W^{l} _{st}}\right]$ admits the following properties:
+\begin{itemize}
+	\item Keep constant,
+	\item Increase,
+	\item Change with certain scale.
+\end{itemize}

@@ -1,0 +1,118 @@
+
+%\section{Numerical examples}
+In this section, we will list some numerical results using different methods on the MNIST dataset. 
+
+%The MNIST data set contains the pictures of single digits. The size of each digit picture is 28*28 and the label is the digit from 0 to 9. There are 60000 training data and 10000 test data in all.
+\subsection{Least square}
+
+We first present the details of the experiments using the least square for classification. 
+
+The most straightforward model for prediction is the linear model
+$$
+y=Wx+b,
+$$
+where $x\in \mathbb{R}^{784}$ is the input data, $y\in \mathbb{R}^{10}$ is the prediction and $W \in \mathbb{R}^{10 \times 784}, b \in \mathbb{R}^{10} $ are the parameters of the model. 
+For each data in the MNIST dataset, $x_i\in \mathbb{R}^{784}, i=1,...,60000$, denote the corresponding label as $y_i\in \mathbb{R}^{10}$. 
+We denote the training set and labels in matrix form, 
+$$A=\begin{pmatrix}
+    x_{1} &x_{2}  &...  &x_{60000}     \\
+    1&1&... &1\\
+\end{pmatrix}^T \in \mathbb{R}^{60000\times 785},$$ 
+$$Y=\begin{pmatrix}
+    y_{1}        ,
+    y_{2}       ,
+    ... ,
+    y_{60000}     
+\end{pmatrix}^T\in \mathbb{R}^{60000\times 10}.
+$$
+Our goal is to find the optimal parameter 
+$\theta=\left[ W ,b  \right]^T\in \mathbb{R}^{785\times 10}$ to minimize the total sum of square loss 
+$$
+\sum_{i=1}^{60000} \|y_i-(W x_i+b)\|^2_2=\|Y- A\theta\|^2_2.
+$$
+The empirical formulae gives the optimal parameter as
+\begin{align}
+\hat{\theta}=(A^TA)^{-1}A^TY.
+\end{align}
+
+
+For the MNIST dataset, after $\hat{\theta}$ is calculated, we can classify $x_i$ based on the linear model
+\begin{align}
+\hat{y_i}=\hat{W}x_i+\hat{b} \in \mathbb{R}^{10}.
+\end{align}
+We choose the entry in $\hat{y_i}$ with the maximum value as the predicted label for $x_i$. Finally, the training accuracy is 85.77$\%$ and the test accuracy is 86.03$\%$. 
+
+\subsection{Logistic regression }
+The model of logistic regression is slightly different from least square in the prediction and the loss function. With similar notations, we use $\hat{y}$=softmax($Wx+b$) as the predicted label of the input.
+Here there is one more operation of softmax in the predicted label of an input $x$. It is used for normalizing the output to a probability distribution. Moreover, the loss function here is the cross entropy loss with an $\ell^2$ regularization term
+\begin{align}
+L_{\lambda}(\theta)=L(\theta)+\lambda R(\|\theta\|)=
+-(y \log(\hat{y})+(1-y)\log(1-\hat{y}))
++\lambda \|\theta\|^2.
+\end{align}
+We use the {\color{red}Adam} optimization algorithm in the numerical experiment. We choose the learning rate to be 0.001,  batch size to be 100
+and regularization coefficient to be 0.0001 for 50 training epochs. Finally, the training accuracy is 93.46$\%$ and the test accuracy is 92.56$\%$. 
+
+
+
+
+\subsection{Support vector machine (SVM) }
+Finally, we use SVM for classification which we discussed in Section \ref{sec:SVMintro}. The main hypercoefficient is the kernel to be used in the algorithm. There are many kernels available such as linear kernel, Gaussian kernel, polynomial kernel and so on. We recall these kernels here. 
+\begin{itemize}
+	\item Polynomial kernel: $k(x,y) = (a\langle x,y\rangle+ b)^n, a > 0, b\geq 0, n\in \mathbb{N}^+$.
+	\item Gaussian kernel: $k(x,y) = e^{-\gamma\|x-y\|^2}, \gamma > 0$.
+\end{itemize}
+We choose the regularization parameter $\lambda=1$ in \eqref{SVM_Quad_soft} and use polynomial kernel 
+and Gaussian kernel as well as no kernel 
+for numerical experiments. 
+With no kernel, the training accuracy is 87.91$\%$ and the test accuracy is 87.73$\%$. 
+With polynomial kernel, the training accuracy is 99.16$\%$ and the test accuracy is 97.71$\%$. 
+With Gaussian kernel, the training accuracy is 98.99$\%$ and the test accuracy is 97.92$\%$.
+
+%The training accuracy is 99.16$\%$ and the test accuracy is 97.71$\%$.
+
+\subsection{Summary }
+For the dataset of MNIST, the traditional linear machine learning models can achieve good classification accuracy. 
+
+  If we apply standard least square to the  MNIST dataset, we only get 86.03\% test accuracy. If we apply logistic regression to the  MNIST dataset, we get 92.56\% test accuracy. If we apply support vector machine (SVM) with polynomial kernel to the  MNIST dataset, we get 97.71\% test accuracy. If we apply support vector machine (SVM) with Gaussian kernel to the  MNIST dataset, we get 97.92\% test accuracy. 
+
+\begin{table}[!htbp]
+	\begin{center}
+		\begin{tabular}{|c|c|c|}
+			\hline
+			Model &  Training accuracy(\%)   &   Test accuracy(\%) \\
+			\hline
+			Least square & 85.77	           &   86.03 \\ \hline
+			Logistic regression & 93.46   &   92.56	     \\ \hline
+			SVM without kernel& 87.91           &   87.73         \\	\hline
+			SVM with kernel& 99.16            &   97.71         \\	\hline
+			CNN & 99.99            &   99.79         \\	\hline
+		\end{tabular}
+	\end{center}
+	\caption{Training and test accuracy of different models on MNIST.}
+	\label{tab:MNIST-LR-Results}
+\end{table}
+
+
+\begin{table}[!htbp]
+	\begin{center}
+		\begin{tabular}{|c|c|c|}
+			\hline
+			Model &  Training accuracy(\%)   &   Test accuracy(\%) \\
+			\hline
+			Least square & 45.10           &   32.86 \\ \hline
+			Logistic regression & 39.25   &   35.23	     \\ \hline
+			SVM without kernel& 33.02            &   23.76         \\	\hline
+			SVM with kernel& 70.29            &   54.37         \\	\hline
+			CNN & 99.97            &   95.05         \\	\hline
+		\end{tabular}
+	\end{center}
+	\caption{Training and test accuracy of different models on CIFAR-10.}
+	\label{tab:MNIST-LR-Results2}
+\end{table}
+In the meanwhile, the accuracy of the state-of-art CNN model (see more details in Section \ref{sec:CNNs})applied on the MNIST dataset is 99.79\%. We summarize the accuracy of these models on MNIST in the following Table \ref{tab:MNIST-LR-Results}.
+
+In the following Table \ref{tab:MNIST-LR-Results2}, we summarize the accuracy of different models on CIFAR-10.
+
+Based on the previous results, CNN models outperform all the other models significantly. 
+Thus we want to investigate the convolutional neural networks for better performance rather than the traditional machine learning models. 

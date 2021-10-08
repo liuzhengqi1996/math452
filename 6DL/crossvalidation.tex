@@ -1,0 +1,383 @@
+\chapter{Cross Validation}
+\section{Motivation}
+
+Generally people train a neural network with the training set and obtain the test  accuracy after each epoch. After the training is finished, the highest ever or the last test  accuracy is reported in the paper. However, in our opinion, this may be not only abusing and polluting the test set, but also not generalizable. 
+
+A test set, as its name tells, should be concealed and be tested only after all the model structures are set up and the training algorithm is fixed. In this way, the test set is never touched by the reseachers and serves as independent and fair comparison target. 
+
+However, this is not the case in the field of deep learning. What people are doing is  first choosing a model and training algorithm, then evaluate the accuracy with the test set. If the test accuracy is not satisfactory, they turn to  choose a new combination of model structures and training algorithm in order to achieve a higher test accuracy. By doing so, the test set is evaluated many times or maybe thousands of times.  The test set is thus touched by the reseachers  and doesn't serves as independent and fair comparison any more. Instead, we say the original test set becomes part of the validation set. Without a proper framework or mechanism, such scenarios will be ongoing and  independent and fair comparison target will be missing. Therefore we want to propose a universal framework to evaluate the performance of the neural networks given a dataset. 
+
+\section{Universal framework}
+The framework takes as input the proposed neural network, training algorithm and dateset.
+
+Suppose we are given a specific dataset such as CIFAR-10 with 50000 training data and 10000 validation data. 
+In each round, we randomly choose 6000 balanced data from CIFAR-10 as the test set, namely 600 data for each label. The remaining data are used as the training set. Then we evaluate the test accuracy after finishing training the neural network. 
+After ten rounds, we take the average of the test accuracies as the metric reported. 
+
+The algorithm is as below.
+%\begin{breakablealgorithm}%[!htb]
+\begin{algorithm}%[!htb]
+	\caption{Overlapping CV training algorithm}
+\hspace*{\algorithmicindent} \textbf{Input} Dataset $D$, neural network $N$
+	\begin{algorithmic}
+	\For{$i = 1:10$}
+		\State 1. Randomly choose 10\% balanced data from $D$ and denote it as $V$, the validation set. The remaining data are  denoted as $T$, the training set.
+		\State 2. Train $N$ with $T$ with the stopping criterion $S$ 
+		\State 3. When the training is finished, evaluate $N$ with $V$ and denote the validation accuracy as $A_i$
+	\EndFor
+	\end{algorithmic}
+\hspace*{\algorithmicindent} \textbf{Output} $A(D,N)=\sum_i A_i /10$
+\end{algorithm}
+
+The  standard  cross validation algorithm is as below.
+\begin{algorithm}%[!htb]
+	\caption{Standard CV training algorithm}
+\hspace*{\algorithmicindent} \textbf{Input} Dataset $D$, neural network $N$\\
+\hspace*{\algorithmicindent} \textbf{Data split}  Randomly divide the dataset $D$ into 10 folds with numbers 1,2,..,10
+	\begin{algorithmic}
+	\For{$i = 1:10$}
+		\State 1. Choose the $i$-th fold and denote it as $V$, the validation set. The remaining data are  denoted as $T$, the training set.
+		\State 2. Train $N$ with $T$ with the stopping criterion $S$ 
+		\State 3. When the training is finished, evaluate $N$ with $V$ and denote the validation accuracy as $A_i$
+	\EndFor
+	\end{algorithmic}
+\hspace*{\algorithmicindent} \textbf{Output} $A(D,N)=\sum_i A_i /10$
+\end{algorithm}
+
+The  leave-one-fold  cross validation algorithm is as below.
+\begin{algorithm}%[!htb]
+	\caption{Leave-one-fold CV training algorithm}
+\hspace*{\algorithmicindent} \textbf{Input} Dataset $D$, neural network $N$\\
+\hspace*{\algorithmicindent} \textbf{Data split}  Randomly divide the dataset $D$ into 10 folds with numbers 1,2,..,10. Fix the $10$-th fold as the test set and denote it as $T_2$.
+	\begin{algorithmic}
+	\For{$i = 1:9$}
+		\State 1. Choose the $i$-th fold and denote it as $V$, the validation set. The remaining data are  denoted as $T$, the training set.
+		\State 2. Train $N$ with $T$ with the stopping criterion $S$ 
+		\State 3. When the training is finished, evaluate $N$ with $T_2$ and denote the test accuracy as $A_i$
+	\EndFor
+	\end{algorithmic}
+\hspace*{\algorithmicindent} \textbf{Output} $A(D,N)=\sum_i A_i /9$
+\end{algorithm}
+
+Things to discuss:
+
+1. If we randomly choose 10\% data and do it 10 times, this is technically not the cross validation. 
+
+Cross validation is when we randomly divide the data into 10 folds of equal sizes. Then in each round, we take one fold  sequentially as the validation set, and use the remaining data as the training set.
+
+2. Does the stopping criterion $S$ depend on $D$ and $N$? We want to use the automative learning rate scheduling algorithm, but it doesn't have a stopping criterion. Moreover, based on the result on DenseNet, SASA by Lian Zhang depends on the initial parameter tuning.
+
+Therefore we will take different dataset splitting, learning rate scheduling, best validation accuracy vs last epoch with various models on popular dataset for comparison.
+
+
+
+\section{ResNet-18 on CIFAR-10}
+In this section, we will use test network ResNet-18 on CIFAR-10. Since the traditional training include the validation set to choose the model, therefore we split the original 54000 training data as training set with 48000 data and validation set with 6000 data. There are also two ways to choose the model, namely choosing the model after the last epoch or choosing the model with the highest validation accuracy. 
+
+
+\subsection{Fixed epoch and manual decreasing learning rate}
+We choose to use fixed epoch training, namely 120 epochs, with changing the learning rate manually, i.e., decrease by 10 for every 30 epochs. The initial learning rate is 0.1, the momentum is 0.9 and the weight-dacay is 0.0001. The batch size is 128.
+
+The time cost is around 17000 seconds.
+
+If we split the sets randomly for 10 times, the results are listed in the table.
+\begin{table}[!htbp]
+	\centering
+	\caption{Accuracy of different sets for model of last epoch and the one with best validation accuracy }
+	\label{table:cv1}
+	\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+		\hline
+		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+%		Iteration &  \multicolumn{2}{{|c|}}{SGD}  &    \multicolumn{2}{{|c|}}{l1-prox}    \\\cline{2-5}
+%		
+fold	&	train accu(best	&	train accu(last	&	val accu(best	&	val accu(last	&	test accu(best 	&	test accu(last	\\
+	&	 val model)	&	 epoch model)	&	val model)	&	 epoch model)	&	val model)	&	 epoch model)	\\\hline
+1	&	99.92	&	99.91	&	93.13	&	92.48	&	93.40	&	93.20	\\\hline
+2	&	99.92	&	99.90	&	93.05	&	92.77	&	92.52	&	92.62	\\\hline
+3	&	99.93	&	99.89	&	93.17	&	92.58	&	93.35	&	93.12	\\\hline
+4	&	99.91	&	99.90	&	92.97	&	92.40	&	92.33	&	92.42	\\\hline
+5	&	99.91	&	99.91	&	93.30	&	93.05	&	92.63	&	92.70	\\\hline
+6	&	99.91	&	99.90	&	93.50	&	93.47	&	93.12	&	92.77	\\\hline
+7	&	99.92	&	99.88	&	93.32	&	93.00	&	93.47	&	93.12	\\\hline
+8	&	99.92	&	99.88	&	93.35	&	92.80	&	93.40	&	93.23	\\\hline
+9	&	99.90	&	99.87	&	93.78	&	93.45	&	92.53	&	92.17	\\\hline
+10	&	99.92	&	99.90	&	93.53	&	93.20	&	92.05	&	92.02	\\\hline
+avg	&	99.92	&	99.89	&	93.31	&	92.92	&	92.88	&	92.74	\\\hline
+	\end{tabular}
+\end{table}
+
+
+If we split the sets into 10 folds and do the standard cross-validation, the results are listed in the table.
+\begin{table}[!htbp]
+	\centering
+	\caption{Accuracy of different sets for model of last epoch and the one with best validation accuracy }
+	\label{table:cv2}
+	\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+		\hline
+		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+%		Iteration &  \multicolumn{2}{{|c|}}{SGD}  &    \multicolumn{2}{{|c|}}{l1-prox}    \\\cline{2-5}
+%		
+fold	&	train accu(best	&	train accu(last	&	val accu(best	&	val accu(last	&	test accu(best 	&	test accu(last	\\
+	&	 val model)	&	 epoch model)	&	val model)	&	 epoch model)	&	val model)	&	 epoch model)	\\\hline
+1	&	99.93	&	99.92	&	94.00	&	93.52	&	93.07	&	93.43	\\\hline
+2	&	99.94	&	99.88	&	93.83	&	93.53	&	93.12	&	93.07	\\\hline
+3	&	99.91	&	99.90	&	93.23	&	92.92	&	93.42	&	93.32	\\\hline
+4	&	99.92	&	99.90	&	93.40	&	93.05	&	93.45	&	93.22	\\\hline
+5	&	99.91	&	99.89	&	93.42	&	92.93	&	92.65	&	92.67	\\\hline
+6	&	99.94	&	99.88	&	93.33	&	92.82	&	93.22	&	92.87	\\\hline
+7	&	99.92	&	99.90	&	93.55	&	93.17	&	93.17	&	93.40	\\\hline
+8	&	99.88	&	99.85	&	92.72	&	92.35	&	92.97	&	92.35	\\\hline
+9	&	99.90	&	99.86	&	93.22	&	92.65	&	92.40	&	92.27	\\\hline
+10	&	99.90	&	99.88	&	93.55	&	92.82	&	92.73	&	92.97	\\\hline
+avg	&	99.92	&	99.89	&	93.43	&	92.98	&	93.02	&	92.96	\\\hline
+	\end{tabular}
+\end{table}
+
+If we split the sets into 10 folds, fix the first fold as the test set, take one fold as the validation set and the remaining as the training set, the results are listed in the table.
+\begin{table}[!htbp]
+	\centering
+	\caption{Accuracy of different sets for model of last epoch and the one with best validation accuracy }
+	\label{table:cv1}
+	\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+		\hline
+		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+%		Iteration &  \multicolumn{2}{{|c|}}{SGD}  &    \multicolumn{2}{{|c|}}{l1-prox}    \\\cline{2-5}
+%		
+fold	&	train accu(best	&	train accu(last	&	val accu(best	&	val accu(last	&	test accu(best 	&	test accu(last	\\
+	&	 val model)	&	 epoch model)	&	val model)	&	 epoch model)	&	val model)	&	 epoch model)	\\\hline
+1	&	99.93	&	99.93	&	93.58	&	93.13	&	92.55	&	92.65	\\\hline
+2	&	99.94	&	99.89	&	93.57	&	92.98	&	92.93	&	92.78	\\\hline
+3	&	99.93	&	99.89	&	93.48	&	93.03	&	92.85	&	93.20	\\\hline
+4	&	99.95	&	99.92	&	93.28	&	92.95	&	93.03	&	93.18	\\\hline
+5	&	99.92	&	99.90	&	93.12	&	92.75	&	92.92	&	92.50	\\\hline
+6	&	99.94	&	99.93	&	93.52	&	92.93	&	92.92	&	93.43	\\\hline
+7	&	99.93	&	99.92	&	93.40	&	93.10	&	93.00	&	93.15	\\\hline
+8	&	99.93	&	99.90	&	92.77	&	92.18	&	92.58	&	93.02	\\\hline
+9	&	99.93	&	99.90	&	92.80	&	92.22	&	92.52	&	92.37	\\\hline
+avg	&	99.93	&	99.91	&	93.28	&	92.81	&	92.81	&	92.92	\\\hline
+	\end{tabular}
+\end{table}
+
+
+\newpage
+\section{VGG-16 on CIFAR-10}
+In this section, we will use test network VGG-16 on CIFAR-10. Since the traditional training include the validation set to choose the model, therefore we split the original 54000 training data as training set with 48000 data and validation set with 6000 data. There are also two ways to choose the model, namely choosing the model after the last epoch or choosing the model with the highest validation accuracy. 
+
+
+\subsection{Fixed epoch and manual decreasing learning rate}
+We choose to use fixed epoch training, namely 160 epochs.
+The initial learning rate is set to 0.1, and is divided by 10 at 50\% and 75\% of the total number of training epochs.
+The momentum is 0.9 and the weight-dacay is 0.0001. The batch size is 128.
+
+The time cost is around 22000 seconds.
+
+If we split the sets randomly for 10 times, the results are listed in the table.
+\begin{table}[!htbp]
+	\centering
+	\caption{Accuracy of different sets for model of  last epoch and the one with best validation accuracy }
+	\label{table:cv3}
+	\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+		\hline
+		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+%		Iteration &  \multicolumn{2}{{|c|}}{SGD}  &    \multicolumn{2}{{|c|}}{l1-prox}    \\\cline{2-5}
+%		
+fold	&	train accu(best	&	train accu(last	&	val accu(best	&	val accu(last	&	test accu(best 	&	test accu(last	\\
+	&	 val model)	&	 epoch model)	&	val model)	&	 epoch model)	&	val model)	&	 epoch model)	\\\hline
+1	&	99.97	&	99.97	&	93.12	&	92.77	&	93.28	&	92.65	\\\hline
+2	&	99.97	&	99.96	&	92.85	&	92.65	&	92.92	&	93.18	\\\hline
+3	&	99.99	&	99.96	&	93.12	&	92.48	&	92.78	&	92.90	\\\hline
+4	&	99.97	&	99.95	&	92.98	&	92.72	&	92.07	&	92.40	\\\hline
+5	&	99.97	&	99.95	&	93.38	&	93.08	&	92.37	&	92.40	\\\hline
+6	&	99.97	&	99.95	&	93.10	&	92.80	&	92.35	&	92.57	\\\hline
+7	&	99.98	&	99.97	&	93.05	&	92.65	&	92.90	&	93.20	\\\hline
+8	&	99.97	&	99.97	&	93.03	&	92.72	&	93.07	&	92.82	\\\hline
+9	&	99.97	&	99.96	&	93.50	&	93.07	&	92.37	&	92.60	\\\hline
+10	&	99.98	&	99.96	&	93.43	&	93.18	&	92.20	&	92.57	\\\hline
+avg	&	99.97	&	99.96	&	93.16	&	92.81	&	92.63	&	92.73	\\\hline
+	\end{tabular}
+\end{table}
+
+
+If we split the sets into 10 folds and do the standard cross-validation, the results are listed in the table.
+\begin{table}[!htbp]
+	\centering
+	\caption{Accuracy of different sets for model of  last epoch and the one with best validation accuracy }
+	\label{table:cv4}
+	\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+		\hline
+		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+%		Iteration &  \multicolumn{2}{{|c|}}{SGD}  &    \multicolumn{2}{{|c|}}{l1-prox}    \\\cline{2-5}
+%		
+fold	&	train accu(best	&	train accu(last	&	val accu(best	&	val accu(last	&	test accu(best 	&	test accu(last	\\
+	&	 val model)	&	 epoch model)	&	val model)	&	 epoch model)	&	val model)	&	 epoch model)	\\\hline
+1	&	99.98	&	99.96	&	93.45	&	92.92	&	92.68	&	92.92	\\\hline
+2	&	99.97	&	99.95	&	93.47	&	93.25	&	92.75	&	92.98	\\\hline
+3	&	99.97	&	99.97	&	93.08	&	92.55	&	92.65	&	93.38	\\\hline
+4	&	99.97	&	99.96	&	93.27	&	92.97	&	92.67	&	92.80	\\\hline
+5	&	99.97	&	99.95	&	92.92	&	92.42	&	92.53	&	92.40	\\\hline
+6	&	99.98	&	99.98	&	92.87	&	92.42	&	92.87	&	93.08	\\\hline
+7	&	99.97	&	99.96	&	93.28	&	93.13	&	93.07	&	93.22	\\\hline
+8	&	99.98	&	99.96	&	93.10	&	92.72	&	92.90	&	93.15	\\\hline
+9	&	99.97	&	99.96	&	93.38	&	93.02	&	92.48	&	92.83	\\\hline
+10	&	99.98	&	99.97	&	93.22	&	92.92	&	92.57	&	92.52	\\\hline
+avg	&	99.97	&	99.96	&	93.20	&	92.83	&	92.72	&	92.93	\\\hline	\end{tabular}
+\end{table}
+
+If we split the sets into 10 folds, fix the first fold as the test set, take one fold as the validation set and the remaining as the training set, the results are listed in the table.
+\begin{table}[!htbp]
+	\centering
+	\caption{Accuracy of different sets for model of last epoch and the one with best validation accuracy }
+	\label{table:cv1}
+	\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+		\hline
+		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+%		Iteration &  \multicolumn{2}{{|c|}}{SGD}  &    \multicolumn{2}{{|c|}}{l1-prox}    \\\cline{2-5}
+%		
+fold	&	train accu(best	&	train accu(last	&	val accu(best	&	val accu(last	&	test accu(best 	&	test accu(last	\\
+	&	 val model)	&	 epoch model)	&	val model)	&	 epoch model)	&	val model)	&	 epoch model)	\\\hline
+1	&	99.98	&	99.98	&	93.40	&	93.40	&	93.13	&	93.10	\\\hline
+2	&	99.98	&	99.97	&	93.37	&	93.23	&	93.00	&	93.05	\\\hline
+3	&	99.98	&	99.97	&	93.47	&	92.85	&	92.67	&	93.25	\\\hline
+4	&	99.98	&	99.96	&	93.02	&	92.45	&	93.20	&	92.73	\\\hline
+5	&	99.98	&	99.95	&	93.57	&	93.18	&	92.70	&	93.00	\\\hline
+6	&	99.98	&	99.97	&	93.43	&	92.77	&	92.80	&	92.65	\\\hline
+7	&	99.97	&	99.96	&	93.18	&	92.78	&	92.95	&	92.55	\\\hline
+8	&	99.98	&	99.97	&	92.72	&	92.18	&	93.17	&	92.90	\\\hline
+9	&	99.97	&	99.96	&	93.47	&	92.95	&	92.72	&	92.63	\\\hline
+avg	&	99.98	&	99.97	&	93.29	&	92.87	&	92.93	&	92.87	\\\hline
+	\end{tabular}
+\end{table}
+
+\newpage
+\section{VGG-19 on CIFAR-10}
+In this section, we will use test network VGG-16 on CIFAR-10. Since the traditional training include the validation set to choose the model, therefore we split the original 54000 training data as training set with 48000 data and validation set with 6000 data. There are also two ways to choose the model, namely choosing the model after the last epoch or choosing the model with the highest validation accuracy. 
+
+
+\subsection{Fixed epoch and manual decreasing learning rate}
+We choose to use fixed epoch training, namely 160 epochs.
+The initial learning rate is set to 0.1, and is divided by 10 at 50\% and 75\% of the total number of training epochs.
+The momentum is 0.9 and the weight-dacay is 0.0001. The batch size is 128.
+
+The time cost is around 27000 seconds.
+
+If we split the sets randomly for 10 times, the results are listed in the table.
+\begin{table}[!htbp]
+	\centering
+	\caption{Accuracy of different sets for model of  last epoch and the one with best validation accuracy }
+	\label{table:cv3}
+	\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+		\hline
+		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+%		Iteration &  \multicolumn{2}{{|c|}}{SGD}  &    \multicolumn{2}{{|c|}}{l1-prox}    \\\cline{2-5}
+%		
+fold	&	train accu(best	&	train accu(last	&	val accu(best	&	val accu(last	&	test accu(best 	&	test accu(last	\\
+	&	 val model)	&	 epoch model)	&	val model)	&	 epoch model)	&	val model)	&	 epoch model)	\\\hline
+1	&	99.98	&	99.97	&	93.15	&	92.65	&	92.82	&	92.85	\\\hline
+2	&	99.98	&	99.97	&	93.38	&	92.78	&	92.35	&	92.85	\\\hline
+3	&	99.98	&	99.97	&	92.73	&	92.33	&	92.27	&	92.05	\\\hline
+4	&	99.97	&	99.96	&	92.73	&	92.40	&	92.22	&	92.82	\\\hline
+5	&	99.98	&	99.96	&	93.18	&	92.85	&	92.13	&	92.13	\\\hline
+6	&	99.99	&	99.99	&	92.82	&	92.45	&	92.30	&	91.90	\\\hline
+7	&	99.97	&	99.97	&	92.75	&	92.23	&	92.68	&	92.52	\\\hline
+8	&	99.98	&	99.96	&	92.70	&	92.62	&	93.02	&	92.92	\\\hline
+9	&	99.98	&	99.97	&	93.45	&	93.15	&	92.12	&	92.13	\\\hline
+10	&	99.98	&	99.97	&	93.18	&	92.83	&	91.93	&	91.82	\\\hline
+avg	&	99.98	&	99.97	&	93.01	&	92.63	&	92.38	&	92.40	\\\hline
+	\end{tabular}
+\end{table}
+
+
+If we split the sets into 10 folds and do the standard cross-validation, the results are listed in the table.
+
+\begin{table}[!htbp]
+	\centering
+	\caption{Accuracy of different sets for model of  last epoch and the one with best validation accuracy }
+	\label{table:cv3}
+	\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+		\hline
+		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+%		Iteration &  \multicolumn{2}{{|c|}}{SGD}  &    \multicolumn{2}{{|c|}}{l1-prox}    \\\cline{2-5}
+%		
+fold	&	train accu(best	&	train accu(last	&	val accu(best	&	val accu(last	&	test accu(best 	&	test accu(last	\\
+	&	 val model)	&	 epoch model)	&	val model)	&	 epoch model)	&	val model)	&	 epoch model)	\\\hline
+1	&	99.98	&	99.98	&	93.38	&	92.75	&	92.70	&	92.78	\\\hline
+2	&	99.97	&	99.97	&	93.43	&	93.07	&	93.05	&	92.87	\\\hline
+3	&	99.98	&	99.96	&	93.27	&	93.08	&	93.03	&	92.70	\\\hline
+4	&	99.99	&	99.99	&	92.75	&	92.27	&	92.82	&	92.43	\\\hline
+5	&	99.98	&	99.98	&	92.93	&	92.53	&	91.67	&	92.08	\\\hline
+6	&	99.98	&	99.97	&	92.92	&	92.50	&	93.25	&	93.05	\\\hline
+7	&	99.98	&	99.97	&	93.00	&	92.65	&	92.55	&	92.30	\\\hline
+8	&	99.98	&	99.96	&	92.70	&	92.42	&	92.82	&	92.72	\\\hline
+9	&	99.98	&	99.98	&	93.22	&	93.05	&	92.48	&	92.70	\\\hline
+10	&	99.97	&	99.95	&	93.13	&	92.42	&	92.80	&	93.00	\\\hline
+avg	&	99.98	&	99.97	&	93.07	&	92.67	&	92.72	&	92.66	\\\hline
+	\end{tabular}
+\end{table}
+
+
+If we split the sets into 10 folds, fix the first fold as the test set, take one fold as the validation set and the remaining as the training set, the results are listed in the table.
+\begin{table}[!htbp]
+	\centering
+	\caption{Accuracy of different sets for model of last epoch and the one with best validation accuracy }
+	\label{table:cv1}
+	\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+		\hline
+		% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+%		Iteration &  \multicolumn{2}{{|c|}}{SGD}  &    \multicolumn{2}{{|c|}}{l1-prox}    \\\cline{2-5}
+%		
+fold	&	train accu(best	&	train accu(last	&	val accu(best	&	val accu(last	&	test accu(best 	&	test accu(last	\\
+	&	 val model)	&	 epoch model)	&	val model)	&	 epoch model)	&	val model)	&	 epoch model)	\\\hline
+1	&	99.98	&	99.98	&	93.37	&	92.87	&	92.42	&	92.88	\\\hline
+2	&	99.99	&	99.98	&	92.97	&	92.47	&	93.27	&	92.95	\\\hline
+3	&	99.98	&	99.97	&	93.27	&	92.75	&	92.60	&	93.02	\\\hline
+4	&	99.98	&	99.97	&	93.05	&	92.55	&	92.88	&	92.65	\\\hline
+5	&	99.99	&	99.97	&	93.63	&	92.85	&	92.70	&	92.87	\\\hline
+6	&	99.98	&	99.95	&	92.87	&	92.40	&	91.85	&	92.82	\\\hline
+7	&	99.98	&	99.97	&	93.32	&	92.77	&	92.93	&	93.07	\\\hline
+8	&	99.98	&	99.98	&	92.70	&	92.70	&	92.93	&	93.23	\\\hline
+9	&	99.99	&	99.99	&	93.07	&	92.82	&	92.70	&	92.17	\\\hline
+avg	&	99.98	&	99.97	&	93.14	&	92.69	&	92.70	&	92.85	\\\hline
+	\end{tabular}
+\end{table}
+
+\newpage
+\section{Discussion}
+We find the test accuracy of the random splitting cross validation is consistently lower than that of the other two methods. This may happen due to the existence of the outliers.
+
+\subsection{Outliers}
+There can be some problems about the data labels.
+
+\begin{enumerate}
+\item Images with wrong labels: the label is wrong or there is a better label than given.
+\item Multi-label images: There should be multiple labels to a image since it contains multiple objects. 
+\item Ontological issues: the class maillot appears twice, the existence of is-a relationships like bathtub is a tub, misnomers like projectile and missile, and unanticipated issues caused by words with multiple definitions like corn and ear. 
+\end{enumerate}
+
+\subsection{Distribution}
+For simplicity, we assume there are $N_0$ outliers out of 60000 over all images in CIFAR-10 dataset. Suppose we do a $k$-fold cross validation for the overlapping and standard one, we want to compared the total number of outliers in all the test folds, $X$. 
+
+As for the standard $k$-fold cross validation, since there are no overlapping among the test folds, each outlier will appear in a test fold once and only once. Therefore the total number of outliers in all the test folds is $N_0$.
+
+As for the overlapping $k$-fold cross validation, things are little bit different. We state the procedure here to better understand the underlying distribution.
+\begin{enumerate}
+\item We choose $\frac{60000}{k}$ balanced data from the dataset as the test set. Here we assume the distribution of outliers in different classes is uniform. Then this is a drawing of $N=\frac{60000}{k}$ data without replacement. For each drawing, the probability of obtaining an  outlier is a constant $p=\frac{N_0}{60000}$. Therefore the number of outliers in this test fold follows a binomial distribution $B_1(N,p)$. The mean is $\mu=N*p=\frac{N_0}{k}$ and the variance is $$\sigma=N*p*(1-p)=\frac{N_0*(60000-N_0)}{60000*k}.$$
+\item Then we repeat the first step for k times. Since the setup is the same, we have the same binomial distributions $B_i(N,p), i=1,2,3,..,k$. By the property of binomials, $$X \sim \sum_{i=1}^{k}B_i(N,p)=B(N*k,p)=B(60000,\frac{N_0}{60000}).$$ The mean is $\mu=N*k*p=N_0$ and the variance is $$\sigma=N*k*p*(1-p)=\frac{N_0*(60000-N_0)}{60000}.$$
+\end{enumerate}
+
+From the analysis, we can see the mean is also  $N_0$, but there is a large variance $\frac{N_0*(60000-N_0)}{60000}$. It means in each experiment of the overlapping $k$-fold cross validation, the total number of outliers in all the test folds can be quite different. We may have encountered a bad case where $X$ is larger than $N_0$ such that the test accuracy is consistently lower than that of the other two methods. It contradicts to our original goal to use statistical methods to reduce randomness and improve the repeatability and substantivity. Therefore we would suggest to use the second and third method for better evaluation.
+
+
+
+\section{Conclusion}
+Based on our numerical result, we can conclude the following things as for the framework and for the traditional training algorithms.
+
+\begin{enumerate}
+\item People use the test set multiple times. The best they can do is to run the same setup of the experiment multiple times to ensure the robustness and repeatability. With our cross-validation framework, we can fairly compare the performance of the proposed model and training algorithms.
+\item As for the first two kinds of data splitting, the regular cross validation taking validation set and test set sequentially achieved better accuracy for all the experiments. We also prefer this way since we don't need to consider the problem of repeated data in different folds for the cross validation taking random validation set and test set. 
+\item As for the last two kinds of data splitting, the regular cross validation taking validation set and test set sequentially achieved comparable  accuracy with the leave-one-fold cross validation. It suggests that when the test data is already given, there is not much difference about the data splitting and model selection. 
+\item In the overlapping $k$-fold cross validation, the total number of outliers in all the test folds follows a binomial distribution and can be quite different. Therefore we don't want to use this method for evaluation.
+\item The average test accuracy is comparable as for taking the model with best validation accuracy or the final model after training. This coincides with our observation that these two ways don't make a difference. It also explains why both ways exist when researchers are reporting their results. 
+\end{enumerate}
+
+
+

@@ -1,0 +1,273 @@
+\section{Adam, Momentum etc}
+\subsubsection{Momentum Mini-Batch}
+Then we are going to introduce the momentum method to accelerate the gradient method.  
+{\bf Without special statement, the general setup for those next algorithms are the same to Mini-Batch}
+
+\begin{algorithm}[H]
+\caption{Momentum Mini-Batch}
+\label{alg:mom}
+{\bf Input}: momentum coefficient $\alpha$(we often choose as: 0.5, 0.9, 0.999) \\
+Compute the gradient on $B_{i_t}$:
+$$
+g_t = \nabla_{w} \frac{1}{m} \sum_{i \in B_{i_t}} f_i(w_{t}).
+$$
+Compute the momentum:
+\begin{equation}
+v_t = \alpha v_{t-1} - \eta_t g_t \quad (v_0 = 0).
+\end{equation}
+Update $w$:
+\begin{equation}
+w_{t+1} = w_t + v_t.
+\end{equation}
+\end{algorithm}
+
+\subsubsection{Nesterov Momentum Mini-Batch Method}
+We may also use the Nesterov accelerated skill and get the Nesterov momentum Mini-Batch method.
+\begin{algorithm}[H]
+\caption{Nesterov Momentum Mini-Batch}
+\label{alg:Nesterov}
+{\bf Input}: momentum coefficient $\alpha$\\
+Compute the gradient on $B_{i_t}$:
+$$
+g_t = \nabla_{w} \frac{1}{m} \sum_{i \in B_{i_t}} f_i(w_{t} + \alpha v_{t-1}) \quad (v_0 = 0).
+$$
+Compute the momentum:
+\begin{equation}
+v_t = \alpha v_{t-1} - \eta_t g_t.
+\end{equation}
+Update $w$:
+\begin{equation}
+w_{t+1} = w_t + v_t.
+\end{equation}
+\end{algorithm}
+
+
+\subsection{Adaptive Learning Rate Mini-batch Based Method}
+The delta-bar-delta algorithm (Jacobs, 1988) is an early heuristic approach to adapting individual learning rates for model parameters during training. The approach is based on a simple idea: if the partial derivative of the loss, with respect to a given model parameter, remains the same sign, then the learning rate should increase. If the partial derivative with respect to that parameter changes sign, then the learning rate should decrease. Of course, this kind of rule can only be applied to full batch optimization. More recently, a number of incremental (or mini-batch-based) methods have been introduced that adapt the learning rates of model parameters.
+
+\subsubsection{AdaGrad}
+The AdaGrad algorithm, individually adapts the learning rates of all model parameters by scaling them inversely proportional to the square root of the sum of all of their historical squared values (Duchi et al., 2011).  
+\begin{algorithm}[H]
+\caption{AdaGrad}
+\label{alg:AdaGrad}
+{\bf Input}: small constant $\delta$(perhaps $10^{-7}$, for numerical stability)\\
+Compute the gradient on $B_{i_t}$:
+$$
+g_t = \nabla_{w} \frac{1}{m} \sum_{i \in B_{i_t}} f_i(w_{t}).
+$$
+Accumulate squared gradient:
+\begin{equation}
+r_t = r_{t-1} + g_t \otimes g_t. \quad (r_0 = 0),
+\end{equation}
+with $\otimes$ means multiplication element-wise.  \\
+Compute Update:
+\begin{equation}
+\Delta w_t = -\frac{\eta_t}{\delta + \sqrt{r_t}} \otimes g_t,
+\end{equation}
+with division and square root applied element-wise. \\
+Update $w$:
+\begin{equation}
+w_{t+1} = w_t + \Delta w_t.
+\end{equation}
+\end{algorithm}
+
+\subsubsection{RMSProp}
+The RMSProp algorithm (Hinton, 2012) modifies AdaGrad to perform better in the non-convex setting by changing the gradient accumulation into an exponentially weighted moving average. 
+
+\begin{algorithm}[H]
+\caption{RMSProp}
+\label{alg:RMSProp}
+{\bf Input}: decay rate $\rho$, small constant $\delta$(usually $10^{-6}$)\\
+Compute the gradient on $B_{i_t}$:
+\begin{equation}
+g_t = \nabla_{w} \frac{1}{m} \sum_{i \in B_{i_t}} f_i(w_{t}).
+\end{equation}
+Accumulate squared gradient:
+\begin{equation}
+r_t = \rho r_{t-1} + (1-\rho)g_t \otimes g_t. \quad (r_0 = 0),
+\end{equation}
+Compute update:
+\begin{equation}
+\Delta w_t = -\frac{\eta_t}{\sqrt{\delta + {r_t}}} \otimes g_t
+\end{equation}
+Update $w$:
+\begin{equation}
+w_{t+1} = w_t + \Delta w_t.
+\end{equation}
+\end{algorithm}
+
+And if we combine RMSProp  with Nesterov momentum, we can get:
+
+\begin{algorithm}[H]
+\caption{RMSProp with Nesterov momentum}
+\label{alg:RMSPropNesterov}
+{\bf Input}: decay rate $\rho$, momentum coefficient $\alpha$\\
+Compute the gradient on $B_{i_t}$:
+\begin{equation}
+g_t = \nabla_{w} \frac{1}{m} \sum_{i \in B_{i_t}} f_i(w_{t} + \alpha v_{t-1}), \quad (v_0 = 0).
+\end{equation}
+Accumulate squared gradient:
+\begin{equation}
+r_t = \rho r_{t-1} + (1-\rho)g_t \otimes g_t. \quad (r_0 = 0),
+\end{equation}
+Compute velocity update:
+\begin{equation}
+v_t = \alpha v_{t-1} -\frac{\eta_t}{\sqrt{{r_t}}} \otimes g_t
+\end{equation}
+Update $w$:
+\begin{equation}
+w_{t+1} = w_t + v_t.
+\end{equation}
+\end{algorithm}
+
+\subsubsection{Adam}
+Adam (Kingma and Ba, 2014) is yet another adaptive learning rate optimization algorithm, and its name ``Adam'' derives from the phrase \emph{Adaptive Moment Estimation}, which adapt both learning rate $\eta$ and subgradient $g$.
+Use moving average of both $g$ and $g^2$ (here $g^2$ indicates the element-wise square $g \bigodot g$) to compute first order moment vector
+\begin{equation}
+m_t  =\beta_1 m_{t-1} + (1-\beta_1) g_t=(1-\beta_1)\sum_{i=1}^{t}\beta_1^{t-i} g_i ,
+\end{equation}
+and second order moment vector
+\begin{equation}
+v_t  =\beta_2 v_{t-1} + (1-\beta_2) g_t^2=(1-\beta_2)\sum_{i=1}^{t}\beta_2^{t-i} g^2_i.
+\end{equation}
+Here $\beta_1 = 0.9$, $\beta_2 = 0.99$.
+
+Since
+\begin{align}
+\mathbb{E} \left[ m_t \right] & =\mathbb{E} \left[ g_t \right] \cdot (1-\beta_1^t) +\zeta\\
+\mathbb{E} \left[ v_t \right] & =\mathbb{E} \left[ g^2_t \right] \cdot (1-\beta_2^t) +\zeta.
+\end{align}
+Here $\zeta=0$ if the true moment is stationary.
+So, we use a bias-corrected version here
+\begin{align}
+\tilde{m}_t=\frac{m_t}{1-\beta_1^t} \\
+\tilde{v}_t=\frac{v_t}{1-\beta_2^t}.	
+\end{align}
+
+The iterate can be written as 
+\begin{equation}\label{Adam}
+w_{t+1}=w_t-\frac{\eta}{\sqrt{\tilde{v}_t}+\delta} \tilde{m}_t.
+\end{equation}
+
+
+\begin{algorithm}[H]
+\caption{Adam}
+\label{alg:Adam}
+{\bf Input}: small constant $\delta$ (can be $10^{-8}$), decay rate for moment estimates $\rho_1$ and $\rho_2$ (suggested defaults: 0.9 and 0.999 respectively)\\
+Compute the gradient on $B_{i_t}$:
+\begin{equation}
+g_t = \nabla_{w} \frac{1}{m} \sum_{i \in B_{i_t}} f_i(w_{t}).
+\end{equation}
+Update biased first moment estimate:
+\begin{equation}
+m_t = \rho_1 m_{t-1} + (1-\rho_1)g_t, \quad (m_0 = 0).
+\end{equation}
+Update biased second moment estimate:
+\begin{equation}
+v_t = \rho_2 v_{t-1} + (1-\rho_2)g_t \otimes g_t, \quad (v_0 = 0).
+\end{equation}
+Correct bias in first moment:
+\begin{equation}
+\tilde m_t = \frac{m_t}{1 - \rho_1^{t}}.
+\end{equation}
+Correct bias in second moment:
+\begin{equation}
+\tilde v_t = \frac{v_t}{1 - \rho_2^{t}}.
+\end{equation}
+Compute update:
+\begin{equation}
+\Delta w_t =  -\frac{\eta_t}{\sqrt{\tilde v_t} + \delta} \otimes \tilde m_t
+\end{equation}
+Update $w$:
+\begin{equation}
+w_{t+1} = w_t + \Delta w_t.
+\end{equation}
+\end{algorithm}
+
+\subsection{For linear problems}
+Now we apply Adam for the following SPD linear system
+\begin{equation}
+	A u-b=0
+\end{equation}
+where $A \in \mathbb{R}^{n \times n}$ is \emph{symmetric positive definite} matrix and $b \in \mathbb{R}^n$.
+It is equal to solve the following minimization problem
+\begin{equation}
+	\min_u\ \left\{f(u):= \frac{1}{2} u^T Au - b^T u\right\}.
+\end{equation}
+
+Assume that we didn't take stochastic technique into consideration, then
+\begin{equation}
+g_k=A u_k-b.
+\end{equation}
+Compute first order moment vector
+\begin{align}
+m_k & = \beta_1 m_{k-1} +(1-\beta_1) g_k\\
+&= \beta_1 m_{k-1} + (1-\beta_1) (A u_k - b)
+\end{align}
+The update can be written as
+\begin{equation}
+u_{k+1}=u_k-\eta P^{-1}_k R_k
+\end{equation}
+where
+\begin{align}
+R_k & =\frac{1-\beta_1}{1-\beta_1^k} \sum_{i=1}^{k} \beta_1^{k-i} (A u_i -b)\\
+& = \frac{(1-\beta_1) \beta_1^{(k-1)}}{1-\beta_1^k} (Au_1 -b) + \frac{(1-\beta_1) \beta_1^{(k-2)}}{1-\beta_1^k} (Au_2 -b) +\cdots \\
+& +\frac{(1-\beta_1) \beta_1^{0}}{1-\beta_1^k} (Au_k -b) \\
+& =c_1 (Au_1-b) + c_2(Au_2-b) + \cdots + c_k (Au_k-b).
+\end{align}
+Here
+\begin{equation}
+c_i = \frac{(1-\beta_1) \beta_1^{(k-i)}}{1-\beta_1^k}
+\end{equation}
+is increase geometrical sequence. 
+And we can easily draw the conclusion that
+\begin{equation}
+\sum_{i=1}^{k} c_i =1.
+\end{equation}
+So $R_k$ is weighted average of $\left\{u_1, u_2, \dots, u_k\right\}$.
+
+$P_k$ is a diagonal matrix
+\begin{align}
+P_k & =\text{diag} \left\{
+\sqrt{ \frac{1-\beta_2}{1-\beta_2^k} \sum_{i=1}^{k} \beta_2^{k-i} (A u_i -b)^2 }+\epsilon 
+\right\}\\
+& = \text{diag} \left\{ p_1, p_2, \cdots, p_n \right\},
+\end{align}
+where $(Au_i -b)^2$ is element-wise product.
+$p_i^2$ is weighted average of $(A u_i-b)^2$.
+
+To simplify our analysis, we will use $A u_k - b$ instead of $R_k$, as well as
+\begin{equation}
+	P_k=\text{diag} \left\{ |A u_k-b| \right\}
+\end{equation}
+
+
+Assume $u^*$ is the solution of $Au-b=0$.
+So
+\begin{equation}
+u^* = u^* + \eta P^{-1} (A u^* -b)
+\end{equation}
+And
+\begin{equation}
+u^* -u_k = (I- \eta P_k^{-1} A) (u^* - u_k)
+\end{equation}
+We need estimate the upper bound of $\|I-\eta P^{-1}_k A\|$.
+
+In other way, we will find the relation of ADAM and SDA.
+
+
+\subsection{Choosing the Right Optimization Algorithm}
+Schaul et al. (2014) presented a valuable comparison of a large number of optimization algorithms across a wide range of learning tasks. While the results suggest that the family of algorithms with adaptive learning rates (represented by RMSProp and Adam) performed fairly robustly, no single best algorithm has emerged.
+
+Currently, the most popular optimization algorithms actively in use include SGD, SGD with momentum, RMSProp, RMSProp with momentum, AdaDelta and Adam. The choice of which algorithm to use, at this point, seems to depend largely on the user's familiarity with the algorithm (for ease of hyperparameter tuning).
+
+%\section{Incremental Methods}
+%%\subsection{Problem setting}
+%Now we consider those kind of problem:
+%\begin{problem}Find ${x}^{*} \in \mathcal{X}$  s.t:
+%	\begin{equation}\label{equ:sum-opt}
+%	{x}^* = \mathop{\arg\min}_{{x} \in \mathcal{X} \subseteq \mathbb{R}^{n}} \frac{1}{N}\sum_{i=1}^N f_i(x).
+%	\end{equation}
+%	Here $\mathcal{X}$ is a convex compact subset. (This condition is used
+%	to prove the gradient is bounded, i.e. $\|\nabla f_i(x)\| \le M$.)
+%\end{problem}

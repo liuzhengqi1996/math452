@@ -1,0 +1,73 @@
+\section{Additional comments}
+\paragraph{\textbf{Remarks}}
+\begin{enumerate}
+	
+	\item $k$ disjoint sets $A_1,A_2,\cdots,A_k$ represent $k$ classes. We use $A$ to denote
+	\[
+	A = A_1\cup A_2\cup \cdots \cup A_k. 
+	\]
+	Naturally we can define the standard decision mapping $\bm{\chi}:A \rightarrow \{e_1,e_2,\cdots,e_k\}\subset \mathbb{R}^k$  as
+	\begin{equation}
+	\bm{\chi}(x) = e_i,\ x\in A_i,
+	\end{equation}
+	which is just like a characteristic function.
+	
+	\item To solve a classification problem, our goal is to find the standard decision mapping. But usually it's unpractical, because we seem to be better at dealing with continuous functions with continuous outputs. A natural idea is to reach the goal in two steps. We can use a composition of the following two mappings 
+	$$\bm{f}:A \rightarrow \mathbb{R}^k;\ x\mapsto y.$$
+	$$\bm{\pi}: \mathbb{R}^k \rightarrow \{e_1,e_2,\cdots,e_k\};\ \ y\mapsto e_i,i = \argmax_j~y_j$$
+	to obtain the standard decision mapping. Notice that the mapping $\bm{\pi}$ is fixed, so we only need to find a proper mapping $\bm{f}$. 
+	
+	\item Assume that we want to find a proper $\bm{f}$ in a mapping sapce $\mathscr{H}$. The result of a classification problem depends on which $\mathscr{H}$ to choose and how to find the optimal mapping $\bm{f}$ in $\mathscr{H}$.\\
+	
+	\item Given a mapping space $\mathscr{H}$, if there exists an $\mathbf{f}\in \mathscr{H}$ such that 
+	\begin{equation}
+	\bm{\chi} = \bm{\pi} \circ \bm{f}.
+	\end{equation}
+	we can say that $A_1,A_2,\cdots,A_k$ are $\mathscr{H}$-separable. Setting $\mathscr{H}$ to be the affine mapping space, $i.e.$ $\mathscr{H} = \{\bm{f}: \bm{f}(x) = Wx+b\}$, we obtain the definition of linearly separable.\\
+	
+	\item A linear model  is a method to find the optimal $W$ and $b$ when we take $\mathscr{H} = \{\bm{f}: \bm{f}(x) = Wx+b\}$.\\
+	
+	\item Assume that $\bm{\phi}$ is a feature mapping from $A$ to a feature space $\mathcal{H}$. A natural choice of $\mathscr{H}$ is 
+	\begin{equation}
+	\mathscr{H} = \{\bm{f}: \bm{f}(x) = W\bm{\phi}(x)+b\}
+	\end{equation}
+	%If we set $\mathcal{H}$ to be a Reproduced Kernel Hilbert Space $w.r.t.$ a kernel function $\bm{k}$ and use SVM to find the optimal $W$ and $b$, we can obtain the methods of kernel SVM.
+\end{enumerate}
+
+
+\subsection{General approach for separation }
+A collection of sets $A_i\subset \mathbb{R}^n$, $1\le i\le k$, are said to be separable if there exists a continuous function $h:\mathbb{R}^n\to\mathbb{R}^k$ such that $h(x)=e_i$.
+
+A general approach:
+\begin{itemize}
+	\item Find a ``nonlinear" function $h_0:\mathbb{R}^n\to\mathbb{R}^m$ such that
+\begin{enumerate}
+	\item $\tilde{A}_i=h_0(A_i)\subset\mathbb{R}^m$ are linearly separable
+	\item $m\ll n$
+\end{enumerate}
+\item Use a ``linear" classifier $l_0:\mathbb{R}^m\to\mathbb{R}^k$, then $h=l_0\circ h_0:\mathbb{R}^n\to\mathbb{R}^k$ is the classifier.
+\end{itemize}
+
+\begin{remark}
+	\begin{enumerate}
+		\item $h_0$: dimension reduction;
+		\item Feature extraction;
+		\item $h_0$: deep neural network, special function class;
+		\item $x^{l+1}=\sigma(Wx^l+b)$, for CNN, $W,b$ are ``sparse";
+		\item ``linear classifier" is fully connected layer.
+	\end{enumerate}
+	\end{remark}
+
+\subsection{Feature map}
+
+\begin{remark}
+The "linear" here means that $wx+b$ is linear with respect to $x$. This condition is not crucial. Actually, we can replace $x$ by $\phi: \mathbb{R}^n\rightarrow \mathbb{R}^m$. To be specific, let  $\tilde x=w\phi(x)+b$ and $\tilde A_i=\phi (A_i)\in \mathbb{R}^m$. The function $\phi$ here is a feature map, 
+common choices include
+\begin{enumerate}
+\item $\phi(x)=x$;
+\item finite elements, wavelets;
+\item deep neural networks.
+\end{enumerate}
+\end{remark}
+
+\input{6DL/LinearSets}

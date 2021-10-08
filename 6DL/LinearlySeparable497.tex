@@ -1,0 +1,51 @@
+% !TEX encoding = UTF-8 Unicode
+\documentclass[handout]{beamer}
+\def\LongSlides{} 
+%\input{Xmacros}
+\usepackage[orientation=landscape,size=custom,width=10,height=15,scale=0.5,debug]{beamerposter} 
+
+\begin{document}
+%\begin{CJK*}{UTF8}{gbsn}
+\begin{frame}
+{Linearly separable sets}
+
+\structure{Binary case}
+\includegraphics[width=1.5in]{LinearS1.png} 
+
+\structure{Multiclass case}
+\begin{definition}[Linearly Separable]
+  A collection of subsets $A_1,...,A_k\subset \mathbb{R}^d$ are
+  linearly separable if there exists 
+  \begin{equation}
+    \label{Wb}
+W=
+\begin{pmatrix}
+  w_1\\
+\vdots\\
+w_k
+\end{pmatrix}
+\in \mathbb{R}^{k\times d}, 
+b=
+\begin{pmatrix}
+  b_1\\
+\vdots\\
+b_k
+\end{pmatrix}
+\in \mathbb{R}^{k\times d}, 
+\end{equation}
+such that,   for each $1\le i\le k$ and $ j \neq i$
+\begin{equation}
+\label{eq:3}
+\begin{equation}
+\label{eq:3}
+ w_ix+b_i > w_jx+b_j,\ \forall x\in A_i.
+ \end{equation}
+\end{definition}
+
+\includegraphics[width=1.5in]{./figures/3-class.PNG}
+ \end{frame}
+
+%\end{CJK*}
+\end{document}
+
+%% end of file %%

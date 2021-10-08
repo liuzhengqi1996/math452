@@ -1,0 +1,558 @@
+\section{Juncai}
+\subsection{Classification Problems for DNN}
+Now we want to make some rigorous mathematical statement about classification problem for DNN. What we want to state and prove is about, what's the necessary and sufficient conditions for $\{x_i, y_i\}_{i \in I}$ such that, DNN model(with one hidden layer, when we talks about DNN model in this subsection, we always mean one hidden layer model.) can ``separate" them. 
+
+Let us note:
+\begin{align}
+A_k = \{x_i ~ | ~  y_i = e_k, i \in I\} \quad k = 1:c. 
+\end{align}
+We need the next two assumptions for data first:
+\begin{assumption}[Boundedness]We say those data $\{x_i, y_i\}$ for $i \in I$ are bounded if there exist a $M < \infty$ such that
+\begin{align}
+\|x_i\| < M \quad \forall i \in I.
+\end{align}
+\end{assumption}
+\begin{assumption}[Consistence]We say those data $\{x_i, y_i\}$ for $i \in I$ are consistent for classification if
+\begin{align}
+A_k \cap A_k =  \emptyset \quad \forall k\neq l.
+\end{align}
+\end{assumption}
+Then we can have the next definition for what means ``DNN can separate  $\{A_k\}_{k=1}^c$":
+\begin{definition}
+We say that DNN model can separate $\{A_k\}_{k=1}^c$ or DNN model can fix the classification problem for $\{x_i ,y_i\}_{i \in I}$ means that there is a function $f: \mathbb{R}^n \to \mathbb{R}^c$ such that:
+\begin{align}
+f(x) = e_k \quad \forall x \in A_k, ~~ k = 1:c,
+\end{align}
+with 
+\begin{align}
+f(x) = a(W_2 \sigma(W_1 x + b_1) + b_2),
+\end{align}
+for some 
+\begin{align}
+W_1 \in \mathbb{R}^{m \times n}, \quad b_1 \in \mathbb{R}^m \quad W_2 \in \mathbb{R}^{c\times m}, \quad b_2 \in \mathbb{R}^c, \quad \epsilon > 0,
+\end{align}
+and $\sigma, a: \mathbb{R} \to \mathbb{R}$.
+Here $\sigma$ can be ``Sigmoid", ``ReLU", ``Heaviside" or $a$ function, with
+\begin{equation}
+\sigma(x) = \frac{1}{1 + e^{-x}}, \quad r(x) = \max\{0,x\}, \quad H(x) = \begin{cases}
+1 ~~ &x > 0 \\
+0 ~~ &x \le 0.
+\end{cases}
+\end{equation}
+and $a$ is a variant form of Heaviside function or combine of two ReLU functions like:
+%\begin{equation}
+%\hat{H}_{\epsilon}(x) = \begin{cases}
+%0 \quad & x < \epsilon, \\
+%\frac{x}{1-2\epsilon} - \frac{\epsilon}{1-2\epsilon} \quad & \epsilon \le x < 1-\epsilon, \\
+%1 \quad & x \ge 1-\epsilon.
+%\end{cases}
+%\end{equation}
+%By the way, $H_{\epsilon}(x) = \frac{1}{1-2\epsilon}r(x - \epsilon) +  \frac{1}{1-2\epsilon}r(x - 1 + \epsilon).$
+\begin{equation}
+a(x) = \begin{cases}
+0 \quad & x < 0, \\
+x \quad & 0 \le x < 1, \\
+1 \quad & x \ge 1.
+\end{cases}
+\end{equation}
+By the way, $a(x) = r(x ) - r(x - 1).$
+
+\end{definition}
+
+Here we define what means ``$\{A_k\}_{k=1}^c$ are separable with positive distance":
+\begin{definition}
+We say that $\{A_k\}_{k=1}^c$ are separable with positive distance when there exists a small positive number $\epsilon$, such that
+\begin{align}
+d(\bar{A}_k, \bar{A}_l) > \epsilon, \quad \forall k \neq l,
+\end{align}
+where $\bar{A}_k$ means the closure of $A_k$ and $d(\bar{A}_k, \bar{A}_l)$ define the distance of two sets as:
+\begin{align}
+d(\bar{A}_k, \bar{A}_l) = \inf_{x \in A_k, y \in A_l} d(x,y).
+\end{align}
+\end{definition}
+
+As for the ``separable with positive distance" property, we have the next lemma:
+\begin{lemma}If $\{A_k\}_{k=1}^c$ are separable with positive distance $\epsilon$, then there exist a smooth feature map $\phi: \mathbb{R}^n \to \mathbb{R}^c$ such that:
+\begin{align}
+\phi(x) = e_k \quad \forall x \in \bar{A}_k,\quad k = 1:c.
+\end{align}
+\end{lemma}
+\begin{proof}This proof is based on the partition of unity theorem. Because of the positive distance with $\epsilon$ property, we define 
+\begin{equation}
+\mathcal{M}_k = \{x ~|~ d(x, \bar{A}_k) < \frac{\epsilon}{2}\}.
+\end{equation}
+So, $\mathcal{M}_k$ is an open set as the continuity for $d(\cdot, \bar{A}_k)$. Let 
+\begin{equation}
+\mathcal{M}_0 = (\bigcup_{k=1:c} \bar{A}_k)^c,
+\end{equation}
+so $\mathcal{M}_0$ is an open set too. And 
+\begin{equation}
+\mathbb{R}^n = (\bigcup_{k=0:c} \mathcal{M}_k).
+\end{equation}
+So we can apply the partition of unity for the above decomposition, getting $\{\phi_k\} \in C^{\infty}(\mathbb{R}^n)$ for $k = 0:c$ and 
+\begin{equation}
+1 = \sum_{k=0}^c \phi_k \quad \text{with} \quad supp(\phi_k) \subset \mathcal{M}_k.
+\end{equation}
+Then we will see that:
+\begin{equation}
+\phi_k(x_l) = \delta_{kl} \quad \forall x_l \in \bar{A}_l, \quad k, l = 1:c,
+\end{equation}
+because of the definition of $\mathcal{M}_k$ and the results of partition of unity.
+
+At last, we can get $\phi$ as:
+\begin{align}
+\phi: \mathbb{R}^n &\to \mathbb{R}^c \\
+ x &\mapsto (\phi_1(x), \cdots, \phi_c(x)),
+\end{align}
+and it satisfy the condition.
+\end{proof}
+
+Now we can have those next theorem:
+\begin{theorem}
+If $I$ is a finite index set, then DNN can always separate $\{A_k\}_{k=1}^c$.
+\end{theorem}
+
+\begin{theorem}
+If $\{A_k\}_{k=1}^c$ are separable with positive distance, then it can be separated by DNN.
+\end{theorem}
+\begin{proof}
+We know that 
+\begin{equation}
+a(e_k) = e_k \quad k = 1:c.
+\end{equation}
+
+Because of the universal approximation property for ``Sigmoid", ``ReLu", ``Heaviside" or $a(x)$ type Neural Network, we can take 
+\begin{align}
+\hat{W}_2\sigma(W_1 x + b_1) + \hat{b}_2,
+\end{align}
+to approximate $\phi$ in $B_M$ such that,
+\begin{align}
+\|\hat{W}_2\sigma(W_1 x + b_1) + \hat{b}_2 - \phi(x) \|_{L^{\infty}} < \delta < \frac{1}{4}, \quad \forall \|x\| \le M.
+\end{align}
+{\bf Here $\delta$ is independent with the distant of training data, we can choose any one in $(0, \frac{1}{2})$ in fact. 
+This is because of the linearly separable of $\{e_k\}_{k=1}^c$ points.
+}
+
+Now we can take the DNN model as:
+\begin{align}
+f(x) = a(\frac{1}{1-2\delta}\hat{W}_2\sigma(W_1 x + b_1) + (\hat{b}_2 -\frac{\delta}{1-2\delta}\bm{1})).
+\end{align}
+So we only need to check that $f(x) = e_k$ if $x\in A_k$ with $k=1:c$. 
+
+If $x \in A_k$ for any $k=1:c$, we know that 
+\begin{align}
+|(\hat{W}_2\sigma(W_1 x + b_1) + \hat{b}_2 - e_k)_i| < \delta, \quad  i = 1:c,
+\end{align}
+which means that
+\begin{equation}
+\begin{cases}
+(\hat{W}_2\sigma(W_1 x + b_1) + \hat{b}_2 )_i < \delta \quad &i\neq k \\
+(\hat{W}_2\sigma(W_1 x + b_1) + \hat{b}_2 )_i  > 1- \delta \quad &i = k.
+\end{cases}
+\end{equation}
+Thus by the definition of $a(x)$, we know:
+\begin{equation}
+a(\frac{x}{1-2\delta} - \frac{\delta}{1-2\delta}) = \begin{cases}
+0 \quad & x < \delta, \\
+\frac{x}{1-2\delta} - \frac{\delta}{1-2\delta} \quad & \delta \le x < 1 - \delta, \\
+1 \quad & x \ge 1 - \delta.
+\end{cases}
+\end{equation}
+So we have 
+$f(x) = e_k$ if $x\in A_k$ with $k=1:c$, for 
+\begin{align}
+f(x) = a(W_2\sigma(W_1 x + b_1) + b_2),
+\end{align}
+with 
+\begin{equation}
+W_2 = \frac{1}{1-2\delta}\hat{W}_2, ~ \text{and} ~ b_2 = \hat{b}_2 -\frac{\delta}{1-2\delta}\bm{1}.
+\end{equation}
+This finishes this proof.
+\end{proof}
+
+\begin{remark}
+Here $W_2$ have a special structure like as 
+\begin{align}
+W_2 = diag\{\omega_1, \cdots, \omega_c\},
+\end{align}
+where $\omega_i \in \mathbb{R}^{1\times n_i}$ with $\sum_{i=1}^c n_i = m$.
+\end{remark}
+
+\begin{theorem}
+If $\{A_k\}_{k=1}^c$ can be separated by DNN, then $\{A_k\}_{k=1}^c$ are separable with positive distance. 
+\end{theorem}
+\begin{proof}First we know that,
+\begin{align}
+A_k \subset L_k := \{x ~|~ f(x) = e_k\}.
+\end{align}
+Here $L_k$ is a closed set and $d(L_k, L_l) \ge \delta > 0$ because of the continuity of $f$. So, 
+$\{A_k\}_{k=1}^c$ are separable with positive distance.
+\end{proof}
+
+\subsection{Linearly Separable and Global Minima}
+
+Here we note those data sets $\{x_i, y_i\}_{i=1}^N$ as $\{A_k\}_{k=1}^c$ with $y = e_k$ for any $x \in A_k$. The simple NN model or perceptron with Heaviside function or $H_{\epsilon}$ like:
+\begin{equation}
+H_{\epsilon}(x) = \begin{cases}
+0 \quad & x < -\epsilon, \\
+\frac{x}{2\epsilon} - \frac{1}{2} \quad & -\epsilon \le x < \epsilon, \\
+1 \quad & x \ge \epsilon.
+\end{cases}
+\end{equation}
+can classify those data means there exist $W \in \mathbb{R}^{c\times n}$ and $b \in \mathbb{c}$ such that 
+\begin{align}
+H(Wx + b) = e_k \quad x \in A_k, ~ k =1:c.
+\end{align}
+
+Note the loss function as:
+\begin{align}
+L(\theta) = \sum_{i=1}^N\|H(Wx_i + b) - y_i\|^2. 
+\end{align}
+
+\begin{properties}Those next two statements are equivalent:
+\begin{enumerate}
+\item The perceptron can classify those data.
+\item $\min L(\theta) = 0$.
+\end{enumerate}
+\end{properties}
+
+
+\begin{theorem}\label{theo:linearconvex}
+Let
+\begin{align}
+\Theta := \mathop{\arg\min}_{\theta}L(\theta).
+\end{align}
+Then $\Theta$ is a convex set if the perceptron can classify those data.
+\end{theorem}
+
+\begin{proof}
+If the perceptron can classify those data, then $\Theta \neq \emptyset$. So, let $\theta_1, \theta_2 \in \Theta$, let us consider $\theta = t\theta_1 + (1-t)\theta_2$ with $t \in [0,1]$.
+Then for any data $(x_i, y_i)$ and $\theta = (W, b)$ we have
+\begin{align}
+H(Wx_i + b) = H(t(W_1x_i + b_1) + (1-t)(W_2x_i + b_2)),
+\end{align}
+and 
+\begin{align}
+H(W_1x_i + b_1) = H(W_2x_i + b_2) = y_i = e_k,
+\end{align}
+for some $1 \le k \le c$.
+
+Because of the properties of Heaviside function(its level sets are convex sets), we know that:
+\begin{align}
+(W_1 x_i + b_1)_j, (W_2 x_i + b_2)_j  \le 0 \quad &\text{if}~ j \neq k \\
+(W_1 x_i + b_1)_j, (W_2 x_i + b_2)_j    > 0 \quad &\text{if}~ j = k.
+\end{align}
+This means that $H(Wx_i + b) = e_k = y_i$, so $\theta \in \Theta$.
+\end{proof}
+
+%\begin{remark}
+%This result also holds for $H_\epsilon$ and $\hat{H}_{\epsilon}$, and in fact 
+%\begin{align}
+%\hat{H}_{\epsilon}(x) = H_{\frac{1-2\epsilon}{2}}(x -1).
+%\end{align}
+%\end{remark}
+
+
+\begin{theorem}\label{theo:linearinfinity}
+If $A_i$ are compact sets, then 
+there are infinity global minima for $L(\theta)$ if $\{A_i\}$ are also linearly separable.
+\end{theorem}
+\begin{proof}If $\{A_i\}$ are also linearly separable, then there exist $\theta=(W,b)$ such that
+\begin{align}
+H(Wx + b) = e_k \quad x \in A_k, ~ k =1:c.
+\end{align}
+Let us note that:
+\begin{align}
+(Wx + b)_k = \omega_k^T x + b_k,
+\end{align}
+so we have
+\begin{align}
+\omega_k^T x + b_k > 0 \quad &\text{if}~ x \in A_k \\
+\omega_k^T x + b_k \le 0 \quad &\text{if}~ x \in A \setminus A_k.
+\end{align}
+By using the compactness for $A_k$, we have 
+\begin{align}
+\min_{x\in A_k} \omega_k^T x + b_k = \epsilon > 0.
+\end{align}
+So, there at leat have those different $\theta_{k,\delta}$ with 
+\begin{align}
+\theta_{k,\delta} = (W, \hat{b}), 
+\end{align}
+and 
+\begin{align}
+\begin{cases}
+\hat{b}_i = b_i \quad &\text{if}~ i \neq k \\
+\hat{b}_i = b_i - \delta \quad &\text{if}~ i = k,
+\end{cases}
+\end{align}
+for any $0 \le \delta < \epsilon$.
+
+Now, we next prove that, we can not only change $b$ but also $W$. First, we can assume that
+\begin{align}
+\omega_k^T x + b_k > 0 \quad &\text{if}~ x \in A_k \\
+\omega_k^T x + b_k >0 \quad &\text{if}~ x \in A \setminus A_k.
+\end{align}
+If this is not true, we can change $b_k$ such that this $\theta$ can satisfy the above conditions with the above trick. Using the compactness again,
+\begin{align}
+\min_{x\in A_k} \omega_k^T x + b_k &\ge \epsilon > 0 \\
+\max_{x\in A\setminus A_k} \omega_k^T x + b_k &\le -\epsilon < 0,
+\end{align}
+and $\|x\| < M $ for all $x \in A$.
+So we may construct $\theta_{k,\delta}$ like:
+\begin{align}
+\theta_{k,\delta} = (\hat{W}, b), 
+\end{align}
+and 
+\begin{align}
+\begin{cases}
+\hat{\omega}_i = \omega_i \quad &\text{if}~ i \neq k \\
+\hat{\omega}_i = \omega_i + \omega \quad &\text{if}~ i = k,
+\end{cases}
+\end{align}
+with $\omega \in B(0, \frac{\delta}{M}) \subset \mathbb{R}^n$ for any $0 < \delta < \epsilon$. Then we can check that
+\begin{align}
+\hat{\omega}_k^T x + b_k > 0 \quad &\text{if}~ x \in A_k \\
+\hat{\omega}_k^T x + b_k >0 \quad &\text{if}~ x \in A \setminus A_k.
+\end{align}
+This means $\theta_{k,\delta}$ with above form also belongs to $\Theta$. 
+This shows that, $\Theta$ is infinity set and have both degree of freedom on $W$ and $b$.
+\end{proof}
+
+
+\begin{theorem}
+If the perceptron can classify those data, then the SGD method for $\min L(\theta)$ will convergence with small positive learning rate. 
+\end{theorem}
+
+\subsection{Separable and Global Minima}
+In simple terms, we assume that those $\{A_k\}_{k=1}^c$ are compact sets. Then the positive distance can be got from the consistency.  Here we note that, we want to use general DNN model with just one hidden layer to separate those data, so the loss function will be:
+\begin{align}
+L(\theta) = \sum_{i=1}^N\|H(W_2\sigma(W_1x_i + b_1) + b_2) - y_i\|^2, 
+\end{align}
+with $H$ could be $\hat{H}_{\epsilon}$ or $H_\epsilon$.
+
+\begin{theorem}Let
+\begin{align}
+\Theta := \mathop{\arg\min}_{\theta}L(\theta).
+\end{align}
+For $(\theta_1, \theta_2) \in \Theta$, we note that 
+\begin{equation}
+\Theta_2(\theta_1) = \{\theta ~|~ (\theta_1, \theta) \in \Theta \}.
+\end{equation}
+Then $\Theta_2(\theta_1)$ is a convex set if the DNN model can classify those data with compactness assumption.
+\end{theorem}
+
+\begin{proof}
+Because of the continuity of $g(x) = \sigma(W_1x + b_1)$, so we have that $\{g(A_k)\}_{i=k}^c$ are also compact sets, and the consistency of $A_k$ also shows the consistency of $g(A_k)$. 
+
+Then because DNN model can classify those data, so $g(A_k)$ are also linear separable w.r.t to $\hat{H}_\epsilon$.
+So, for fixed $\theta_1$, we can finish this proof by using Theorem \ref{theo:linearconvex}.
+\end{proof}
+
+\begin{theorem}If $A_i$ are compact sets, then 
+$\Theta_2(\theta_1)$ is a infinity set if $\{A_i\}$ can be separated by DNN model.
+\end{theorem}
+\begin{proof}Use the analysis in the theorem above and we can get a similar poof with Theorem \ref{theo:linearinfinity}.
+\end{proof}
+
+
+Next, we want to talk about some properties about $\theta_1$ part. We can also get some infinity property for 
+\begin{equation}
+\Theta_1(\theta_2) = \{\theta ~|~ (\theta, \theta_2) \in \Theta \}
+\end{equation} with some special $\theta_2$.
+
+\subsection{Discussion with Prof. Xu on 3/10/2017}
+Prof. Xu proposed those next points about vanishing gradient and random strategies in training algorithms:
+\begin{enumerate}
+\item ``Vanishing Gradient' is a mathematical problem. 
+
+\item For deep neural network models, ReLU activation function is better than Sigmoid in many cases just likes that singular system can be solved more easily than nearly singular system. 
+
+\item For some components in $\frac{\partial f^J_i}{\partial \theta^k_{st}} \approx 0$, we may just take those as 0.
+
+\item For classification problems, if the class is not big, like $c = 10$, and we may have $100000$ data, and mini-batch size is $100$, which means for every mini-batch, we have $10$ samples in every class. One way for good "mini-batch" is to choose those $10$ samples in the same class as separable as possible. {\bf And in some degree, SGD is doing this. }
+
+If the class is too big, like $c = 1000$ but mini-bath size is still $100$, we can change our mind to choose those mini-batch just comes from one class and also as separable as possible. 
+
+Here is a suggested strategy for how to choose those mini-batch  as separable as possible from Prof. Xu. For example, we have $N$ data for one class, and we want to choose $m$ data from this data set  as separable as possible. We may use next steps:
+\begin{itemize}
+\item Use KNN method for those data with $k = m$.
+\item Use the uniform sampling strategy to choose one data in every cluster, then we get $m$ samples.
+\end{itemize}
+
+\end{enumerate}
+
+
+\subsection{Train good smoother for multigrid methods}
+We are going to using the idea of deconvolution to get some good smoother in multigrid method with fixing the restriction and interpolation method. 
+
+Data $\{u_k, f_k\}_{k=1}^N$ such that 
+\begin{equation}
+A u_k = f_k,
+\end{equation}
+with $A$ is the linear FEM matrix with uniform grids. 
+
+Then we have stander nested multi-grids like $\{\mathcal{G}_j \}_{j=1}^J$, and $P_{j}^{j+1}$ is the interpolation operator form $\mathcal{G}_j$ to $\mathcal{G}_{j+1}$. We may have $S_j$ as the smoother in grid $\mathcal{G}$, there are also what we will trained. Under those set up, we may note $B(S_j)$ as the multigrid solve for $B \approx A^{-1}$.
+
+So we optimization problem is:
+\begin{equation}
+\min_{S_j} \sum_{k=1}^N\| u_k - B(S_j)f_k\|^2.
+\end{equation}
+
+There are two points we need to take care of:
+\begin{itemize}
+\item How to choose those data $\{u_k, f_k\}_{k=1}^N$?
+
+For this problem, Prof. Xu, suggested that we need to choose good data by choosing fine $f_k$ not $u_k$. 
+
+\item How to solve those above optimization problem?
+
+One way to train this model is to compute 
+\begin{equation}
+\sum_{k=1}^N\| u_k - B(S_j)f_k\|^2 = \sum_{k=1}^N \| (I - B(S_j)A)u_k\|^2.
+\end{equation}
+And then, we may use ``BP" for $I - B(S_j)A$ for $S_j$ from $j = J: -1 :1$? But, how to implement this, we may need to check more details. 
+\end{itemize}
+
+\subsubsection{Another viewpoint for this problem}
+We can use the idea for best convergence rate with 
+\begin{equation}
+\min_{S_j} \|I - B(S_j)A\|^2,
+\end{equation}
+then the above question is the next $min-max$ problem:
+\begin{equation}
+\min_{S_j} \max_{\|u\| = 1}\|(I - B(S_j)A)u\|^2.
+\end{equation}
+And then we may take this method as:
+\begin{equation}
+ \sum_{k=1}^N \| (I - B(S_j)A)u_k\|^2 \approx \max_{\|u\| = 1}\|(I - B(S_j)A)u\|^2.
+\end{equation}
+
+
+
+
+
+\subsection{Seminar notes on 11/31/2017}
+\begin{itemize}
+\item Runge phenomenon and overfitting. 
+\item How about sample points and interpolation and Runge phenomenon.
+\end{itemize}
+
+\subsection{Discussion on 12/13/2017}
+\subsubsection{Statistical learning based regression(classification)
+  problems}
+
+Here we suppose that for all image with label and task we want to solve, we have the next joint distribution in real world as:
+\begin{equation}\label{eq:jointdit}
+(X,Y) \sim p_{\rm data},
+\end{equation}
+as 
+\begin{equation}\label{eq:defPr}
+\rm{Pr}(X \in I_x, Y \in I_y) = \int_{I_x \times I_y}p_{\rm data}(x,y)dxdy,
+\end{equation}
+with $X \in \mathbb{R}^{n\times n}$ and $Y \in \mathbb{R}^c$.
+
+So for regression problem, the function that we want to interpolate is:
+\begin{equation}\label{eq:deff}
+f^*(x) = \mathbb{E}_Y (Y | X = x).
+\end{equation}
+This is in fact that 
+\begin{equation}\label{eq:f*}
+f^* = \mathop{\arg\min}_{f ~\text{is a distribution}}\mathbb{E}_{X\times Y} \|y - f(x)\|^2.
+\end{equation}
+
+For classification problem, the values of $Y$ should be some discrete values such as $\{e_1, \cdots, e_c\}$. So the reals problem that we may try to solve is to use some function family to approximate the $f^*$ by:
+\begin{equation}\label{eq:stat_opt}
+\mathbb{E}_{X} (\|f^*(x) - f(x;\Theta)\|^2) = \mathbb{E}_{X\times Y}(\|y - f(x;\Theta)\|^2).
+\end{equation}
+
+\hrule
+\paragraph{Jinchao:}  In general, we assume that the label $y$  of a given
+data $x$ is also a random variable depending on $x$.  For example, for
+$c$-classification problem, 
+$$
+\sum_{k=1}^cP\{Y=e_k | X=x\}=1.
+$$
+
+$$
+Y: \{e_1,\ldots e_k\}\mapsto \mathbb R^c.
+$$
+
+There are at least five different concepts:
+\begin{enumerate}
+\item The original expected loss
+\item The empirical loss with $N$-sampled data
+\item SGD directly from the original data [training]
+\item SGD from the $N$-sampled data [training]
+\item SGD with epoch from $N$-sampled data [training]
+\end{enumerate}
+
+Jinchao's questions:
+\begin{enumerate}
+\item From pure math point of view, generalization error is a concept
+  for model, not for training algorithms
+\item In the literature, people often relate the generalization error
+  with a training algorithm.   This would only make sense if we treat
+  a training algorithm as a modeling procedure. 
+\item In other words, the training algorithm, when finished in
+  practice, has not really solved the original model problem
+  accurately, namely a global minimizer or a ``good local minimizer''
+\end{enumerate}
+
+Traditionally, generalization error = test error. 
+
+For expected loss, the concept of ``training data'' and ``test data''
+should not apply. 
+
+``test data'' are those data from the original data space (for
+expected loss) that are not in the ``training data''
+
+In practice, we should never aim to accurately find a global minimizer
+of the empirical loss function, which is why we need ``validation
+data''.  The role of the validation data 
+
+
+\begin{quote}
+{\bf Jinchao's conjecture:}  Under reasonable assumptions, the exact
+global minimizer of the empirical loss function would for sure lead to
+over-fitting. 
+\end{quote}
+
+In this case, we can find a DNN so that the emirical lost function is
+zero. 
+
+We also note that a global minimizer of the expected loss function is
+also a global minimizer of the empirical loss function.  But in
+practice, it is hard to find a global minimizer of the expected loss
+function.  The practical approximation of the global minimizer would
+lead to over-fitting. 
+
+The above conclusions are not valid for cross-entry with soft-max.
+
+There are many kinds of data
+\begin{enumerate}
+\item All feasible data:
+\item training data
+\item validation data
+\item test data
+\end{enumerate}
+
+The labelled data can be divided to, subjectively or statistically,
+into 
+\begin{enumerate}
+\item training data
+\item validation data
+\item test data
+\end{enumerate}
+\bigskip 
+\hrule
+\bigskip 
+
+\subsubsection{Manifold distance}
+For classification problem, we may state that 
+\begin{equation}\label{def:manifoldAk}
+A_k = \{x: f(x) = e_k\},\quad 1 \le k \le c,
+\end{equation}
+with $f$ is defined above \eqref{eq:deff}. Then the manifold distance means that
+\begin{equation}\label{key}
+\rm{dist}(A_k, A_l) \ge \delta > 0, \quad k \neq l.
+\end{equation}

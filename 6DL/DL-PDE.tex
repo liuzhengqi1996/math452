@@ -1,0 +1,133 @@
+% Lin will add things here.
+\section{I.E. Lagaris, A. Likas and D.I.Fotiadis's Works 1997}
+
+Artificial Neural Networks for Solving Ordinary and Partial Differential Equations
+
+They present a method to solve initial and boundary value problems using artificial neural networks. A trial solution of the differential equation is written as a sum of two parts. The applicability of this approach ranges from single ODE's, to systems of coupled ODE's and also to PDE's. 
+
+Use neural networks for solving the differential equation
+\begin{equation}
+G(\vec x,\Psi(\vec x),\nabla \Psi(\vec x),\nabla^2 \Psi(\vec x)) = 0,\quad \vec x\in D
+\end{equation}
+subject to certain boundary conditions, where $\vec x = (x_1,x_2,...,x_n)\in R^n, D\subset R^n$. $\Psi(\vec x)$ is the solution to be computed. 
+
+Assumes a discretization of the domain $D$ and its boundary $S$ into a set points $\hat D$ and $\hat S$ respectively. The problem is then transformed into the following system:
+\begin{equation}
+G(\vec x_i,\Psi(\vec x_i),\nabla \Psi(\vec x_i),\nabla^2 \Psi(\vec x_i)) = 0,\quad\forall \vec x_i\in \hat D
+\end{equation}
+subject to the constraints imposed by the B.Cs.
+
+If $\Psi_t(\vec x,\vec p)$ donotes a trial solution with parameters $\vec p$, the problem is transformed to:
+\begin{equation}
+\min_{\vec p} \sum_{\vec x_i\in \hat D} G(\vec x_i,\Psi(\vec x_i),\nabla \Psi(\vec x_i),\nabla^2 \Psi(\vec x_i)) ^2
+\end{equation} 
+subject to the constraints imposed by the B.Cs.
+
+Choose a form for the trial function $\Psi_t(\vec x)$. This is achieved by
+\begin{equation}
+ \Psi_t(\vec x) = A(\vec x) + F(\vec x, N(\vec x,\vec p))
+\end{equation} 
+where $N(\vec x,\vec p)$ is a single-output feedforward neural network with parameters $\vec p$ and $n$ input units fed with the input vector $\vec x$.
+
+Consider a multilayer perceptron with $n$ input units, one hidden layer with $H$ sigmoid units and a linear output unit. For a given input vector $\vec x = (x_1,x_2,...,x_n)$ the output of the network is 
+\begin{equation}
+N = \sum_{i=1}^H v_i\sigma(z_i)
+\end{equation}
+where $z_i = \sum_{j = 1}^n w_{ij}x_j+u_i$, $w_{ij}$ denotes the weight from the input unit $j$ to the hidden unit $i$, $v_i$ denotes the weight from the hidden unit $i$ to the output, $u_i$ denotes the bias of hidden unit $i$ and $\sigma(z)$ is the sigmoid transfer function.
+
+In their experiments, they use BFGS method to solve all examples.
+
+\section{Modjtaba Baymani, Asghar Kerayechian, Sohrab Effati's Work 2010}
+They transform the mixed Stokes problem into three independent Poisson problems which by solving them the solution of the Stokes problem is obtained. 
+
+The incompressible fluids stocks equations are
+\begin{equation}
+\left\{
+ \begin{split}
+  -\Delta u_1 + \frac{\partial p}{\partial x} = f_1 &\quad \mbox{in}\ \Omega\\
+  -\Delta u_2 + \frac{\partial p}{\partial y} = f_2 &\quad \mbox{in}\ \Omega \\
+  \frac{\partial u_1}{\partial x} + \frac{\partial u_2}{\partial y} = 0&\quad \mbox{in}\ \Omega 
+ \end{split}\right.
+\end{equation} 
+
+To solve the problem with $\Omega = [0,1]\times [0,1]$, they apply the operators $\frac{\partial}{\partial x}$ and $\frac{\partial}{\partial y}$ on the first and second equations respectively. Then
+\begin{equation}
+\frac{\partial p^2}{\partial x^2}+\frac{\partial p^2}{\partial y^2} = (f_1)_x+(f_2)_y
+\end{equation}
+
+Use artificial neural network to get a trial solution $p_t$, by substituting the trial solution $p_t$ in the first and second equation
+\begin{equation}
+ \left\{
+ \begin{split}
+  \Delta u_1 = \frac{\partial p_t}{\partial x} - f_1\\
+  \Delta u_2 = \frac{\partial p_t}{\partial y} - f_2\\
+ \end{split}\right.
+\end{equation}
+
+\section{Weinan E, Bing Yu's Work 2017}
+
+They build a trial function space 
+\begin{equation}
+ u(x;\theta) = a\cdot z_{\theta}(x) + b 
+\end{equation}
+where $z_\theta = f_n\circ ...\circ f_1(x)$, and the $f_i$ is defined as 
+\begin{equation}
+t = f_i(s) = \phi(W_{i,2}\cdot \phi(W_{i,1}+b_{i,1})+b_{i,2}) + s
+\end{equation}
+where $W_{i,1},W_{i,2}\in R^{m\times m},b_{i,1},b_{i,2}\in R^m$. $\phi$ is the activation function
+\begin{equation}
+\phi(x) = \max\{x^3,0\}
+\end{equation}
+To finish describing the algorithm, they use the stochastic gradient descent algorithm.
+
+They solve the Poisson equation
+\begin{equation}
+ \begin{split}
+  -\Delta u(x) = 1, &\qquad x\in \Omega\\
+  u(x) = 0,&\qquad x\in \partial \Omega
+ \end{split}
+\end{equation}
+
+They minimize the functional
+\begin{equation}
+ I(u) = \int_{\Omega} (\frac{1}{2}|\nabla_x u(x)|^2-f(x)u(x))dx+\beta\int_{\partial \Omega} u^2(x)ds
+\end{equation}
+
+They solve the eigenvalue problems
+\begin{equation}
+ \begin{split}
+  - \Delta u + v\cdot u = \lambda u,& \qquad x\in \Omega\\
+  u = 0 & \qquad x \in \partial \Omega
+ \end{split}
+\end{equation}
+They  minimize the
+\begin{equation}
+ L(u(x,\theta)) = \frac{\int_\Omega |\nabla u|^2dx+\int_\Omega vu^2dx}{\int_\Omega u^2dx} + \beta\int_{\partial \Omega u^2(x)dx} + \gamma(\int_{\Omega}u^2 - 1)^2
+\end{equation}
+
+\section{Pratik Chaudhari, Adam Oberman, Stanley Osher, Stefano Soatto, Guillaume Carlier's Work 2017 }
+They solve the viscous Hamilton-Jacobi PDE
+\begin{equation}
+ \frac{\partial u}{\partial t} = -\frac{1}{2}|\nabla u|^2 + \frac{\beta^{-1}}{2}\Delta u, \qquad \mbox{for} \quad 0<t\le \gamma
+\end{equation}
+Their starting point point is the continuous time stochastic gradient descent equation
+\begin{equation}
+ dx(t) = -\nabla f(x(t))dt +  \beta^{-\frac{1}{2}}dW(t)
+\end{equation}
+
+They define the neural network
+\begin{equation}
+ y(x;\xi) = \sigma'(x^{p}\sigma(x^{p-1}...\sigma(x^2\xi))...)
+\end{equation}
+where $x^1,...,x^{p-1}\in R^{d\times d}$ and $x^p\in R^{d\times K}$. $\sigma(z) = \max(0,z)$ and the last non-linearity is set to $\sigma'(z) = 1_{z\ge0}$.
+They minimize the empirical loss
+\begin{equation}
+ f(x):=\frac{1}{N}\sum_{i=1}^{N}f_i(x)
+\end{equation}
+where $f_i$ is
+\begin{equation}
+ f_i(x):=1_{\{y(x,\xi^i)\neq y^i\}}
+\end{equation}
+
+They use the SGD method.
+

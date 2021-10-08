@@ -1,0 +1,223 @@
+
+
+\input{6DL/DoubleFourier}
+%\section{Asymptotic convergence estimates for $L^2$ norm}
+%\subsection
+
+ 
+\iffalse
+Then we propose the next assumption on $\sigma$
+\begin{assumption}\label{assump:sigma}[Siegle \& Xu 2020]
+	Let $\sigma \in L^{\infty}(\Omega)$ and there exists $p> 1$  such that
+	\begin{equation}\label{key}
+	|\sigma(t)| \le (1+|t|)^{-p}.
+	\end{equation}
+\end{assumption}
+
+
+Then we have the next important lemma about the estimate of $\rho(\theta)$.
+\fi
+
+\begin{theorem}\label{approximation_rate_theoreml2}
+ Let $\Omega\subset \mathbb{R}^d$ be a bounded domain. If the activation function $\sigma $ is non-zero and satisfies the polynomial decay condition 
+$$
+\sigma(t) \le (1+|t|)^{-p}
+$$
+for some $p>1$, then for any $n \ge 1$, there exist 
+	$\theta_i = (\omega_i, b_i) \in \mathbb{R}^{d+1}$ such that
+	\begin{equation}\label{key}
+	\|u-u_n\|_{L^{2}(\Omega)} \lesssim n^{-\frac{1}{2}}\|u\|_{\mathcal B^1(\Omega)},
+	\end{equation}
+	where
+	\begin{equation}\label{key}
+	u_n(x) = \frac{\|\rho\|_{L^1}}{n} \sum_{i=1}^n \beta_i {\sigma}(a^{-1}\omega_i\cdot x + b_i) %{\rm Re} \left( \hat f(\omega_i)e^{iab}\right) 
+	\in \dnn(\sigma, n).
+	\end{equation}
+\end{theorem}
+
+\begin{theorem}\label{approximation_rate_theorem}
+ Let $\Omega\subset \mathbb{R}^d$ be a bounded domain. If the activation function $\sigma\in W^{m,\infty}(\mathbb{R})$ is non-zero and satisfies the polynomial decay condition 
+ \begin{equation}\label{growth_condition}
+  |\sigma^{(k)}(t)| \leq C_p(1 + |t|)^{-p}
+ \end{equation}
+ for $0\leq k\leq m$ and some $p > 1$, we have
+ \begin{equation}
+  \inf_{u_n\in \dnn(\sigma,n)}\|u-u_n\|_{H^m(\Omega)} \leq |\Omega|^{\frac{1}{2}}C(p,m,\text{\normalfont diam}(\Omega),\sigma)n^{-\frac{1}{2}}\|u\|_{\mathcal{B}^{m+1}(\Omega)},
+ \end{equation}
+ for any $u\in \mathcal{B}^{m+1}$.
+\end{theorem}
+Before we proceed to the proof, we discuss how this bound depends on
+the dimension $d$. We first note that $|\Omega|$ may in a sense depend
+on the dimension, as the measure may be exponentially large in high
+dimensions. However, bounding the $H^m$ error over a larger set is
+also proportionally stronger. This can be seen by noting that dividing
+by the $|\Omega|^\frac{1}{2}$ factor transforms the left hand side
+from the total squared error to the average squared error.
+
+The dimension dependence of this result is a consequence of how the
+Barron norm behaves in high dimensions. This issue is discussed in
+\cite{barron1993universal}, where the norm $\|\cdot\|_{\mathcal{B}^1}$
+is analyzed for a number of different function classes. A particularly
+representative result found there is that $H^{\frac{d}{2}+2}\subset
+\mathcal{B}^1$. This shows that sufficiently smooth functions have
+bounded Barron norm, where the required number of derivatives depends
+upon the dimension. It is known that approximating functions with such
+a dimension dependent level of smoothness can be done efficiently
+\cite{petrushev1998approximation, kainen2007sobolev}. However, the
+Barron space $\mathcal{B}^1$ is significantly larger that
+$H^{\frac{d}{2}+2}$, in fact we only have $\mathcal{B}^1 \subset H^1$
+by lemma \ref{smoothness-lemma}. The precise properties of the Barron
+norm in high dimensions are an interesting research direction which
+would help explain exactly how shallow neural networks help alleviate
+the curse of dimensionality.
+
+
+Next we consider the proof for Theorem \ref{approximation_rate_theoreml2}. Recall
+ \begin{equation} 
+u(x) =  \int_{\mathbb{R}^d}\int_\mathbb{R} k(x,\theta) dbd\omega,\quad 
+  k(x,\theta)= \frac{1}{ \hat{\sigma}(a)}
+  \sigma\left(a^{-1}{\omega}\cdot
+    x+b\right)\hat{u}(\omega)e^{-2\pi iab}. 
+ \end{equation}
+where $\theta=(\omega, b)$. 
+ Define 
+\begin{equation}\label{key}
+h(\omega, b) = \max_{x\in \Omega}|\sigma(a^{-1}\omega\cdot x+b)|, \quad \mbox{ and }\quad \rho(\theta) = h(\omega, b)  |\hat u(\omega)|.
+\end{equation}
+If $ \rho(\theta) \in L^1(\mathbb{R}^{d+1})$, then $f(x)=\mathbb{E}(k(x,\theta))$. By the Monte Carlo method in Theorem \ref{MC}, it is sufficient to prove $ \rho(\theta) \in L^1(\mathbb{R}^{d+1})$. 
+\begin{lemma}
+Let $\sigma \in L^{\infty}(\Omega)$ and there exists $p> 1$  such that
+	\begin{equation}\label{key}
+	|\sigma(t)| \le (1+|t|)^{-p},
+	\end{equation}
+then we have 
+$$
+\rho(\theta) \in L^1(\mathbb{R}^{d+1}).
+$$
+\end{lemma}
+\begin{proof}
+Note that
+\begin{equation}
+\label{eq:4}
+\begin{aligned}
+|k(x,\theta)| &\le \frac{1}{ |\hat \sigma(a)|} \max_{x\in \Omega} |\sigma\left(a^{-1}{\omega}\cdot
+x+b\right) | |\hat u(\omega)|  \\
+&\le  \frac{1}{ |\hat \sigma(a)|}  h(\omega, b)|\hat u(\omega)|   =  \frac{1}{  |\hat \sigma(a)|} \rho(\theta)
+\end{aligned},
+\end{equation}
+and
+	\begin{equation}\label{key}
+	\|\rho\|_{L^1(\mathbb{R}^{d+1})} = \int_{\mathbb{R}^{d+1}} |\rho(\theta)|d\theta = \int_{\mathbb{R}^d} \left( \int_{\mathbb{R}} h(\omega, b)db\right) |\hat u(\omega)| d\omega.
+	\end{equation}
+Note that
+\begin{equation}\label{key}
+|a^{-1}\omega \cdot x + b| \ge |b| - |a^{-1}\omega \cdot x | \ge  |b| - |a^{-1}||\omega| | x|  \ge |b| - |a^{-1}| |\omega | R,
+\end{equation}
+where 
+\begin{equation}\label{key}
+R = \max_{x\in \bar \Omega} |x|,
+\end{equation}
+as $\Omega$ is bounded.
+Thus
+\begin{equation}\label{key}
+|a^{-1}\omega \cdot x + b| \ge \max(0, |b| - \frac{R}{|a|} |\omega |).
+\end{equation}
+That is to say
+\begin{equation}\label{key}
+h(\omega, b) \le (1+  \max(0, |b| - \frac{R}{|a|}|\omega|))^{-p},
+\end{equation}
+	Then we calculate
+	\begin{equation}\label{eq_775}
+	\begin{split}
+	\int_\mathbb{R} h(\omega,b)db& \le \int_{|b|\leq \frac{R|\omega|}{|a|}} db + 2\int_{b > \frac{R\|\omega\|}{|a|}} \left(1 + b - \frac{R|\omega|}{|a|}\right)^{-p}db \\
+	& =~2R|a|^{-1}|\omega| + 2\left[(1-p)^{-1}\left(1 + b - \frac{R|\omega|}{|a|}\right)^{1-p}\right]_{\frac{R|\omega|}{|a|}}^\infty \\
+	&=~2R|a|^{-1}|\omega| + \frac{2}{p-1}\leq C_1(p,\text{\normalfont diam}(\Omega),\sigma) (1 + |\omega|).
+	\end{split}
+	\end{equation}
+	Thus, we have
+	\begin{equation}\label{key}
+		\|\rho\|_{L^1(\mathbb{R}^{d+1})} \le C_1\int_{\mathbb{R}^d} (1+|\omega|)|\hat u(\omega)| d\omega.
+	\end{equation}
+\end{proof}
+Here we denote 
+\begin{equation}\label{key}
+\|u\|_{\mathcal B^1(\Omega)} = \int_{\mathbb{R}^d} (1+\|\omega\|)|\hat u(\omega)| d\omega,
+\end{equation}
+namely
+\begin{equation}\label{key}
+\|\rho\|_{L^1(\mathbb{R}^{d+1})} \lesssim \|u\|_{\mathcal B^1(\Omega)}.
+\end{equation}
+
+ 
+These two theorems include many popular activation functions, such as the rectified linear units \cite{nair2010rectified} and logistic sigmoid activation functions. Below we provide a table listing some well-known activation functions to which this theorem applies.
+\begin{center}
+\begin{tabular}{ |c|c|c|c|c| } 
+ \hline
+ Activation Function & $\sigma(x)$ & Maximal $m$ & $n_0$ & $\nu(x)$ \\
+ \hline
+ Sigmoidal (Logistic) & $(1 + e^{-x})^{-1}$ & $\infty$ & $2$ & $\sigma(x+1) - \sigma(x)$ \\
+ \hline
+
+ Arctan & $\arctan(x)$ & $\infty$ & $2$ & $\sigma(x+1) - \sigma(x)$ \\ 
+ \hline
+ Hyperbolic Tangent & $\tanh(x)$ & $\infty$ & $2$ & $\sigma(x+1) - \sigma(x)$ \\
+ \hline
+ SoftPlus \cite{glorot2011deep} & $\log(1 + e^x)$ & $\infty$ & $4$ & $\sigma(x+1) + \sigma(x - 1) - 2\sigma(x)$ \\
+ \hline
+ ReLU\cite{nair2010rectified} & $\max(0,x)$ & $1$ & $4$ & $\sigma(x+1) + \sigma(x - 1) - 2\sigma(x)$ \\
+ \hline
+  Leaky ReLU\cite{maas2013rectifier} & $\epsilon x + (1-\epsilon)\max(0,x)$ & $1$ & $4$ & $\sigma(x+1) + \sigma(x - 1) - 2\sigma(x)$ \\
+ \hline
+ $k$-th power of ReLU & $[\max(0,x)]^k$ & $k$ & $k+1$ & $\sum_{i=0}^k(-1)^i\binom{k}{i} \sigma(x - \lfloor k/2 \rfloor + i)$\\
+ \hline
+\end{tabular}
+\end{center}
+
+ 
+The bound depends on
+the dimension $d$. We first note that $|\Omega|$ may in a sense depend
+on the dimension, as the measure may be exponentially large in high
+dimensions. However, bounding the $H^m$ error over a larger set is
+also proportionally stronger. This can be seen by noting that dividing
+by the $|\Omega|^\frac{1}{2}$ factor transforms the left hand side
+from the total squared error to the average squared error.
+
+
+
+
+
+
+
+\iffalse
+\newpage
+
+\subsection{Comparison with linear finite element method}
+We can briefly have the next two asymptotic approximation results for deep neural networks and adaptive
+linear finite element methods:
+\begin{description}
+	\item[Neural Network (NN)] 
+	\begin{equation}\label{key}
+	\inf_{f_n \in \dnn(\sigma,n)} \|f-f_n\|_{L^{2}(\Omega)} \lesssim  n^{-\frac{1}{2}}\|f\|_{\mathcal B^1(\Omega)},
+	\end{equation}
+	where $nd$ is the number of parameters.
+	\item[Finite Element (FE)] 
+	\begin{equation}\label{key}
+	\inf_{f_n \in V_n} \|f-f_n\|_{L^{2}(\Omega)} \lesssim  n^{-\frac{2}{d}}\|f\|_{\ast},
+	\end{equation}
+	where
+	\begin{equation}\label{key}
+	V_n: \text{linear finite element space of}~ n-\text{elements},
+	\end{equation}
+	and $\|f\|_{\ast}$ is some Besov norm. 
+\end{description}
+A direct observation for the asymptotic approximation error is that :
+\begin{equation}\label{key}
+(\frac{n}{d})^{-\frac{1}{2}} << n^{-\frac{2}{d}},
+\end{equation}
+if $d >> 1$ with respect to the umber of parameters. However, in the future  we will show that 
+\begin{equation}\label{key}
+{\rm DNN}({\rm ReLU}) = \text{Linear FE},
+\end{equation}
+or we can say that DNN with ReLU activation function is a different way to parametrize linear 
+finite element space.
+\fi

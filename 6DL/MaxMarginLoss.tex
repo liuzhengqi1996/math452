@@ -1,0 +1,640 @@
+
+\section{Linearly separable sets and margin}
+Given dataset $(\bm x_i, y_i)$, $i = 1,2,\cdots,N$, $y$ is the label of $\bm x$ where $y\in \{1,2,\cdots,k\}$ or $\{e_1,e_2,\cdots,e_k\}$.
+
+\begin{definition}[Unbiasedly Linearly Separable]
+	A collection of subsets $A_1,...,A_k\subset \mathbb{R}^d$ are unbiased
+	linearly separable if there exists $\bm \theta$ where
+	\begin{equation}
+	\label{theta}
+	\bm\theta=
+	\begin{pmatrix}
+	\theta_1\\
+	\vdots\\
+	\theta_k
+	\end{pmatrix}
+	\in \mathbb{R}^{k\times d}, 
+	\end{equation}
+	such that for each $1\le i\le k$ and $ j \neq i$
+	\begin{equation}
+	\label{eq:3}
+	\theta_i x > \theta_j x,\ \forall x\in A_i.
+	\end{equation}
+	or
+	\begin{equation}
+	\label{eq:3}
+	(e_i-e_j)\cdot\bm\theta x > 0,\ \forall x\in A_i,
+	\end{equation}
+\end{definition}
+
+\begin{definition}[Linearly Separable]
+	A collection of subsets $A_1,...,A_k\subset \mathbb{R}^d$ are
+	linearly separable if there exists $\bm \theta = (W,b)$ where
+	\begin{equation}
+	\label{Wb}
+	W=
+	\begin{pmatrix}
+	w_1\\
+	\vdots\\
+	w_k
+	\end{pmatrix}
+	\in \mathbb{R}^{k\times d}, 
+	b=
+	\begin{pmatrix}
+	b_1\\
+	\vdots\\
+	b_k
+	\end{pmatrix}
+	\in \mathbb{R}^{k}, 
+	\end{equation}
+	such that for each $1\le i\le k$ and $ j \neq i$
+	\begin{equation}
+	\label{eq:3}
+	w_ix+b_i > w_jx+b_j,\ \forall x\in A_i.
+	\end{equation}
+	or
+	\begin{equation}
+	\label{eq:3}
+	(e_i-e_j)\cdot(Wx+b) > 0,\ \forall x\in A_i,
+	\end{equation}
+	
+\end{definition}
+
+\begin{lemma}{\label{Interplation}}
+	Define
+	\begin{equation}
+	\label{Gammai}
+	\Gamma_i(\bm\theta) = \{x\in\mathbb R^n: (Wx+b)_i > (Wx+b)_j,\ \forall j \neq i\}     
+	\end{equation}
+	Then for any set collection $A_1,\cdots,A_k$, $\bm\theta$ can separate $A_1,\cdots,A_k$ iff for each $i$, 
+	\begin{equation}
+	\label{AiGamma}
+	A_i \subset \Gamma_i(W,b)  
+	\end{equation}
+\end{lemma}
+We note that  each $\Gamma_i(W,b)  $ is a polygon whose boundary consists of hyperplanes
+\begin{equation}
+\label{Hij}
+H_{ij}=\{(w_i-w_j)\cdot x+(b_i-b_j) = 0\}, \quad \forall j\neq i.
+\end{equation}
+
+Denote $\tilde x = 
+\begin{pmatrix}
+x\\
+1
+\end{pmatrix}
+$, we have $\bm\theta \tilde{x} = Wx+b$. For $x\in A_i$, then we have
+
+\begin{lemma}
+	A collection of subsets $A_1,...,A_k\subset \mathbb{R}^d$ are
+	linearly separable iff $\tilde A_1,\cdots,\tilde{A}_k$ are unbiasedly linearly separable.
+\end{lemma}
+
+Denote 
+\begin{align}
+&m_j^i(x,\bm\theta) = (e_i - e_j)\cdot (Wx+b) = (e_i - e_j)\cdot (\bm\theta \tilde{x}),\\
+&\bm m^i(x,\bm\theta) = (m^i_1(x,\bm\theta),\cdots,m^i_{i-1}(x,\bm\theta),m^i_{i+1}(x,\bm\theta),\cdots,m^i_{k}(x,\bm\theta))
+\end{align}
+easy to observe that $x$ is correctly classified by $\bm\theta$ if and only if $m_j^i(x,\bm\theta) > 0$ for all $j\neq i$.
+
+Define $\rho: \mathbb{R}^{k\times (d+1)} \rightarrow \mathbb{R}$ which can be chosen as $\rho(\bm\theta) = \|\bm\theta\|$ or  $\rho(\bm\theta) = \|W\|$. Notice that when $\rho(\bm\theta) = 0$, $\bm\theta$ can not classify any linearly separable set collections. So we only focus on those $\bm\theta$ where $\rho(\bm\theta) > 0$.
+
+
+\begin{definition}[margin]
+	The \textbf{soft margin} $m(\bm\theta)$ of a linearly separable subset collection $A_1,...,A_k\subset \mathbb{R}^d$ with respect to $\bm\theta = (W,b)$ and the \textbf{feasible separating parameter set} $\bm\Theta_0$ is defined as 
+	\begin{equation}
+	m(\bm\theta) =  \min_{i} \min_{x\in \tilde{A}_i} \min_{j\neq i} m_j^i(x,\bm\theta)
+	\end{equation}
+	where $\tilde x = 
+	\begin{pmatrix}
+	x\\
+	1
+	\end{pmatrix}$,  $\tilde A_i = \{\tilde{x}: x\in A_i\}$, and $\bm \theta \tilde{x} = Wx + b$, and
+	\begin{equation}
+	\bm\Theta_0 = \{\bm\theta: m(\bm\theta) > 0, \forall j\neq i, x\in A_i, i = 1,\cdots,k.\}
+	\end{equation}
+	And we can define the \textbf{max margin} $m^*$ and the \textbf{max margin parameter set} $\bm\Theta^*$ w.r.t $\rho(\cdot)$ as 
+	\begin{equation}
+	m^* = \max_{\rho(\bm \theta)>0}\ \frac{m(\bm\theta)}{\rho(\bm\theta)} = \max_{\rho(\bm \theta)= 1}\ m(\bm\theta)
+	\end{equation}
+	
+	\begin{equation}
+	\bm\Theta^* = \mathop{\rm argmax}_{\rho(\bm \theta)= 1}\ m(\bm\theta).
+	\end{equation} 
+\end{definition}
+
+
+
+\begin{remark}
+	$m(\bm\theta)>0$ implies $\rho(\bm\theta)>0$. Because if $\rho(\bm\theta)$ = 0, namely, $\bm\theta = 0$ or $\bm W = 0$, we have $m(\bm\theta) \leq \min (b_1-b_2,b_2-b_1) \leq 0$.
+\end{remark}
+
+Notice that the min of a famlily of concave functions is still concave, so $m(\bm\theta)$ is a concave function w.r.t $\bm\theta$. More precisely, $m(\bm\theta)$ is a concave homogeneous piecewise linear function w.r.t $\bm\theta$. \\
+Because $m(\cdot)$ is continuous and $\{\bm\theta\ | \ \rho(\bm\theta) = 1\}$ is compact in a finite-dimensional space, we can easily obtain the following lemma:
+
+\begin{lemma}
+	If $\rho(\cdot) = \|\cdot\|$ is a norm on $\mathbb{R}^{k\times (d+1)} $ then $\bm\Theta^*$ must be nonempty.
+\end{lemma}
+
+
+\begin{lemma}
+	If $\rho(\cdot) = \|\cdot\|$ is a strictly convex norm on $\mathbb{R}^{k\times (d+1)} $, then $\bm\Theta^*$ is a singleton set.
+\end{lemma}
+
+
+\begin{proof}
+	suppose not, we can find $\bm\theta_1\neq\bm\theta_2$ such that $\|\bm\theta_1\| = \|\bm\theta_2\| = 1$ and $m(\bm\theta_1) = m(\bm\theta_2) = m^*$. \\
+	\indent Take $\bm\theta = \frac{\bm\theta_1+\bm\theta_2}{2}$, we have $\|\bm\theta\| < 1$ and $m(\bm\theta) \geq \frac{m(\bm\theta_1)+m(\bm\theta_2)}{2} = m^*$ because of the concaveness of $m(\cdot)$. So we obtain
+	\[
+	m(\frac{\bm\theta}{\|\bm\theta\|}) > m(\bm\theta) \geq m^*,
+	\]
+	which leads to a contradiction to the definition of $m^*$.
+\end{proof}
+
+
+\begin{lemma}
+	Given any $\bm\theta \in \mathbb{R}^{k\times (d+1)}$, we have 
+	\[
+	m(\bm\theta + \bm{1}\alpha^T) = m(\bm\theta),
+	\]
+	for any $\alpha \in \mathbb{R}^{d+1}$.
+\end{lemma}
+\begin{proof}
+	We only need to notice that
+	\begin{equation}
+		m^i_j(x,\bm\theta + \bm{1}\alpha^T) = (\theta_i + \alpha)\tilde{x} - (\theta_j + \alpha)\tilde{x} = (\theta_i - \theta_j)\tilde{x} = m^i_j(x,\bm\theta).
+	\end{equation}
+	So 
+	\begin{equation}
+		m(\bm\theta + \bm{1}\alpha^T) = \min_{i} \min_{x\in \tilde{A}_i} \min_{j\neq i} m_j^i(x,\bm\theta + \bm{1}\alpha^T) = \min_{i} \min_{x\in \tilde{A}_i} \min_{j\neq i} m_j^i(x,\bm\theta) = m(\bm\theta).
+	\end{equation}
+\end{proof}
+
+\begin{corollary}
+	\begin{equation}
+		\mathop{\rm argmax}_{\|W\| = 1, b_1 = 0} m(\bm\theta) \subset \mathop{\rm argmax}_{\|W\| = 1} m(\bm\theta).
+	\end{equation}
+\end{corollary}
+\begin{proof}
+	The case of $\mathop{\rm argmax}_{\|W\| = 1, b_1 = 0} m(\bm\theta) = \emptyset$ is trivial. We only consider the situation of $\mathop{\rm argmax}_{\|W\| = 1, b_1 = 0} m(\bm\theta) \neq \emptyset$. For any $\bm\theta^*\in\mathop{\rm argmax}_{\|W\| = 1, b_1 = 0} m(\bm\theta) = \emptyset$ and any $\bm\theta\in \{\bm\theta: \|W\| = 1\}$ we have 
+	\begin{equation}
+		m(\bm\theta^*) \geq m(\bm\theta + \bm{1}^T\alpha) = m(\bm\theta)
+	\end{equation}
+	where $\alpha = (\bm{0},-b_1)^T$, which implies $\mathop{\rm argmax}_{\|W\| = 1, b_1 = 0} m(\bm\theta) \subset \mathop{\rm argmax}_{\|W\| = 1} m(\bm\theta).$
+\end{proof}
+
+
+\begin{lemma}
+	If $\rho(\cdot)$ satisfies $\rho(\bm\theta) = \|W\|$ where $\|\cdot\|$ is a norm on $\mathbb{R}^{k\times d}$,  then $\bm\Theta^*$ is nonempty.
+\end{lemma}
+
+\begin{proof}
+	Take $x_i\in A_i,\ i = 1,\dots,k$, then we have
+	\begin{align}
+	(e_j-e_l)\cdot(W x_j) + b_j - b_l > 0,\\
+	(e_l-e_j)\cdot(W x_l) + b_l - b_j > 0,
+	\end{align}
+	which implies
+	\begin{equation}
+	|b_j-b_l|\leq \|e_j-e_l\|(\|Wx_l\|+\|Wx_j\|)\leq  (\sum_{i=1}^{k}\|e_i\|)(\sum_{i=1}^{k} \|x_i\|),
+	\end{equation}
+	for all $i \neq j$, $ (W,b)\in \bm\Theta_0$.\\
+	According to the last corollary, we only need to prove that $\mathop{\rm argmax}_{\|W\| = 1, b_1 = 0} m(\bm\theta) \neq \emptyset.$ Because $b_1 = 0$, we fix $l = 1$, let $j \neq 1$, and we obtain
+	\begin{equation}
+		|b_j|\leq (\sum_{i=1}^{k}\|e_i\|)(\sum_{i=1}^{k} \|x_i\|),
+	\end{equation}
+	for all $j \neq 1$. so $\overline{\{\bm\theta: \|W\| = 1, b_1 = 0\}\cap \bm\Theta_0}$ is closed and bounded, thus compact, which implies $\mathop{\rm argmax}_{\|W\| = 1, b_1 = 0} m(\bm\theta) \neq \emptyset.$
+\end{proof}
+
+
+\section{Relation between margin and geometric margin}
+Suppose that $X$ is a banach space with norm $\|\cdot\|$, $f$ is a bounded linear functional on $X$. Denote the kernel of $f$ as $\ker f$, then we can induce a quotient space $X/\ker f = \{x + \ker f : x\in X\}$, and we denote $x+\ker f $ as $[x]$. According to the quotient space theory in functional analysis, we can define a norm $\|\cdot\|_q$ on $X/\ker f$ as
+\begin{equation}
+	\|[x]\|_q = \inf_{y\in \ker f} \|x-y\| = d(x, \ker f),
+\end{equation}
+where $d$ is a distance induced by norm $\|\cdot\|$ on $X$, and $X/\ker f$ is a banach space. Also we can define a linear functional $f_q$ on $X/\ker f$ such that
+\begin{equation}
+	f_q([x]) = f(x),
+\end{equation}
+easy to check that $f_q$ is bounded and $\|f_q\| = \|f\|$. Because $\ker f$ is a maximal linear subspace of $X$, so $X/\ker f$ is a one-dimensional linear space. Thus we have
+\begin{equation}
+	|f_q([x])| = \|f_q\|_{dual} \|[x]\|_q,
+\end{equation}
+or namely,
+\begin{equation}
+	|f(x)| = \|f\|_{dual} \inf_{y\in \ker f} \|x-y\| = d(x,\ker f).
+\end{equation}
+Suppose that $x_0$ satisfy $f(x_0) + b = 0$, then
+\begin{equation}
+	|f(x) + b| = \|f(x-x_0)\| = \|f\|_{dual} \inf_{y\in \ker f} \|x-x_0-y\| = \|f\|_{dual} d(x, x_0+\ker f)
+\end{equation}
+So $\frac{|f(x)+b|}{\|f\|_{dual}}$ equals to the distance between $x$ and a hyperplane $\{x: f(x) + b = 0\}$ in a sense of norm $\|\cdot\|$ on $X$. Specially, if $X$ is a Hilbert space, then there must exist a $w \in X$ such that $f(x) = <x,w>$. and we have
+\begin{equation}
+	\frac{|<x,w>+b|}{\|w\|_{dual}} = \inf_{y\in\{x: <x,w> + b = 0\}} \|x-y\|.
+\end{equation}
+
+\begin{definition}[Geometric margin]
+	Suppose that $k$ subsets of $\mathbb{R}^n$, $A_1,...,A_k$ are linearly separable by $\bm\theta = (W,b)$,
+	the \textbf{geometric margin} of separation with respect to a metric 
+	$d$ is given by
+	\begin{equation}
+	\widehat{m}(\bm\theta) = \min_{i} \min_{x\in A_i} d(x,\partial\Gamma_i(\bm\theta)).
+	\end{equation}
+	where 
+	\begin{equation}
+	d(x,\partial\Gamma_i(\bm\theta)) = \min_{y\in \partial\Gamma_i(\bm\theta) } d(x,y).
+	\end{equation}
+\end{definition}
+
+\begin{lemma}
+	If $d$ is a metric induced by a norm $\|\cdot\|$, we have
+	\begin{equation}
+	\widehat{m}(\bm\theta) =  \min_{i} \min_{x\in A_i} \min_{j\neq i} \frac{m_j^i(x,\bm\theta)}{\|w_i-w_j\|_{dual}}.
+	\end{equation}
+\end{lemma}
+
+\begin{lemma}
+	If $\rho(\bm\theta) = \|W\|$, there must exist a positive number $\alpha$ which relies on the choice of vector and matrix norm such that 
+	\begin{equation}
+		m(\bm\theta) \leq \alpha \widehat{m}(\bm\theta), \ \forall \bm\theta\in \bm\Theta_0,
+	\end{equation}
+	or namely, geometric margin can always dominate margin.
+\end{lemma}
+\begin{proof}
+	Notice that for any classifiable $\bm\theta$ (which means $\bm\theta\in\bm\Theta_0$), we have
+	\begin{equation}
+		\widehat{m}(\bm\theta) \geq \frac{1}{2} \min_{i} \min_{x\in A_i} \min_{j\neq i} \frac{m_j^i(x,\bm\theta)}{\max_i \|w_i\|} = \frac{\|W\|}{2\max_i \|w_i\|} m(\bm\theta)
+	\end{equation}
+	Because $2\max_i \|w_i\|$ is also a matrix norm of $W$, so there must exist a positive number $\alpha$ such that 
+	\begin{equation}
+		\frac{\|W\|}{2\max_i \|w_i\|} \geq \frac{1}{\alpha},\ \forall W\neq 0.
+	\end{equation}
+	thus we obtain $m(\bm\theta) \leq \alpha \widehat{m}(\bm\theta), \ \forall \bm\theta\in \bm\Theta_0$.
+\end{proof}
+
+
+Next, we will discuss the equivalence between margin maximization and geometric margin maximization in binary classification ($k = 2$). To simplify the statement, we may just denote $m(\bm\theta)$ and $\tilde{m}(\bm\theta)$ as $m(w_1,w_2,b)$ and $\widehat{m}(w_1,w_2,b)$. An easy observation is that
+\begin{equation}
+	\widehat{m}(w_1+w,w_2+w,b) = \widehat{m}(w_1,w_2,b),\ \forall w\in \mathbb{R}^{1\times d}.
+\end{equation}
+Specailly, if we take $w = -\frac{w_1+w_2}{2}$, we have
+\begin{equation}
+\widehat{m}(w_1,w_2,b) = \widehat{m}(\frac{w_1-w_2}{2},\frac{w_2-w_1}{2},b).
+\end{equation}
+So without loss of classifiers, we may restrict $W$ to have the form $W = \begin{pmatrix}
+w\\
+-w
+\end{pmatrix}$ when maximizing geometric margin. 
+
+
+\begin{lemma}
+	If $k = 2$ and $\rho(\bm\theta) = \|W\| = \max_i \|w_i\|$, then $\mathop{\rm argmax}_{\bm\theta\in \bm\Theta_0} m(\bm\theta)$ and  $\mathop{\rm argmax}_{\bm\theta\in \bm\Theta_0} \widehat{m}(\bm\theta)$ contains the same classifiers.
+\end{lemma}
+\begin{proof}
+Notice that 
+\begin{equation}
+	\max_i \|w_i +w\| \geq \frac{1}{2}\|w_1-w_2\|, \forall w\in \mathbb{R}^{1\times d},
+\end{equation}
+and the equality holds when $w = -\frac{w_1+w_2}{2}$, which implies
+\begin{equation}
+	m(w_1,w_2,b) \leq m(\frac{w_1-w_2}{2},\frac{w_2-w_1}{2},b).
+\end{equation}
+So both margin maximization and geometric margin maximization can be restricted on $\{\bm\theta: W = \begin{pmatrix}
+w\\-w
+\end{pmatrix}\}$ without loss of classifiers. Notice that
+\[
+m(w,-w,b) = 2\widehat{m}(w,-w,b),
+\]
+so $\mathop{\rm argmax}_{\bm\theta\in \bm\Theta_0} m(\bm\theta)$ and  $\mathop{\rm argmax}_{\bm\theta\in \bm\Theta_0} \widehat{m}(\bm\theta)$ contains the same classifiers.
+\end{proof}
+
+\begin{lemma}
+	If $k = 2$ and $\rho(\bm\theta) = \|W\| = \|w_1\| + \|w_2\|$, then $\mathop{\rm argmax}_{\bm\theta\in \bm\Theta_0} m(\bm\theta)$ and  $\mathop{\rm argmax}_{\bm\theta\in \bm\Theta_0} \widehat{m}(\bm\theta)$ contains the same classifiers.
+\end{lemma}
+
+\begin{proof}
+	We only need to notice that
+	\begin{equation}
+	\|w_1+w\| + \|w_2+w\| \geq \|w_1-w_2\|, \forall w\in \mathbb{R}^{1\times d},
+	\end{equation}
+	and the equality holds when $w = -\frac{w_1+w_2}{2}$. The rest are the same to the proof of the last lemma .
+
+\end{proof}
+
+\begin{lemma}
+	If $k = 2$ and $\rho(\bm\theta) = \|W\| = (\|w_1\|^p + \|w_2\|^p)^{\frac{1}{p}}$ where $p\geq 1$, then $\mathop{\rm argmax}_{\bm\theta\in \bm\Theta_0} m(\bm\theta)$ and  $\mathop{\rm argmax}_{\bm\theta\in \bm\Theta_0} \widehat{m}(\bm\theta)$ contains the same classifiers.
+\end{lemma}
+
+\section{Margin Maximizing Loss Functions}
+
+Denote the extended real number system as $\bar{\mathbb{R}} = \mathbb{R}\cup \{-\infty,+\infty\}$ and we use $\bm m = (m_1,m_2,\cdots,m_{k-1})$ to represent an elemnt of $\bar{\mathbb{R}}^k$. Consider functions $l: \bar{\mathbb{R}}^{k-1} \rightarrow \mathbb{R}$ with the following assumptions:
+\begin{itemize}
+	\item $l(\cdot)$ is commutative and decreasing in each coordinate, and is continuous on $\bar{\mathbb{R}}^{k-1}$.
+	\item There exists a $T>0$ in $\bar{\mathbb{R}} $ such that 
+	\begin{equation}
+	l(\bm m)
+	\begin{cases}
+	> 0,\ \ \min_i m_i < T,\\
+	= 0,\ \ \min_i m_i \geq T.
+	\end{cases}
+	\end{equation}
+	Notice that when $T = \infty$, $l(\bm m) = 0$ if and only if $m_i = \infty$ for all $i = 1,2,\cdots,k-1$.
+	\item If $T = \infty$, we assume for any $\bm u, \bm v \in \bar{\mathbb{R}}^{k-1}$ where $\min_i u_i < \min_i v_i$ must satisfy
+	\begin{equation}
+	\lim\limits_{t\rightarrow \infty}\frac{l(t\bm u)}{l(t\bm v)} = \infty.
+	\end{equation}
+	Specially, we have
+	\begin{equation*}
+	\lim\limits_{t\rightarrow \infty}\frac{l(tu,\infty,\cdots,\infty)}{l(tv,tv,\cdots,tv)} = \infty,\ \ \forall u<v.
+	\end{equation*}
+	
+\end{itemize}
+
+Denote that $R: \mathbb{R}^{+}\rightarrow \mathbb{R}^{+}$ which is a strictly increasing function such that $R(0) = 0$ and $R(x) \rightarrow +\infty$ as $x\rightarrow +\infty$. The final loss function has the following fomulation
+\begin{equation}
+L(\bm\theta,\lambda) = \sum_{i =  1}^{k} \sum_{x\in A_i} l(\bm m^i(x,\bm  \theta)) + \lambda R(\rho(\bm\theta))
+\end{equation}
+And we denote the optimal parameter set of the above problem as
+\begin{equation}
+\bm\Theta(\lambda) = \mathop{\rm argmin}_{\bm\theta} L(\bm\theta,\lambda) 
+\end{equation}
+
+
+
+\begin{lemma}
+	If $\rho: \bm\theta \mapsto \|\bm\theta\|$ where $\|\cdot\|$ is a norm on $\mathbb{R}^{k\times (d+1)} $, then $\bm\Theta(\lambda)$ must be nonempty for any $\lambda > 0$.
+\end{lemma}
+
+\begin{lemma}
+	If $\rho: \bm\theta \mapsto \|W\|$ where $\|\cdot\|$ is a norm on $\mathbb{R}^{k\times d} $, then $\bm\Theta(\lambda)$ must be nonempty for sufficiently small $\lambda > 0$.
+\end{lemma}
+
+
+Here we show the loss function of logistic regression and SVM as examples.
+
+Logistic regression($T = \infty$):\\
+\[
+\sum_{i =  1}^{k} \sum_{x\in A_i} \log(1+\sum_{j\neq i} e^{(\theta_j - \theta_i) x}) + \lambda R(\rho(\bm\theta))
+\]
+
+where
+\[
+l(\bm m) = \log(1 + \sum_{j}^{k-1} e^{-m_j})
+\]
+
+\indent Support vector machine($T = 1$):\\
+\[
+\sum_{i =  1}^{k} \sum_{x\in A_i}\sum_{j\neq i} {\rm ReLU}(1 - (\theta_i - \theta_j) x) + \lambda R(\rho(\bm\theta))
+\]
+where 
+\[
+l(\bm m) = \sum_{j = 1}^{k-1} {\rm ReLU}(1 - m_j)
+\]
+%\begin{lemma}
+%	If $l(\bm m(x,\bm\theta))$ is convex w.r.t $\bm\theta$ for any fixed $x$, $R(\cdot)$ is convex and $\rho(\cdot)$ is a strictly convex norm, then $L(\bm\theta,\lambda)$ is strictly convex w.r.t $\bm\theta$ and $\bm\Theta(\lambda)$ contains the unique element for any $\lambda > 0$.
+%\end{lemma}
+
+
+From now on, for any given $\lambda > 0$, we fix a $\bm\theta(\lambda)\in \bm\Theta(\lambda)$. We'll prove that this kind of loss functions has the margin maxmizing property.
+
+
+
+\begin{lemma}
+	
+	\begin{equation}
+	\lim\limits_{\lambda\rightarrow 0} L(\bm\theta(\lambda),\lambda) = 0. 
+	\end{equation}
+\end{lemma}
+
+\begin{proof}
+    It's sufficient to show that $\mathop{\rm limsup}_{\lambda \rightarrow 0} L(\bm\theta(\lambda),\lambda) = 0$.\\
+    Given any $\epsilon>0$, there must exist a $\bm\theta_{\epsilon}\in\bm\Theta_0$ such that
+    \[
+    \sum_{i =  1}^{k} \sum_{x\in A_i} l(\bm m^i(x,\bm  \theta_{\epsilon})) < \epsilon.
+    \]
+    So
+    \begin{equation}
+    	\mathop{\rm limsup}_{\lambda \rightarrow 0} L(\bm\theta(\lambda),\lambda) \leq \mathop{\rm limsup}_{\lambda \rightarrow 0} L(\bm\theta_\epsilon,\lambda) \leq \epsilon.
+    \end{equation}
+    Because of the arbitrariness of $\epsilon$, we have
+    \[
+    \mathop{\rm limsup}_{\lambda \rightarrow 0} L(\bm\theta(\lambda),\lambda) = 0.
+    \]
+\end{proof}
+
+
+\begin{corollary}
+	For sufficiently small $\lambda$, we must have $\bm\Theta(\lambda) \subset \bm\Theta_0 $, or namely, 
+	\[
+	m(\bm\theta) > 0,\ \rho(\bm\theta) >0,
+	\]
+	for any $\bm\theta \in \bm\Theta(\lambda)$, 
+\end{corollary}
+
+
+In order to make the problem more intuitive, we can transfer the problem to a new coordinate system similarily to the polar coordinate system. Define
+\begin{equation}
+\bm S = \{\bm\omega\in \mathbb{R}^{k\times (d+1)}: \rho(\bm \omega) = 1\}
+\end{equation}
+Given any $\bm\theta\in \{\bm\theta: \rho(\bm\theta) > 0\}$, we can define its $\rho$-polar coordinates $(r,\omega) \in [0,+\infty) \times \bm S$ as 
+\begin{equation}
+r = \rho(\bm\theta),\ \bm\omega = \frac{\bm\theta}{\rho(\bm\theta)}.
+\end{equation}
+
+Notice that this coordinate transformation is a bijection from $\{\bm\theta: \rho(\bm\theta) > 0\}$ to  $(0,+\infty)\times \bm S$.
+Correspondingly, we can define a new loss function in this new coordinate as
+\begin{equation}
+ \mathcal L(r,\bm\omega,\lambda) = L(r\bm\omega, \lambda) = \sum_{i =  1}^{k} \sum_{x\in A_i} l(r\bm m^i(x,\bm\omega)) + \lambda R(r)
+\end{equation}
+And define the minima set of this new loss as 
+\begin{equation}
+\bm Z(\lambda) = \mathop{\rm argmin}_{r, \bm\omega} \mathcal L(r,\bm\omega,\lambda) 
+\end{equation}
+
+Given any $\lambda>0$, we fix a $ (r(\lambda),\omega(\lambda))\in \bm Z(\lambda)$. Similarily, we have the following lemma.
+\begin{lemma}
+	\begin{equation}
+	\lim\limits_{\lambda\rightarrow 0} \mathcal L(r(\lambda),\bm\omega(\lambda),\lambda) = 0. 
+	\end{equation}
+\end{lemma}
+
+
+
+\begin{corollary}\label{Maxmargin3}
+	For sufficiently small $\lambda >0$, we must have
+	\[
+	r> 0,\ m(\bm\omega) > 0,
+	\]
+	for any $(r,\bm\omega) \in \bm Z(\lambda)$.
+\end{corollary}
+
+\begin{lemma}
+	For sufficiently small $\lambda >0$, the coordinate transformation restricted on $\bm\Theta(\lambda)$ is a bijection from $\bm\Theta(\lambda)$ to $\bm Z(\lambda)$. 
+\end{lemma}
+
+
+So to study the convergence of $\frac{\bm\theta(\lambda)}{\|\bm\theta(\lambda)\|}$, we only need to figure out the convergence of $\bm\omega(\lambda)$ as $\lambda\rightarrow 0$.
+
+
+
+\subsection{Case 1: $T<\infty$}
+
+We first discuss the case of $T<\infty$.
+
+\begin{lemma}
+	\begin{equation}
+		r(\lambda) \leq \frac{T}{m^*}, \forall \lambda>0.
+	\end{equation}
+\end{lemma}
+
+\begin{proof}
+	Find any $\bm\omega^*\in\bm\Theta^*$, we have
+	\[
+	\lambda R(r(\lambda)) \leq \mathcal{L}(r(\lambda),\bm\omega(\lambda),\lambda)\leq\mathcal{L}(\frac{T}{m^*},\bm\omega^*,\lambda) = \lambda R(\frac{T}{m^*}).
+	\]
+	which implies
+	\[
+	r(\lambda) \leq \frac{T}{m^*}.
+	\]
+	
+\end{proof}
+
+\begin{theorem}
+	If $T<\infty$, any convergence point of $\bm\omega(\lambda)$ must be a margin maximizing parameter in $\bm\Theta^*$.
+\end{theorem}
+
+\begin{proof}
+	Suppose that there is a sequence $\lambda_n \searrow 0$ such that  $\bm\omega(\lambda_n)\rightarrow \overline{\bm\omega}$ and $m(\overline{\bm\omega})< m^*$. So there exsits a $\epsilon>0$ and $K\in \mathbb{N}$ such that
+	\[
+	m(\bm\omega(\lambda_n)) < m^* - \epsilon, \ \forall n>K.
+	\]
+	Then we have
+	\begin{align}
+	&\mathcal{L}(r(\lambda_n),\bm\omega(\lambda_n),\lambda_n) \\
+	\geq\ &\sum_{i =  1}^{k} \sum_{x\in A_i} l(r(\lambda_n)\bm m^i(x,\bm\omega(\lambda_n)))\\
+	\geq\ & l(\frac{m^*-\epsilon}{m^*}T,\infty,\cdots,\infty) > 0,\ \forall n>K,
+	\end{align}
+	which leads to a contradiction with $\lim\limits_{\lambda\rightarrow 0} \mathcal L(r(\lambda),\bm\omega(\lambda),\lambda) = 0$.
+\end{proof}
+
+
+\subsection{Case 2: $T=\infty$}
+Next, we discuss the case of $T=\infty$.
+
+\begin{lemma}\label{Maxmargin7}
+	If $T = \infty$, we have
+	\begin{equation}
+	\lim\limits_{\lambda\rightarrow 0}\ r(\lambda) = \infty.
+	\end{equation}
+\end{lemma}
+
+\begin{proof}
+	Suppose that there is an $M>0$ and a sequence $\lambda_n \searrow 0$ such that  $r(\lambda_n) \leq M$. Then we have
+	\[
+	\mathcal{L}(r(\lambda_n),\bm\omega(\lambda_n),\lambda_n) \geq l(Mm^*,\infty,\cdots,\infty) > 0,\ \forall n\in\mathbb{N},
+	\]
+	which is contradictory to $\lim\limits_{\lambda\rightarrow 0} \mathcal L(r(\lambda),\bm\omega(\lambda),\lambda) = 0$.
+\end{proof}
+
+
+\begin{theorem}
+	If $T = \infty$, any convergence point of $\bm\omega(\lambda)$ must be a margin maximizing parameter in $\bm\Theta^*$.
+\end{theorem}
+
+\begin{proof}
+	Suppose that there is a sequence $\lambda_n \searrow 0$ such that  $\bm\omega(\lambda_n)\rightarrow \widehat{\bm\omega}$ and $m(\widehat{\bm\omega})< m^*$. So there exsits a $\epsilon>0$ and $K_1\in \mathbb{N}$ such that
+	\[
+	m(\bm\omega(\lambda_n)) < m^* - \epsilon, \ \forall n>K_1.
+	\]
+	Take
+	\[
+	\bm u = (m^*-\epsilon,\infty,\cdots,\infty),\ \bm v = (m^*, m^*,\cdots,m^*),
+	\]
+	then there exists a $K_2\in\mathbb{N}$ such that
+	\[
+	l(r(\lambda_n) \bm u) > N l(r(\lambda_n) \bm v), \forall n>K_2.
+	\]
+	Let $K = \max\{K_1,K_2\}$. Notice that
+	\[
+	\mathcal{L}(r(\lambda_n),\bm\omega(\lambda_n),\lambda_n) \geq  l(r(\lambda_n)\bm u) + \lambda_n \rho(r(\lambda_n)),
+	\]
+	\[
+	\mathcal{L}(r(\lambda_n),\bm\omega^*,\lambda_n) \leq N l(r(\lambda_n) \bm v) + \lambda_n \rho(r(\lambda_n)).
+	\]
+	Thus given any $\bm\omega^*\in \bm\Theta^*$, we have
+	\[
+	\mathcal{L}(r(\lambda_n),\bm\omega^*,\lambda_n) < \mathcal{L}(r(\lambda_n),\bm\omega(\lambda_n),\lambda_n),\ \forall n > K,
+	\]
+	which is contradictory to $(r(\lambda_n),\bm\omega(\lambda_n))\in \bm Z(\lambda)$.
+\end{proof}
+
+\begin{corollary}
+	If $\bm\Theta^*$ only contains the unique element $\bm\theta^*$, then $\frac{\bm\theta(\lambda)}{\rho(\bm\theta(\lambda))}$ must converge to $\bm\theta^*$ as $\lambda\rightarrow 0$.
+\end{corollary}
+
+\begin{corollary}
+	If $\rho(\cdot)$ is a strictly convex norm, then $\frac{\bm\theta(\lambda)}{\rho(\bm\theta(\lambda))}$ must converge to $\bm\theta^*$ as $\lambda\rightarrow 0$.
+\end{corollary}
+
+\newpage
+\section{Regularization by maximizing margins $k=2$}
+The classic SVM, without kernels, is based on the belief that
+bigger margin will give better generalization.
+
+The question is 
+\begin{itemize}
+\item What is the right metric to define margin?
+\end{itemize}
+
+We make the following observations:
+\begin{enumerate}
+\item  The regularization norm for the loss function should be dual to the
+norm  for the data space
+\item The norm for the data space ideally should reflect the features
+  of the image, such as 
+
+\begin{enumerate}
+\item rotation invariant (continuity)
+\item translation invariant (continuity)
+\item deformation invariant (continuity)
+\end{enumerate}
+
+\item One possibility is to use the following metrix
+$$
+d(\phi(x), \phi(y) )
+$$
+where $\phi(x)$ is some CNN function transferred from other data 
+\end{enumerate}
+
+In LR, we have
+$$
+L(x)=(\Theta, x)
+$$
+
+\subsection{Conclusion}
+\begin{itemize}
+\item The commonly used regularization such as $\ell^2$ norm should
+  not be helpful to increase genearlization accuracy, since its dual norm is not
+  a good metric to measure the dat, but such a regularization may be
+  useful for noisy.
+\end{itemize}
+
+\newpage
+
+\section{Some comments on the metric of images}
+$\ell^2$ norm might not be a proper norm for us to do classification in the digital image space, because if you rotate the index of an image, the new image you get might have larger distance to the original than some images from other labels. That means defferent classes of images are not separated very well as we imagine, but are mixed together and not linearly separable. \\
+\indent What kind of 'metric' is reasonable for image classification? At least, it should satisfy some invariance like translation-invariance and rotation-invariance in index space. Theoretically, we can define a 'metric' using the notion of quotient space. Abstractly, We regard a digital image as a function from $\mathbb{R}^2$ to $\mathbb{R}$. And we can assume the whole digital image space to be a $L^p(\mathbb{R}^2)$ space. And given $Q\in \mathbb{R}^{2\times 2}$, $b\in ]\mathbb{R}^2$, we define an operation $A(Q,b): L^p(\mathbb{R}^2)\circlearrowleft$ such that
+\[
+A(Q,b)\circ f(x) = f(Qx+b).
+\]
+When we take $Q$ is an orthogonal matrix, it's a rotation or reflection in the domain, while $A(Q,b)$ ia a bijectiction in $L^p$ space which keeps the value of norm.
+\begin{definition}{equivalence of images}
+	We say two images $f,g \in L^p(\mathbb{R}^2)$ are equivalent if there is an orthogonal matrix $Q$ and a vector $b$ such that $A(Q,b)\circ f = g$, denoted as $f \sim g$.
+\end{definition}
+Thus we can naturally induce a quotient space by the notion of image equivalence. We define a equivalence class from the quotient space as $\bar{f} = \{g: g\sim f\}$. But unfortunately, the natural way to define plus opration in the quotient space dosen't work in this situation. If we define $\bar{f}+\bar{g} = \bar{f+g}$, then we will find this plus opration rely on the representitive you choose, so is not well-defined. But we can still define a metric in this quotient space as
+\begin{equation}
+	d(\bar{f},\bar{g}) = \inf_{s\in \bar{f},t\in \bar{g}} \|s-t\|_{L^p}.
+\end{equation}
+Although this metric satisfy those invariance we expect, the quotient space is not linear at all, so this metric can not be a norm which means it's hard to use in the real situation. \\
+\indent Another way to achieve those invariance is to find some feature mapping $F$ to map those equivalent points to be very close to each other in feature space and then we use the norm in feature space to determine the metric. For example, we define $d(f,g) = \|F(f)-F(g)\|$. How to achieve those invariance via this $F$? Roughly speaking, it's concerned with your data and model. First, your model should have the capacity to get a proper function $F$ with those expected property. Second, your image data should contain those rotation or translation from the same image to help your model build such invariance properties. For example, data augmentation can  do such things.\\
+\indent So an interesting question is, do those deep learning models have the ability to achieve or approximately achieve those invariance?

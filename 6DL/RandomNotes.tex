@@ -1,0 +1,99 @@
+*  Yuyan: Deep Neural network is usually under-determined.  If there are a set of parameters will give accurate prediction under various perturbations or disturbances or distractions,  then these would be a good set of parameters. 
+
+Why a good set of parameters should be robust with respects to drop-out?
+
+*  Xiaodong:  
+
+Dropping out will reduce the number of parameters, which will decrease the generalization ability (泛化能力）, namely decrease the inaccuracy in the test data.   This has nothing to do what activations are used. 
+
+Theoretical starting point:
+\begin{quote}
+$\#\Theta$ is sufficiently large that the underlying DNN model is accurate.
+\end{quote}
+
+The starting point, or the ideal case,  is that $\# \Theta \approx \# X$. 
+
+
+Dropout is only efficient if $\# \Theta \gg \# X$.
+
+
+* Hongxuan:  
+
+This gives a random perturbation in the gradient method.  This will help to jump out local minimizers ... 
+
+* Juncai:  These parameters should have special structures, namely these matrices, multiplied by a random cut-matrices (consisting of $0$ and $1$) on their right lead to the final results that have some uniform properties.
+
+
+$$
+f^{j+1}=\theta^{j+1}\circ g \theta^{j}\circ g \circ f^{j-1}
+$$
+Drop-out:  Let $D_j$ be a diagonal matrix with $0$ or $1$ as diagonal, say $25\%$ $0$. 
+$$
+f^{j+1}=\theta^{j+1}\circ g \circ \theta^{j}\circ {\color{red}D_j}\circ g \circ f^{j-1}
+$$
+There are two conceptional understandings, one is
+$$
+f^{j+1}=\theta^{j+1}\circ g \circ \theta^{j}\circ[ {\color{red}D_j}\circ g \circ f^{j-1}]
+$$
+This means that we drop out $25\%$ the output values
+$$
+f^{j+1}=\theta^{j+1}\circ g \circ [\theta^{j}\circ {\color{red}D_j}]\circ g \circ f^{j-1}
+$$
+This means that we drop out $25\%$ neurons. 
+
+This may be related to the following fact:
+
+\begin{quote}\it
+Given $Q\in \mathbb R^{n\times m}$, let $D={\rm diag}(d_i)$ with $d_i\in {\rm rand}(0,1)$.  then, for large singular values
+$$
+\sigma_i(QD-Q)\le \epsilon \sigma_i(Q)
+$$  
+\end{quote}
+
+
+* Deep Learning Book:
+
+It is important to understand that a large portion of the power of dropoutarises from the fact that the masking noise is applied to the hidden units. This can be seen as a form of highly intelligent, adaptive destruction of the information content of the input rather than destruction of the raw values of the input. For example, if the model learns a hidden unithithat detects a face by finding thenose, then dropping $h_i$ corresponds to erasing the information that there is a nose in the image. The model must learn another $h_i$, that either redundantly encodes the presence of a nose or detects the face by another feature, such as the mouth. Traditional noise injection techniques that add unstructured noise at the input are not able to randomly erase the information about a nose from an image of a face unless the magnitude of the noise is so great that nearly all the information inthe image is removed. Destroying extracted features rather than original values allows the destruction process to make use of all the knowledge about the input distribution that the model has acquired so far.
+
+Another important aspect of dropout is that the noise is multiplicative. If the noise were additive with fixed scale, then a rectified linear hidden unit $h_i$ with added noise $\epsilon$ could simply learn to have $h_i$ become very large in order to make the added noise $\epsilon$ insignifiant by comparison. Multiplicative noise does not allow such a pathological solution to the noise robustness problem.
+
+\newpage
+\section{Mathematical versus practical}
+
+
+\subsection{Mathematical}
+Mathematically speaking, for a given application, we have the following conclusion
+\begin{enumerate}
+\item There exist a number of smoother disjoint manifold that  contain all the possible data.
+\item If the $N=\#\Theta$ is sufficiently large, then there exists a DDN with these paramaters that can ``accurately'' classify the underlying manifolds
+\item If the $m=\# X$ is sufficiently large and ``well-distributed'' for training, then the aforementioned DDN with at least one set of parameters $\Theta^{\rm opt}$ and, as a result, there is no ``over-fitting''!
+\end{enumerate}
+
+\subsection{Practical}
+We will use training data to get an approximation of $\Theta^{\rm opt}$.  More precisely
+$$
+\Theta^*=\arg\min {1\over m}\sum_{i=1}^m|f(x_i,\Theta)-y_i|^2.
+$$
+Question:
+$$
+\Theta^*\approx \Theta^{\rm opt}?
+$$
+Note
+\begin{quote}
+  $\Theta^*$ is determined by the training data!
+\end{quote}
+
+Xu:
+
+\begin{quote}
+If  $m\gg 1$ and ``good'', then $\Theta^*\approx \Theta^{\rm opt}?$
+\end{quote}
+Practically speaking,  
+\begin{enumerate}
+\item $N$ is unknown.
+\item $N\gg 1$, but $m\ll N$
+\end{enumerate}
+
+\subsubsection{Case 1:  The DNN model is good enough}
+
+\subsubsection{Case 2:  The DNN model is  NOT good enough}

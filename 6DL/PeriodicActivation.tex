@@ -1,0 +1,25 @@
+\subsection{Periodic activation function}
+By dilating $\sigma$ if necessary, we may assume without loss of generality that $\sigma$ is periodic on $[0,1]$. Consider the Fourier series of $\sigma$
+\begin{equation}
+\sigma(x) = \displaystyle\sum_{i=-\infty}^\infty a_i e^{2\pi ix},
+\end{equation}
+with coefficients
+\begin{equation}\label{eq_1027}
+a_i =  \int_0^{1} \sigma(b)e^{-2\pi ib}db. 
+\end{equation}
+The assumption that $\sigma$ is non-constant means that there exists some $i$ such that $a_i \neq 0$. Note that we do not need the Fourier series to converge pointwise to $\sigma$, all we need is for some $a_i$ to be non-zero and the integrals in \eqref{eq_1027} to converge (which is does since $\sigma\in W^{m,\infty}$). Notice that shifting $\sigma$ by $t$, i.e. replacing $\sigma$ by $\sigma(\cdot+t)$, scales the coefficient $a_i$ by $e^{it}$. Setting $t = (\omega \cdot x)$, we get
+\begin{equation}
+e^{2\pi i\omega\cdot x} = \frac{1}{a_i}\int_0^{1} \sigma\left(\omega\cdot x + b\right)e^{-2\pi ib}db.
+\end{equation}
+Plugging this into the Fourier representation of $u$, we see that
+\begin{equation}
+u(x) = \int_{\mathbb{R}^d} e^{2\pi i\omega\cdot x}\hat{u}(\omega)d\omega = \frac{1}{ a_i}
+\int_{\mathbb{R}^d}\int_0^{1}\sigma\left(\omega\cdot x + b\right)e^{-2\pi ib}\hat{u}(\omega)dbd\omega.
+\end{equation}
+Since $u(x)$ is real, we can add this to its conjugate to obtain the representation
+\begin{equation}\label{eq_1029}
+u(x) = \int_{\mathbb{R}^d} e^{2\pi i\omega\cdot x}\hat{u}(\omega)d\omega = \frac{1}{|a_i|}
+\int_{\mathbb{R}^d}\int_0^{1}\sigma\left(\omega\cdot x + b\right)e^{-ib}\hat{u}(\omega)dbd\omega.
+\end{equation}
+ 
+ 

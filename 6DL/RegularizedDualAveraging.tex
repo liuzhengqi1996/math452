@@ -1,0 +1,180 @@
+\section{Regularized Dual Averaging}
+In this section, we generalize the dual averaging method (\ref{generalized_dual_averaging}) to deal
+with composite optimization problems, i.e. problems of the form
+\begin{equation}\label{composite_optimization}
+\arg\min_x \left[f(x) = F(x) + G(x)\right] 
+\end{equation}
+where $F$ is a convex, Lipschitz function and $G$ is a convex function for which we can efficiently solve the proximal,
+or backward step
+\begin{equation}\label{prox_regularlized_dual_averaging}
+ P_{\lambda G}(x) = \arg\min_{y} \frac{1}{2}\|y - x\|_2^2 + \lambda G(y)
+\end{equation}
+Two very common choices for $G$ are the indicator function of a convex set $A$
+\begin{equation}
+ G(x) = i_A(x) = 
+ \begin{cases}
+                    0 &~ \text{if $x\in A$} \\
+		    +\infty &~ \text{if $x\notin A$}
+ \end{cases}
+\end{equation}
+and the l$1$-norm $G(x) = \|x\|_1$. In the former case, the proximal map is just a projection onto the set $A$ and
+we obtain methods for solving constrained optimization problems. In the latter case, the
+proximal map is called soft-thresholding and can be given in closed form.
+
+It is important to note that the methods we will derive for the composite problem (\ref{composite_optimization})
+have convergence rates which only depend upon the Lipschitz constant of $F$. This is where the drastic improvement
+lies, since often $G$ will not be Lipschitz at all, for instance $G = i_A$, or the Lipschitz constant of $G$ 
+will be very large, for instance $G = \|\cdot\|_1$.
+
+To derive the regularized dual averaging methods, we begin by noting that if $g_i\in \partial F(x_i)$, then
+$$ F(x_i) + \langle g_i, x - x_i\rangle + G(x)
+$$
+is a lower bound for $f(x)$. Substituting this lower bound into the dual averaging iteration (\ref{generalized_dual_averaging}),
+we arrive at the following iteration
+\begin{equation}\label{naive_regularized_dual_averaging}
+ x_{n+1} = \arg\min_x \left(\displaystyle\sum_{i = 1}^n \langle s_ig_i, x\rangle + \frac{\alpha_{n+1}}{2}\|x\|_2^2 + \gamma_{n+1} G(x)\right)
+\end{equation}
+where $\gamma_{n + 1} = \sum_{i = 1}^n s_i$.
+
+Before we proceed, it is useful to write out the iteration (\ref{naive_regularized_dual_averaging}) in two steps by completing the
+square
+\begin{equation}
+ x_{n+\frac{1}{2}} = -\frac{1}{\alpha_{n+1}}\displaystyle\sum_{i = 1}^n s_ig_i,~x_{n+1} = P_{(\gamma_{n+1}/\alpha_{n+1})G}(x_{n+\frac{1}{2}})
+\end{equation}
+We note that the second, i.e. proximal, step above means that
+$$h_{n+1}:=\frac{\alpha_{n+1}}{\gamma_{n+1}}(x_{n+\frac{1}{2}} - x_{n+1})\in \partial G(x_{n+1})
+$$
+So in the process of computing the minimizer in (\ref{naive_regularized_dual_averaging}) we obtain an element
+of $\partial G(x_{n+1})$ as a byproduct. We can use this element to lower bound $f$ in a different way, namely by
+$$ F(x_i) + \langle g_i, x - x_i\rangle + f_i(G(x_i) + \langle h_i, x - x_i\rangle) + (1 - f_i)G(x)
+$$
+where $0 \leq f_i$. Here we have replaced a fraction $f_i$ of the bound $G(x)$ by its linear lower bound
+based on $h_i\in \partial G(x_i)$. Writing $t_i = s_if_i$, this leads to the following method
+\begin{equation}\label{argmin_formulation_generalized_RDA}
+ x_{n+1} = \arg\min_x \left(\displaystyle\sum_{i = 1}^n \langle s_ig_i + t_ih_i, x\rangle + \frac{\alpha_{n+1}}{2}\|x\|_2^2 + \gamma_{n+1} G(x)\right)
+\end{equation}
+i.e.
+\begin{align}\label{first_attempt_iteration}
+ x_{n+\frac{1}{2}} = -\frac{1}{\alpha_{n+1}}\displaystyle\sum_{i = 1}^n &s_ig_i + t_ih_i = \frac{\alpha_n}{\alpha_{n+1}}x_{n-\frac{1}{2}} - \frac{s_ng_n + t_nh_n}{\alpha_{n+1}}\\
+ x_{n+1} &= P_{(\gamma_{n+1}/\alpha_{n+1})G}(x_{n+\frac{1}{2}})
+\end{align}
+where $\gamma_{n + 1} = \sum_{i = 1}^n s_i-t_i$, $h_i = \frac{\alpha_{i}}{\gamma_{i}}(x_{i-\frac{1}{2}} - x_{i})$, and
+$g_i\in \partial f(x_i)$. Additionally, we must have $t_1 = 0$ since we don't have an element in the subdifferential
+of $G$ at $x_1$ (as $\gamma_1 = 0$).
+
+By utilizing the definition of $h_i$ in (\ref{first_attempt_iteration}), we can rewrite this iteration in the following simpler way
+\begin{align}\label{generalized_RDA_iteration}
+ &x_{n+\frac{1}{2}} = \frac{\alpha_n}{\alpha_{n+1}}\left(\frac{t_n}{\gamma_n}x_n + \left(1 - \frac{t_n}{\gamma_n}\right)x_{n-\frac{1}{2}}\right) - \frac{s_n}{\alpha_{n+1}}g_n \\
+ &x_{n+1} = \arg\min_x \left(\frac{1}{2}\|x - x_{n+\frac{1}{2}}\|_2^2 + \frac{\gamma_{n+1}}{\alpha_{n+1}}G(x)\right)
+\end{align}
+
+We have the following convergence result for the generalized RDA method.
+\begin{theorem}
+ Assume that $F$ is convex and Lipschitz with parameter $M$ and let $x^*\in \arg\min_x f(x)$. 
+ Then if $x_n$ is given by the iteration (\ref{generalized_RDA_iteration})
+ with $t_i\leq \gamma_i$, $\alpha_i\leq \alpha_{i+1}$, and $s_{i+1}\leq s_i$, then we have
+ \begin{align}
+  &f(\bar{x}_n) - f(x^*) \leq \\
+  &\left(\displaystyle\sum_{i = 1}^n s_i\right)^{-1} \left(\alpha_n\|x^*\|_2^2 + M^2\displaystyle\sum_{i = 1}^n \frac{s_i^2}{\alpha_i} + s_1(G(x_1) - \inf_x G(x))\right)
+ \end{align}
+ where $\bar{x}_n = (\sum_{i = 1}^n s_i)^{-1}\sum_{i = 1}^n s_ix_i$ is a weighted average of the iterates with weights $s_i$.
+ We also have
+ \begin{align}
+  &\min_{i = 1,...,n} f(x_i) - f(x^*) \leq \\
+  &\left(\displaystyle\sum_{i = 1}^n s_i\right)^{-1}\left(\alpha_n\|x^*\|_2^2 + M^2\displaystyle\sum_{i = 1}^n \frac{s_i^2}{\alpha_i} + s_1(G(x_1) - \inf_x G(x))\right)
+ \end{align}
+\end{theorem}
+
+\begin{proof}
+  We begin by noting that by convexity we have
+ \begin{equation}
+  f(\bar{x}_n) - f(x^*) \leq \left(\displaystyle\sum_{i = 1}^n s_i\right)^{-1}\displaystyle\sum_{i = 1}^n s_i(f(x_i) - f(x^*))
+ \end{equation}
+ and since the minimum is smaller than the average we have
+ \begin{equation}
+  \min_{i = 1,...,n} f(x_i) - f(x^*) \leq \left(\displaystyle\sum_{i = 1}^n s_i\right)^{-1}\displaystyle\sum_{i = 1}^n s_i(f(x_i) - f(x^*))
+ \end{equation}
+ Thus it suffices to prove that
+ \begin{equation}
+ \displaystyle\sum_{i = 1}^n s_i(f(x_i) - f(x^*)) \leq 
+ \frac{1}{2}\left(\alpha_n\|x^*\|_2^2 + M^2\displaystyle\sum_{i = 1}^n \frac{s_i^2}{\alpha_i}\right)+ s_1(G(x_1) - \inf_x G(x))
+ \end{equation}
+ For this we first use the subgradient property to get
+ \begin{align}\label{eq_rda_100}
+  \displaystyle\sum_{i = 1}^n s_i(f(x_i) - f(x^*)) &\leq \displaystyle\sum_{i = 1}^n \langle s_ig_i + t_ih_i, x_i - x^*\rangle \\
+  &+ \displaystyle\sum_{i = 1}^n (s_i - t_i)(G(x_i) - G(x^*))
+ \end{align}
+ We now rewrite the first sum above as
+ \begin{align}\label{eq_rda_105}
+  \displaystyle\sum_{i = 1}^n \langle s_ig_i + t_ih_i, x_i - x^*\rangle &= \displaystyle\sum_{i = 1}^n \langle s_ig_i + t_ih_i, x_n - x^*\rangle \\
+  &+ \displaystyle\sum_{i = 1}^{n-1} \displaystyle\sum_{j = 1}^i\langle s_jg_j + t_jh_j, x_i - x_{i+1}\rangle 
+ \end{align}
+ We proceed by bounding the term
+ \begin{equation}
+  \sum_{j = 1}^i\langle s_jg_j + t_jh_j, x_i - z\rangle
+ \end{equation}
+ Recall from (\ref{argmin_formulation_generalized_RDA}) that $x_i = \arg\min_x f_i(x)$ where
+ \begin{equation}
+  f_i(x) = \displaystyle\sum_{j = 1}^{i-1} \langle s_jg_j + t_jh_j, x\rangle + \frac{\alpha_{i}}{2}\|x\|_2^2 + \gamma_i G(x_i)
+ \end{equation}
+ The definition of $h_i\in \partial G(x_i)$ means that
+ \begin{equation}
+  0 = \alpha_i x_i + \gamma_i h_i + \displaystyle\sum_{j = 1}^{i-1} s_jg_j + t_jh_j
+ \end{equation}
+ This means that $0\in \partial f_i^\prime(x_i)$ if we set 
+ $$f_i^\prime(x) = f_i(x) + \langle t_ih_i, x\rangle - t_iG(x)
+ $$
+ Moreover, $f_i^\prime$ is a strongly convex function with convexity parameter $\alpha_i$ as long as $t_i\leq \gamma_i$.
+ Now, define $f^{\prime\prime}_i(x) = f_i^\prime(x) + \langle s_ig_i, x\rangle$. Then we have
+ $s_ig_i\in \partial f^{\prime\prime}_i(x_i)$ and the strong convexity of $f^{\prime\prime}_i$ implies that
+ \begin{equation}
+  f^{\prime\prime}_i(x_i) \leq f^{\prime\prime}_i(z) + \frac{1}{2\alpha_i}\|s_ig_i\|_2^2
+ \end{equation}
+ Substituting in the definition of $f^{\prime\prime}_i$ and rearranging, we get
+ \begin{align}
+  \sum_{j = 1}^i\langle s_jg_j + t_jh_j, x_i - z\rangle &\leq \frac{\alpha_i}{2}(\|z\|_2^2 - \|x_i\|_2^2) + \frac{s_i^2}{2\alpha_i}\|g_i\|_2^2 \\
+  &+ (\gamma_i - t_i)(G(z) - G(x_i))
+ \end{align}
+ Plugging this bound into (\ref{eq_rda_105}) with $z = x_{i+1}$ and $z = x^*$, recalling that 
+ $\gamma_n = \sum_{i = 1}^{n-1} s_i - t_i$, that $x_1 = 0$, $\gamma_1 = t_1 = 0$, and that
+ $\|g_i\|_2\leq M$, and rearranging terms, we obtain
+ \begin{align}
+  \displaystyle\sum_{i = 1}^n \langle s_ig_i + t_ih_i, x_i - x^*\rangle& \leq \frac{\alpha_n}{2}\|x^*\|_2^2 
+  + \frac{1}{2}\displaystyle\sum_{i = 2}^n (\alpha_{i-1} - \alpha_i)\|x_i\|_2^2 \\
+  &+ \frac{M^2}{2}\displaystyle\sum_{i = 1}^n \frac{s_i^2}{\alpha_i}
+  + \displaystyle\sum_{i = 2}^n (t_i - s_{i-1})G(x_i)
+ \end{align}
+ Plugging this bound into (\ref{eq_rda_100}) we obtain
+ \begin{align}
+  \displaystyle\sum_{i = 1}^n s_i(f(x_i) - f(x^*)) &\leq \frac{\alpha_n}{2}\|x^*\|_2^2 
+  + \frac{M^2}{2}\displaystyle\sum_{i = 1}^n \frac{s_i^2}{\alpha_i} \\
+  &+ \frac{1}{2}\displaystyle\sum_{i = 2}^n (\alpha_{i-1} - \alpha_i)\|x_i\|_2^2 \\
+  &+ s_1 G(x_1) - \displaystyle\sum_{i = 2}^n (s_{i-1} - s_i)G(x_i) - s_nG(x^*)
+ \end{align}
+ Finally, we use the assumption that $\alpha_{i-1} - \alpha_i \leq 0$ and that $s_{i-1} - s_i \geq 0$ to conclude that
+ $$\frac{1}{2}\displaystyle\sum_{i = 2}^n (\alpha_{i-1} - \alpha_i)\|x_i\|_2^2 \leq 0
+ $$
+ and
+ $$s_1 G(x_1) - \displaystyle\sum_{i = 2}^n (s_{i-1} - s_i)G(x_i) - s_nG(x^*) \leq s_1(G(x_1) - \inf_x G(x))
+ $$
+ Finally, this yields
+ \begin{equation}
+  \displaystyle\sum_{i = 1}^n s_i(f(x_i) - f(x^*)) \leq \frac{\alpha_n}{2}\|x^*\|_2^2 
+  + \frac{M^2}{2}\displaystyle\sum_{i = 1}^n \frac{s_i^2}{\alpha_i}
+  + s_1(G(x_1) - \inf_x G(x))
+ \end{equation}
+ which completes the proof.
+
+\end{proof}
+
+We begin by noting that the regularizer $\|x\|_2^2$ can be replaced by any strongly convex function. In particular,
+if we replace it by $\|x - x_1\|_2^2$, we are free to choose $x_1$ arbitrarily. This allows us to remove the
+annoying term $s_1(G(x_1) - \inf_x G(x))$ from the bound in the above theorem, by simply choosing $x_1$ to be a minimizer
+of $G$.
+
+We would also like to note two special cases of the above method. If we set $t_i = \frac{1}{\sqrt{i-1}}$ for $i > 1$,
+$s_i = \frac{1}{\sqrt{i}}$, and $\alpha_i = 1$ (note that this means $\gamma_i = t_i$), 
+then we recover forward-backward subgradient descent.
+
+Also, if we set $t_i = 0$, $s_i = 1$, and $\alpha_i = \sqrt{n}$ (note that this means $\gamma_i = i$), we recover the
+original version of RDA.

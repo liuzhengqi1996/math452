@@ -1,0 +1,120 @@
+%This is wonderful
+\newpage
+\section{Train Interpolation for AMG}
+Here what we want do is to use the basic idea in Prod. Xu's big paper in ActaNumerica about the AMG method. 
+
+
+\subsection{Basic Methods}
+The original problem is set as: 
+%\begin{problem}
+	Find $P \in \mathbb{R}^{n\times n_c}$ as 
+	\begin{equation}\label{min-tra}
+	\min_{P \in \mathcal{X}_eta} \rm{Tr} (P^\top \bar{R}^{\frac{1}{2}} A \bar R^{\frac{1}{2}} P)
+	\end{equation}
+	where 
+	\begin{equation}\label{min-con}
+	\mathcal{X}_{\eta} = \{P \in \mathbb{R}^{n\times n_c} ~:~ P \bm{1} =  \sqrt{n_c\eta}\hat \xi_1, \quad (Pv, Pv) \ge \eta (v,v) \}.
+	\end{equation}
+%\end{problem}
+
+But we want to train some GMG interpolation from AMG. So we can change those model little.
+\subsection{Train GMG from AMG}
+To verify that GMG can be obtained from this abstract AMG theory, we may ask the next problem:
+\subsubsection{Original form}
+%\begin{problem}
+	Find $P \in \mathbb{R}^{n\times n_c}$ as 
+	\begin{equation}\label{min-tra}
+	\min_{P \in \mathcal{X}} \rm{Tr} (P^\top \bar{R}^{\frac{1}{2}} A \bar R^{\frac{1}{2}} P)
+	\end{equation}
+	where 
+	\begin{equation}\label{min-con}
+	\mathcal{X}_{} = \{P \in \mathbb{R}^{n\times n_c} ~:~ P \bm{1} =  \bm{1}, \quad \text{Sparse}(P) = \text{Sparse}(P^{GMG}) \}.
+	\end{equation}
+%\end{problem}
+\subsubsection{Approximated form}
+	Find $P \in \mathbb{R}^{n\times n_c}$ as 
+\begin{equation}\label{min-tra}
+\min_{P \in \mathcal{X}} \rm{Tr} (P^\top X A \bar X^\top)
+\end{equation}
+where 
+\begin{equation}\label{min-con}
+\mathcal{X}_{} = \{P \in \mathbb{R}^{n\times n_c} ~:~ P \bm{1} =  \bm{1}, \quad \text{Sparse}(P) = \text{Sparse}(P^{GMG}) \}.
+\end{equation}
+Here $\bar R = XX\top$ which we can adopt the exact formula as 
+\begin{itemize}
+	\item G-S
+	\begin{equation}\label{XXT:G-S}
+	\bar R^{-1} = (D-L)D(D-U) \Rightarrow X = (D-L)D^{1 \over 2}.
+	\end{equation}
+	\item ILU
+		\begin{equation}\label{XXT:ILU}
+		\bar R^{-1} = XX^T \Rightarrow X = ILU.
+	\end{equation}
+\end{itemize}
+
+\subsubsection{Few parameters form}
+We can both solve the above two problems with $P$ only have d.o.f like 
+\begin{itemize}
+	\item FDM:
+\begin{itemize}
+	\item Same sparsity w.r.t the ``graph": $5$
+	\item Same sparsity w.r.t the GMG: $9$
+	\item More connection w.r.t GMG: $16$
+\end{itemize}
+	\item FEM
+\begin{itemize}
+		\item Same sparsity w.r.t the ``graph": $7$
+		\item Same sparsity w.r.t the GMG: $7$
+		\item More connection w.r.t GMG: $9$ (add the symmetry property)
+	\end{itemize}
+\end{itemize}
+
+
+
+\subsection{Implement Detail}
+We use online PCA method to solve \eqref{min-tra}. Write $\tilde{A} = \bar{R}^{\frac 12}A\bar{R}^{\frac 12}$, and $P^S = (p^S_{ij}), p^S_{ij}=1 \text{ iff } p^{GMG}_{ij}\neq 0$. Let $\odot$ is entry-wise multiply, i.e.$(A\odot B)_{ij}=(a_{ij}b_{ij})$. Let $\|M\|_*=\sum_{i,j} |M_{ij}|$.
+The algorithm is 
+\begin{algorithm}  
+	\caption{Online PCA for Prolongation of GMG}  
+	\label{Online PCA for Prolongation of GMG}  
+	\begin{algorithmic}  
+		\STATE choose a series of learning rate $\eta_t$, max iteration steps $M_{\text{step}}$ and convergence threshold $\epsilon$ and batchsize $s$.
+		\STATE $t \leftarrow 0$ and choose a random initial $P^0$ from distribution $U(0,1)$.
+		\FOR{ each row $\mathbf p$ of $P^{0}$} 
+		\STATE $\mathbf p \leftarrow \dfrac 1{\|\mathbf p\|_1}\mathbf{p}$
+		\ENDFOR
+		\STATE $P^0\leftarrow P^S\odot P^0$ 
+		\REPEAT  
+		\STATE Sample vectors $V=(\mathbf v_1,...,\mathbf v_s)$ from distribution $N(0,\tilde{A})$
+		\STATE $P^{t+1} \leftarrow P^t - \dfrac{\eta_t}{s} V V^T P$
+		\STATE $P^{t+1}\leftarrow P^S\odot \hat{P}^{t+1}$
+		\FOR{ each row $\mathbf p$ of $P^{t+1}$} 
+		\STATE $\mathbf p \leftarrow \dfrac 1{\|\mathbf p\|_1}\mathbf{p}$
+		\ENDFOR
+		\STATE $t\leftarrow t+1$
+		\UNTIL{$t>M_{\text{step}}$ or $\|P^{t+1}-P^{t}\|_*<\epsilon \|P^{t+1}\|_* $ }  
+	\end{algorithmic}  
+\end{algorithm}  
+\begin{remark}
+	We can use any $X$ such that $\bar{R} =XX^T$ to replace $\bar{R}^\frac{1}{2}$. For GS smoother, because $\bar{R}=(D-U)^{-1}D(D-L)^{-T}$, we can easily set $X=(D-L)^{-1}D^\frac 12$. For general $\bar{R}$, we can choose $X$ is the incomplete Cholesky factorization to make $X$ sparse.
+\end{remark}
+\newpage
+\subsection{Numerical Experiment}
+We choose $A$ is the five points  difference form of Possion equation and smoother is GS.
+
+Let $P^*$ is the result of using \eqref{Online PCA for Prolongation of GMG} to solve \eqref{min-tra}. The numerical experiment shows $\dfrac{\|P^{GMG}-P^*\|_*}{\|P^{GMG}\|_*}<8\%$ and if we use $P^*$ in two level multigrid method to solve $Ax=b$, the stop iteration step of $P^*$ is the same as $P^{GMG}$. If we do more iteration, we can get a better  $P^*$ than $P^{GMG}$.
+%which means $\rm{Tr} ((P^*)^\T \tilde{A} P^*) <\rm{Tr} ((P^{GMG})^\T \tilde{A} P^{GMG})$ and the stop iteration step of multigrid method is less than $P^{GMG}$.
+
+
+
+\section{A Proof for Training $\lambda$ smoother for AMG}
+Give some distribution for $v$, and some $v_i$ as $i = 1:m$, we can compute 
+\begin{equation}
+	\frac{\sum_i \|Av_i\|^2}{\sum_i \|Av_i\|_A^2}.
+\end{equation}
+
+Now we sample $v_i$ form the distribution as:
+\begin{equation}\label{sample}
+v_i^{(j)} \sim N(0,1),  \quad \text{or}\quad  v_i^{(j)}  \sim U[-1,1],
+\end{equation}
+then we will have the next 

@@ -1,0 +1,129 @@
+\newpage
+\section{Asymptotic convergence estimates for $H^m$ norm}
+In this section, we will extend the previous asymptotic approximation analysis 
+to $H^k$ Sobolev norm. 
+
+\subsection{Asymptotic error estimates}
+\begin{theorem}\label{approximation_rate_theorem}
+ Let $\Omega\subset \mathbb{R}^d$ be a bounded domain. If the activation function $\sigma\in W^{m,\infty}(\mathbb{R})$ is non-zero and satisfies the polynomial decay condition 
+ \begin{equation}\label{growth_condition}
+  |\sigma^{(k)}(t)| \leq C_p(1 + |t|)^{-p}
+ \end{equation}
+ for $0\leq k\leq m$ and some $p > 1$, we have
+ \begin{equation}
+  \inf_{f_n\in \dnn(\sigma,n)}\|f - f_n\|_{H^m(\Omega)} \leq |\Omega|^{\frac{1}{2}}C(p,m,\text{\normalfont diam}(\Omega),\sigma)n^{-\frac{1}{2}}\|f\|_{\mathcal{B}^{m+1}},
+ \end{equation}
+ for any $f\in \mathcal{B}^{m+1}$.
+\end{theorem}
+Before we proceed to the proof, we discuss how this bound depends on
+the dimension $d$. We first note that $|\Omega|$ may in a sense depend
+on the dimension, as the measure may be exponentially large in high
+dimensions. However, bounding the $H^m$ error over a larger set is
+also proportionally stronger. This can be seen by noting that dividing
+by the $|\Omega|^\frac{1}{2}$ factor transforms the left hand side
+from the total squared error to the average squared error.
+
+The dimension dependence of this result is a consequence of how the
+Barron norm behaves in high dimensions. This issue is discussed in
+\cite{barron1993universal}, where the norm $\|\cdot\|_{\mathcal{B}^1}$
+is analyzed for a number of different function classes. A particularly
+representative result found there is that $H^{\frac{d}{2}+2}\subset
+\mathcal{B}^1$. This shows that sufficiently smooth functions have
+bounded Barron norm, where the required number of derivatives depends
+upon the dimension. It is known that approximating functions with such
+a dimension dependent level of smoothness can be done efficiently
+\cite{petrushev1998approximation, kainen2007sobolev}. However, the
+Barron space $\mathcal{B}^1$ is significantly larger that
+$H^{\frac{d}{2}+2}$, in fact we only have $\mathcal{B}^1 \subset H^1$
+by lemma \ref{smoothness-lemma}. The precise properties of the Barron
+norm in high dimensions are an interesting research direction which
+would help explain exactly how shallow neural networks help alleviate
+the curse of dimensionality.
+
+
+\begin{proof}
+Given the integral representation given by Lemma~\ref{lem:sampleHk}, we follow
+a similar line of reasoning as in \cite{barron1993universal}. Our
+argument differs from previous arguments in how we write $f$ as convex
+combination of shifts and dilations of $\sigma$. This is what allows
+us to relax our assumptions on $\sigma$. In order to do this, we must
+first find a way to normalize the above integral.
+ 
+ The above integral is on an unbounded domain, but the decay
+ assumption on the Fourier transform of $f$ allows us to normalize the
+ integral in the $\omega$ direction.  To normalize the integral in the
+ $b$ direction, we must use the assumption that $x$ is bounded and
+ that $\sigma$ decays polynomially. Consider the $\sigma$ part of the
+ above integral representation,
+ \begin{equation}
+  D_x^\alpha\sigma\left(\frac{\omega}{a}\cdot x+b\right).
+ \end{equation}
+ Note that by the triangle inequality and the boundedness of $x\in
+ \Omega$, we can obtain a lower bound on the above argument uniformly
+ in $x$. Specifically, we have
+ \begin{equation}
+  \left|\frac{\omega}{a}\cdot x+b\right| \geq \max\left(0,|b| - \frac{R\|\omega\|}{|a|}\right),
+ \end{equation}
+ where $R$ is the maximum norm of an element of $\Omega$. Note that
+ without loss of generality, we can translate $\Omega$ so that it
+ contains the origin and so $R \leq \text{\normalfont diam}(\Omega)$.
+ 
+Combining this with the polynomial decay of $\omega$ \eqref{growth_condition} implies that
+\begin{equation}\label{eq_779}
+  \left|\sigma^{(k)}\left(\frac{\omega}{a}\cdot x+b\right)\right| \leq C_p\left(1 + \left|\frac{\omega}{a}\cdot x+b\right|\right)^{-p} \leq C_p\left(1 + \max\left(0,|b| - \frac{R\|\omega\|}{|a|}\right)\right)^{-p}.
+\end{equation}
+Thus the function $h$ defined by 
+ \begin{equation}\label{h_definition}
+  h(b,\omega) = \left(1 + \max\left(0,|b| - \frac{R\|\omega\|}{|a|}\right)\right)^{-p}
+ \end{equation}
+ provides (up to a constant) an upper bound on
+ $\sigma^{(k)}\left(\frac{\omega}{a}\cdot x+b\right)$ uniformly in
+ $x$.  The decay rate of $h$ is fast enough to make it integrable in
+ $b$. Moreover, its integral in $b$ grows at most linearly with
+ $\omega$. Namely, we calculate
+ \begin{equation}\label{eq_775}
+ \begin{split}
+  \int_\mathbb{R} h(\omega,b)db& = \int_{|b|\leq \frac{R\|\omega\|}{|a|}} db + 2\int_{b > \frac{R\|\omega\|}{|a|}} \left(1 + b - \frac{R\|\omega\|}{|a|}\right)^{-p}db \\
+  & =~2R|a|^{-1}\|\omega\| + 2\left[(1-p)^{-1}\left(1 + b - \frac{R\|\omega\|}{|a|}\right)^{1-p}\right]_{\frac{R\|\omega\|}{|a|}}^\infty \\
+  &=~2R|a|^{-1}\|\omega\| + \frac{2}{p-1}\leq C_1(p,\text{\normalfont diam}(\Omega),\sigma) (1 + \|\omega\|).
+  \end{split}
+ \end{equation}
+\end{proof}
+
+ Finally, we note that the approximation rate in this theorem holds as long as the growth condition \eqref{growth_condition}
+ hold for some $f\in \dnn(\sigma)$, i.e. the condition \eqref{growth_condition} need not hold for $\sigma$ itself.
+ We state this as a corollary below.
+ \begin{corollary}\label{GeneralApproximation}
+  Let $\sigma\in W^{m,\infty}_{loc}(\mathbb{R})$ be an activation function and suppose that there exists a $\nu\in \Sigma_1^{n_0}(\sigma)$ which satisfies the polynomial decay condition \eqref{growth_condition} in Theorem \ref{approximation_rate_theorem}. Then for any $f$ satisfying the assumptions of Theorem \ref{approximation_rate_theorem}, we have
+  \begin{equation}
+     \inf_{f_n\in \dnn(\sigma,n)}\|f - f_n\|_{H^m(\Omega)} \leq |\Omega|^{\frac{1}{2}}C(p,m,\text{\normalfont diam}(\Omega),\sigma)\sqrt{n_0}\|f\|_{\mathcal{B}^{m+1}}n^{-\frac{1}{2}}.
+  \end{equation}
+
+ \end{corollary}
+ \begin{proof}
+ The result follows immediately from Theorem \ref{approximation_rate_theorem} and the observation that $v\in \dnn(\sigma,n_0)(\sigma)$ implies that
+ \begin{equation}
+  \dnn(\nu,n) \subset \dnn(\sigma,nn_0)(\sigma).
+ \end{equation}
+
+ \end{proof}
+
+Next, we consider the case of periodic activation functions. We show that neural networks with periodic activation functions achieve the same rate of approximation in Theorem \ref{approximation_rate_theorem}. The argument makes use of a modified integral representation and allows us to relax the smoothness condition on $f$, which now only has to be in $\mathcal{B}^m$.
+\begin{theorem}\label{periodic-activation}
+ Let $\Omega\subset \mathbb{R}^d$ be a bounded domain. If the activation function $\sigma\in W^{m,\infty}(\mathbb{R})$ is a non-constant periodic function, we have
+ \begin{equation}
+  \inf_{f_n\in \dnn(\sigma,n)}\|f - f_n\|_{H^m(\Omega)} \leq |\Omega|^{\frac{1}{2}}C(\sigma)n^{-\frac{1}{2}}\|f\|_{\mathcal{B}^m},
+ \end{equation}
+ for any $f\in \mathcal{B}^{m}$.
+\end{theorem}
+\begin{proof}
+ Using the integrability condition on $\hat{f}$, we define the probability distribution on $\mathbb{R}^d \times [0,2\pi]$ as
+ \begin{equation}
+  d\lambda = \frac{1}{2\pi\|f\|_{\mathcal{B}^m}}(1 + |\omega|)^m|\hat{f}(x)|dxdb.
+ \end{equation}
+ Then $f(x)$ can be written
+ \begin{equation}\label{periodic_representation}
+ f(x) = \mathbb{E}_{d\lambda}\left(\|f\|_{\mathcal{B}^m}|a_i|^{-1}(1 + |\omega|)^{-m}\chi(\omega,b)\sigma\left(\omega\cdot x + b\right)\right).
+ \end{equation}
+ We have now written $f\in \mathcal{B}^m\subset H^m(\Omega)$ as a convex combination of functions $f_{\omega,b}\in H^m(\Omega)$. As in the proof of \ref{approximation_rate_theorem}, we now utilize Lemma 1 in \cite{barron1993universal} and proceed to bound $\|f_{\omega,b}\|_{H^m(\Omega)}$ using much the same argument.
+\end{proof}

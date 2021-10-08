@@ -1,0 +1,729 @@
+\chapter{A Brief Survey of Approaches for Unconstrained Optimization Problems}
+
+\section{Basic Conceptions}
+\subsection{Problem Description}
+The goal of unconstrained optimization problem is to minimize the objective function f
+	
+\begin{eqnarray*}
+			\min\limit_{x\in\Rn} \quad f(x),
+\end{eqnarray*}
+where $f: \Rn \longmapsto \R$. 
+
+The objective function f can be convex or nonconvex, differentiable or non-differentiable. The acquirable information include function value, derivative and so on.
+
+On the other hand, the constrained optimization contains some constraints
+\begin{eqnarray*}
+	    	\min\limits_{x\in\Rn} \quad f(x), \quad \st \quad x\in C.
+\end{eqnarray*}
+It is equivalent to the unconstrained optimization problem in the way 
+\begin{eqnarray*}
+	    	\min\limits_{X\in\Rn} \,\, f(x) + \delta_C(x), where~  \delta_C(x):=\ifelse{0, & \mbox{if\,}x\in C;\\ 1, & \mbox{otherwise.}}
+\end{eqnarray*}
+Meanwhile we can have exact penalty functions such as $\ell_1$ penalty, augmented Lagrangian, etc.
+
+
+
+%******************************************************
+\subsection{Optimality Conditions}
+There are several cases as to the optimality conditions.
+
+	\subsubsection{First-order optimality conditions}
+When it's the first-order optimality conditions, $f$ is differentiable: $\nabla f(x)=0$. Moreover, $f$ is nondifferentiable but convex
+		$$0\in \partial f(x):=\{g\mid f(y)\geq f(x)+ g\zz (y-x),\,\forall\, y \}.$$		
+	\subsubsection{Second-order necessary (sufficient) optimality conditions}
+On the other hand, when the optimality condition is the second-order necessary (sufficient) optimality condition, $f$ is second-order differentiable: 
+\begin{eqnarray*}
+	    	\nabla^2 f(x)\succeq (\succ) 0.
+\end{eqnarray*}
+
+
+
+	\subsubsection{Optimization condition (differentiability is assumed)}
+When only differentiability is assumed, there are many cases.
+It is simple when $f$ is convex: $x^*$ is a global minimizer $\Leftrightarrow\,\nabla f(x^*)=0$.
+
+When $f$ is nonconvex:
+		\begin{itemize}
+			\item \clr{$x^*$ is a first-order stationary point $\Leftrightarrow\,\nabla f(x^*)=0$\qquad
+			$\bigstar$}\\[1mm]
+			\item \clr{$x^*$ is a local minimizer $\Rightarrow\,\nabla f(x^*)=0$}\\[1mm]
+			\item \clg{$x^*$ is a second-order stationary point
+				$\Leftrightarrow\,{\color{red}\bigstar}\mbox{\,\,and}\,\,\nabla^2 f(x^*)\succeq 0$}\\[1mm]
+			\item \clg{$x^*$ is a local minimizer $\Rightarrow\,\nabla^2 f(x^*)\succeq 0$}\\[1mm]
+			\item \clb{$x^*$ is a local minimizer $\Leftarrow\,{\color{red}\bigstar}\mbox{\,\,and}\,\,\nabla^2 f(x^*)\succ 0$}
+		\end{itemize}
+	
+
+	\subsubsection{Finding a minimizer (nonconvexness is assumed)}
+When the non-convexness is assumed, we have some conclusions
+	\begin{itemize}
+		\item finding global minimizer is \clb{numerically impossible}
+		\item finding global minimizer for quartic polynomial is already \clb{NP-hard}
+		\item finding local minimizer is \clb{not easier}
+	\end{itemize}
+
+With all the discussions above, the task of numerical optimization methods becomes clear. 
+As for the first-order methods, it is to find first-order stationary point.
+We want to find second-order stationary point for second-order methods. What's more, finding global minimizer or local minimizer becomes possible only when $f$ is structured. 
+	
+
+
+%******************************************************
+\subsection{Iterative Methods}
+We can use the iterative methods to find the desired stationary points.
+
+	\subsubsection{Framework}
+The framework of the iterative methods is as follows.
+	\begin{itemize}
+		\item[(1)] Input: initial guess $x^0$, tolerance $\epsilon$, $k:=0$;
+		\item[(2)] Main iteration: $x^{k+1} = h(x^k)$;
+		\item[(3)] Check stopping criterion, if satisfied, then terminate and return $x^{k+1}$;
+		otherwise, set $k:=k+1$ and goto step (2).
+	\end{itemize}
+The stopping criterions is different according to the orders.
+For first-order criterion, it is $||\nabla f(x)||<\epsilon$.
+It is $\lambda_{\min}(\nabla^2 f(x))>-\epsilon$ for second-order criterion.
+
+	
+
+
+	\subsubsection{Choosing $h$}
+A question naturally arises that how do we choose an appropriate iteration function h.
+For line search methods such as gradient methods and Newton methods, we let $x^{k+1} = x^k + \alpha^k d^k$ with$\alpha^k$ as the stepsize.
+The $h$ can be so different as for trust region methods, block coordinate descent methods and so on.
+	
+	\subsubsection{Fixed-point convergence -- contraction}
+Moreover we can find the desired points with fixed-point convergence if $||\mathcal{J}_h(x)||<1$ holds for a given norm $||\cdot||$ and any $x\in\Rn$, where $\mathcal{J}_h$ stands for the Jacobian of $h$. 
+But we should note that the following example shows that $\rho\left(\mathcal{J}_h(x)\right)<1$ is not sufficient for nonstationary iteration
+\begin{eqnarray*}
+	\small \mathcal{J}_h(x^{2k-1}) &=\mat{cc}{0.5 & 10\\ 0 & 0.5},
+\\	\mathcal{J}_h(x^{2k}) &=\mat{cc}{0.5 & 0\\ 10 & 0.5},  \forall\, k=1, ...
+\end{eqnarray*}
+
+
+%******************************************************
+%\begin{frame}
+%	\frametitle{Iterative Methods (Cont'd)}
+	\subsubsection{Global convergence -- to stationarity}
+However, it is not so easy to find the global stationary points. Some conditions of $f$ need to be met as following
+	\begin{itemize}
+		\item objective is bounded below: \clg{$f(x)>-\infty$}.
+		\item sufficient function value reduction:
+		\clr{
+		$$f(x^k)-f(x^{k+1})\geq c||\nabla f(x^k)||_2^2.$$
+		}
+		\vspace{-6mm}
+		
+		\item convergence to first-order
+		stationarity: \clb{$\lim\limits_{k\rightarrow +\infty} \nabla f(x^k)=0$}
+		\end{itemize}
+And we should note
+		\begin{itemize}
+		\item if iterate sequence is bounded, \clb{subsequence convergence to a stationary point}
+	\end{itemize}
+
+
+	\subsubsection{Local convergence}
+Suppose we have 
+	\begin{eqnarray*}
+		\lim\limits_{k\rightarrow +\infty} x^k=x^*,\qquad q^k = \frac{||x^{k+1}-x^*||}{||x^{k}-x^*||^p}.
+	\end{eqnarray*}
+Then the local convergence rate is defined accordingly as following	
+	\begin{itemize}
+		\item \clm{$p=1$}, \clg{\small $\lim\limits_{k\rightarrow +\infty}q^k=q=1$}:
+		local Q-sublinear convergence
+		\item \clm{$p=1$}, \clg{\small $\lim\limits_{k\rightarrow +\infty}q^k=q\in(0,1)$}:
+		local Q-linear convergence
+		\item \clm{$p=1$}, \clg{\small $\lim\limits_{k\rightarrow +\infty}q^k=q=0$}:
+		local Q-superlinear convergence
+		\item \clm{$p>1$}, \clg{\small $\lim\limits_{k\rightarrow +\infty}q^k=q$}:
+		local convergence with order $p$
+		\begin{itemize}
+			\item $p=2$, quadratic
+			\item $p=3$, cubic
+		\end{itemize}
+	\end{itemize}
+	\vspace{-5mm}
+	
+
+	\begin{eqnarray*}
+		\lim\limits_{k\rightarrow +\infty} x^k=x^*,\qquad
+		||x^k-x^*|| \leq cq^k.
+	\end{eqnarray*}
+	\begin{itemize}
+		\item \clg{$q\in(0,1)$}, local R-linear convergence rate
+	\end{itemize}
+
+
+	\subsubsection{Worst case complexity/Global convergence rate}
+The  complexity for global convergence rate varies a lot.\\
+We get $\epsilon-$solution after $O\left(\log \frac{1}{\epsilon}\right)$ iterations as for global linear convergence. \\
+But in the worst case, we get $\epsilon-$solution after $O\left(\frac{1}{\epsilon^{1/q}}\right)$ iterations for global sublinear convergence:
+\begin{eqnarray*}
+			\lim\limits_{k\rightarrow +\infty} f(x^k)=f^*,\qquad
+			f(x^k)-f^*<\frac{c}{k^q},\quad q>0.
+\end{eqnarray*}
+
+	\subsubsection{Global convergence -- iterate convergence}
+The global convergence can be achieved by the considering iterate convergence in several ways
+	\begin{itemize}	
+		\item {\color{blue} Sufficient reduction:}
+		\vspace{-1mm}
+		\clm{\begin{eqnarray*}
+				f(x^{k})-f(x^{k+1})\geq c_1 ||x^k-x^{k+1}||_2^2.
+		\end{eqnarray*}}
+		\vspace{-8mm}
+		\item {\color{blue} Asmptotic small stepsize safe-guard:}
+		\vspace{-1mm}
+		\clm{\begin{eqnarray*}
+				||x^k-x^{k+1}||_2\geq c_2 ||g^k||_2,\qquad g^k\in\partial f(x^k).
+		\end{eqnarray*}}
+		\vspace{-8mm}
+		\item {\color{blue}\L{}ojasiewicz property:} {$\exists\, \theta\in[0,1)$ such that}
+		\vspace{-1mm}
+		\clm{
+			\begin{eqnarray*}
+				|f(x)- f(x^*)|^\theta\leq  c_3||g||_2,\qquad \forall x\in {\cal B}(x^*,\epsilon),
+				\quad \forall g\in \partial f(x).
+		\end{eqnarray*}}
+		\vspace{-6mm}
+		\item \clg{iterate convergence:}  \clr{$\sum\limits_{k=1}^\infty ||x^k-x^{k+1}||_2 < +\infty.$}
+		\item \clg{local convergence rate}
+		\begin{itemize}
+			\item if $\theta = 0$, the sequence $\{x^k\}_{k\in\N}$ \clb{finite termination;}\\[1mm]
+			\item if $\theta \in \left(0,\frac{1}{2}\right]$, there exist $c>0$ and $Q\in[0,1)$
+			such that
+			\clb{$||x^k-x^*||_2\leq {c}\cdot{q^k}$;}\\[1mm]
+			\item if $\theta \in \left(\frac{1}{2},1\right)$, there exist $c>0$ such that
+			\clb{$||x^k-x^*||_2\leq {c}\cdot{k^{-\frac{1-\theta}{2\theta-1}}}$.}
+		\end{itemize}
+	\end{itemize}
+
+
+
+%********************* section ********************
+\section{Classical Optimization Methods}
+\iffalse
+%\begin{frame}
+	\begin{center}
+		\huge\color{blue}\bf
+		Section 2. Classical Optimization Methods
+	\end{center}
+%\end{frame}
+\fi
+\subsection{Gradient Methods}
+%\begin{frame}
+%	\frametitle{Gradient Methods}
+	\subsubsection{Line search}
+	If we got the iterative direction $d^k$, we need to find the step size $\alpha^k$ in the $k$-th step 
+	\clr{\begin{eqnarray*}
+		x^{k+1} = x^k + \alpha^k d^k.
+	\end{eqnarray*}}	
+	There are many line search methods. We can classify them into 2 classes. \\
+	One is exact line search which solve the $\alpha$ exactly, namely $\alpha$ satisfies\\
+	 \clm{$\alpha^k=\argmin\limits_{\alpha\in\R} f( x^k + \alpha d^k)$}.\\
+	Another one is inexact line search, an example of the inexact line search is Armijo line search:
+	\begin{itemize}
+		\item Armijo line search (back tracking):
+		\begin{itemize}
+			\item set $c_1\in(0,1)$, $\tau\in(0,1)$, $\alpha_0>0$, and $j:=0$;\\[1mm]
+			\item if \clg{$f(x^k)-f(x^k+\alpha_j d^k)\geq -\alpha_j c_1\nabla f(x^k)\zz d^k$,} return
+			\clm{$\alpha^k := \alpha_j$;}\\[1mm]
+			\item otherwise, set $j:=j+1$ and \clb{$\alpha_{j}=\tau \alpha_{j-1}$.}
+		\end{itemize}
+		\item Wolfe condition: {\small additional curvature condition with $c_2\in (c_1,1)$,}
+		\vspace{-1mm}
+		\clg{
+		\begin{eqnarray*}
+			-\nabla f(x^k + \alpha_j d^k)\zz d^k \leq - c_2 \nabla f(x^k)\zz d^k.
+		\end{eqnarray*}}
+	\end{itemize}
+%\end{frame}
+
+%******************************************************
+%\begin{frame}
+%	\frametitle{Gradient Methods (Cont'd)}
+	\subsubsection{Gradient methods}
+	In gradient methods, the iterative direction is the negative direction of gradient:
+	\clm{\begin{eqnarray*}
+			d^k = - \nabla f(x^k).
+	\end{eqnarray*}}
+	Then we have many strategies to find the stepsize:
+	\begin{itemize}
+		\item steepest descent: exact line search
+		\item gradient descent with inexact line search:
+		global convergence and local linear rate related
+		to $\kappa(\nabla^2 f(x^*))$.\\[1mm]
+		\item Barzilai-Borwein (BB) stepsize:
+		\clb{\begin{eqnarray*}
+			\alpha^k =\frac{{s^k}\zz y^k}{{y^k}\zz y^k},\quad \mbox{or}
+			\quad \alpha^k =\frac{{s^k}\zz s^k}{{s^k}\zz y^k}.
+		\end{eqnarray*}}
+		\vspace{-3mm}
+		
+		where \clg{$s^k=x^k-x^{k-1} \clm{=\alpha^{k-1}d^{k-1}}$, $y^k=\nabla f(x^k)-\nabla f(x^{k-1})$,}\\[1mm]
+		
+		 global convergence and local linear convergence only
+		for $f(x)=\frac{1}{2}x\zz Ax +b\zz x$ with $A\succ 0$; local superlinear convergence
+		in the case $n=2$; global convergence if combined with nonmonotone line search.
+	\end{itemize}
+%\end{frame}
+
+
+%******************************************************
+%\begin{frame}
+%	\frametitle{Gradient Methods (Cont'd)}
+	\subsubsection{Conjugate gradient methods}
+	The conjugate gradient methods are  originally proposed for solving linear system. We use the combination of gradient and the last step's direction to generate this step's direction.
+	\clm{\begin{eqnarray*}
+			d^k = - \nabla f(x^k) + \beta^k d^{k-1}.
+	\end{eqnarray*}}
+	The strategies of choosing parameters:
+	\begin{itemize}
+		
+		\item $\alpha^k$: exact line search
+		\item updating rules for $\beta^k$
+		\begin{itemize}
+			\item Fletcher-Reeves: \clb{$\beta^k = \nabla f(x^k)\zz \nabla f(x^k)\left/\,\nabla f(x^{k-1})\zz \nabla f(x^{k-1}) \right.$;}\\[1mm]
+			\item Polak-Ribi\`{e}re: \clb{$\beta^k = \nabla f(x^k)\zz y^k\left/\,\nabla f(x^{k-1})\zz \nabla f(x^{k-1}) \right.$;}\\[1mm]
+			\item Hestenes-Stiefel: \clb{$\beta^k = \nabla f(x^k)\zz y^k\left/\,{d^{k-1}}\zz y^k \right.$;}\\[1mm]
+			\item Dai-Yuan: \clb{$\beta^k = \nabla f(x^k)\zz \nabla f(x^k)\left/\,{d^{k-1}}\zz y^k \right.$.}
+		\end{itemize}
+		\item subspace strategy:
+		\clm{
+		\begin{eqnarray*}
+			x^{k+1} :=\argmin_{x-x^k \,\in\, \mathrm{span}\{\nabla f(x^k),\, d^{k-1}\}}\quad
+			f(x).
+		\end{eqnarray*}
+		}
+	
+		\vspace{-2mm}
+		\clr{\footnotesize global convergence if combined with line search, local linear convergence rate not related to $\kappa(\nabla^2 f(x^*))$.}
+	\end{itemize}
+%\end{frame}
+
+
+%********************* section ********************
+\subsection{Newton Methods}
+%\begin{frame}
+%	\frametitle{Newton Methods}
+	The gradient methods only use 1-order derivative information of $f$. The Newton methods need to use 2-order derivative information.
+	\subsubsection{Newton methods}
+	The step direction of Newton methods is:
+	\clm{\begin{eqnarray*}
+			d^k = - {\nabla^2 f(x^k)}\inv \nabla f(x^k).
+	\end{eqnarray*}}
+	The strategies of choosing parameters:
+	\begin{itemize}
+		\item original ones: \clb{$\alpha^k = 1$ or exact line search}\\[1mm]
+		\clr{\footnotesize local quadratic convergence.}
+		\item hybrid Newton method: \clg{$d^k = -\beta \nabla f(x^k) - {\nabla^2 f(x^k)}\inv \nabla f(x^k)$}
+		\item negative curvature descent: set \clg{$d^k=d$} if $d\zz \nabla^2 f(x^k) d<0$.
+		\item damped Newton method: \clb{$\alpha^k= 1\left/\left(1+ \sqrt{\nabla f(x^k)\zz {\nabla^2 f(x^k)}\inv \nabla f(x^k)}\right) \right.$}\\[1mm]
+		\clr{\footnotesize global convergence.}
+	\end{itemize}
+%\end{frame}
+
+
+%******************************************************
+%\begin{frame}
+%	\frametitle{Newton Methods (Cont'd)}
+	\subsubsection{Motivation of quasi-Newton methods}
+	Because we need to spend lots of time on calculating the $\nabla^2 f(x)$ every step, the quasi-Newton methods use the approximation of $\nabla^2 f(x^k)$ written as $B^k$ which is much easier to calculate to get the direction:
+	\clm{\begin{eqnarray*}
+			d^k = - {B^k}\inv \nabla f(x^k).
+	\end{eqnarray*}}
+	\vspace{-7mm}
+	\begin{itemize}
+		%\item $\clb{B^k}$ is an approximation of $\nabla^2 f(x^k)$
+		\item easy to calculate, possess the essential characteristics of Hessian, descent direction (positive definiteness of $B^k$)
+		\item solution: \clg{the secant equation}
+		\clr{\begin{eqnarray*}
+				B^k s^k = y^k.
+		\end{eqnarray*}}
+		\vspace{-7mm}
+		\item SR$-1$ (symmetric rank$-1$ update) can not guarantee the positive definiteness
+		\item rank$-2$ update is more favorable
+		\begin{itemize}
+			\item start from \clb{$B^0$}, (e.g. $\alpha I_n$.)\\[1mm]
+			\item in each iteration, add rank$-2$ update
+			\clb{$B^{k+1}=B^k+\alpha uu\zz +vv\zz$;}\\[1mm]
+			\item choose \clb{$u=y^k$, $v=B^ks^k$,} we arrive at -- \clr{BFGS.}
+		\end{itemize}
+	\end{itemize}
+%\end{frame}
+
+%******************************************************
+%\begin{frame}
+%	\frametitle{Newton Methods (Cont'd)}
+	\subsubsection{BFGS (Broyden-Fletcher-Goldfarb-Shanno)}
+	\clm{\footnotesize $$B^{k+1}_{\tiny\mbox{BFGS}} = B^k + \frac{{y^k}\zz {y^k}}{{y^k}\zz s^k} -\frac{B^ks^k{s^k}\zz B^k}
+		{{s^k}\zz B^ks^k}.$$}
+	\vspace{-5mm}
+	\begin{itemize}
+		\item consider the update for inverse $H^k={B^k}\inv$
+		\clr{\footnotesize  $$H^{k+1}_{\tiny\mbox{BFGS}} = \left(I-\frac{{s^k}{y^k}\zz}{{s^k}\zz y^k}\right)H^k\left(I-\frac{{s^k}{y^k}\zz}{{s^k}\zz y^k}\right) + \frac{{s^k} {s^k}\zz}{{s^k}\zz y^k}.$$}
+		\vspace{-5mm}
+		\item minimum change property:
+		\clb{\small  $$H^{k+1}=\min\limits_{H\in\Sn} ||H-H^k||_G,\quad \st \quad Hy^k = s^k$$}
+		\vspace{-5mm}
+		{\footnotesize where $||A||_G = ||G^{\frac{1}{2}}AG^{\frac{1}{2}}||\ff$, $G\in\{G\mid Gs^k=y^k\}$,
+		e.g. $G=\int_0^1 \nabla^2 f(x^k+\tau \alpha^k d^k)d\tau$}\\[7mm]
+	\end{itemize}
+
+	\clr{\footnotesize global convergence if combined with line search; local linear convergence
+		if $f$ is strict convex; local superlinear convergence if $f$ is strongly convex.}
+%\end{frame}
+
+%******************************************************
+%\begin{frame}
+%	\frametitle{Newton Methods (Cont'd)}
+	\subsubsection{DFP (Davidon-Fletcher-Powell)}
+	\clm{\footnotesize $$B^{k+1}_{\tiny\mbox{DFP}} = \left(I-\frac{{s^k}{y^k}\zz}{{s^k}\zz y^k}\right)B^k\left(I-\frac{{s^k}{y^k}\zz}{{s^k}\zz y^k}\right) + \frac{{y^k} {y^k}\zz}{{s^k}\zz y^k}.$$}
+	\vspace{-5mm}
+	\begin{itemize}
+		\item consider the update for inverse $H^k={B^k}\inv$
+		\clg{\footnotesize  $$H^{k+1}_{\tiny\mbox{DFP}} = H^k + \frac{{s^k}\zz {s^k}}{{y^k}\zz s^k} -\frac{H^ky^k{y^k}\zz H^k}
+			{{y^k}\zz H^ky^k}.$$}
+	\end{itemize}
+	
+	\clr{\footnotesize global convergence if combined with line search and local linear convergence
+		if $f$ is strict convex; local superlinear convergence if $f$ is strongly convex.}
+	\bigskip
+	
+%	\structure{\bf The Broyden family}
+	\begin{eqnarray*}
+		B^{k+1} = (1-\phi^k) B^{k+1}_{\tiny\mbox{BFGS}} + \phi^k B^{k+1}_{\tiny\mbox{DFP}},\qquad \phi^k\in[0,1].
+	\end{eqnarray*}
+	\clr{\footnotesize $\phi^k\in[0,1)$ same convergence property with BFGS.}
+%\end{frame}
+
+
+%******************************************************
+%\begin{frame}
+%	\frametitle{Newton Methods (Cont'd)}
+	\subsubsection{Limited memory quasi-Newton method}
+	\begin{itemize}
+		\item if the storage of \clr{$B^k$} (\clr{$H^k$}) is not affordable\footnote{
+		The difference between using $B^k$ or $H^k$ appears at the computational cost, and the storage
+	    is a whole other story.}
+		\item rank$-2$ update provides a limited memory strategy
+		\begin{itemize}
+			\item store \clb{$\mathcal{L}:=\{s^k,s^{k-1},...,s^{\max\{k-l+1,0\}},y^k,y^{k-1}),...,y^{\max\{k-l+1,0\}}\}$;}\\[1mm]
+			\item $H^k$ is built up from $H^0$ by a \clm{rank$-2\max\{l,k\}$ update}\\[1mm]
+			\item reduce the storage from $O(n^2)$ to \clg{$O(mn)$} at a cost of $O(mn)$ arithmetic operation\\[1mm]
+			\item reduce the computational cost from $O(n^2)$ to \clg{$O(mn)$}, if there is no structure
+		\end{itemize}
+		\item numerically successful
+		\begin{itemize}
+			\item BFGS update\\[1mm]
+			\item $m=10$\\[2mm]
+		\end{itemize}
+	\end{itemize}
+
+	\clr{\footnotesize global convergence if combined with line search and local linear convergence.}
+%\end{frame}
+
+%******************************************************
+%\begin{frame}
+%	\frametitle{Newton Methods (Cont'd)}
+	\subsubsection{The explanation of BB stepsize}
+	\clb{\begin{eqnarray*}
+			x^{k+1} = x^k -\alpha^k \nabla f(x^k),\quad \mbox{with} \quad
+			\clr{\alpha^k =\frac{{s^k}\zz y^k}{{y^k}\zz y^k}},\quad \mbox{or}
+			\quad \clm{\alpha^k =\frac{{s^k}\zz s^k}{{s^k}\zz y^k}}.
+	\end{eqnarray*}}
+    \vspace{-3mm}
+    \begin{itemize}
+    	\item Using $\frac{1}{\alpha}\cdot I$ to approximate $\nabla^2 f(x^k)$
+    	\clm{$$\alpha^k = 1 \left/ \argmin\limits_{\beta\in\R} \left\|\beta s^k -y_k\right\|_2^2\right.. $$}
+    	\vspace{-5mm}
+    	\item Using $\alpha\cdot I$ to approximate ${\nabla^2 f(x^k)}\inv$
+    	\clr{$$\alpha^k = \argmin\limits_{\alpha\in\R} ||\alpha y^k -s_k||_2^2. $$}
+    \end{itemize}
+%\end{frame}
+
+
+%********************* section ********************
+\subsection{Trust Region Methods}
+%\begin{frame}
+%	\frametitle{Trust Region Methods}
+	Region Methods are another kinds of optimize methods. The motivation of them are finding the minimize of the quadratic approximation of $f$ in a limited region. If the quadratic approximation can approximate $f$ well, expand the region, else reduce the region. In mathematics,
+	\clr{\begin{eqnarray*}
+			x^{k+1} &=& x^k + s^k,\\
+			s^k &=& \argmin\limits_{s\in \R} \quad m^k(s),\quad \st\quad ||s||_2\leq \Delta^k.
+		\end{eqnarray*}
+	}
+	\vspace{-5mm}
+	\begin{itemize}
+		\item $m^k(s)$ quadratic approximation of $f(x^k+s)$ at $x^k$
+		\clb{\begin{eqnarray*}
+				m^k(s) := \nabla f(x^k)\zz s + \frac{1}{2}s\zz B^k s.
+		\end{eqnarray*}}
+		\vspace{-5mm}
+		\item solving subproblem
+		\begin{itemize}
+			\item exactly solver: \clg{Mor\'{e}-Sorensen}
+			\item approximate: Chauchy point, dog-leg
+			\item inexact solver: \clg{truncated CG, $2-$D subspace minimization}
+		\end{itemize}
+		\item the choice of \clb{$B^k$}
+		\begin{itemize}
+			\item $\nabla^2 f(x^k)$\\[1mm]
+			\item quasi-Newton update\\[1mm]
+			\item other approximation of $\nabla^2 f(x^k)$
+		\end{itemize}
+	\end{itemize}
+%\end{frame}
+
+
+%******************************************************
+%\begin{frame}
+%	\frametitle{Trust Region Methods (Cont'd)}
+	\begin{itemize}
+		\item approximation ratio
+		\clm{\small $$\eta^k = \frac{\mbox{red}_{\mbox{\tiny real}}}{\mbox{red}_{\mbox{\tiny pred}}}
+		= \frac{f(x^k)-f(x^k+s^k)}{m(0)-m(s^k)}.$$}
+		\vspace{-5mm}
+		\item accept trial step of not:
+		\clb{\small
+		$$x^{k+1} = \ifelse{
+		x^k + s^k, & \mbox{if\,} \eta^k>0;\\
+		x^k, & \mbox{otherwise.}
+	    }$$
+		}
+		\vspace{-5mm}
+		\item updating trust region radius \clg{$\Delta^k$}
+		\clb{\small
+			$$\Delta^{k+1} = \ifelse{
+				b_2 \Delta^k, & \mbox{if\,} \eta^k > c_2;\\
+				\Delta^k, & \mbox{if\,} c_2\geq \eta^k>c_1;\\
+				b_1 \Delta^k, & \mbox{otherwise.}
+			}$$
+		}
+		\vspace{-5mm}
+		{\small where  $0<c_1<c_2<1$, $0<b_1<1<b_2$}.\\[7mm]
+	\end{itemize}
+
+	\clr{\footnotesize global convergence only requires subproblem inexactly solved; convergence to second-order stationary point if $B^k=\nabla^2 f(x^k)$ and subproblem exactly solved.}
+%\end{frame}
+
+%********************* section ********************
+\subsection{Methods for Nonlinear Least Squares}
+%\begin{frame}
+%	\frametitle{Methods for Nonlinear Least Squares}
+	\subsubsection{Nonlinear least squares}
+	For nonlinear least squares, the objective function $f$ reads:
+	\clm{
+	$$f(x)= ||F(x)||_2^2 = \sum\limits_{i=1}^m f^2_i(x)~.$$
+	}
+	\vspace{-5mm}
+	\begin{itemize}
+		\item $F(x):=\left(f_1(x),...,f_m(x)\right)\zz$, each $f_i(x):\Rn\mapsto \R$ ($i=1,...,m$)
+		\item Jacobian matrix: \clb{$\mathcal{J}_F(x)=\left(\nabla f_1(x),...,\nabla f_m(x)\right)\zz$}
+		\item gradient: \clr{$\nabla f(x) = \mathcal{J}_F(x)\zz F(x)$}
+		\item Hessian: \clr{$\nabla^2 f(x) = \mathcal{J}_F(x)\zz \mathcal{J}_F(x) + \sum\limits_{i=1}^m
+			f_i(x)\nabla^2 f_i(x)$}
+		\item linear approximation:\clr{ $F(x) \approx F(x^{(k)})+\mathcal{J}_F(x^{(k)})(x-x^{(k)}) $}
+		\item new approximation of Hessian: \clg{$\mathcal{J}_F(x)\zz \mathcal{J}_F(x)$}
+		\begin{itemize}
+			\item approximation quality depends on residuals $f_i(x)$  ($i=1,...,m$)\\[1mm]
+			\item obtain partial Hessian information by collecting derivatives\\[1mm]
+			\item positive definiteness
+		\end{itemize}
+	\end{itemize}
+%\end{frame}
+
+%******************************************************
+%\begin{frame}
+%	\frametitle{Methods for Nonlinear Least Squares (Cont'd)}
+	\subsubsection{Gauss Newton method}
+	The step direction of Gauss Newton methods is:
+	\clm{
+		$$d^k = - \left(
+		\mathcal{J}_F(x^k)\zz \mathcal{J}_F(x^k)	\right)\inv \nabla f(x^k)$$
+	}
+	\vspace{-6mm}
+	\begin{itemize}
+		\item similar performance as Newton method if small residual
+		\item similar performance as gradient method if large residual
+		\item numerically unstable if \clr{$\mathcal{J}_F(x^k)$} is singular or close to singular
+ 	\end{itemize}
+    \medskip
+
+%    \structure{\bf Levenberg-Marquardt method}
+    \clg{
+    	$$s^k = - \left(
+    	\mathcal{J}_F(x^k)\zz \mathcal{J}_F(x^k) + \clb{\mu^k} \cdot I\right)\inv \nabla f(x^k)$$
+    }
+    \vspace{-6mm}
+    \begin{itemize}
+    	\item regularization parameter $\clb{\mu^k}$ can be tuned
+    	\begin{itemize}
+    		\item in the same manner as trust region radius
+    		\item \clb{$||F(x^k)||_2^t$ ($t=[1,2]$)}\\[3mm]
+    	\end{itemize}
+    \end{itemize}
+
+	\clr{\footnotesize global convergence; quadratic local convergence rate if $\mu^k\rightarrow 0$
+		and zero residual at solution}
+%\end{frame}
+
+
+%********************* section ********************
+\subsection{Block Coordinate Descent}
+%\begin{frame}
+%	\frametitle{Block Coordinate Descent}
+	\clr{
+	\begin{eqnarray*}
+		\left\{
+		\begin{array}{l}
+			x^{k+1}_1 = \argmin\limits_{x_1\in\R^{n_1}} f(x_1,x_2^k,...,x_p^k);\\
+			x^{k+1}_2 = \argmin\limits_{x_2\in\R^{n_2}} f(x_1^{k+1},x_2,x_3^k...,x_p^k);\\
+			\cdots \cdots\\
+			x^{k+1}_p = \argmin\limits_{x_p\in\R^{n_p}} f(x_1^{k+1},...,x_{p-1}^{k+1},x_p).
+		\end{array}
+		\right.
+	\end{eqnarray*}
+	}
+	\begin{itemize}
+		\item $x=(x_1\zz,x_2\zz,...,x_p\zz)\zz$, $x_i\in\R^{n_i}$ ($i=1,...,p$)
+		\item convergence under strongly convex
+		\item essentially \clb{Gauss-Seidel} iteration: \clg{\small $f=\frac{1}{2}x\zz Ax -b\zz x$ with $A\succ 0$}
+		\footnote{This condition can be relaxed to $A\succeq 0$, $A_{ii}\succeq 0$ ($i=1,...,p$).}
+		\item \clm{question: does Jacobi iteration work?} linear proximal variant:
+		\clr{$$
+		x^{k+1}_i = \argmin\limits_{x_i\in\R^{n_i}} \nabla_{x_i} f(x^k)\zz x_i
+		+ \frac{\beta^k}{2}||x_i-x_i^k||_2^2,\quad i=1,...,p.
+		$$}
+	\end{itemize}
+%\end{frame}
+
+
+%********************* section ********************
+\section{Global Optimization Strategies}
+\iffalse
+\begin{frame}
+	\begin{center}
+		\huge\color{blue}\bf
+		Section 3. Global Optimization Strategies
+	\end{center}
+\end{frame}
+\fi
+Global optimization for non-convex function is a very difficult problem. We can only use it on some special problems. This section discuss a few strategies which try to solve this problem:
+\subsection{Overview}
+%\begin{frame}
+%	\frametitle{Overview}
+	\subsubsection{A few strategies}
+	\begin{itemize}
+		\item deterministic methods\footnote{Combinatorial optimization
+			can be modeled as binary variable programming. Since $x\in\{0,1\}\,\Leftrightarrow\, x^2=x$,
+			it can be viewed as a special nonlinear programming.}
+		\begin{itemize}
+			\item branch and bound
+			\item cutting plane
+			
+		\end{itemize}
+		\item undeterministic methods
+		\begin{itemize}
+			\item homotopy
+			\item randomly multi-start
+			\item simulated annealing
+			\item {genetic algorithm}
+			\item {ant colony algorithm}
+		\end{itemize}
+		\item approximation methods
+		\begin{itemize}
+			\item \clb{SDP relaxation:} $x\zz Ax=\langle A,xx\zz \rangle$,\quad $xx\zz \Rightarrow X\succeq 0$
+		\end{itemize}
+		\item problems have nice properties
+		\begin{itemize}
+			\item \clg{special quartic objective: phase retrieval, matrix completion, ...}
+			\item \clm{problem input obeys a certain distribution}
+			\item \clm{no nonglobal local minimizer: stationary $\Leftrightarrow$ global or saddle}
+		\end{itemize}
+	\end{itemize}
+%\end{frame}
+
+
+%**************************************************
+\subsection{Undeterministic Methods}
+%\begin{frame}
+%	\frametitle{Undeterministic Methods}
+	\subsubsection{Homotopy (Global continuation)}
+	\begin{itemize}
+		\item let \clb{$g(x)$} be a convex relaxation\footnote{Usually, it means that the epigraph of $g(x)$,
+			$\{(x,v)\mid v\geq f(x)  \}$, completely contains the epigraph of $f(x)$.} of \clr{$f(x)$}
+		\item define the homotopy function: \clg{$F(x,t) :\Rn\times [0,1]\mapsto \R$}
+		\begin{itemize}
+			\item \clr{$F(x,0)=f(x)$;}\\[1mm]
+			\item \clb{$F(x,1)=g(x)$;}\\[1mm]
+			\item e.g. \clg{$F(x,t)= (1-t)\cdot f(x) + t\cdot g(x)$.}
+		\end{itemize}
+		\item main idea -- solving
+		\clm{$$\min\limits_{x\in\Rn} \quad F(x,t),$$}
+		with \clg{$t$} varying from \clb{$1$} to \clr{$0$}.
+		\item particularly useful for problems
+		\begin{itemize}
+			\item one main valley
+			\item surrounded by side valleys
+			\item side valleys occur by oscillation
+		\end{itemize}
+	\end{itemize}
+%\end{frame}
+
+%**************************************************
+%\begin{frame}
+%	\frametitle{Undeterministic Methods (Cont'd)}
+	\subsubsection{Randomly multi-start}
+	\begin{itemize}
+		\item different with multi-start from grids or other patterns
+		\item main procedure
+		\begin{itemize}
+			\item[1.] input: $\mbox{MaxL}\in\N$, $\mbox{MaxW}\in\N$.
+			\item[2.] set $\mbox{CL} :=0$, $\mbox{CW} := 0$, \clm{$x^{\tiny\mbox{rec}}:=0$,}
+			\clg{$f^{\tiny\mbox{rec}}=+\infty$.}
+			\item[3.] certain \clb{random sampling procedure:} obtain $x^{\tiny\mbox{sp}}$.
+			\item[4.] certain \clr{local search procedure:} obtain $x^{\tiny\mbox{loc}}$,
+			 $\mbox{CL}:=\mbox{CL}+1$.
+			\item[5.] if $f(x^{\tiny\mbox{loc}})< f^{\tiny\mbox{rec}}$, set
+				\clm{$x^{\tiny\mbox{rec}} := x^{\tiny\mbox{loc}}$,} \clg{$f^{\tiny\mbox{rec}}
+				= f(x^{\tiny\mbox{loc}})$,} $\mbox{CW} := 0$, goto 3.
+			\item[6.] otherwise, $\mbox{CW}:=\mbox{CW}+1$.
+			\item[7.] if $\mbox{CL}=\mbox{MaxL}$ or $\mbox{CW}=\mbox{MaxW}$, terminate
+			and return \clm{$x^{\tiny\mbox{rec}}$.}
+			\item[8.] otherwise, goto 3.
+		\end{itemize}
+		\item trade off between \clb{sampling phase} and \clr{local search phase}
+		\item convergence
+		\begin{itemize}
+			\item finding global minimizer in a compact domain
+			\item locally Lipschitz
+			\item \clg{when $\mbox{MaxL}\rightarrow +\infty$,} \clm{probability approaches $1$}
+		\end{itemize}
+	\end{itemize}
+%\end{frame}
+
+%**************************************************
+%\begin{frame}
+%	\frametitle{Undeterministic Methods (Cont'd)}
+	\subsubsection{Simulated annealing}
+	This method's inspiration comes from annealing in metallurgy.
+	\begin{itemize}
+		\item main framework
+		\begin{itemize}
+			\item[1.] input: initial temperature \clg{$T\gg 1$,} initial point \clr{$x$,} $L\in\N$,
+			$\mbox{MaxW}\in\N$; set \clm{$\mbox{CW} := 0$,} $i:=0$.\\[1mm]
+			\item[2.] if $i=L$, goto Step 7; otherwise, goto Step 3.\\[1mm]
+			\item[3.] \clb{find a new point $x'$} by certain simple procedure.\\[1mm]
+			\item[4.] evaluate the incremental $\Delta':=f(x')-f(x)$.\\[1mm]
+			\item[5.] if $\Delta'\leq 0$, \clr{$x:=x'$,} \clm{$\mbox{CW} = 0$;} else if, set
+			\clr{$x:=x'$,} \clm{$\mbox{CW} = 0$} in probability \clb{$\exp(-\Delta'/(kT))$}\footnote{$k$ takes Boltzmann constant.}; otherwise,
+			\clm{$\mbox{CW}:=\mbox{CW}+1$.}\\[1mm]
+			\item[6.] if \clm{$\mbox{CW}\geq\mbox{MaxW}$} and \clg{$T=0$,} terminate; otherwise,
+			set $i:=i+1$ and goto Step 2.\\[1mm]
+			\item[7.] \clg{decrease temperature $T$ slowly,} set $i:=0$ and goto Step 2.
+		\end{itemize}
+	\end{itemize}
+%\end{frame}
+

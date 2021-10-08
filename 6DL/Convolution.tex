@@ -1,0 +1,77 @@
+\section{Convolution}
+For simplicity of exposition, we denote 
+\begin{equation}\label{eq:size_f}
+m = m_1 = 2^{s} + 1,  \quad n = n_1 = 2^t  +1.
+\end{equation}
+\begin{definition}
+A convolution defined on $\mathbb{R}^{m\times n}$ is a linear mapping 
+$K\ast: \mathbb{R}^{m\times n}\mapsto \mathbb{R}^{m\times n}$ defined with padding,  
+for any $g \in \mathbb{R}^{m\times n}$ by:
+%We first consider $\theta$ a convolution operator (with stride $1$) 
+%and padding:
+\begin{equation}\label{con1}
+[K \ast g]_{i,j} = \sum_{p,q=-k}^k K_{p, q} g_{i + p, j + q}, \quad i=1:m, j = 1:n.
+\end{equation}
+\end{definition}
+Here we note that the indices for the entries in $K$ are given un a special way. 
+For example, if $k=1, K\in \mathbb R^{3\times 3}$, and 
+$$
+K=\begin{pmatrix}
+	K_{-1,-1} &K_{-1,0} &K_{-1,1} \\
+	K_{0,-1} &K_{0,0} &K_{0,1} \\
+	K_{1,-1} &K_{1,0} &K_{1,1} \\
+	\end{pmatrix}.
+$$
+  
+The coefficients in \eqref{con1} constitute  a kernel matrix
+\begin{equation}
+K \in \mathbb{R}^{(2k+1) \times (2k+1)},
+\end{equation}
+where $k$ is often taken as a small integer. 
+Here padding means how $ g_{i+ p, j + q}$ is defined
+when $(i+ p, j + q)$ is out of $1:m$ or $1:n$. 
+The following three choices are often used
+\begin{equation}\label{eq:padding}
+f_{i + p, j + q} = \begin{cases}
+0,  \quad &\text{zero padding}, \\
+f_{(i + p)\pmod{m}, (s + q)\pmod{n}},  \quad &\text{periodic padding}, \\
+f_{|i-1 +p|, |j -1  +q|},  \quad &\text{reflected padding}, \\
+\end{cases}
+\end{equation}
+if 
+\begin{equation}
+i + p \notin \{1, 2, \dots, m\} ~\text{or} ~  j+ q \notin \{1, 2, \dots, n\}.
+\end{equation}
+Here $ d \pmod{m} \in \{1, \cdots, m\} $  means the remainder when $d$ is divided by $m$.
+
+
+\section{Convolution with stride}
+\begin{definition}
+For any given integer $s\ge1$, a convolution with stride $s$ for $g \in \mathbb{R}^{m\times n}$ is defined as:
+	\begin{equation}\label{stride}
+	[K \ast_s g]_{i,j} = \sum_{p,q=-k}^k K_{p,q} g_{si + p, sj + q},  
+	\quad i = 1: \lceil  \frac{m+1}{s}\rceil, j = 1: \lceil  \frac{n+1}{s}\rceil.
+	\end{equation}
+	Here $ \lceil  \frac{m}{s}\rceil$ denotes the smallest integer that greater than $\frac{m}{s}$.
+\end{definition}
+Both in CNN and in multigrid method, convolution with stride $s=2$ is the most important case, namely
+\begin{equation}\label{stride_2}
+[K \ast_2 g]_{i,j} = \sum_{p,q=-k}^k K_{p,q} g_{2i + p, 2j + q},  
+\quad i = 1: \frac{m+1}{2} , j = 1: \frac{n+1}{2}.
+\end{equation}
+
+
+\begin{lemma}
+The convolution with stride $2$ can be rewritten as:
+\begin{equation}\label{eq:convstride_2_1}
+K \ast_2 g = \mathcal S( K\ast g),
+\end{equation}
+where $\mathcal S$ is a stride operator defined by:
+\begin{equation}\label{eq:strideopdim}
+\mathcal S: \mathbb{R}^{m \times n} \mapsto \mathbb{R}^{\frac{m+1}{2} \times \frac{n+1}{2}},
+\end{equation}
+with
+\begin{equation}\label{eq:strideop}
+[\mathcal S(g)]_{i,j} = g_{2i, 2j}, \quad i  = 1: \frac{m+1}{2} j = 1: \frac{n+1}{2}.
+\end{equation}
+\end{lemma}

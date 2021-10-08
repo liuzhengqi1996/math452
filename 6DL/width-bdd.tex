@@ -1,0 +1,47 @@
+\chapter{Approximation properties of width-bounded ReLU DNN}
+In this part, we will show a universal approximation theorem for width-bounded ReLU networks: width-(d+4) ReLU networks, where $d$ is the input dimension.
+
+\begin{theorem}
+	\label{width-bdd}
+	For any Lebesgue-integrable function $f:\mathbb{R}^d\to\mathbb{R}$ and any $\epsilon>0$, there exists a fully-connected ReLU network $\mathcal{A}$ with width at most $d+4$, such that the function 
+	$F_{\mathcal{A}}$ represented by this network satisfies
+	\begin{equation}
+	\int_{\mathbb{R}^d}|f(x)-F_{\mathcal{A}}(x) |dx<\epsilon
+	\end{equation}
+\end{theorem}
+The proof of the above theorem involves the following three steps,
+\begin{enumerate}
+	\item Show that $f$ can be approximated by finite weighted sum of indicator functions on d-dimensional cubes.
+	\item  Use ReLU network to approximate an indicator function on an d-dimensional cube. 
+	\item  Show that the constructed ReLU network can ``store" the quantites and sum them up.
+\end{enumerate}
+ The first step can be shown by the knowledge from real analysis.
+ 
+ As for the second step, let us consider the easy case in 1D to demonstrate the idea. Given $[a,b]$, the goal now is to use ReLU function to approximate the indicator function $\chi_{[a,b]}$.
+ 
+ For $1/2>\delta>0$, consider the interval $[a+\delta(b-a),b-\delta(b-a)]$, we can construct a ReLU network $r(x)$ such that 
+ $$
+ r(x)=1\quad x\in[a+\delta(b-a),b-\delta(b-a)],\quad r(x)=0\quad x\notin[a,b]
+ $$
+ Define 
+ $$
+ r(x)=ReLU(ReLU(1-ReLU(\frac{x-(b-\delta(b-a))}{\delta(b-a)}))-ReLU(1-ReLU(\frac{x-a}{\delta(b-a)})))
+ $$
+ Actually the last ReLU can be removed, but in order to be consistent with the structure of ReLU DNN, we write one ReLU function here to indicate one hidden layer.
+
+With the above 1D example, now we can construct the ReLU network to approximate an indicator function on an d-dimensional cube. The key idea here is to do the procedure above one dimension by one dimension. Assume the cube is $[a_1,b_1]\times[a_2,b_2]\times\cdots\times[a_d,b_d]$ and suppose now we have constructed $r_k$ to approximate the indicator function on $[a_1,b_1]\times[a_2,b_2]\times\cdots\times[a_k,b_k]$. Now we define:
+\begin{equation}
+\begin{aligned}
+&r_{k+1}(x_1,\dots,x_{k+1})\\
+=&ReLU(ReLU(r_k(x_1,\dots,x_k)-ReLU(\frac{x_{k+1}-(b_{k+1}-\delta(b_{k+1}-a_{k+1}))}{\delta(b_{k+1}-a_{k+1})}))\\
+&-ReLU(r_k(x_1,\dots,x_k)-ReLU(\frac{x_{k+1}-a_{k+1}}{\delta(b_{k+1}-a_{k+1})})))
+\end{aligned}
+\end{equation}
+It is easy to check that $r_{k+1}$ can be used to approximate the indicator function on $[a_1,b_1]\times[a_2,b_2]\times\cdots\times[a_{k+1},b_{k+1}]$.
+
+Now we proceed to the third step, where we combine all the indicator functions together with their weights. To do this, we need to consider again the $d+4$-width.
+
+The first $d$ nodes in hidden layer are used to pass the information of the input. For the $d+1$-th and $d+2$-th nodes, we use them to store the information we get from $r_d$. And as for the last two nodes, they are used for the computation of $r_k$ functions. See \cite{lu2017expressive} for detailed graph.
+
+
+

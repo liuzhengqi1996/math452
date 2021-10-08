@@ -1,0 +1,86 @@
+\documentclass[leqno,labelfig,psfigt,colorlinks]{svmono}
+%\openup8pt
+
+%\usepackage[a4paper,left=1cm,right=10cm,bindingoffset=5pt, asymmetric, reversemarginpar]{geometry}
+
+\makeatletter
+\providecommand*{\input@path}{}
+\edef\input@path{{./}{../}\input@path}% prepend
+\makeatother
+
+\input{../Xmacros}
+\renewcommand{\blankpage}{}\renewcommand{\break}{}
+\usepackage{wrapfig}
+\usepackage{bbm}
+\usepackage{listings}
+\usepackage{natbib}
+\usepackage{color}
+\usepackage{cases}
+\usepackage{pythonhighlight}
+\usepackage{multirow}
+
+\usepackage{setspace}
+
+\usepackage{pdfpages}
+
+\usepackage{adjustbox}
+
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\brown}[1]{\textcolor{blue}{#1}}
+\newcommand{\green}[1]{\textcolor{green}{#1}}
+
+\makeatletter
+\newenvironment{breakablealgorithm}
+{% \begin{breakablealgorithm}
+	\begin{center}
+		\refstepcounter{algorithm}% New algorithm
+		\hrule height.8pt depth0pt \kern2pt% \@fs@pre for \@fs@ruled
+		\renewcommand{\caption}[2][\relax]{% Make a new \caption
+			{\raggedright\textbf{\ALG@name~\thealgorithm} ##2\par}%
+			\ifx\relax##1\relax % #1 is \relax
+			\addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##2}%
+			\else % #1 is not \relax
+			\addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##1}%
+			\fi
+			\kern2pt\hrule\kern2pt
+		}
+	}{% \end{breakablealgorithm}
+		\kern2pt\hrule\relax% \@fs@post for \@fs@ruled
+	\end{center}
+}
+\makeatother
+
+\usepackage{multirow}
+\usepackage{mathtools}
+
+
+\newtheorem{properties}[theorem]{Properties}
+%\graphicspath{{figures/}}
+\graphicspath{{../figures/}{figures/}{../}}
+
+\begin{document}
+	
+	\rhead{\hfill Jinchao Xu}
+	%\title{A Mathematical Introduction to Deep Neural Networks}
+	\title{\huge Deep Neural Networks Backups}
+	%through\quad\quadFinite Element and Multigrid Methods}
+	\author{Jinchao Xu\footnote{
+			Department of Mathematics,
+			The Pennsylvania State University, University Park, PA 16802,
+			U.S.A. xu@math.psu.edu,  http://www.math.psu.edu/xu/}}
+	\date{January 2021}
+	
+	\maketitle 
+	
+	\tableofcontents
+	
+	\input{Limin-Backup}	
+	\input{Jianqing-Backup}
+	\input{Qingguo-Backup}
+	\input{Jinchao-Backup}
+	
+	%\input{MG-CNN}
+	\bibliographystyle{abbrv}
+	\bibliography{ref,ref_mgcnn,../3FEM/3FEM}
+\end{document}

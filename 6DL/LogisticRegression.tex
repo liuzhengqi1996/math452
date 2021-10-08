@@ -1,0 +1,541 @@
+% Author: Jonathan Siegel
+% This chapter aims to introduce the logistic regression, a model which
+% is the basis of machine learning classification problems.
+
+\section{The Logistic Regression}
+\subsection{Soft-max}
+Now we introduce the softmax: Given $z=\left( \begin{array}{ccc}
+	z_1\\
+	\vdots \\
+	z_k
+\end{array} \right)\in \mathbb R^k$, let
+
+\begin{equation}
+	\label{softmax}
+	q_j=\frac{e^{z_j}}{\sum_{i=1}^ke^{z_i}}, \quad j=1:k.
+\end{equation}
+We note that 
+$$
+q_j\ge 0, \quad \sum_{j=1}^kq_j=1
+$$
+which can be viewed as probability distribution. 
+We can write \eqref{softmax} as a more compact form:
+$$
+q = (\mathbbm{1}^Te^z)^{-1}e^z
+$$
+
+The softmax is a good measure when the classification is not
+distinctive.  For example, in the MNIST, we may not be able to
+distinct some handwritings for ``$0$'' versus ``$6$", ``$2$'' versus
+``$7$'', ``$3$'' versus ``$5$''.  In these cases, the softmax is
+expected to give relative large components corresponding to these
+numbers.
+\subsection{2-class case} Let $A_1$ and $A_2$ are two linearly
+separable sets and $(w,b)$ is as in Lemma~\ref{lem:2class}. We apply
+the soft-max to the linear classifying vector function
+\begin{equation}
+  \label{eq:1}
+{1\over 2}
+\begin{pmatrix}
+  wx+b\\
+-(wx+b)
+\end{pmatrix}
+\end{equation}
+we easily obtain the following classifier:
+\begin{equation}
+  \label{f-sigmoidal}
+f(x)=  
+\begin{pmatrix}
+s(wx+b)\\
+s(-(wx+b)
+\end{pmatrix}
+\end{equation}
+ where $s$ is the so-called sigmoidal function defined by
+\begin{equation}
+\label{sigmoidal}
+s(x)=\frac{e^x}{e^x+e^{-x}}  
+\end{equation}
+We define $s(x)$ in this way so that $f(x)$ is a probability distribution on
+$A_1$ and $A_2$.
+\begin{remark} We note that, in the above discussions, we have
+  encountered with $4$ special functions, namely
+\begin{enumerate}
+\item the Heaviside function given by \eqref{heaviside};
+\item the linear-step function given by
+  \eqref{linear-step};
+\item the rectified linear unit function given by \eqref{ReLU}
+\item the sigmoidal function given by \eqref{sigmoidal}.
+\end{enumerate}
+These functions are examples of the so-called activation functions
+used in machine learning.  The Heaviside function was probably the
+most natural and introduced most early in the machine learning
+literature, but its lack of continuity makes the relevant model hards
+to train using gradient based training algorithm.  Both the
+linear-step and the sigmoid functions are smoothed variants of the
+Heaviside function, while the former is only Liptschitz and the latter
+is infinitely differential.  We note that
+\begin{equation}
+  \label{approx-Heaviside}
+\lim_{\epsilon\to 0}\sigma(x/\epsilon) =
+\lim_{\epsilon\to 0}s(x/\epsilon) =h_0(x), \quad\forall x\in
+\mathbb R^1. 
+\end{equation}
+The ReLU function \eqref{ReLU} emerges to be the most popular
+activation used in the modern machine learning literature.  The
+popularity of ReLU may attribute to the following two properties:
+\begin{enumerate}
+\item it generates the linear step function $\sigma$
+  \eqref{linear-step} as in \eqref{sigma-ReLU};
+\item it generates the identity mapping:
+  \begin{equation}
+    \label{ReLU-identity}
+x=ReLU(x)-ReLU(-x)    
+  \end{equation}
+\end{enumerate}
+
+\end{remark}
+The following lemma is a trivial consequence of the definition of linear separability
+\begin{lemma}
+	If $A_1$, $A_2\subset\mathbb{R}^n$ are linearly separable,
+        then there exist $\theta^* = (w^*,b^*)\in\mathbb{R}^{1\times
+          (n+1)}$ such that
+\begin{equation}\label{ftheta}
+f(\theta^*;x)\cdot e_i>f(\theta^*;x)\cdot e_j, \mbox{ if }\ x\in A_i,\ i=1,2, j\neq i.          
+\end{equation}
+\end{lemma}
+
+Define 
+$$
+y(x)=e_i,\quad x\in A_i.
+$$
+and consider the loss function
+\begin{equation}\label{logit_loss}
+ L(\theta) = \displaystyle\sum_{i = 1}^N -\log\left(f(\theta;x_i)\cdot y(x_i)\right)
+\end{equation}
+
+\begin{lemma}\label{lemma116}
+ If $A_1$ and $A_2$ are linearly separable, then 
+ \begin{equation}
+  \inf_{\theta} L(\theta) = 0
+ \end{equation}
+ Moreover, this infimum is not achieved.
+\end{lemma}
+\begin{proof}
+ Since $A_1$ and $A_2$ are linearly separable, there exists a $\theta = (w,b)$ such that
+ \begin{equation}
+  wx+b
+  \begin{cases}
+   > 0 & x\in A_1 \\
+   < 0 & x\in A_2
+  \end{cases}
+ \end{equation}
+
+ This means that for each $i$, 
+ $$-\log\left(f(\theta;x_i)\cdot y(x_i)\right) = \log(e^{c_i} + e^{-c_i}) - c_i$$
+ for some $c_i > 0$. Now we note that
+ $$-\log\left(f(K\theta;x_i)\cdot y(x_i)\right) = \log(e^{Kc_i} + e^{-Kc_i}) - Kc_i$$
+ Thus we see that
+ \begin{equation}
+  \lim_{K\rightarrow \infty} L(K\theta) = 0
+ \end{equation}
+ so $\inf_{\theta} L(\theta) \leq 0$. It is a simple exercise to see that $L(\theta) > 0$
+ for any $\theta$, which completes the proof.
+
+\end{proof}
+ 
+\begin{lemma}\label{lemma146}
+Suppose $A_1,A_2$ are two linearly separable sets and let $(\theta_i)_{i = 1}^\infty$ be
+a minimizing sequence for the loss functions $L$ in (\ref{logit_loss}), i.e.
+\begin{equation}
+ \lim_{i\rightarrow \infty} L(\theta_i) = \inf_{\theta} L(\theta)
+\end{equation}
+ Then there exists an $N$ such that for all $n > N$, (\ref{ftheta}) holds for $\theta_n$.
+\end{lemma}
+\begin{proof}
+ We have from Lemma \ref{lemma116} that $\inf_{\theta} L(\theta) = 0$. So let $N$ be chosen so that
+ $L(\theta_n) < \log(2)$ for all $n > N$. 
+ 
+ We claim that (\ref{ftheta}) holds for $\theta_n$ as long
+ as $n > N$. 
+ 
+ To prove this we simply note that if (\ref{ftheta}) fails to hold for $\theta_n$, then
+ there exists a $j$ such that $f(\theta;x_j)\cdot y(x_j) < \frac{1}{2}$. Thus
+ \begin{equation}
+  L(\theta_n) = -\log\left(f(\theta;x_j)\cdot y(x_j)\right) + \displaystyle\sum_{i\neq j}-\log\left(f(\theta;x_i)\cdot y(x_i)\right) > \log(2)
+ \end{equation}
+ as $f(\theta;x_j)\cdot y(x_j) < \frac{1}{2}$ and $f(\theta;x_i)\cdot y(x_i) < 1$ for all $i$.
+
+ Since this contradicts our choice of $N$ above, we have that (\ref{ftheta}) holds for $\theta_n$ as desired.
+\end{proof}
+
+Next, we examine what happens when we add a regularization term to the loss function in (\ref{logit_loss}), i.e. we consider
+the loss function
+\begin{equation}\label{regularized_logit_loss}
+ L(\theta,\lambda) = \displaystyle\sum_{i = 1}^N -\log\left(f(\theta;x_i)\cdot y(x_i)\right) + \lambda \|\theta\|_2^2
+\end{equation}
+Note that this loss is strongly convex and thus has a unique minimizer. We have the following lemma.
+\begin{lemma}
+ Suppose $A_1,A_2$ are two linearly separable sets and let $\theta^*$ be the unique minimizer of the 
+ regularized loss function in (\ref{regularized_logit_loss}), i.e.
+ \begin{equation}
+  \theta^* = \argmin_\theta L(\theta, \lambda)
+ \end{equation}
+ Then for sufficiently small $\lambda > 0$, (\ref{ftheta}) holds for $\theta^*$.
+\end{lemma}
+\begin{proof}
+ Lemma \ref{lemma116} implies that there exists a $\theta^\prime$ such that $L(\theta^\prime) < \frac{1}{2}\log(2)$ (note
+ that $L$ here is the unregularized loss in (\ref{logit_loss})). Set 
+ $$\lambda < \frac{\log(2)}{2\|\theta^\prime\|_2^2}$$
+ Then we have
+ \begin{equation}
+  L(\theta^\prime, \lambda) = L(\theta) + \lambda \|\theta\|_2^2 < \frac{1}{2}\log(2) + \frac{1}{2}\log(2) = \log(2)
+ \end{equation}
+ This means that $L(\theta^*,\lambda) < \log(2)$. But the same argument as in the proof of Lemma \ref{lemma146} shows that
+ if (\ref{ftheta}) fails for $\theta^*$, then
+ $$L(\theta^*, \lambda) \geq L(\theta^*) > \log(2)$$
+ This contradiction shows that (\ref{ftheta}) holds for $\theta^*$ as desired.
+
+\end{proof}
+
+We can easily generalize those consequences to multicalass situations.
+\begin{lemma}{\label{fade}}
+	Assume that the sets $A_1,\cdots,A_k$ are linearly separable. Then we must have
+	\begin{equation}
+	\inf_{\theta} L(\theta,\alpha) \rightarrow 0, \alpha \rightarrow 0.
+	\end{equation}
+\end{lemma}
+\begin{proof}
+	Easy to observe that if $\theta = (W,b)\in \Theta$, then $K\theta \in \Theta$ for all $K>0$. And
+	\begin{equation}
+	\lim\limits_{K\rightarrow +\infty} \displaystyle\sum_{i=1}^k \displaystyle\sum_{x\in A_i} 
+	\left(\log(\mathbbm{1}^T\exp(KW x + Kb)) - (KW x + Kb)_i\right) = 0.
+	\end{equation}
+	Given $\epsilon>0$ arbitrarily. Then there must exist a $\theta^{\epsilon} = (W^{\epsilon},b^{\epsilon}) \in \Theta$ such that 
+	\begin{equation}
+	\displaystyle\sum_{i=1}^k \displaystyle\sum_{x\in A_i} 
+	\left(\log(\mathbbm{1}^T\exp(W^{\epsilon} x + b^{\epsilon})) - (W^{\epsilon} x + b^{\epsilon})_i\right) \leq \epsilon/2.
+	\end{equation}
+	So for all $0 < \alpha \leq \frac{\epsilon}{2\max_i \|w^{\epsilon}_i\|}$, we have
+	\begin{equation}
+	|\inf_{\theta} L(\theta,\alpha)| = \inf_{\theta} L(\theta,\alpha) \leq L(\theta^{\epsilon},\alpha) \leq \frac{\epsilon}{2} + \frac{\epsilon}{2} = \epsilon
+	\end{equation}
+	So we obtain
+	\[
+	\inf_{\theta} L(\theta,\alpha) \rightarrow 0, \alpha \rightarrow 0.
+	\]
+\end{proof}
+
+\begin{lemma}
+	Suppose that the sets $A_i,\cdots,A_k$ are linearly separable. We claim that when $\alpha$ is sufficiently small, we must have
+	\begin{equation}
+	\theta_\alpha = \argmin_{\theta} L(\theta,\alpha) \in \Theta.
+	\end{equation}
+\end{lemma}
+
+\begin{proof}
+	Notice that for all $\theta \notin \Theta$ and $\alpha>0$, we have
+	\begin{equation}
+	L(\theta,\alpha) \geq \displaystyle\sum_{i=1}^k \displaystyle\sum_{x\in A_i} 
+	\left(\log(\mathbbm{1}^T\exp(W x + b)) - (W x + b)_i\right) > \log 2.
+	\end{equation}
+	But according to lemma (\ref{fade}), we know there exists a $\delta>0$ such that 
+	\begin{equation}
+	\inf_{\theta} L(\theta,\alpha) < \log 2,~~\forall 0< \alpha < \delta.
+	\end{equation} 
+	So when $0< \alpha < \delta$, we must have
+	\[
+	\theta_\alpha = \argmin_{\theta} L(\theta,\alpha) \in \Theta.
+	\]
+\end{proof}
+
+\begin{remark}
+$\theta^*$ is a desirable weight, i.e. $f(\theta^*;x)$ is a classifier, if $\{A_i\}_i$ are all finite. 
+\end{remark}
+
+
+\subsection{Description of the model}
+The logistic regression model takes as input a vector of real valued features
+and outputs a probability distribution over a set of labels. So the feature, or input space is
+$\mathcal{X} = \mathbb{R}^n$, the label set is $\mathcal{Y} = \{l_1,...,l_k\}$, and the output of the model
+lies in the set $\mathcal{Y}^* = \mathcal{P}(\mathcal{Y})$. In what follows, we will denote the 
+input features by a vector $x\in \mathcal{X} = \mathbb{R}^n$.
+
+\subsubsection{Special Case: Two Labels}
+We consider first the simple case where there are only two possible labels, i.e. $\mathcal{Y} = \{l_1,l_2\}$.
+In this case, a probability distribution on the labels is uniquely determined by the probability of the first label
+$l_1$. Thus, in this case we can view the output of the logistic regression as a single number $p_1\in [0,1]$, which
+represents the probability of the first label.
+
+The model consists of the composition of an affine linear function which the logistic function, i.e.
+\begin{equation}
+ p_i(x~|~W,b) \sim \exp(W_{i}x + b_i)
+\end{equation}
+Here
+$W_{i}$ denotes the $i$-th row of $W$. Explicitly normalizing this probability distribution gives
+$$p_i(x~|~W,b) = \left(\displaystyle\sum_{j = 1}^2\exp(W_{j}x + b_j)\right)^{-1}\exp(W_{i}x + b_i)$$
+%where $$l(z) = \frac{\exp(z)}{1 + \exp(z)}$$ is the logistic function. 
+The parameters of the model are $b\in \mathbb{R}^2$
+and $W\in \mathbb{R}^{2\times n}$, which specify an affine linear function from the parameter space to $\mathbb{R}$.
+
+\subsection*{Loss functions for two labels case}
+In the case of a logistic regression with two labels, we have
+\begin{equation}
+p_1(x~|~W,b)  = \frac{\exp(W_{1}x + b_1)}{\exp(W_{1}x + b_1)+\exp(W_{2}x + b_2)}.
+\end{equation}
+Then the likelihood is defined as follows
+\begin{equation}
+\begin{split}
+p(\mathcal{D}~|~W, b) &= 
+\prod_{j = 1}^n 
+\left(
+\left(p_1(x~|~W,b)\right)^{(y_j)_1}\cdot(1-p_1\left(x~|~W,b)\right)^{(y_j)_2}
+\right)
+\\
+&=
+\prod_{j = 1}^n 
+\left(
+\left(
+\frac{\exp(W_{1}x + b_1)}{\exp(W_{1}x + b_1)+\exp(W_{2}x + b_2)}
+\right)^{(y_j)_1}
+\cdot
+\left(
+\frac{\exp(W_{2}x + b_2)}{\exp(W_{1}x + b_1)+\exp(W_{2}x + b_2)} 
+\right)^{(y_j)_2}
+\right),
+\end{split}
+\end{equation}
+where $y_j$ is the label of the $j$-th data point. Finally, we take the negative log likelihood as the loss function
+
+\begin{equation}\label{LossTwoLabels}
+\begin{aligned}
+&-\log(p(\mathcal{D}~|~W, b)) \\
+&= 
+-\displaystyle\sum_{j=1}^n
+\left(
+{(y_j)_1}
+\log\left(
+\frac{\exp(W_{1}x + b_1)}{\exp(W_{1}x + b_1)+\exp(W_{2}x + b_2)}
+\right)
++
+(y_j)_2\log\left(
+\frac{\exp(W_{2}x + b_2)}{\exp(W_{1}x + b_1)+\exp(W_{2}x + b_2)}
+\right)
+\right)
+\\
+&=
+-\displaystyle\sum_{j=1}^n \left(
+(y_j)_1(W_{1}x + b_1)+(y_j)_2(W_{2}x + b_2)-\log\left(\exp(W_{1}x + b_1)+\exp(W_{2}x + b_2)\right)
+\right).
+\end{aligned}
+\end{equation}
+
+
+
+
+\subsubsection{General Case: Multiple Labels}
+We now consider the more general case where the number of labels can be greater than $2$, i.e. $\mathcal{Y} = \{l_1,...,l_k\}$
+with $k > 2$. The output of the logistic regression model will be a probability distribution over $\mathcal{Y}$, i.e. for each
+input $x\in \mathbb{R}^n$ and index $i = 1,...,k$ the model gives a probability $p_i(x~|~W,b)$, such that the 
+sum of the probabilities over $i$ is $1$. 
+
+\begin{itemize}
+\item 
+If given $(W,b)$,
+\begin{equation}
+p_i(x~|~W,b) = {\rm Pr}(Y=i | X = x),
+\end{equation}
+means the probability of the random variable $Y =i $ with condition $ X = x$ where 
+$X$ is the random variable corresponding to the data space 
+and $Y$ is the random variable corresponding to the label space.  
+
+\item Here
+\begin{equation}
+p_i(x~|~W,b) = {\rm Pr}( X = x, Y = i | W ,b),
+\end{equation}
+means the probability of the random variable $(X,Y) = (x,i)$ with condition $W ,b$ are given. 
+Here $X$ is the random variable corresponding to the data space 
+and $Y$ is the random variable corresponding to the label space.  
+Following the notation in the next paragraphs, this setup seems more reasonable.
+
+\end{itemize}
+
+
+
+
+The model consists of an affine linear map composed with the softmax function, i.e.
+\begin{equation}
+ p_i(x~|~W,b) \sim \exp(W_{i}x + b_i)
+\end{equation}
+where the parameters of the model are $b\in \mathbb{R}^k$ and $W\in \mathbb{R}^{k\times n}$. Here
+$W_{i}$ denotes the $i$-th row of $W$. Explicitly normalizing this probability distribution gives
+$$p_i(x~|~W,b) = \left(\displaystyle\sum_{j = 1}^k\exp(W_{j}x + b_j)\right)^{-1}\exp(W_{i}x + b_i)$$
+
+A simpler way of saying this is that the output of the model is given by
+\begin{equation}
+ \mathcal{Y}^* = \mathcal{P}(\mathcal{Y})\ni h(x~|~W,b) = l(W x + b)
+\end{equation}
+here $W x$ simply denotes matrix-vector multiplication and the map $l$ is the softmax function
+$l:\mathbb{R}^k\rightarrow \mathcal{P}(\mathcal{Y})$, defined by
+$$l(y)_i = \frac{\exp(y_i)}{\exp(y_1) + \cdots + \exp(y_k)}$$
+where $l(y)_i$ denotes the probability of label $l_i$ under the distribution $l(y)$.
+
+\subsubsection{Remarks}
+\begin{itemize}
+ \item Notice that adding any vector to the rows of $W$ or adding any constant to each entry of $b$ doesn't
+ change the model. We are only fitting the parameters up to these symmetries. Essentially, what is important are the
+ differences between each pair of the rows of $W$ and each pair of entries of $b$. We can remove this redundancy in 
+ the parameter space by assuming that the first row of $W$ and the first entry of $b$ are $0$. Whether this is
+ useful depends on which algorithm we are using to fit the parameters.
+ \item The success of the logistic regression depends on how good the features (the entries of $x$) are at linearly distinguishing
+ the different classes. In machine learning practice, these features must be engineered based on some domain knowledge.
+ Many neural network models attempt to learn the features in addition to the coefficients.
+ \item Another way of thinking about the logistic regression is as follows. Given two labels, $l_i$ and $l_j$, define the
+ odds of $l_i$ over $l_j$ to be the ratio $o_{i,j} = p(l_i) / p(l_j)$ (i.e. the ratio of the respective probabilities). 
+ The logistic regression models the logarithm of the
+ odds, $\log(o_{i,j})$, as a linear function of the features for all pairs $(i,j)$.
+ \item Somewhat counterintuitively, if the training data is perfectly linearly separable, then the negative log-likelihood
+ objective has no minimizers because scaling up the parameters $W$ and $b$ always produces a smaller loss. This means that
+ some form of regularization is necessary if the data are well-separated by linear functions.
+\end{itemize}
+
+
+\subsection{Loss functions}
+Given a collection of labelled data points $\mathcal{D} = (x_1,y_1),...,(x_n,y_n)$ with $x_i\in \mathcal{X} = \mathbb{R}^n$ and
+$y_i \in \mathcal{Y} = \{l_1,...,l_n\}$, we want to fit parameters $W^*,b^*$ from the data $\mathcal{D}$. There are
+many different ways of doing this (a large part of statistics is concerned with what it means to fit parameters from data),
+but we will only describe two standard approaches, the maximum likelihood and maximum posterior estimators.
+\subsubsection{Maximum Likelihood Estimator}
+The maximum likelihood estimator finds the parameter values which maximize the likelihood $p(\mathcal{D}~|~W, b)$ 
+of the observed data, i.e. we set
+\begin{equation}
+ \theta^*=(W^*,b^*) = \argmax_{W, b} p(\mathcal{D}~|~W, b)
+\end{equation}
+Very often, the above optimization problem is replaced by the equivalent minimization of the negative log likelihood,
+\begin{equation}
+ \theta^*= (W^*,b^*) = \argmin_{W, b} -\log(p(\mathcal{D}~|~W, b))
+\end{equation}
+the reason for considering the log likelihood is that the objective now becomes a sum over the data points
+$(x_1,y_1),...,(x_n,y_n)$ instead of a product. Specifically, in the case of a logistic regression, we have
+\begin{equation}
+ p(\mathcal{D}~|~W, b) = \prod_{j = 1}^n p_{i_j}(x_j ~|~W, b ) = 
+\prod_{j = 1}^n 
+\frac{\exp(W_{i_j}x_j + b_{i_j})}
+{\displaystyle\sum_{i=1}^k\exp(W_{i}x_j + b_i)} = 
+\displaystyle\prod_{j = 1}^n 
+ \frac{\exp(W x_j + b)_{i_j}}
+ {\mathbbm{1}^T\exp(W x_j + b)}
+\end{equation}
+where $i_j$ denote the index such that $y_j = l_{i_j}$ (i.e. $i_j$ is the label of the $j$-th data point), $\exp$ is applied
+to a vector entrywise, and $\mathbbm{1}$ denotes the vector of ones. Then the negative log likelihood becomes
+\begin{equation}
+ -\log(p(\mathcal{D}~|~W, b)) = \displaystyle\sum_{j=1}^n \left(\log(\mathbbm{1}^T\exp(W x_j + b)) - 
+ (W x_j + b)_{i_j}\right) = \sum_{j=1}^n Cross-Entropy(p(x_j ~|~ W,b), y_j).
+\end{equation}
+
+
+\subsubsection{Maximum Posterior Estimator}
+The maximum posterior estimator is very similar to the maximum likelihood estimator, but approaches the problem from a 
+Bayesian point of view. Equivalently, we can think of the maximum posterior estimator as a regularized maximum likelihood estimator.
+
+In the Bayesian setting we fix a prior distribution over the parameters, $p(W,b)$, which represents domain
+knowledge that we have concerning the values of the parameters. The posterior distribution (or distribution
+given the data), $p(W,b~|~\mathcal{D})$, is determined by Bayes' rule
+\begin{equation}
+ p(W,b~|~\mathcal{D}) \sim p(W,b)p(\mathcal{D}~|~W,b)
+\end{equation}
+
+Because the posterior distribution is difficult to deal with in general, various approximate approaches exist, for example
+sampling from the posterior distribution using MCMC or approximating the posterior distribution by a parametrized class
+of distributions (known as variational Bayes'). The approach we consider here is the simpler elementary approach of
+choosing the parameter values which maximize the posterior distribution, or equivalently minimize the negative log of the
+posterior
+\begin{equation}
+ (W^*,b^*) = \argmin_{W, b} -\log(p(W, b~|~D))
+\end{equation}
+Plugging Bayes' formula into this yields
+\begin{equation}
+ (W^*,b^*) = \argmin_{W, b} -\log(p(W,b)) - \log(p(W, b~|~D))
+\end{equation}
+and we see that this becomes a `regularized' maximum likelihood estimate with regularizer $-\log(p(W,b))$,
+which depends on the assumed prior. Often, the prior is a Gaussian centered at $0$, which results in a quadratic regularizer
+of the form $\alpha (\|W\|_2^2 + \|b\|_2^2)$. 
+
+Taking into account the form of the likelihood function for the
+logistic regression, we get the following problem
+\begin{equation}
+ (W^*,b^*) = \argmin_{W, b} \alpha (\|W\|_2^2 + \|b\|_2^2) + \displaystyle\sum_{j=1}^n \left(\log(\mathbbm{1}^T\exp(W x_j + b)) - 
+ (W x_j + b)_{i_j}\right)
+\end{equation}
+
+We now consider the logistic regression with a different type of regularizer.
+\begin{equation}
+ (W^*,b^*) = \argmin_{W, b} \alpha (\max_i \|w_i\|_2) + \displaystyle\sum_{i=1}^k \displaystyle\sum_{x\in A_i} 
+ \left(\log(\mathbbm{1}^T\exp(W x_j + b)) - (W x_j + b)_i\right)
+\end{equation}
+
+
+
+
+
+\begin{theorem}
+ Suppose that the sets $A_i$ are linearly separable. Let
+ $$\theta_\alpha = \argmin_{W, b} \alpha (\max_i \|w_i\|_2) + \displaystyle\sum_{i=1}^k \displaystyle\sum_{x\in A_i} 
+ \left(\log(\mathbbm{1}^T\exp(W x + b)) - (W x + b)_i\right)
+ $$
+ and
+ $$\theta^* = \argmin_{\substack{w_ix + b_i \geq w_jx + b_j + 1\\x\in A_i,~j\neq i}} \max_i \|w_i\|_2$$
+ Then, up to a rescaling, $\theta_\alpha \rightarrow \theta^*$ as $\alpha\rightarrow 0$, i.e.
+ \begin{equation}
+  \lim_{\alpha\rightarrow 0} \frac{\theta_\alpha}{\max_i \|w^\alpha_i\|_2} = \frac{\theta^*}{\max_i \|w^*_i\|_2}
+ \end{equation}
+
+\end{theorem}
+\begin{proof}
+ The key is to consider the auxiliary problem
+ \begin{equation}
+  \theta_M = \argmin_{\substack{W, b\\\max_i \|w_i\|_2 = M}}\displaystyle\sum_{i=1}^k \displaystyle\sum_{x\in A_i} 
+ \left(\log(\mathbbm{1}^T\exp(W x_j + b)) - (W x_j + b)_i\right)
+ \end{equation}
+ The linear separability of the sets $A_i$ implies that $\theta_\alpha \rightarrow \infty$ as $\alpha\rightarrow 0$.
+ This means that
+ \begin{equation}
+  \lim_{\alpha\rightarrow 0} \frac{\theta_\alpha}{\max_i \|w^\alpha_i\|_2} = \lim_{M\rightarrow \infty} \frac{\theta_M}{M}
+ \end{equation}
+ So we only need to consider the problem
+ \begin{equation}
+  \frac{\theta_M}{M} = \argmin_{\substack{W, b\\\max_i \|w_i\|_2 = 1}}\displaystyle\sum_{i=1}^k \displaystyle\sum_{x\in A_i} 
+ \left(\log(\mathbbm{1}^T\exp(M(W x_j + b))) - (M(W x_j + b))_i\right)
+ \end{equation}
+ Additionally, by rewriting the optimization for $\theta^*$, we obtain
+ \begin{equation}
+  \frac{\theta^*}{\max_i \|w^*_i\|_2} = \argmax_{\substack{W, b\\\max_i \|w_i\|_2 = 1}} \min_{i\neq j,~x\in A_i} [(w_ix + b_i) - (w_jx + b_j)]
+ \end{equation}
+ It now suffices to show that given $\epsilon > 0$, there exists an $M(\epsilon)$ such that given $\theta, \theta^\prime$ with $\max_i \|w_i\|_2 = \max_i \|w^\prime_i\|_2 = 1$ and
+ $$\min_{i\neq j,~x\in A_i} [(w^\prime_ix + b^\prime_i) - (w^\prime_jx + b^\prime_j)] 
+ > \min_{i\neq j,~x\in A_i} [(w_ix + b_i) - (w_jx + b_j)] + \epsilon
+ $$
+ we have
+ \begin{equation}
+ \begin{split}
+  &\displaystyle\sum_{i=1}^k \displaystyle\sum_{x\in A_i} 
+ \left(\log(\mathbbm{1}^T\exp(M(\epsilon)(W^\prime x_j + b^\prime))) - (M(\epsilon)(W^\prime x_j + b^\prime))_i\right) > \\
+ &\displaystyle\sum_{i=1}^k \displaystyle\sum_{x\in A_i} 
+ \left(\log(\mathbbm{1}^T\exp(M(\epsilon)(W x_j + b))) - (M(\epsilon)(W x_j + b))_i\right)
+ \end{split}
+ \end{equation}
+ To see why this is the case, it helps to rewrite the above objective as
+ \begin{equation}
+  \displaystyle\sum_{i=1}^k \displaystyle\sum_{x\in A_i} \log\left(\displaystyle\sum_{j = 1}^k \exp(-M[(w_ix+b_i) - (w_jx+b_j)])\right)
+ \end{equation}
+ It is now clear that for sufficiently large $M$, this term is dominated by the terms which minimize $[(w_ix + b_i) - (w_jx + b_j)]$
+ and thus for large $M$, this objective behaves as
+ \begin{equation}
+  C(\theta) \exp(-M\min_{i\neq j,~x\in A_i} [(w_ix + b_i) - (w_jx + b_j)])
+ \end{equation}
+ where $C(\theta)$ depends on how many indices and data points 
+ achieve the minimum $\min_{i\neq j,~x\in A_i} [(w_ix + b_i) - (w_jx + b_j)]$. This clearly implies that claim and completes the
+ proof.
+
+
+\end{proof}
+

@@ -1,0 +1,62 @@
+\chapter*{Notation}
+
+We suggest to settle some notational issues as follows. 
+\begin{enumerate}
+\item input data variables
+  \begin{equation}
+    \label{eq:1}
+x, \quad y    
+  \end{equation}
+In MgNet paper we keep using $f$ for data to match the notation
+with the PDE since this is a special case.
+\item number of dimension of the input data
+  \begin{equation}
+    \label{dim}
+d, \quad x\in \mathbb R^d    
+  \end{equation}
+\item the weights
+  \begin{equation}
+    \label{weights}
+Wx+b; W\in\mathbb R^{\kappa\times d}, b\in \mathbb R^\kappa,
+\theta=(W,b)\in\mathbb R^{\kappa\times(d+1)}
+\end{equation}
+\item number of classification class:
+  \begin{equation}
+    \label{k} \kappa    
+  \end{equation}
+\item Number of iterations
+  \begin{equation}
+    \label{iterations}
+t
+  \end{equation}
+such as
+$$
+\theta^{t+1}=\theta^t-\eta_t \nabla f_{i_t}(\theta^t)
+$$
+\item Learning rate
+  \begin{equation}
+    \label{learningrate}
+\eta    
+  \end{equation}
+
+\item independent variables for optimization algorithm
+for general optimizations, use x,y, like
+$$
+x^*=\arg\min_{x}f(x)
+$$
+and
+$$
+f(y)\ge f(x)+\nabla f(x)\cdot (y-x)
+$$
+When the problem involves deep learning or machine learning  models, use $\theta$
+$$
+\theta^*=\arg\min_{\theta}f(\theta)
+$$
+\begin{remark}
+In RDA, we will use w instead.
+\end{remark}
+
+
+\end{enumerate}
+
+

@@ -1,0 +1,78 @@
+
+\section{CNN models}
+
+\subsection{2020 Jan 14, Juncai seminar}
+In the initialization phase,  the following operations are usually
+done:
+\begin{itemize}
+\item Increase the channels
+\item pooling
+\end{itemize}
+Is this mathematically equivalent to represent a fine grid function
+into a number of (channels) coarse grid functions.
+
+In CIFAR models, the following is mostly used:
+$$
+f_{\rm in}(f)=\sigma\circ\theta^0\ast f
+$$
+
+In ImageNet, the following is mostly used:
+$$
+f_{\rm in}(f)=\sigma \circ R_{\max} \ast_2 \sigma \circ \theta^0 \ast_2 f
+$$
+
+\subsubsection*{Question:}  Does this mean that the resolution of the
+input images is too hight?
+
+For both CIFAR and ImageNet, people often use
+\begin{equation}
+  \label{f-out}
+f_{\rm out}=R_{\rm ave}:  \mathbb R^{n_J\times m_J\times c_J}\mapsto 
+R^{1\times 1\times c_J}\mapsto. 
+\end{equation}
+
+\subsection{Resolution of input images}
+The resolutions in the original ImageNet vary a lot:
+$$
+4288x2848 \mapsto 75x56
+$$
+
+Pre-process are needed to bring the different resolutions to the same
+resolution. 
+
+\subsection{Scale of CNN}
+\begin{enumerate}
+\item Increase the depth
+\item increase the channels
+\end{enumerate}
+
+\section{EfficientNet}
+\begin{enumerate}
+\item Fix a baseline model, say ResNet-18:  
+$$
+\bar v_\ell, \bar c_\ell, \bar n
+$$
+here $\bar n\times\bar n$ is the resolution of the input image. 
+\item EfficientNet:
+$$
+d\cdot\bar v_\ell, w\cdot \bar c_\ell, \gamma\cdot\bar n
+$$
+which satisfies
+$$
+d=\alpha^\phi, w=\beta^\phi, r=\gamma^\phi
+$$
+such that
+$$
+\alpha\beta^2\gamma^2\approx 2.
+$$
+\end{enumerate}
+
+\section{Notation for hyper-parameters}
+
+\subsubsection*{Question}
+\begin{quote}
+  Are there some good notations for all hyper-parameters in CNN?
+\end{quote}
+
+
+

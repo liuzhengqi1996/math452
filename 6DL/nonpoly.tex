@@ -1,0 +1,220 @@
+\subsection{Special Case: 1-hidden Layer}
+First, let us define the so-called 1-hidden layer (shallow) neural network.
+\begin{definition}The 1-hidden layer (shallow) neural network is defined as:
+	$$
+	{\rm DNN}_1 = \lbrace \phi~:~ \phi(x) = \sum_{i=1}^N a_i \sigma(w_i x + b_i ) + c, ~~ N \in \mathbb{N}^+\rbrace.
+	$$
+\end{definition}
+
+To consistent with above notation, we can write it as:
+$$
+\phi = W^1 x^1 + b^1 = (a_1,\cdots,a_N) \sigma(W^0 x + b^0) + c \in {\rm DNN}_1.
+$$
+
+The first question about ${\rm DNN}_1$ is about the approximation properties for any continuous functions. Here we have the next theorem:
+\begin{theorem}[Universal Approximation Property of Shallow Neural Networks] Let $\Omega$ be bounded, if any $f\in C(\bar \Omega)$, there exists a sequence $\phi_n \in {\rm DNN}_1$ such that 
+	$$
+	\max_{x\in \bar \Omega} |\phi_n(x) - f(x)| \to 0, \quad n \to \infty.
+	$$
+	This provide that $\sigma$ is not a polynomial.
+	On the other hand, let $\sigma$ be a non-polynomial Riemann integrable function and $\sigma\in L_{loc}^\infty(\mathbb{R})$ then we have
+	$$
+	\overline{\rm DNN}_1 = C(\bar \Omega).
+	$$
+\end{theorem}
+Before the proof, let us give some notation.
+We use $\mathbb{P}_m(\mathbb{R}^d)$ to define the polynomials
+of $d$-variables of degree less than $m$. 
+Let $\alpha = (\alpha_1,\cdots,\alpha_d)$( $\alpha_i $ non-negative integers), we note $|\alpha| = \sum_{i=1}^d \alpha_i$ and 
+$$
+x^{\alpha} = x_1^{\alpha_1}x_2^{\alpha_2}\cdots x_d^{\alpha_d}.
+$$
+\begin{lemma}\label{lemm:dsigma}
+	Let $\sigma \in C^{\infty}(\Omega)$ (i.e. $\sigma$ is infinitely differentiable) and is not a polynomial, then for any $k \ge 0$ there exists $t_k \in \mathbb{R}$ such that 
+	$$
+	\sigma^{(k)}(t_k) \neq 0.
+	$$
+\end{lemma}
+
+Now we are going to give the proof of 
+\begin{proof}
+	If $\sigma$ is a polynomial, say $\sigma \in \mathbb{P}_m(\mathbb{R})$, then we have that
+	$$
+	{\rm DNN}_1 \subset \mathbb{P}_m(\mathbb{R}^d).
+	$$
+	Thus, ${\rm DNN}_1$ cannot approximate polynomial of degree bigger than $m+1$. This implies that $\sigma$ cannot be polynomial if ${\rm DNN}_1$ has the approximation property.
+	
+	Now we prove that $\overline{\rm DNN}_1 = C(\bar \Omega)$ if $\sigma$ is not a polynomials.
+	
+	\begin{description}
+		\item[Case 1] First, let us assume that $\sigma \in C^{\infty}(\Omega)$. 
+		
+		\item[Fact 1:] We have the next relation:
+		$$
+		\frac{\partial}{\partial [w]_i} \left(\sigma(wx + b) \right) |_{w=0}= \sigma'(wx+b)\frac{\partial}{\partial [w]_i} (wx+b) = \sigma'(wx+b)x_i |_{w=0}.
+		$$
+		That is to say,
+		$$
+		\frac{\partial}{\partial [w]_i} \left(\sigma(wx + b) \right) |_{w=0} = \sigma'(b)x_i.
+		$$
+		By the lemma \ref{lemm:dsigma}, there exists a $b \in \mathbb{R}$ such that 
+		$$
+		\sigma'(b) \neq 0.
+		$$
+		\item[Fact 2:] By using the definition of derivative, we have
+		$$
+		\frac{\partial}{\partial [w]_i} \left(\sigma(wx + b) \right) |_{w=0}=
+		\lim_{n\to \infty} \frac{\sigma((0 + \frac{1}{n}e_i )\cdot x + b) - \sigma(b)}{\frac{1}{n}} = \lim_{n\to\infty} \phi_n(x),
+		$$
+		where 
+		$$
+		\phi_n(x) = n \left(\sigma(\frac{1}{n}e_i \cdot x + b) - \sigma(b)\right) \in {\rm DNN}_1.
+		$$
+		This leads to the result that
+		$$
+		\sigma'(b)x_i = \lim_{n\to\infty} \phi_n(x) \in \overline{\rm DNN}_1,
+		$$
+		because of the definition that
+		$$
+		\overline{\rm DNN}_1 = {\rm DNN}_1 \cup \{f ~:~f = \lim_{n\to\infty} \phi_n(x), \phi_n \in {\rm DNN}_1 \}. 
+		$$
+	\end{description}
+	Follow there facts, we know that
+	$$
+	\sigma'(b)x_i \in {\rm DNN}_1,
+	$$
+	this leads to 
+	$$
+	x_i \in 	\overline{\rm DNN}_1,
+	$$
+	because  $[\sigma'(b)]^{-1} \phi_n(x) \to x_i$.
+	
+	Thus we have
+	$$
+	\frac{\partial^2}{\partial [w]_1 \partial [w]_2} \left(\sigma(wx+b)\right) |_{w=0} = \sigma^{(2)}(b)x_1x_2.
+	$$
+	Using the Lemma \ref{lemm:dsigma} again, there exists a $b \in \mathbb{R}$ such that
+	$$
+	\sigma^{(2)}(b) \neq 0.
+	$$
+	This leads to 
+	$$
+	x_1x_2 \in \overline{\rm DNN}_1 .
+	$$
+	Similarly, we can prove that
+	$$
+	x_1^{\alpha_1} x_2^{\alpha_2} \cdots x_d^{\alpha_d} \in \overline{\rm DNN}_1.
+	$$
+	This proves that ${\rm DNN}_1$ can approximate any polynomials.
+	Combine with the Weierstrass theorem, ${\rm DNN}_1$ can approximate any continuous functions.
+	
+	Then we will finish the proof for any $\sigma$ as a non-polynomial Riemann integrable function and $\sigma\in L_{loc}^\infty(\mathbb{R})$.
+\end{proof}
+
+\iffalse
+Given an activation function
+\begin{equation}
+  \label{activation}
+\sigma: \mathbb R^1\mapsto \mathbb R^1  
+\end{equation}
+We consider the following shallow neural network function class
+\begin{equation}
+  \label{ShallowNN}
+	\Sigma_d(\sigma)=\mathrm{span}\left\{\sigma(\omega\cdot x+\theta):\omega\in\mathbb{R}^d,\theta\in\mathbb{R}\right\}.
+\end{equation}
+
+In this chapter, we will two theorems as follows. 
+\begin{theorem}
+Let $\sigma$ be a non-polynomial Riemann integrable function and
+$\sigma\in L_{loc}^\infty(\mathbb{R})$. Then $\Sigma_d(\sigma)$ in dense in
+$C(\mathbb R^d)$.	
+\end{theorem}
+\fi 
+
+\begin{theorem}
+Let $\Omega\subset \mathbb{R}^d$ be a bounded set, $\sigma\in W^{m,\infty}(\mathbb R)$ that has 
+compact support such that 
+\begin{equation}
+  \label{eq:1}
+  \hat\sigma(a)\neq 0, \mbox{ for some } a\neq 0.
+\end{equation}
+Then
+\begin{equation}
+  \label{eq:2}
+\inf_{f_n\in\Sigma_n}\|f-f_n\|_{H^m( \Omega)}
+\le C(d,m)\;n^{-{1\over2}}\int_{\mathbb R^d}(1+|\omega|)^{m+1}|\hat f(\omega)|
+\end{equation}
+\end{theorem}
+
+\iffalse
+	\begin{lemma}
+		Let $\sigma\in C^\infty(\mathbb{R})$ and assume $\sigma$ is not a polynomial. Then $\Sigma_n(\sigma)$ is dense in $C(\mathbb{R}^n)$.
+	\end{lemma}
+	\begin{proof}
+		Since $\sigma\in C^\infty(\mathbb{R})$, and $[\sigma((\omega+h e_j)\cdot x+\theta)-\sigma(\omega\cdot x+\theta)]/h\in\Sigma_n(\sigma)$ for every $\omega,\theta$ and $h\ne0$, it follows that 
+		$\frac{\partial}{\partial \omega_j}\sigma(\omega\cdot x+\theta)\in\overline{\Sigma}_n(\sigma)$ for all $j=1:n$. By the same argument $\frac{\partial^k}{\partial \omega^k_j}\sigma(\omega\cdot x+\theta)\in\overline{\Sigma}_n(\sigma)$ for all $k\in\mathbb{N}$, $j=1:n$, $\omega\in\mathbb{R}^n$ and $\theta\in\mathbb{R}$.
+		
+		Now $\frac{\partial^k}{\partial \omega^k_j}\sigma(\omega\cdot x+\theta)=x_j^k\sigma^{(k)}(\omega\cdot x+\theta)$, and since $\sigma$ is not a polynomial there exists a $\theta_k\in\mathbb{R}$ such that $\sigma^{(k)}(\theta_k)\ne0$. Take $\omega=0$ and $\theta=\theta_k$, we then have $x_j^k\in\overline{\Sigma}_n(\sigma)$. Similarly, for all polynomials of the form $x_1^{k_1}\cdots x_n^{k_n}$, we can get them by taking the corresponding partial derivatives.
+		
+		This implies that $\overline{\Sigma}_n(\sigma)$ contains all polynomials. By Weierstrass's Theorem it follows that $\overline{\Sigma}_n(\sigma)$ contains $C(K)$ for each compact $K\subset\mathbb{R}^n$. That is $\Sigma_n(\sigma)$ is dense in $C(\mathbb{R}^n)$.
+		\end{proof}
+	
+	\fi
+
+The first proof for this lemma above can be found in \cite{leshno1993multilayer} and summarized in \cite{pinkus1999approximation}.
+The next theorem plays an important role in the proof of above lemma, which is first proved
+in \cite{leshno1993multilayer} with several steps. Here we can present a more direct and simple version.
+%
+%\begin{proposition}
+%	If $\Sigma_1$ is dense in $C(\mathbb{R})$, then $\Sigma_n$ is dense in $C(\mathbb{R}^n)$.
+%	\end{proposition}
+%
+%
+%
+%From now on, we will focus on $\mathbb{R}$.
+
+\begin{theorem}
+	\label{prop:conti}
+Let $\sigma$ be a non-polynomial Riemann integrable function and $\sigma\in L_{loc}^\infty(\mathbb{R})$. Then $\Sigma_1(\sigma)$ in dense in $C(\mathbb{R})$.
+\end{theorem}
+\begin{proof}
+	Consider the mollifier $\eta$
+	\begin{equation*}\eta(x)=\left\{
+	\begin{aligned}
+	Cexp(\frac{1}{|x|^2-1}),\quad&|x|<1,\\
+ 	0,\qquad\qquad\qquad\quad  &|x|\ge1.
+	\end{aligned}
+	\right.
+	\end{equation*}
+	here C is selected so that $\int_{\mathbb{R}}\eta dx=1.$
+	
+	Set $\eta_\epsilon=\frac{1}{\epsilon}\eta(\frac{x}{\epsilon})$. Then consider $\sigma_{\eta_\epsilon}$
+\begin{equation}
+	\sigma_{\eta_\epsilon}(x):=\sigma\ast{\eta_\epsilon}(x)=\int_{\mathbb{R}}\sigma(x-y){\eta_\epsilon}(y)dy
+\end{equation}
+
+It can be seen that $\sigma_{\eta_\epsilon}\in
+C^\infty(\mathbb{R})$. Following the proof in the previous
+proposition, we want to show that $\overline{\Sigma}_1(\sigma)$
+contains all polynomials.  The first step is to show that
+$\overline{\Sigma}_1(\sigma_{\eta_\epsilon})\subset\overline{\Sigma}_1(\sigma)$,
+which can be done easily by checking the Riemann sum of
+$\sigma_{\eta_\epsilon}(x)=\int_{\mathbb{R}}\sigma(x-y){\eta_\epsilon}(y)dy$
+is in $\overline{\Sigma}_1(\sigma)$.
+
+Then it suffices to show that there exists $\theta_k$ and
+$\sigma_{\eta_\epsilon}$ such that
+$\sigma_{\eta_\epsilon}^{(k)}(\theta_k)\ne0$ for each k. If not, then
+there must be $k_0$ such that
+$\sigma_{\eta_\epsilon}^{(k_0)}(\theta)=0$ for all
+$\theta\in\mathbb{R}$ and all $\epsilon>0$.  Thus
+$\sigma_{\eta_\epsilon}$'s are all polynomials with degree at most
+$k_0-1$.  In particular, It is known that $\eta_\epsilon\in
+C_0^\infty(\mathbb{R})$ and $\sigma\ast\eta_\epsilon$ uniformly
+converges to $\sigma$ on compact sets in $\mathbb{R}$ and
+$\sigma\ast\eta_\epsilon$'s are all polynomials of degree at most
+$k_0-1$. Polynomials of a fixed degree form a closed linear subspace,
+therefore $\sigma$ is also a polynomial of degree at most $k_0-1$,
+which leads to contradiction.
+\end{proof}
+

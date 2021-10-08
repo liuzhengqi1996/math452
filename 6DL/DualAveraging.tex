@@ -1,0 +1,132 @@
+\section{Dual Averaging}
+In this section, we introduce Nesterov's method of dual averaging. In order to best explain where this method comes from,
+we first start with a different perspective on subgradient descent. We note that the subgradient descent iteration
+(\ref{subgradient_descent_variable}) (with $x_1 = 0$) can also be written as
+\begin{equation}\label{minimizing_subgradient_descent}
+ x_{n+1} = \arg\min_x \left(\displaystyle\sum_{i = 1}^n \langle s_ig_i, x\rangle + \frac{1}{2}\|x\|_2^2\right)
+\end{equation}
+
+This can easily be proven by induction on $n$ and we leave this as an exercise. The above minimization problem
+can be rewritten as
+\begin{equation}
+ x_{n+1} = \arg\min_x \left(\displaystyle\sum_{i = 1}^ns_i(f(x_i) + \langle g_i, x - x_i\rangle) + \frac{1}{2}\|x\|_2^2\right)
+\end{equation}
+and we note that the terms $f(x_i) + \langle g_i, x - x_i\rangle$ are lower bounds on the objective $f$. Thus, the next iterate
+can be obtained by optimizing an average of these lower bounds (with weights $s_i$) plus a regularization term which is a multiple
+of $\|x\|_2^2$.
+
+In the previous section we set $s_i = \frac{1}{\sqrt{i}}$. This means that we are giving more weight to the bounds coming from
+earlier iterates, which is odd. The starting point for Nesterov's dual averaging method is to ask whether we can change the
+weights $s_i$. It turns out that we can, but in order to do this we must weight the regularization term differently as well.
+
+We thus modify (\ref{minimizing_subgradient_descent}) and consider methods of the form
+\begin{equation}\label{generalized_dual_averaging}
+ x_{n+1} = \arg\min_x \left(\displaystyle\sum_{i = 1}^n \langle s_ig_i, x\rangle + \frac{\alpha_{n+1}}{2}\|x\|_2^2\right)
+\end{equation}
+where the sequences $s_i,\alpha_i > 0$ are parameters (and $g_i\in \partial f(x_i)$ as before).
+
+We obtain the following convergence result for the dual averaging method as a consequence of the definition (\ref{generalized_dual_averaging}).
+\begin{theorem}\label{dual_averaging_theorem}
+ Assume that $f$ is convex and Lipschitz with constant $M$, i.e. $\|g\|_2\leq M$ for $g\in \partial f(x)$. Let 
+ $x^*\in \arg\min_x f(x)$.
+ 
+ Then if the sequence $x_i$ is given by (\ref{generalized_dual_averaging}) (note in particular that this means that
+ $x_1 = 0$) with $\alpha_i \leq \alpha_{i+1}$, we have
+ \begin{equation}
+  f(\bar{x}_n) - f(x^*) \leq \frac{1}{2}\left(\displaystyle\sum_{i = 1}^n s_i\right)^{-1} \left(\alpha_n\|x^*\|_2^2 + M\displaystyle\sum_{i = 1}^n \frac{s_i^2}{\alpha_i}\right)
+ \end{equation}
+ where $\bar{x}_n = (\sum_{i = 1}^n s_i)^{-1}\sum_{i = 1}^n s_ix_i$ is a weighted average of the iterates with weights $s_i$.
+ We also have
+ \begin{equation}
+  \min_{i = 1,...,n} f(x_i) - f(x^*) \leq \frac{1}{2}\left(\displaystyle\sum_{i = 1}^n s_i\right)^{-1} \left(\alpha_n\|x^*\|_2^2 + M\displaystyle\sum_{i = 1}^n \frac{s_i^2}{\alpha_i}\right)
+ \end{equation}
+
+\end{theorem}
+\begin{proof}
+ We begin by noting that by convexity we have
+ \begin{equation}
+  f(\bar{x}_n) - f(x^*) \leq \left(\displaystyle\sum_{i = 1}^n s_i\right)^{-1}\displaystyle\sum_{i = 1}^n s_i(f(x_i) - f(x^*))
+ \end{equation}
+ and since the minimum is smaller than the average we have
+ \begin{equation}
+  \min_{i = 1,...,n} f(x_i) - f(x^*) \leq \left(\displaystyle\sum_{i = 1}^n s_i\right)^{-1}\displaystyle\sum_{i = 1}^n s_i(f(x_i) - f(x^*))
+ \end{equation}
+ Thus it suffices to prove that
+ \begin{equation}
+  \displaystyle\sum_{i = 1}^n s_i(f(x_i) - f(x^*)) \leq \frac{1}{2}\left(\alpha_n\|x^*\|_2^2 + M\displaystyle\sum_{i = 1}^n \frac{s_i^2}{\alpha_i}\right)
+ \end{equation}
+ For this we first use the subgradient property to get
+ \begin{equation}\label{eq_dual_averaging_59}
+  \displaystyle\sum_{i = 1}^n s_i(f(x_i) - f(x^*)) \leq \displaystyle\sum_{i = 1}^n \langle s_ig_i, x_i - x^*\rangle
+ \end{equation}
+ and rewrite this sum as follows
+ \begin{equation}\label{eq_dual_averaging_63}
+  \displaystyle\sum_{i = 1}^n \langle s_ig_i, x_i - x^*\rangle = \displaystyle\sum_{i = 1}^n \langle s_ig_i, x_n - x^*\rangle
+  + \displaystyle\sum_{i = 1}^{n-1} \displaystyle\sum_{j = 1}^i\langle s_jg_j, x_i - x_{i+1}\rangle 
+ \end{equation}
+ We proceed by bounding the term
+ \begin{equation}
+  \sum_{j = 1}^i\langle s_jg_j, x_i - z\rangle
+ \end{equation}
+ Recall from (\ref{generalized_dual_averaging}) that $x_i = \arg\min_x f_i(x)$ where
+ \begin{equation}
+  f_i(x) = \displaystyle\sum_{j = 1}^{i-1} \langle s_jg_j, x\rangle + \frac{\alpha_{i}}{2}\|x\|_2^2
+ \end{equation}
+ This means that $0\in\partial f_i(x_i)$ and thus, defining 
+ $$f_i^\prime(x) = f_i(x) + \langle s_ig_i, x\rangle$$ 
+ we see that $s_ig_i\in \partial f_i^\prime(x_i)$. Moreover, $f_i^\prime$ is strongly convex with convexity parameter
+ $\alpha_i$, which implies that
+ $$f_i^\prime(x_i) \leq f_i^\prime(z) + \frac{1}{2\alpha_i}\|s_ig_i\|_2^2
+ $$
+ Using the definition of $f_i^\prime$ and rearranging, this gives
+ \begin{equation}
+  \sum_{j = 1}^i\langle s_jg_j, x_i - z\rangle \leq \frac{\alpha_i}{2}(\|z\|_2^2 - \|x_i\|_2^2) + \frac{s_i^2}{2\alpha_i}\|g_i\|_2^2
+ \end{equation}
+ Pluggin this into (\ref{eq_dual_averaging_63}) with $z = x_{i+1}$ and $z = x^*$, we obtain (recalling that $x_1 = 0$ and
+ $\|g_i\|_2 \leq M$)
+ \begin{equation}
+  \displaystyle\sum_{i = 1}^n \langle s_ig_i, x_i - x^*\rangle \leq \frac{\alpha_n}{2}\|x^*\|_2^2 
+  + \frac{1}{2}\displaystyle\sum_{i = 2}^n (\alpha_{i-1} - \alpha_i)\|x_i\|_2^2 + \frac{M}{2}\displaystyle\sum_{i = 2}^n \frac{s_i^2}{\alpha_i}
+ \end{equation}
+ Now we use the assumption that $\alpha_i$ is an non-decreasing sequence, i.e. $$\alpha_{i-1} - \alpha_i \leq 0$$ to see that
+ the middle sum above is negative. Combining this with (\ref{eq_dual_averaging_59}) we see that
+ \begin{equation}
+  \displaystyle\sum_{i = 1}^n s_i(f(x_i) - f(x^*)) \leq \frac{1}{2}\left(\alpha_n\|x^*\|_2^2 + M\displaystyle\sum_{i = 1}^n \frac{s_i^2}{\alpha_i}\right)
+ \end{equation}
+ which completes the proof.
+
+\end{proof}
+
+We conclude this section by noting several consequences of this theorem. First, the choice $s_i = \frac{1}{\sqrt{i}}$
+and $\alpha_i = 1$ recovers subgradient descent. For this choice of $s_i$ and $\alpha_i$
+$$\displaystyle\sum_{i = 1}^n s_i = O(\sqrt{n})
+$$
+and
+$$\displaystyle\sum_{i = 1}^n \frac{s_i^2}{\alpha_i} = O(\log(n))
+$$
+and we obtain the bound from Theorem \ref{variable_subgradient_descent_thm}. 
+
+We can remove the logarithmic factor by
+shifting the weights $s_i$ to the more recent iterates. For example, if we set $s_i = 1$ and $\alpha_i = \sqrt{i}$,
+we recover the dual averaging method originally proposed by Nesterov, for which we have
+$$\displaystyle\sum_{i = 1}^n s_i = n
+$$
+and
+$$\displaystyle\sum_{i = 1}^n \frac{s_i^2}{\alpha_i} = O(\sqrt{n})
+$$
+which removes the logarithmic factor we had for subgradient descent. 
+
+Other choices are also reasonable, for example we could
+set $s_n = n^c$ and $\alpha_n = n^{c + (1/2)}$ for any $c \geq -(1/2)$. As long as $c > -(1/2)$ we obtain the same convergence
+rate up to a constant, if $c = (1/2)$, then we recover subgradient descent which introduces a logarithmic factor.
+
+Next, we address the issue of scaling. If we scale the sequences $s_i$ and $\alpha_i$ by the same (positive) factor,
+then both the bound in Theorem \ref{dual_averaging_theorem} and the method (\ref{generalized_dual_averaging}) don't change.
+However, scaling one sequence and not the other has the effect of changing the `step size' of the method, and 
+changes the relative importance of the initial distance to the optimum $\|x^*\|_2^2$ and the Lipschitz constant $M$ in the
+our bound.
+
+Finally, we address the issue of setting the initial iterate to $0$. This is done solely out of notational convenience. In particular,
+if we change the regularization term $\|x\|_2^2$ to $\|x - x_1\|_2^2$, our analysis is unchanged. In fact, we can replace the 
+$2$-norm regularizer by any strongly convex function, as the reader can easily verify. This is an important point which we
+will use in a later section to extend these methods to the Banach space setting.

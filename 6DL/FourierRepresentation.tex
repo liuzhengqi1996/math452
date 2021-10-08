@@ -1,0 +1,59 @@
+\input{6DL/BarronSpace}
+\subsection{Cosine function as activation function}
+	Consider the Fourier transform:
+	\begin{equation}
+	  \label{Fourier}
+	  \hat f(\omega)=\frac{1}{(2\pi)^d}\int_{\mathbb{R}^d}e^{-i\omega\cdot x}f(x)dx
+	  \quad \forall \omega \in \mathbb R^d.
+	\end{equation}
+	We write  
+	$\hat{f}(\omega)=e^{i\beta(\omega)}|\hat{f}(\omega)|$. By Fourier inversion formula,
+	\begin{equation}
+		\label{eqn1}
+		f(x)=\int_{\mathbb{R}^d}e^{i\omega\cdot x}\hat{f}(\omega)d\omega
+		=\int_{\mathbb{R}^d}e^{i(\omega\cdot x+\beta(\omega))}|\hat{f}(\omega)|d\omega.
+	\end{equation}
+Since $f(x)$ is real-valued, it implies that, for $x$
+	  \begin{equation}
+		\label{key}
+		\begin{aligned}
+			f(x)
+			&={\rm Re}\int_{\mathbb{R}^d}
+			e^{i\omega\cdot x} 
+			\hat{f}(\omega)d\omega \\
+			&={\rm Re}\int_{\mathbb{R}^d}
+			e^{i\omega\cdot x}
+			e^{i\beta
+				(\omega)}|\hat{f}(\omega)|d\omega \\
+			&=\int_{\mathbb{R}^d}\cos(\omega\cdot
+			x+\beta(\omega))|\hat{f}(\omega)|d\omega.
+		\end{aligned}
+	\end{equation}
+	Then we have 
+	\begin{equation}\label{key}
+	f(x) =\int_{\mathbb{R}^d}k(x,\omega)d\omega,
+	\end{equation}
+	with
+	\begin{equation}\label{key}
+	k(x,\omega) = \cos(\omega\cdot
+	x+\beta(\omega))|\hat{f}(\omega)|.
+	\end{equation}
+	Let 
+	$$
+	\rho(\omega) = |\hat f(\omega)|,\qquad \lambda(\omega)={\rho(\omega)\over \|\rho(\omega)\|_{L^1}}={\rho(\omega)\over \|\hat f\|_{L^1}}.
+	$$ 
+	
+\begin{theorem}
+There exist $\omega_i \in \mathbb{R}^d$, s.t., $G = \mathbb{R}$ and 
+\begin{equation}\label{key}
+\| f(x) - f_n(x)\|_{L^2} \le \frac{1}{\sqrt{n}} \int_{\mathbb{R}^d} |\hat f(\omega)| d \omega,
+\end{equation}
+where
+\begin{equation}\label{key}
+f_n(x)  = \frac{\|\hat f\|_{L^1}}{n} \sum_{i=1}^n \frac{ cos(\omega^*_i \cdot x + \beta^*_i)}{\rho(\omega_i^*)}.
+\end{equation}
+\end{theorem}
+Note that 
+\begin{equation}\label{key}
+f_n = \frac{\|\hat f\|_{L^1}}{n}\sum_{i=1}^n \frac{ cos(\omega^*_i \cdot x + \beta^*_i)}{\rho(\omega_i^*)} \in \dnn(\cos, n).
+\end{equation} 

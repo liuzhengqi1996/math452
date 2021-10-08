@@ -1,0 +1,113 @@
+\documentclass[leqno,labelfig,psfigt,colorlinks]{svmono}
+
+%\usepackage[a4paper,left=1cm,right=10cm,bindingoffset=5pt, asymmetric, reversemarginpar]{geometry}
+
+\makeatletter
+\providecommand*{\input@path}{}
+\edef\input@path{{./}{../}\input@path}% prepend
+\makeatother
+
+\input{../Xmacros}
+\renewcommand{\blankpage}{}\renewcommand{\break}{}
+\usepackage{wrapfig}
+\usepackage{bbm}
+\usepackage{listings}
+\usepackage{natbib}
+\usepackage{color}
+\usepackage{cases}
+\usepackage{pythonhighlight}
+
+\usepackage{setspace}
+
+\usepackage{pdfpages}
+
+\usepackage{adjustbox}
+
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\brown}[1]{\textcolor{blue}{#1}}
+\newcommand{\green}[1]{\textcolor{green}{#1}}
+
+\makeatletter
+\newenvironment{breakablealgorithm}
+{% \begin{breakablealgorithm}
+	\begin{center}
+		\refstepcounter{algorithm}% New algorithm
+		\hrule height.8pt depth0pt \kern2pt% \@fs@pre for \@fs@ruled
+		\renewcommand{\caption}[2][\relax]{% Make a new \caption
+			{\raggedright\textbf{\ALG@name~\thealgorithm} ##2\par}%
+			\ifx\relax##1\relax % #1 is \relax
+			\addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##2}%
+			\else % #1 is not \relax
+			\addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##1}%
+			\fi
+			\kern2pt\hrule\kern2pt
+		}
+	}{% \end{breakablealgorithm}
+		\kern2pt\hrule\relax% \@fs@post for \@fs@ruled
+	\end{center}
+}
+\makeatother
+
+\usepackage{multirow}
+\usepackage{mathtools}
+
+
+\newtheorem{properties}[theorem]{Properties}
+%\graphicspath{{figures/}}
+\graphicspath{{../figures/}{figures/}{../}}
+
+
+
+\begin{document}
+
+
+\chapter{MgNet: a Unified Framework for CNN and MG}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{breakablealgorithm}
+	\caption{$u={\rm DarcyCNN}(\kappa; f_d, coarse\_grid\_size,)$}
+	\label{alg:mgnet}
+	\begin{algorithmic}
+		\State Initialization:  $\kappa$, $u^{0} $
+		%		\State Initialization $u^{1,0}$
+%		\For{$ = 1:N_{epoch}$}
+%		\For{$i = 1:\nu_$}
+		\State Encode
+		\begin{equation}
+		u^{} = K^{3}  \ast_2 \sigma \circ K^{ 2}\ast \sigma (K^{ 1}\ast \kappa).
+		\end{equation}
+	
+%		\EndFor
+		\State Restriction to the coarse grid
+		\begin{equation}
+		u^{} = \sigma \circ \theta^{. 1} \circ u^{}
+		\end{equation}
+		\State
+		Convolution on the coarse grid
+		\begin{equation}
+		u^{} =  \sigma \circ K^{ 5}\ast \sigma (K^{ 4}\ast u^{}).
+		\end{equation}
+		\State Decode
+		\begin{equation}
+		u^{} =  \sigma \circ \theta^{ 3}\circ \sigma (\theta^{ 2}\circ u^{}).
+		\end{equation}
+%		\EndFor
+	\end{algorithmic}
+\end{breakablealgorithm}
+
+	where $K^{3}  \ast_2$ is the average pooling with kernel size $2  \times 2$ and stride 2, $K^{1}$, $K^{2} $, $K^{4} $ and $K^{5}  $ are multi-channel kernels with kernel size $3  \times 3$ and the size of these kernel matrices are $(1 \times f_d/2)$, $ (f_d/2 \times f_d)$, $(1,f_d/2)$ and $(f_d/2, f_d)$ respectively.
+%\input{6DL/mgnet
+%
+%\input{6DL/mgnet_relation}
+%\input{ConstrainedLinearModel}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+\bibliographystyle{abbrv}\bibliography{ref,ref_mgcnn,../3FEM/3FEM}
+
+\end{document}
+
+

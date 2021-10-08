@@ -1,0 +1,85 @@
+If we add the post-smoothing with a symmetric form which means we 
+use $[S^\ell \ast ]^\top$ as the smoother, then we can get the V-cycle
+version multigrid algorithm.
+
+\begin{breakablealgorithm}%[!htb]
+	\caption{$u = {\text{V-MG}}(f; J,\nu_1, \cdots, \nu_J)$}
+	\label{alg:V-cycle}
+	\begin{algorithmic}
+		\State Call Algorithm \ref{alg:L-Slash0},
+		$$
+		(u^{\ell,\nu_\ell}: ~\ell = 1:J) = {\text{MG0}}(f; J,\nu_1, \cdots, \nu_J).
+		$$
+		\State Prolongation and restriction from coarse to fine level
+		\For{$\ell = J-1:1$}
+		\State
+		$$
+		u^{\ell,0} \leftarrow u^{\ell,\nu_\ell} + R  \ast_2^{\top} u^{\ell+1, \nu_{\ell+1}}.
+		$$
+		\For{$i = 1:\nu_\ell$}
+		\State
+		$$
+		u^{\ell,i} = u^{\ell,i-1} + \tilde S^\ell \ast (f^\ell - A_\ell \ast u^{\ell,i-1})
+		$$
+		\EndFor
+				%		\ENDIF
+		\EndFor
+		\State Output
+		$$
+		u = u^{1,\nu_\ell}.
+		$$
+	\end{algorithmic}
+\end{breakablealgorithm}
+Here $\tilde S^\ell $ means the central symmetry of kernel for smoother $S^\ell$ as in the 
+definition of \eqref{eq:def_tildeK} in Lemma \ref{lemm:tilde-K}.
+
+
+\begin{theorem}
+If $R$ is consistent with $A_\ell$ which means that $R$ should be linear or bi-linear as $A_\ell$, then we have
+the $A_{\ell+1}$ operation in coarse grid defined in \eqref{eq:def_coarse} is the same with $A_\ell$.
+\end{theorem}
+
+\begin{proof}
+By the definition above, we have that
+\begin{equation}
+A_{\ell+1} (v) = \mathcal S\left( (R\ast A_{\ell} \ast R )\ast \mathcal S^\top(v) \right),
+\end{equation}
+because of the properties of convolution we know that 
+\begin{equation}\label{eq:K=RAR}
+(R\ast A_{\ell} \ast R )\ast = K \ast,
+\end{equation}
+for some 
+$$
+K \in \mathbb{R}^{7\times 7}.
+$$
+Then we have the next computation for $A_{\ell+1}(v)$
+\begin{equation}\label{eq:compute_A}
+\begin{aligned}
+[A_{\ell+1} (v)]_{i,j} &= [\mathcal S\left( (R\ast A_{\ell} \ast R )\ast \mathcal S^\top(v) \right)]_{i,j}, \\
+&= [ K\ast  \mathcal S^\top(v)]_{2i,2j}, \\
+&= \sum_{p,q=-3}^{3} [\mathcal S^\top (v)]_{2i+p, 2j+q} K_{p,q}, \\
+&= \sum_{p,q=-1}^1  [\mathcal S^\top (v)]_{2(i+p), 2(j+q)} K_{2p,2q}, \\
+&= \sum_{p,q=-1}^1  v_{i+p, j+q} \hat K_{p,q}, \\
+\end{aligned}
+\end{equation}
+	
+Thus to say, we have
+\begin{equation}
+A_{\ell+1}(v) =  \hat K \ast v,
+\end{equation}
+with 
+$$
+\hat K_{p,q} = K_{2p,2q}, \quad p,q = -1,0,1,
+$$
+with $K$ is defined in \eqref{eq:K=RAR}.
+
+Then by the direct computation of \eqref{eq:K=RAR} as 
+$$
+(R\ast A_{\ell} \ast R )\ast = K \ast
+$$
+and take the even index we have that
+\begin{equation}
+A_{\ell+1} = \hat K = A_\ell,
+\end{equation}
+if $R$ is consistent with $A_\ell$ which means that $R$ should be linear or bi-linear as $A_\ell$.	
+\end{proof}

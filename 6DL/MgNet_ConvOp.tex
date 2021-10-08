@@ -1,0 +1,131 @@
+\subsection{Convolution in one grid (without stride)}
+%Firstly, as mentioned before, an image type
+%data with multichannel can be understand as  
+%vector valued functions
+%$$
+%f \in \mathbb{R}^{(2^m+1)\times(2^n+1) \times c}, \quad \text{or}\quad [f]_i \in
+%\mathbb{R}^{(2^m+1)\times(2^n+1)}, \quad i = 1:c,
+%$$
+Here we mention our new set up for all the next notes as all image with
+size like 
+\begin{equation}\label{eq:size_f}
+m = m_1 = 2^{s} + 1,  \quad n = n_1 = 2^t  +1.
+\end{equation}
+By the linear finite element discretization and bilinear finite element discretization, 
+we have \eqref{2d-fe0} and \eqref{2d-fe1} respectively. 
+A more general form for the discretization systems  is the so 
+called convolution for $ g \in \mathbb{R}^{m\times n}$ with padding as:
+%We first consider $\theta$ a convolution operator (with stride $1$) 
+%and padding:
+\begin{equation}\label{con1}
+[K \ast g]_{i,j} = \sum_{p,q=-k}^k K_{k+1+p,k+1+q} g_{i + p, j + q}, \quad i=1:m + 1, j = 1:n + 1.
+\end{equation}
+The coefficients in \eqref{con1} constitute  a kernel matrix
+\begin{equation}
+K \in \mathbb{R}^{(2k+1) \times (2k+1)},
+\end{equation}
+where $k$ is often taken as small integers. 
+Here padding means how choose $ g_{i+ p, j + q}$ 
+when $(i+ p, j + q)$ is out of $1:m$ or $1:n$. 
+Those next three choices are often used
+\begin{equation}\label{eq:padding}
+f_{i + p, j + q} = \begin{cases}
+0,  \quad &\text{zero padding}, \\
+f_{(i + p)\pmod{m}, (s + q)\pmod{n}},  \quad &\text{periodic padding}, \\
+f_{|i-1 +p|, |j -1  +q|},  \quad &\text{reflected padding}, \\
+\end{cases}
+\end{equation}
+if 
+\begin{equation}
+i + p \notin \{1, 2, \dots, m\} ~\text{or} ~  j+ q \notin \{1, 2, \dots, n\}.
+\end{equation}
+Here $ d \pmod{m} \in \{1, \cdots, m\} $  means the remainder when $d$ is divided by $m$.
+
+By the definition of convolution \eqref{con1}, we can rewrite \eqref{2d-fe0} and \eqref{2d-fe1} as follows: 
+\begin{equation}
+K_A\ast:  \mathbb{R}^{m\times n}\rightarrow \mathbb{R}^{m\times n},~~~K_A\ast u=f, 
+\end{equation}
+where 
+\begin{equation}\label{fe0_Ka}
+	K_A=
+	\begin{pmatrix}
+	0 &-1&0\\
+	-1& 4&-1\\
+	0 &-1& 0
+	\end{pmatrix}
+	\end{equation}
+for linear finite element discretization or	
+	\begin{equation}\label{fe1_Ka}
+	K_A=
+	\begin{pmatrix}
+	-1 &-1&-1\\
+	-1& 8&-1\\
+	-1 &-1& -1
+	\end{pmatrix}.
+	\end{equation}
+for bilinear finite element discretization.
+
+The gradient descent method for \eqref{laplace} or \eqref{laplace-h} can be derived as following 
+\begin{itemize}
+	\item $\min_{x\in \mathbb{R}^n} J(x)$ with $ J(x) =
+          \frac{1}{2}u^TA u - f^Tu$ 
+	\item Gradient:
+	$$
+	\nabla J= Au - f := - r.
+	$$
+	\item Given $u^k$, a new approximate solution is computed by two steps:
+	$$
+	r^k = f-Au^k,\quad u^{k+1} = u^k + \frac{\omega}{4} r^k.
+	$$
+\end{itemize}
+Here we can clearly see that gradient descent method is equivalent to damped Jacobi method. Usually, we call this as 
+smoother. A commonly used 
+damped Jacobi is the one with damped coefficient $\omega$ with $\omega \in (0,2)$,  
+which can be written as $S_{0}:\mathbb R^{m\times n}\mapsto
+\mathbb R^{m\times n}$ satisfying
+\begin{equation}
+\label{jacobi1}
+(S_{0}f)_{i,j}={\omega\over 4}f_{i,j},
+\end{equation}
+for equation \eqref{laplace-h} with initial guess zero.
+If we apply the Jacobian iteration twice, then
+$$
+S_1(f) = S_{0} f + S_0(f - A(S_{0}f)),
+$$
+with element-wise form
+\begin{equation} 
+\begin{aligned}
+\label{jacobi2}
+[S_1(f)]_{i,j} &={1\over 4}\omega(2-\omega)f_{i,j} + {\omega^2\over 16}(f_{i+1,j}+f_{i-1,j}+f_{i,j+1}+f_{i,j-1}).
+\end{aligned}
+\end{equation}
+Then by the definition of convolution \eqref{con1}, we have
+ \begin{equation}\label{eq:convS}
+S_{0}f = K_{S_{0}} \ast f \quad S_1 f = K_{S_1} \ast f.
+\end{equation}
+with
+\begin{equation}\label{eq:kernel-S}
+K_{S_{0}} = {\omega \over 4},
+\end{equation}
+and 
+\begin{equation}\label{eq:kernel-S2}
+K_{S_1} = \begin{pmatrix}
+0 & \frac{\omega^2}{16} & 0 \\
+\frac{\omega^2}{16} & {\omega(2-\omega) \over 4} & \frac{\omega^2}{16}  \\
+0 & \frac{\omega^2}{16}  & 0
+\end{pmatrix}.
+\end{equation}
+
+
+
+
+
+%Then we remark that, if we take convolution without pooling, there is a 
+%shift with 
+%$$
+%i+ p  \rightarrow i + k+ p,
+%$$
+%and also for $j$ such that all index $(i + k+ p, j + k+ p)$ is during
+%$1:n$. 
+
+%\input{6DL/MgNet_ConvStride.tex}

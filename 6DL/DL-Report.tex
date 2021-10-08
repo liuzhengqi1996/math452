@@ -1,0 +1,305 @@
+\documentclass[leqno,labelfig,psfigt,colorlinks]{svmono}
+\makeatletter
+\providecommand*{\input@path}{}
+\edef\input@path{{./}{../}\input@path}% prepend
+\makeatother
+
+\input{../Xmacros}
+\renewcommand{\blankpage}{}\renewcommand{\newbreak}{}
+\usepackage{wrapfig}
+\usepackage{bbm}
+\usepackage{listings}
+\usepackage{natbib}
+\usepackage{color}
+\usepackage{cases}
+\usepackage{pythonhighlight}
+
+\usepackage{setspace}
+
+\usepackage{pdfpages}
+
+\usepackage{adjustbox}
+\usepackage{threeparttable}
+
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\brown}[1]{\textcolor{blue}{#1}}
+\newcommand{\green}[1]{\textcolor{green}{#1}}
+
+
+
+\makeatletter
+\newenvironment{breakablealgorithm}
+{% \begin{breakablealgorithm}
+	\begin{center}
+		\refstepcounter{algorithm}% New algorithm
+		\hrule height.8pt depth0pt \kern2pt% \@fs@pre for \@fs@ruled
+		\renewcommand{\caption}[2][\relax]{% Make a new \caption
+			{\raggedright\textbf{\ALG@name~\thealgorithm} ##2\par}%
+			\ifx\relax##1\relax % #1 is \relax
+			\addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##2}%
+			\else % #1 is not \relax
+			\addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##1}%
+			\fi
+			\kern2pt\hrule\kern2pt
+		}
+	}{% \end{breakablealgorithm}
+		\kern2pt\hrule\relax% \@fs@post for \@fs@ruled
+	\end{center}
+}
+\makeatother
+
+\usepackage{multirow}
+\usepackage{mathtools}
+
+\newtheorem{properties}[theorem]{Properties}
+%\graphicspath{{figures/}}
+\graphicspath{{../figures/}{./figures/}{../}}
+
+\title{Deep Neural Networks}
+\author{Jinchao Xu}
+\date{Spring 2018}
+ \makeatletter
+\let\runauthor\@author
+\let\runtitle\@title
+\makeatother
+\lhead{\textcopyright \ Jinchao Xu (www.multigrid.org)}
+\rhead{\runtitle}
+
+\begin{document}
+\maketitle
+
+\section*{Contributors:}
+This set of notes are based on contributions from many of graduate
+students, postdoctoral fellows and other collaborators.   Here is a
+partial list:
+\begin{quote}
+Jianhong Chen, Yuyan Chen, Juncai He, Xiaodong Jia, Lin Li,  Shaobo Liang,
+Jonathan Siegel, Pengfei Yin, Hongxuan Zhang, Liang Zhao, Chunyue
+Zheng, Lian Zhang, Qian Zhang
+\end{quote}
+\tableofcontents
+%\openup8pt
+
+
+
+
+\input{6DL/Plan}
+\input{6DL/TrainTest}
+\input{6DL/jindong}
+\input{6DL/DA_Theory}
+\input{6DL/U-Net}
+\end{document}
+\bibliographystyle{abbrv}\bibliography{6DL/ref,6DL/ref_mgcnn}\end{document}
+
+\chapter{Spaces of Polynomials}
+In this chapter, we discuss approximation properties of spaces of
+polynomials and finite elements consisting of piecewise polynomials.
+\input{6DL/PolyWeierstrass} \input{3FEM/FEspaces}
+\chapter{Linear Finite Element Spaces}
+\section{Piecewise linear finite element spaces}
+\input{3FEM/linearFE}
+\input{3FEM/Nodal-Interpolation}
+\section{Locally adaptive grids}
+\subsection{A 1D example}
+\input{3FEM/1dAFEM}
+\input{3FEM/2dW21AFEM}
+\subsection{Lower bound of optimal error estimates in any dimension}
+\begin{conjecture}
+Let $V_N$ be  linear finite element spaces associated with 
+shape-regular simplicial grids $\mathcal T_N$ of $N$-elements (or
+$N$-grid points) in a polyhedral domain $\Omega\subset \mathbb R^d$,
+say $\Omega=(0,1)^d$.  Then,  for any reasonable function (which is,  say,
+not locally linear), then the following lower bound holds:
+\begin{equation}
+\label{optimalFEMerror}
+\inf_{\# \mathcal T_N=\mathcal O(N)} \inf_{v_N\in
+  V_N}\|u-v_N\|_{0,\Omega}\ge c(u) N^{-2/d} 
+%\le C(u) N^{-2/d}
+\end{equation}
+\end{conjecture}
+
+Questions:
+\begin{enumerate}
+\item Is the above conjecture correct in some way?  If yes, what are
+  the more rigorous statements for such results?
+\item What are the most relevant references that contain such results?
+\item If the conjecture is incorrect, is there a counter example?
+\end{enumerate}
+
+\chapter{Artificial Neural Network (ANN) and  Deep Neural Networks (DNN)}
+\input{6DL/FEM2DNN}
+\input{6DL/WhyDeep}
+\input{6DL/DNN}  % Juncai and Jinchao 
+%\input{6DL/Activation}
+
+
+\input{6DL/DNN-Approx}
+
+
+\chapter{Normalization Methods in Deep Learning}
+\input{6DL/BN}
+\input{6DL/Normalization_DL}
+
+%\bibliographystyle{abbrv}\bibliography{6DL/ref,6DL/ref_mgcnn}\end{document}
+
+\input{6DL/TrainTest}
+
+\chapter{Linear Classification Models and  Logistic Regression}
+\input{6DL/LinearModels}
+\input{6DL/IntroLR}
+\input{6DL/LogisticRegression}
+\input{6DL/LogisticNumerics}
+\input{6DL/LossFunction}
+\input{6DL/MaxMarginLoss}
+\input{6DL/LRComments}
+
+
+\input{6DL/PublicOpinions}
+\input{6DL/notation}
+\input{6DL/probability}
+
+\input{6DL/IntroML} 
+\input{6DL/ML-Theory}
+\includepdf[pages=-,angle=270]{6DL/SiegelHandwrittenNotes1.pdf}
+
+\chapter{Linear Classification Models and  Logistic Regression}
+\input{6DL/LinearModels}
+\input{6DL/IntroLR}
+\input{6DL/LogisticRegression}
+\input{6DL/LogisticNumerics}
+\input{6DL/LossFunction}
+\input{6DL/MaxMarginLoss}
+\input{6DL/LRComments}
+
+
+\chapter{Support Vector Machines}
+\input{6DL/DL-SVM-2}
+\input{6DL/DL-SVM-k}
+
+%\input{6DL/SVM}  % Jiang Li 
+
+\chapter{$k$-nearest Neighbor}
+\input{6DL/KNN}  % Liang Shaobo
+
+
+\chapter{$k$-Means Clustering Problem and Algorithm}
+\input{6DL/Kmeans} % LiangShaobo
+
+\chapter{PCA and Autoencoder}
+\input{6DL/PCA}
+%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%Training%%%%%%%%
+\chapter{Stochastic Gradient Descent Methods and Its Variants}
+\input{6DL/ChSGD}
+\input{6DL/ChSpaceDecomp}
+\input{6DL/Prox_SGD}
+\input{6DL/PracticalSGD}
+\includepdf[pages=-,angle=270]{6DL/SGD-summary.jpeg}
+
+%\input{6DL/ChSGD}
+%\input{6DL/ChSGD}
+
+\chapter{Variants of SGD: Adam etc}
+\input{6DL/AdamSGD}
+
+\input{6DL/SubgradientMethods} % Jonathan Siegel
+\input{6DL/OnlineLearning} % Jonathan Siegel
+\input{6DL/ChRDA}
+%\input{6DL/SGD-FullGD}
+\input{6DL/ChSpaceDecomp}
+\chapter{Additional Notes on SGD}
+\input{6DL/SGD_Notes_LiJunchi}
+
+\chapter{Initialization in CNN}
+\input{6DL/initialization}
+
+%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%DNN%%%%%%%%%%
+%xxxx
+\chapter{Artificial Neural Network (ANN) and  Deep Neural Networks
+	(DNN)}
+\input{6DL/FEM2DNN}
+\input{6DL/DNN}  % Juncai and Jinchao 
+\input{6DL/Activation}
+\input{6DL/PolyFEM} 
+
+\input{6DL/DNN-Approx}
+
+\chapter{Super-approximation properties of ReLU DNN}
+\input{6DL/h-pDNN}
+
+\chapter{Deep learning for PDEs}
+\input{6DL/DL-PDE}
+
+
+%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%CNN%%%%%%%%%
+%\input{6DL/CNN}  % Juncai and Jinchao
+\chapter{Image as piecewise linear functions}
+\input{6DL/XuNet}
+
+\chapter{Numerical PDEs on multilevel methods}
+\input{6DL/multigrid}
+\input{6DL/FEM-MG-CONV}
+\input{6DL/ReLU-multigrid}
+
+\chapter{Convolution filters}
+\input{6DL/convolution-filter}
+
+\chapter{MgNet}
+\input{6DL/mgnet_datafeature}
+\input{6DL/mgnet_iterativescheme}
+\input{6DL/mgnet}
+\input{6DL/mgnet_densenet}
+\input{6DL/mgnet_DPN}
+\input{6DL/mgnet_relation}
+\input{6DL/mgnet_numerica}
+\input{6DL/mgnet_summary}
+%\input{6DL/ResNet}  % Juncai and Jinchao 
+\input{6DL/597/597HW-MG}
+\input{6DL/597/597HW-MgNet}
+\input{6DL/CNN-Examples}
+
+%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Normalization Methods in Deep Learning}
+\input{6DL/BN}
+\input{6DL/Normalization_DL}
+\input{6DL/Dropout}
+\input{6DL/Questions}
+\bibliographystyle{abbrv}\bibliography{6DL/ref,6DL/ref_mgcnn}
+
+
+%%%%%%%%%%Others%%%%%%%%%
+%\input{6DL/ChSGD}
+%\input{6DL/ChRDA}
+%\input{6DL/SA}
+%\input{6DL/BN}
+%\input{6DL/RNNGuanchunLi0322}
+%\input{6DL/RL}
+%\input{6DL/GAN}
+%\input{6DL/TrainValidateTest}
+%\input{6DL/APoint-classificationNeuralNetworkNote}
+%\input{6DL/MNISETCNNTest}
+%\input{6DL/EfficientBackpropagationforConvolutionalNeuralNetworkLiangZhao0315}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\chapter{Comments}
+%\input{6DL/jinchao}
+%\input{6DL/xiaodong}
+%\input{6DL/yuyan}
+%\input{6DL/juncai}
+%\input{6DL/jcuncai}
+%\input{6DL/hongxuan}
+%\input{6DL/guanchun}
+
+%\chapter{PKU-DL Seminar Notes}
+%\input{6DL/PKU-DL-Seminar}
+%\chapter{OtherTopics}
+\end{document}
+

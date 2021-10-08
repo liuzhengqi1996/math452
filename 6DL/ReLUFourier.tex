@@ -1,0 +1,299 @@
+\section{ReLU Fourier representation}\label{sec:error2}
+Rather than using general Fourier transform  to represent
+$e^{i\omega\cdot x}$ in terms of $\sigma(\omega\cdot x+b)$, 
+\cite{klusowski2016uniform} gave a different method to represent
+$e^{i\omega\cdot x}$ in terms of $(\omega\cdot x+b)_+^k$  for $k=1$
+and $2$.   The following lemma gives a generalization of this
+representation for all $k\ge 0$. 
+\begin{lemma}\label{lm:talorcomplex}
+For any $k\ge0$ and $x\in \Omega$,
+\begin{equation}  
+e^{i\omega\cdot x} =\sum_{j=0}^k{(i\omega\cdot x)^{j}\over j!} 
++
+{i^{k+1}\over k!} \|\omega\|^{k+1}\int_{0}^T\left[(\bar \omega\cdot x - t)_+^ke^{i\|\omega\|t}
++(-1)^{k-1}(-\bar \omega\cdot x - t)_+^ke^{-i\|\omega\|t} \right]dt.
+\end{equation} 
+\end{lemma}
+\begin{proof}  
+For $|z|\leq c$, by the Taylor expansion with integral remainder,
+\begin{equation} 
+e^{iz} = \sum_{j=0}^k {(iz)^j\over j!} + {i^{k+1}\over k!} \int_0^z e^{iu}(z-u)^kdu.
+\end{equation}
+Note that 
+$$
+(z-u)^k=(z-u)^k_+ - (u-z)^k_+.
+$$
+It follows that
+\begin{equation}
+\begin{split}
+\int_{0}^z (z-u)^ke^{iu} du=&\int_{0}^z (z-u)_+^ke^{iu} du + \int_{0}^z (-1)^k(u-z)_+^ke^{iu} du
+\\
+=&\int_{0}^z (z-u)_+^ke^{iu} du + \int_{0}^{-z} (-1)^{k-1}(-u-z)_+^ke^{-iu} du
+\\
+=&\int_{0}^c (z-u)_+^ke^{iu} du + (-1)^{k-1}(-u-z)_+^ke^{-iu} du.
+\end{split}
+\end{equation}
+Thus,
+\begin{equation}  
+e^{iz} - \sum_{j=0}^k{(iz)^{j}\over j!} 
+= 
+{i^{k+1}\over k!}\int_{0}^c\left[(z - u)_+^ke^{iu} + (-1)^{k-1}(-z - u)_+^ke^{-iu} \right]du.
+\end{equation}  
+Let 
+\begin{equation}\label{baromega}
+z=\omega\cdot x,\quad u=\|\omega\|t,\quad \bar \omega={\omega\over \|\omega\|}.
+\end{equation}
+Since $\|x\| \le T$ and $|\bar \omega \cdot x|\le T$, we obtain
+\begin{equation}  
+e^{i\omega\cdot x} - \sum_{j=0}^k{(i\omega\cdot x)^{j}\over j!} 
+= 
+{i^{k+1}\over k!} \|\omega\|^{k+1}\int_{0}^T\left[(\bar \omega\cdot x - t)_+^ke^{i\|\omega\|t}
++(-1)^{k-1}(-\bar \omega\cdot x - t)_+^ke^{-i\|\omega\|t} \right]dt,
+\end{equation} 
+which completes the proof.
+\end{proof}
+
+Since $
+u(x) = {1\over (2\pi)^d}\int_{\mathbb{R}^d} e^{i\omega\cdot x}\hat{u}(\omega)d\omega
+$
+and 
+$
+ \partial^\alpha u(x)=\int_{\mathbb{R}^d} i^{|\alpha|}\omega^\alpha e^{i\omega\cdot x}\hat{u}(\omega)d\omega,
+$
+\begin{eqnarray}
+ \partial^\alpha u(0)x^\alpha=\int_{\mathbb{R}^d} i^{|\alpha|}\omega^\alpha x^\alpha\hat{u}(\omega)d\omega.
+\end{eqnarray} 
+Note that $\displaystyle (\omega\cdot x)^j=\sum_{|\alpha|=j}{j!\over \alpha !}\omega^\alpha x^\alpha $. It follows that
+\begin{equation}
+\sum_{|\alpha|=j}{1\over \alpha!} \partial^\alpha u(0) x^\alpha=i^j\sum_{|\alpha|=j}{1\over \alpha!} \int_{\mathbb{R}^d} \omega^\alpha x^\alpha\hat{u}(\omega)d\omega
+={1\over j!}  \int_{\mathbb{R}^d} (i\omega\cdot x)^j \hat{u}(\omega)d\omega.
+\end{equation} 
+Let $\hat{u}(\omega)=|\hat{u}(\omega)|e^{ib(\omega)}$. Then, $e^{i\|\omega\|t}\hat{u}(\omega) = |\hat{u}(\omega)|e^{i(\|\omega\|t + b(\omega))}$.
+By Lemma \ref{lm:talorcomplex},
+\begin{equation}\label{eq:fftaylor}
+\begin{split}
+&u(x) - \sum_{|\alpha|\le k}{1\over \alpha!} \partial^\alpha u(0) x^\alpha
+\\
+= &\int_{\mathbb{R}^d} \big (e^{i\omega\cdot x}-\sum_{j=0}^k{1\over j!}(i\omega\cdot x)^j\big )\hat{u}(\omega)d\omega.
+\\
+=&{\rm Re} \bigg ({i^{k+1}\over k!}\int_{\mathbb{R}^d} \int_{0}^T\left[(\bar \omega\cdot x - t)_+^ke^{i\|\omega\|t}
++(-1)^{k-1}(-\bar \omega\cdot x - t)_+^ke^{-i\|\omega\|_{\ell_1}t} \right]\hat{u}(\omega)\|\omega\|^{k+1}dt d\omega\bigg )
+\\
+=& {1\over k!}\int_{\{-1,1\}}\int_{\mathbb{R}^d} \int_{0}^T (z\bar \omega\cdot x - t)_+^k s(zt,\omega)  |\hat{u}(\omega)|\|\omega\|^{k+1}dtd\omega dz
+\end{split}
+\end{equation}
+with $\int_{\{-1, 1\}} r(z) dz = r(-1) + r(1)$ and
+\begin{equation} 
+s(zt,\omega)= 
+\begin{cases}
+(-1)^{k+1\over 2}\cos(z\|\omega\|t + b(\omega)) & k \text{ is odd},
+\\
+(-1)^{k+2\over 2}\sin(z\|\omega\|t + b(\omega)) & k \text{ is even}.
+\end{cases}
+\end{equation} 
+Define $G=\{-1,1\}\times [0,T]\times \mathbb{R}^{d}$, $\theta=(z, t, \omega)\in G$,
+\begin{equation}\label{eq:straglam}
+g(x,\theta)= (z\bar \omega\cdot x - t)_+^k {\rm sgn} s(zt,\omega),\qquad  \rho(\theta) = {1\over (2\pi)^d}|s(zt,\omega)||\hat{u}(\omega)|\|\omega\|^{k+1},\quad \lambda(\theta)={\rho(\theta)\over 
+\|\rho\|_{L^1(G)}}.
+\end{equation} 
+
+Then \eqref{eq:fftaylor} can be written as 
+\begin{equation}
+u(x) = \sum_{|\alpha|\le k}{1\over \alpha!}D^\alpha u(0) x^\alpha
++ {\nu\over k!}\int_G  g(x, \theta)\lambda(\theta)d\theta,  
+\end{equation}   
+with $\nu=\int_G \rho(\theta)d\theta$. In summary, we have the following lemma.
+ 
+
+
+\begin{lemma}\label{lm:probabilityexpan}
+It holds that
+\begin{equation}\label{ReLUm}
+u(x) = \sum_{|\alpha|\le k}{1\over \alpha!} \partial^\alpha u(0) x^\alpha
++ {\nu\over k!}r_k(x),\qquad x\in \Omega
+\end{equation}  
+with $\nu=\int_G \rho(\theta)d\theta$ and 
+\begin{equation}\label{ReLUrm}
+r_k(x) = \int_G  g(x, \theta)\lambda(\theta)d\theta,\qquad G=\{-1,1\}\times [0,T]\times \mathbb{R}^{d},
+\end{equation}  
+and  $g(x,\theta)$, $\rho(\theta)$  and $\lambda(\theta)$ defined in \eqref{eq:straglam}.
+\end{lemma}
+
+According to \eqref{eq:straglam}, the main ingredient $(z\bar
+\omega\cdot x - t)_+^k$ of $g(x,\theta)$ only includes the direction
+$\bar\omega$ of $\omega$ which belongs to a bounded domain
+$\mathbb{S}^{d-1}$. Thanks to the continuity of $(z\bar \omega\cdot x
+- t)_+^k$ with respect to $(z, \bar\omega, t)$ and the boundedness of
+$\mathbb{S}^{d-1}$, the application of the stratified sampling to the
+residual term of the Taylor expansion leads to the 
+approximation property in Theorem \ref{est:stratify}.
+
+\begin{theorem}\label{est:stratify}
+Assume $u\in B^{k+1}(\Omega)$
+%$$
+% \int_{\mathbb{R}^{d}} |\hat{f}(\omega)|\|\omega\|^{m+1} d\omega<\infty.
+%$$
+There exist $\beta_j\in [-1, 1]$, $\|\bar \omega_j\|=1$, $t_j\in [0,T]$ such that 
+\begin{equation}
+u_N(x)= \sum_{|\alpha|\le k}{1\over \alpha!} \partial^\alpha u(0) x^\alpha + {2\nu\over k!N}\sum_{j=1}^{N}\beta_j (\bar \omega_j\cdot x - t_j)_+^k
+\end{equation} 
+with $\nu=\int_G \rho(\theta)d\theta$ and $\rho(\theta)$  defined in \eqref{eq:straglam} 
+satisfies the following estimate
+\begin{equation}
+\|u - u_N \|_{H^m(\Omega)} \lesssim  
+\begin{cases}
+ N^{-{1\over 2}-{1\over d}}\|u\|_{B^{k+1}(\Omega)},&m< k,
+\\
+N^{-{1\over 2}}\|u\|_{B^{k+1}(\Omega)}& m=k.
+\end{cases} 
+\end{equation} 
+%Especially,
+%\begin{equation}
+%\|u - u_N \|_{L^2(\Omega)} \leq {(2T)^k|\Omega|^{1\over 2}\over (k-1)!} N^{-{1\over 2}-{1\over d}}\|u\|_{\mathcal B^{k+1, q}(\Omega)}.
+%\end{equation} 
+%\begin{equation}
+%\|D^\beta (f(x)- f_n(x))\|_{L^2(\Omega)}\le \sqrt{2^{m-k-2}(2m-k)\over k!(m-k)!}|\Omega|^{1/2} n^{-{1\over 2}-{1\over d}},\quad |\beta|=k\le m.
+%\end{equation}
+\end{theorem}
+
+\begin{proof}
+Let
+$$
+u_N(x)=  \sum_{|\alpha|\le k}{1\over \alpha!} \partial^\alpha u(0) x^\alpha + {\nu\over k!} r_{k,N}(x), \qquad r_{k,N}(x)={1\over N}\sum_{j=1}^{N}\beta_j (\bar \omega_j\cdot x - t_j)_+^k.
+$$
+Recall  the representation  of $u(x)$ in \eqref{ReLUm} and $r_k(x)$ in \eqref{ReLUrm}. It holds that
+\begin{equation}
+u(x) - u_N(x)={2\nu\over k!} (r_k(x) - r_{k,N}(x)).
+\end{equation}
+By Lemma \ref{lem:stratifiedapprox}, for any decomposition $\displaystyle G=\cup_{i=1}^N G_i$, there exist $\{\theta_i\}_{i=1}^N$ and $\{\beta_i\}_{i=1}^N\in [0, 1]$ such that 
+\begin{equation}
+\| \partial_x^\alpha (u - u_N)\|_{L^2(\Omega)} = {\nu\over k!}\|  \partial_x^\alpha (r_k - r_{k,N})\|_{L^2(\Omega)} \leq {1\over k!N^{1/2}}\max_{1\le j\le n}\sup_{\theta_{j},\theta_{j}'\in G_j} \|  \partial_x^\alpha \big(g(x,\theta_j) - g(x,\theta_j')\big)\|_{L^2(\Omega)}.
+\end{equation}
+\iffalse
+Consider a $\epsilon$-covering decomposition $G=\cup_{i=1}^M G_i$ as follows. 
+The variable $z$ is in the set $\{-1,1\}$, which can be divided into two subsets $\{-1\}$ and $\{1\}$. 
+Given a positive integer $N$, for the random variable $t$, the interval  $ [0,T]$ can be divided into $n_t$ subintervals $\{G_i^t\}_{i=1}^{n_t}$ such that 
+$$
+|t-t'|<{1\over 2}N^{-{1\over d}}\quad t,t'\in G_i^t,\quad 1\leq i\leq n_t
+$$ 
+for $n_t>2\lceil T N^{1\over d}\rceil$. 
+For variable $\bar \omega=\omega/\|\omega\|\in \mathbb{S}^{d-1}$ where $\mathbb{S}^{d-1}=\{\bar \omega\in \mathbb{R}^d: \|\bar \omega\|=1\}$. Note that $\mathbb{S}^{d-1}$ can be divided into $n_\alpha$ subdomains $\{G_i^s \}_{i=1}^{n_s}$ such that
+$$
+\|\bar \omega- \bar \omega'\|\leq {1\over 2}N^{-{1\over d}}\qquad \bar \omega, \bar \omega' \in G_i^s,\quad 1\leq i\leq n_s
+$$
+for $(2N^{1\over d})^{d-1}\leq n_s\leq \lceil (5N^{1\over d})^{d-1}\rceil$ \cite{klusowski2016uniform}.
+Then 
+$$
+G=\displaystyle \cup \{G_{ijk\ell}: 1\leq i\leq 2,\ 1\leq j\leq n_t,\ 1\leq k\leq n_s,\ 1\le \ell\le 2\}
+$$
+with 
+\begin{equation}
+G_{ijk\ell} = \{(z, t, \omega): z=(-1)^i,\ t\in G_j^t, \bar \omega \in G_k^s,\ {\rm sgn} s(zt,\omega)=(-1)^\ell\}.
+\end{equation}
+Denote this decomposition of $G$ by $G=\cup_{i=1}^{M} G_i$ with $M=4n_sn_t\le 2^{d}N$. For each $G_i$,
+\fi
+Consider a $\epsilon$-covering decomposition $G=\cup_{i=1}^N G_i$  such that 
+\begin{equation}
+z=z',\ |t-t'|<\epsilon,\ \|\bar \omega  - \bar \omega'\|_{\ell^1}<\epsilon\qquad \forall \theta=(z, t, \omega),\ \theta'=(z', t', \omega')\in G_i
+\end{equation}
+where $\bar\omega$ is defined in \eqref{baromega}. 
+For any $\theta_i, \theta'_i\in G_i$,  
+$$
+| \partial_x^\alpha \big (g(x,\theta_i) - g(x,\theta_i')\big )| = {k!\over (k-|\alpha|)!} | g_\alpha(x, \bar\omega, t) -  g_\alpha(x, \bar\omega', t')| 
+$$
+with 
+\begin{equation}
+ g_\alpha(x, \bar\omega, t)  = (z\bar \omega\cdot x-t)^{k-|\alpha|}_+\bar \omega^\alpha.
+ \end{equation} 
+ Since
+$$
+|\partial_{\bar\omega_i}  g_\alpha|\le (2T)^{m-|\alpha|-1}\big ((k-|\alpha|)x_i + 2T\alpha_i\big ), \qquad |\partial_t  g_\alpha|\le (k-|\alpha|)(2T)^{k-|\alpha|-1},
+$$
+it follows that
+\begin{equation}
+\big | \partial_x^\alpha \big (g(x,\theta_i) - g(x,\theta_i')\big )\big | \le {k!\over (k-|\alpha|)!}(2T)^{k-|\alpha|-1}   \bigg ( (k-|\alpha|)(|x|_{\ell_1}+1) + 2T|\alpha |\bigg ) \epsilon.
+\end{equation}
+Thus, by Lemma \ref{lem:stratifiedapprox}, if $m=|\alpha|<k$,
+\begin{equation}
+\|  \partial_x^\alpha (u - u_N)\|_{L^2(\Omega)} \le {|\Omega|^{1/2}\over (k-|\alpha|)!}(2T)^{k-|\alpha|-1}   \bigg ( (k-|\alpha|)(T+1) + 2T|\alpha |\bigg )N^{-{1\over 2}}\epsilon.
+\end{equation}
+Note that $\epsilon \sim N^{-{1\over d}}$. There exist $\theta_{i,j}$ such that for any $0\le k< m$,
+\begin{equation}
+\| u - u_N\|_{H^k(\Omega)} \le  C(m,k,\Omega)\nu N^{-{1\over 2}-{1\over d}}
+\end{equation}
+with $\nu\le \|u\|_{B^{k+1}(\Omega)}$ and
+\begin{equation}\label{equ:defcmko}
+C(m,k,\Omega)=|\Omega|^{1/2}\bigg (\sum_{|\alpha|\le k}{1\over (k-|\alpha|)!}(2T)^{k-|\alpha|-1}   \big ( (k-|\alpha|)(T+1) + 2T|\alpha |\big )\bigg )^{1/2}.
+\end{equation} 
+If $m=|\alpha|=k$,
+$$
+\max_{1\le j\le M}\sup_{\theta_{j},\theta_{j}'\in G_j} \| D_x^\alpha \big(g(x,\theta_j) - g(x,\theta_j')\big)\|_{L^2(\Omega)}\lesssim 1.
+$$
+This leads to 
+\begin{equation}
+\| u - u_N\|_{H^m(\Omega)} \le  C(m,k,\Omega)\nu N^{-{1\over 2}}\quad \mbox{for }\ k=m.
+\end{equation}
+Note that $u_N$ defined above can be written as
+$$
+u_N(x)=  \sum_{|\alpha|\le k}{1\over \alpha!} \partial^\alpha u(0) x^\alpha + {1\over k!N}\sum_{j=1}^{N}\beta_j (\bar \omega_j\cdot x - t_j)_+^k
+$$ 
+with $\beta_j\in [-1, 1]$,
+which completes the proof.
+\end{proof}
+
+\begin{lemma}
+There exist $\alpha_i$, $\omega_i$, $b_i$ and $N\le 2\begin{pmatrix} k+d\\k\end{pmatrix}$
+such that
+$$
+ \sum_{|\alpha|\le m}{1\over \alpha!} \partial^\alpha u(0) x^\alpha = \sum_{i=1}^N\alpha_i (\omega_i\cdot x + b_i)_+^k
+$$ 
+with $
+x^\alpha = x_1^{\alpha_1}x_2^{\alpha_2}\cdots x_d^{\alpha_d},\quad \alpha!=\alpha_1!\alpha_2!\cdots \alpha_d!.
+$
+\end{lemma}
+The above result can be found in \cite{he2020preprint}
+
+A combination of Theorem \ref{est:stratify} and the above the lemma gives the following estimate in Theorem \ref{th:stra}.
+\begin{theorem} \label{th:stra}
+Suppose $u\in B^{k+1}(\Omega)$.
+There exist $\beta_j, t\in \mathbb{R}$, $\omega_j \in \mathbb{R}^d$ such that 
+\begin{equation}
+u_N(x)= \sum_{j=1}^{N}\beta_j (\bar \omega_j\cdot x - t_j)_+^k
+\end{equation} 
+satisfies the following estimate
+\begin{equation}\label{d}
+\|u- u_N \|_{H^m(\Omega)} \lesssim 
+\begin{cases}
+N^{-{1\over 2}-{1\over d}}\|u\|_{B^{k+1}(\Omega)},\qquad k> m,
+\\
+N^{-{1\over 2}}\|u\|_{B^{k+1}(\Omega)},\qquad k= m,
+\end{cases}
+\end{equation} 
+where $\bar\omega$ is defined in \eqref{baromega}.
+\end{theorem}
+
+\begin{remark}
+We make the following comparisons:
+\begin{enumerate}
+\item The results in \ref{sec:Bsplines} are for activation functions $\sigma=b_k$, while the results in Section \ref{sec:error2} are for activation functions $\sigma={\rm ReLU}^k$.
+\item By \eqref{splinetorelu}, the following relation obviously holds
+$$
+V_N(b_k)\subset V_{N+k}({\rm ReLU}^k),
+$$
+where 
+\begin{equation}
+\label{VkN}
+V_{N+k}({\rm ReLU}^k)=\left\{\sum_{i=1}^Na_i(w_i\cdot x+b_i)_+^k, a_i, b_i\in\mathbb R^1, w_i\in \mathbb R^{1\times d}\right\},
+\end{equation}
+and $V_N(b_k)$ is the one hidden layer neuron network
+function class with activation function $b_k$.  Thus, asymptotically
+speaking, the results that hold for $\sigma=b_k$ also hold for
+$\sigma={\rm ReLU}^k$. 
+\end{enumerate}
+\end{remark}
+
+
+
+
+
+

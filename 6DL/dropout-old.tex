@@ -1,0 +1,55 @@
+\section{Drop out and nonlinear G-S method}
+
+Here we are going to talk about the Dropout method for training DL model. This is a kind of training algorithm but also a kind of parameter regularilization method in some sense. 
+
+Recall the traditional Mini-Batch SGD training algorithm, for every step, we update the parameters $\Theta$ by:
+\begin{equation}
+\Theta^{t+1} = \Theta^t + \eta_t \sum_{i \in B_t} \mathcal{L}_i(\Theta),
+\end{equation} 
+where 
+\begin{equation}
+ \mathcal{L}_i(\Theta) = \frac{1}{N} L(f(x_i ;\Theta) ,y_i),
+\end{equation}
+with $L(\cdot, \cdot)$ is the loss function like $L^2$ normal or cross-entropy.
+
+So the dropout means that you need to change our model just in this step, and get:
+\begin{equation}
+\tilde{f}^{j} = \theta^j \circ P^j \circ g^j \circ \tilde f^{j-1},
+\end{equation}
+with $P^j$ is a diagonal matrix for 
+\begin{equation}
+P^j_{ii} \simeq P,
+\end{equation}
+with
+\begin{equation}
+P\{x = 0 \} = p, \quad P\{x = 1 \} = 1-p.
+\end{equation}
+and then get the update
+\begin{equation}
+\Theta^{t+1} = \theta^{t} - \eta \nabla_{\Theta} \sum_{i \in B_t} L(\tilde f^J(x_i, \Theta), y_i).
+\end{equation}
+
+Now we may note 
+\begin{equation}
+\Theta \mathcal{P}  = \{\theta^0, \theta^1 P^1, \cdots, \theta^{J}P^J\}.
+\end{equation}
+Then drop-out method can be think as:
+\begin{equation}
+\Theta^{t+1} = \theta^{t} - \eta \nabla_{\Theta} \sum_{i \in B_t} L(f^J(x_i, \Theta), y_i) |_{\Theta = \Theta^t \mathcal{P}}.
+\end{equation}
+
+
+\subsection{GS and Dropout}
+Suppose $\mathcal D_\gamma(\mathbf A)$ is dropout function with prevent probability $\gamma$. $\mathbf x$ is input data. $f^j(x;\theta^j)=\sigma(W^jx+b^j)$ , $\theta^j=(W^j,b^j)$, $f=f^j\circ f^{j-1}\circ \cdots \circ f^1$ is the neural network function.
+\subsection{Training}
+\begin{itemize}
+	\item [GS:] A general form of GS iteration can write as $$g_{\text{GS}}=D_\gamma(\nabla_{\Theta} (f^j\circ f^{j-1}\circ \cdots \circ f^1(\mathbf x)))$$
+	\item [Dropout:] $g_{\text{Dropout}}=\nabla( D_{\gamma_j}\circ f^j\circ D_{\gamma_{j-1}}\circ f^{j-1} \circ \cdots \circ D_{\gamma_1}\circ f^1 )$, we usually set $$\gamma_1,...,\gamma_{j-2},\gamma_j = 0.$$ So we have $$g_{\text{Dropout}}=\nabla_\Theta(  f^j\circ D_{\gamma_{j-1}}\circ f^{j-1} \circ \cdots \circ f^1(\mathbf x) )$$
+	
+\end{itemize}
+\subsection{Prediction}
+	After training, the weight of each layer should be scaling to make the expectation be same as dropout.
+	
+	So when predicting, the neural network function is
+	$$
+	f= (\gamma_j f^j)\circ (\gamma_{j-1} f^{j-1})\circ \cdots \circ( \gamma_1 f^1 )$$

@@ -1,0 +1,31 @@
+\newpage
+\section{Jinchao: XN}
+XN is independent with the SGD training process.
+
+After an update of the neural network, XN can be applied to each hidden layer successively, and won't change the output of it. In this example, we have only one hidden layer. The XN algorithm can be written as follows.
+\begin{enumerate}
+\item Denote 
+$$\Theta=(W_1\ b_1)\in\mathbb{R}^{n_1\times(n+1)}$$
+and
+$$
+\hat X=(X;\mathbf{1})\in\mathbb{R}^{(n+1)\times m}, 
+Y=\text{ReLU1}(W_1X+b_1).
+$$
+	Split the columns of $\hat X$ to $X_I$, $X_J$, $X_K$, s.t. for every row $\theta_i$ of $\Theta$, $i=1,...,n_1$,
+	\begin{equation}
+	\begin{aligned}
+	\theta_i X_I\leq 0,\\
+	\theta_i X_J\geq 1,\\
+	\theta_i X_K\in[0,1].
+	\end{aligned}
+	\end{equation}
+	Denote IJ as the union of I and J. For every $\theta_i$, the optimization problem can be rewritten as
+	\begin{equation}\label{standardv2opt}
+	\begin{aligned}
+	\min_\theta&\quad\|\theta  X_{IJ}-Y_{IJ}\|_2\\
+	\text{subject to}&\quad\theta X_{I}\leq 0,\\
+	&\quad\theta X_{J}\geq 1,\\
+	&\quad\theta X_{K}=Y_{K}.
+	\end{aligned}
+	\end{equation}
+\end{enumerate}

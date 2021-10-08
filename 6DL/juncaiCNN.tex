@@ -1,0 +1,52 @@
+\newpage
+\subsection{Juncai's summary}
+\paragraph{Summary of learning rate schedule methods:}
+\begin{itemize}
+	\item Classical method: iteration for fixed epochs (30 or 50) and then reduce the learning rate by 1/10 or 1/2. 
+	\item Adaptive learning rate: iteration for some epochs by monitoring some indicator and then reduce the learning rate by some factor (1/10 or 1/2) such as SASA.
+	\item Cosine method: use the next formula
+	\begin{equation}\label{key}
+	\eta_t = \eta_{min} + \frac{1}{2}(\eta_{max} - \eta_{min}) (1 - \cos(\frac{t\pi}{T_{\max}})),
+	\end{equation}
+	where $T_{\max}$ is the global number of epochs.
+\end{itemize}
+
+\paragraph{Some observations:}
+\begin{itemize}
+	\item There should be a method between classical methods and Cosine method.
+	\item How to reduce learning rate might be more important than when to reduce learning rate?
+\end{itemize}
+
+\paragraph{Summary for what we have in adaptive learning rate method:}
+\begin{itemize}
+	\item For SASA, we have the next observations (conclusions):
+	\begin{itemize}
+		\item This is only a method which tries to tell us when to reduce learning rate.
+		\item When learning rate is very ``small'' (different models data sets, this small level may different), the criterion in this method is very difficult to hold. 
+	\end{itemize}
+	\item For epoch level criterion to check the stationary:
+	\begin{itemize}
+		\item Lian implemented it before, I will take over that code and try to fine-tune these hyper-parameters to make it works as a comparable criterion with SASA.
+		\item I am thinking about to use this as the global stopping criterion method. This seems more difficult, I will focus on it after I am familiar with these codes.
+	\end{itemize}
+\end{itemize}
+
+\paragraph{One suggestion from Prof. Xu on Mar. 14th, 2020 for global stopping criterion:}
+\begin{itemize}
+	\item 1. Do SASA first when learning rate is big enough.
+	\item 2. Fix a thresholding, and if the criterion of SASA cannot hold within that number of epochs then switch to epoch level criterion.
+	\item 3. When epoch level criterion holds, finish the training process.
+\end{itemize}
+
+\paragraph{Juncai's plan for this project:}
+\begin{itemize}
+	\item Be familiar with running these models with SASA on DGX-1.
+	\begin{itemize}
+	\item CIFAR10, for SASA with 300 epochs: 95.6\% test accuracy. (To verify the code)
+	\item CIFAR100, SGD with cosine learning rate with ($T_{max}=1800$, $\eta_{max} = 0.1$ and $\eta_{min}=0.0001$). Now for 1350 epochs, I got the test accuracy 78.6\%. (Compared with Jianqing's results for FAA augmentation and same SGD with cosine learning rate, which needs 1800 epochs to have 80.3\% test accuracy.)
+	\item Observation: from the test on CIFAR100, I doubt the efficiency of FAA. 
+	\end{itemize}
+	\item Based on Lian's implementation about epoch level criterion as learning rate schedule, try to run some comparable results for some classical models (ResNet and MgNet) on CIFAR 10 and 100 data sets. 
+	\item Try to figure our a good global stopping criterion algorithm.
+\end{itemize}
+

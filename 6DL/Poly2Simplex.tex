@@ -1,0 +1,41 @@
+\section{Division of any polyhedron into a union of simplexes}
+As Adrian mentioned, the key is to divide a polyhedron into convex parts. Then one can further divide each convex body by a simple subdivision. So let us focus on the first step.
+
+By the definition of polyhedron, there are finite numbers of $n-1$ dimensional faces. Each of these faces has the form 
+$$
+a^i_1 x_1 + \ldots + a^i_n x_n +b^i +b^i= 0 
+$$
+where i is the index of the face.  Each of the faces divide $R^n$ into two parts, i.e.,  
+$$
+a^i_1 x_1 + \ldots + a^i_n x_n +b^i> 0 \mbox{ and } a^i_1 x_1 + \ldots + a^i_n x_n +b^i< 0. 
+$$
+These planes divide $R^n$ into several parts, i.e., the intersection of  
+\begin{equation}\label{inequal}
+  a^i_1 x_1 + \ldots + a^i_n x_ n +b^i<(>) 0
+\end{equation}
+
+
+Each part defined by these inequalities is convex (by definition). Then we need to check that the original polyhedron can be written as the union of some of these convex parts. 
+
+To see this, consider any point $x$ in the polyhedron. $x$ belongs to one of the convex bodies defined above, since \eqref{inequal} includes all the possible situations. This shows that the union of the above convex bodies contains the polyhedron.
+
+Next, we claim that each convex body is either contained in the polyhedron, or has no intersection with the polyhedron (need a rigorous proof!). 
+
+This implies that we can represent the polyhedron as the union of some convex bodies.
+
+
+\endinput
+\subsection{Discussion with Lin}
+
+Prof Ocneanu builds up a connection between polygon and binary tree.
+\begin{itemize}
+\item A hyperplane can cut a polygon into two polygons. The hyperplane can be regarded as a node, and the divided polygons can be seen as sub-binary trees.
+\item Follow the steps above to get more sub-binary trees.
+\item According to binary tree algorithm you will git a algorithm of cutting polygon.
+\end{itemize}
+
+Because of finiteness of polygon, the operator will be end. We can cut a polygon into simplices.
+
+The other thing that is very interesting is that if you cut with a hyperplane, then the other polygons are only on one side of the hyperplane, which may not be connected, but increases the convexity, which guarantees convex.
+
+

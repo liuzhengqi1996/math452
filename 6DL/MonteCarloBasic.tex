@@ -1,0 +1,326 @@
+\subsection{Monte Carlo sampling and analysis}
+\input{6DL/EEn}
+
+\begin{lemma}   \label{MC}
+For any $g\in L^\infty(G)$, we have
+  \begin{equation}
+  \begin{split}
+    \mathbb{E}_n\Big(\mathbb{E}g-\frac1n\sum_{i=1}^n
+    g(\omega_i)\Big)^2
+    &=\frac{1}{n}\mathbb{V}(g)=\frac{1}{n}\Big(\mathbb{E}(g^2) - \big (\mathbb{E}(g)\big )^2\Big)
+    \\
+    &=
+    \left\{
+             \begin{aligned}
+    \frac{1}{n}\mathbb{V}(g)
+   & \le\frac{1}{n} \sup_{\omega, \omega'\in G} |g(\omega) - g(\omega')|^2
+    \\
+\frac{1}{n}\Big(\mathbb{E}(g^2) - \big (\mathbb{E}(g)\big )^2\Big)
+&\le\frac{1}{n} \mathbb E(g^2)\le \frac{1}{n}\|g\|^2_{L^\infty},
+\end{aligned}
+\right.
+\end{split}
+  \end{equation} 
+\end{lemma}
+
+\begin{proof}%[Proof of Lemma \ref{MC}]
+First note that
+ \begin{equation}
+    \label{eqn}
+    \begin{aligned}
+\left(\mathbb{E} g-\frac1N\sum_{i=1}^Ng(\omega_i)\right)^2 
+  & 
+=\frac{1}{N^2} \left(\sum_{i=1}^N(\mathbb{E} g-g(\omega_i))\right)^2 
+  \\
+  &=\frac{1}{N^2} \sum_{i,j=1}^N(\mathbb{E} g-g(\omega_i))(\mathbb{E} g-g(\omega_j))
+  \\
+  &=\frac{I_1}{N^2} +\frac{I_2}{N^2}.
+    \end{aligned}
+  \end{equation}
+with 
+\begin{equation}
+I_1= \sum_{i=1}^N(\mathbb{E} g-g(\omega_i))^2,\quad I_2=\sum_{i\neq  j}^N\left ((\mathbb{E}g)^2-\mathbb {E}(g)(g(\omega_i)+
+g(\omega_j))+g(\omega_i)g(\omega_j))\right).
+\end{equation}
+Consider $I_1$, for any $i$,
+ $$
+ \mathbb{E}_N(\mathbb{E} g-g(\omega_i))^2
+ =\mathbb{E}(\mathbb{E} g-g)^2 = \mathbb{V}(g).
+ $$ 
+Thus,
+$$
+ \mathbb{E}_N (I_1) = n\mathbb{V}(g).
+$$
+For $I_2$, note that
+$$
+\mathbb E_N g(\omega_i)=\mathbb E_N g(\omega_j) =\mathbb E(g)
+$$
+and, for $i\neq j$,
+\begin{equation}\label{key}
+\begin{aligned}
+\mathbb {E}_N ( g(\omega_i)g(\omega_j)) &= 
+\int_{G\times G\times\ldots\times G}
+g(\omega_i) g(\omega_j) \lambda(\omega_1) \lambda(\omega_2)\ldots \lambda(\omega_N)
+d\omega_1d\omega_2\cdots d\omega_N \\
+&= \int_{G\times G} g(\omega_i) g(\omega_j) \lambda(\omega_1) 
+\lambda(\omega_1) \lambda(\omega_2)
+d\omega_1d\omega_2 \\
+&= \mathbb {E}_N (
+g(\omega_i))\mathbb {E}_n(g(\omega_j))
+=[\mathbb E(g)]^2.
+\end{aligned}
+\end{equation}
+Thus
+ \begin{equation}
+\mathbb{E}_N (I_2) = \mathbb{E}_N \left( \sum_{i\neq j}^N((\mathbb{E}g)^2-\mathbb
+  E(g)(\mathbb E(g(\omega_i))+ \mathbb E(g(\omega_j)))+\mathbb E(g(\omega_i)g(\omega_j))) \right)=0.
+  \end{equation}
+Consequently, there exist the following two formulas for $\displaystyle \mathbb{E}_N\left(\mathbb{E} g-
+      \frac1N\sum_{i=1}^Ng(\omega_i)\right)^2$:
+ \begin{equation} 
+ \mathbb{E}_N\left(\mathbb{E} g-
+      \frac1N\sum_{i=1}^Ng(\omega_i)\right)^2 = \frac{1}{N^2}\mathbb{E}_N (I_1)
+      =
+           \left\{
+             \begin{aligned}
+            \frac{1}{N}\mathbb{E}\big ((\mathbb{E} g-g)^2\big )\\
+            \frac{1}{N}(\mathbb{E}(g^2) - (\mathbb{E} g)^2).
+            \end{aligned}
+    \right.
+  \end{equation}
+Based on the first formula above, since
+$$
+|g(\omega) - \mathbb{E} g|=|\int_G \big (g(\omega) - g(\tilde \omega) \big )\lambda(\tilde \omega)d\tilde \omega|\le \sup_{\omega, \omega'\in G} |g(\omega) - g(\omega')|,
+$$
+it holds that
+ \begin{equation} 
+ \mathbb{E}_N\left(\mathbb{E} g-
+      {1\over N }\sum_{i=1}^Ng(\omega_i)\right)^2 
+            \le\frac{1}{N} \sup_{\omega, \omega\in G} |g(\omega) - g(\omega')|^2.
+  \end{equation}
+Due to the second formula above,  
+ \begin{equation}
+    \label{eqn}
+ \mathbb{E}_N\left(\mathbb{E} g-
+      \frac1N\sum_{i=1}^Ng(\omega_i)\right)^2  
+            \le\frac{1}{N} \mathbb E(g^2)\le\frac{1}{N}\|g\|^2_{L^\infty}
+  \end{equation}
+which completes the proof.
+\end{proof}
+
+We can also generalize Lemma \ref{MC} to Hilbert spaces following a similar analysis.
+
+\begin{lemma}    
+For any $g: G\rightarrow H$ where $H$ is a Hilbert space, we have
+  \begin{equation}
+  \begin{split}
+    \mathbb{E}_n\Big(\|\mathbb{E}g-\frac1n\sum_{i=1}^n
+    g(\omega_i)\|_H^2\Big)
+    &=\frac{1}{n}\mathbb{V}(g)=\frac{1}{n}\Big(\mathbb{E}(\|g\|_H^2) - \big (\mathbb{E}(\|g\|_H)\big )^2\Big)
+    \\
+    &=
+    \left\{
+             \begin{aligned}
+    \frac{1}{n}\mathbb{V}(g)
+   & \le\frac{1}{n} \sup_{\omega, \omega'\in G} \|g(\omega) - g(\omega')\|_H^2
+    \\
+\frac{1}{n}\Big(\mathbb{E}(\|g\|_H^2) - \big (\mathbb{E}(\|g\|_H)\big )^2\Big)
+&\le\frac{1}{n} \mathbb E(\|g\|_H^2),
+\end{aligned}
+\right.
+\end{split}
+  \end{equation} 
+\end{lemma}
+
+\begin{proof}%[Proof of Lemma \ref{MC}]
+First note that
+ \begin{equation}
+    \label{eqn}
+    \begin{aligned}
+\left\|\mathbb{E} g-\frac1N\sum_{i=1}^Ng(\omega_i)\right\|_H^2 
+  & 
+=\frac{1}{N^2} \left\|\sum_{i=1}^N(\mathbb{E} g-g(\omega_i))\right\|_H^2 
+  \\
+  &=\frac{1}{N^2} \sum_{i,j=1}^N\left(\mathbb{E} g-g(\omega_i), \mathbb{E} g-g(\omega_j)\right)
+  \\
+  &=\frac{I_1}{N^2} +\frac{I_2}{N^2}.
+    \end{aligned}
+  \end{equation}
+with 
+\begin{equation}
+I_1= \sum_{i=1}^N\|\mathbb{E} g-g(\omega_i)\|_H^2,\quad I_2=\sum_{i\neq  j}^N\left(\mathbb{E} g-g(\omega_i), \mathbb{E} g-g(\omega_j)\right).
+\end{equation}
+Consider $I_1$, for any $i$,
+ $$
+ \mathbb{E}_N(\|\mathbb{E} g-g(\omega_i)\|_H^2)
+ =\mathbb{E}(\|\mathbb{E} g-g\|_H^2) = \mathbb{V}(g).
+ $$ 
+Thus,
+$$
+ \mathbb{E}_N (I_1) = n\mathbb{V}(g).
+$$
+For $I_2$, note that
+$$
+\mathbb E_N \|g(\omega_i)\|_H=\mathbb E_N \|g(\omega_j)\|_H =\mathbb E(\|g\|_H)
+$$
+and, for $i\neq j$,
+\begin{equation}\label{key}
+\begin{aligned}
+\mathbb {E}_N ( g(\omega_i), g(\omega_j)) &= 
+\int_{G\times G\times\ldots\times G}
+g(\omega_j) g(\omega_j) \lambda(\omega_1) \lambda(\omega_2)\ldots \lambda(\omega_N)
+d\omega_1d\omega_2\cdots d\omega_N \\
+&= \int_{G\times G} (g(\omega_j) , g(\omega_j) ) 
+\lambda(\omega_i) \lambda(\omega_j)
+d\omega_id\omega_j \\
+&=\left( \mathbb {E}_N (
+g(\omega)) , \mathbb {E}_N(g(\omega))\right)
+=\|\mathbb E(g)\|_H^2.
+\end{aligned}
+\end{equation}
+Thus
+ \begin{equation}
+\mathbb{E}_N (I_2) = \mathbb{E}_N \left( \sum_{i\neq j}^N\big(\|\mathbb{E}g\|_H^2-
+(\mathbb  E(g), \mathbb E(g(\omega_i))+ \mathbb E(g(\omega_j)))
++ (g(\omega_i), g(\omega_j))\big) \right)=0.
+  \end{equation}
+Consequently, there exist the following two formulas for $\displaystyle \mathbb{E}_N\left\|\mathbb{E} g-
+      \frac1N\sum_{i=1}^Ng(\omega_i)\right\|_H^2$:
+ \begin{equation} 
+ \mathbb{E}_N\left\|\mathbb{E} g-
+      \frac1N\sum_{i=1}^Ng(\omega_i)\right\|_H^2 = \frac{1}{N^2}\mathbb{E}_N (I_1)
+      =
+           \left\{
+             \begin{aligned}
+            \frac{1}{N}\mathbb{E}\big (\|\mathbb{E} g-g\|_H^2\big )\\
+            \frac{1}{N}(\mathbb{E}(\|g\|_H^2) - \|\mathbb{E} g\|_H^2).
+            \end{aligned}
+    \right.
+  \end{equation}
+Based on the first formula above, since
+$$
+|g(\omega) - \mathbb{E} g|=|\int_G \big (g(\omega) - g(\tilde \omega) \big )\lambda(\tilde \omega)d\tilde \omega|\le \sup_{\omega, \omega'\in G} |g(\omega) - g(\omega')|,
+$$
+it holds that
+ \begin{equation} 
+ \mathbb{E}_N\left\|\mathbb{E} g-
+      {1\over N }\sum_{i=1}^Ng(\omega_i)\right\|_H^2 
+            \le\frac{1}{N} \sup_{\omega, \omega'\in G} \|g(\omega) - g(\omega')\|_H^2.
+  \end{equation}
+Due to the second formula above,  
+ \begin{equation}
+    \label{eqn}
+ \mathbb{E}_N\left\|\mathbb{E} g-
+      \frac1N\sum_{i=1}^Ng(\omega_i)\right\|_H^2  
+            \le\frac{1}{N} \mathbb E(\|g\|_H^2),
+  \end{equation}
+which completes the proof.
+\end{proof}
+
+
+%\input{6DL/MonteCarloProbability}
+\begin{lemma}\label{lem:sample}
+\textup{[Monte Carlo Sampling]}
+	Consider 
+	\begin{equation}
+	\label{uv}
+	u(x)=\int_{G}g(x,\theta)\rho(\theta)d\theta   = \mathbb E (g)
+	\end{equation}
+	with $0\le \rho(\theta)\in L^1(G)$. For any $N\ge 1$, there exist $\theta_i^*\in G$ such that
+	$$
+	\|u-u_N\|_{L^2(\Omega)}^2 
+	\le\frac{1}{N}
+	\int_G \|g(\cdot,\theta)\|_{L^2(\Omega)}^2\rho(\theta)d\theta = {\|\rho\|_{L^1(G)}\over N}\mathbb E (\|g(\cdot,\theta)\|_{L^2(\Omega)}^2)
+	$$
+	where  
+	$
+	\|g(\cdot,\theta)\|_{L^2(\Omega)}^2 = \int_{\Omega} [g(x,\theta)]^2 d\mu(x),
+	$
+	\begin{equation}\label{fndef} 
+	u_N(x)=\frac{\|\rho\|_{L^1(G)}}{N}\sum_{i=1}^N g(x,\theta_i^*).
+	\end{equation}
+
+Similarly, if $g(\cdot, \theta)\in H^m(\Omega)$, for any $N\ge 1$, there exist $\theta_i^*\in G_i$ with $f_N$ given in \eqref{fndef} such that
+	\begin{equation}\label{eq:hm}
+	\|u-u_N\|_{H^m(\Omega)}^2 
+	\le 
+	\int_G  \|g(\cdot,\theta)\|_{H^m(\Omega)}^2\rho(\theta)d\theta
+	=\frac{\|\rho\|_{L^1(G)}}{N} \mathbb E (\|g(\cdot,\theta)\|_{H^m(\Omega)}^2).
+	\end{equation}
+\end{lemma}
+
+\iffalse
+\begin{proof} 
+Note that
+\begin{equation}
+\label{uv}
+u(x) = \|\rho\|_{L^1(G)}\mathbb E (g).
+\end{equation}
+By Lemma \ref{MC},
+$$
+\mathbb {E}_n\left(\bigg(\mathbb E(g(x,\cdot))
+-\frac{1}{N}\sum_{i=1}^N g(x,\theta_i))\bigg)^2
+\right)\le {1\over N} \mathbb E (g^2).
+$$
+By taking integration w.r.t. $x$ on both sides, we get
+$$
+\mathbb {E}_n\left(h(\theta_1,\theta_2, \cdots, \theta_N)
+\right)\le {1\over N} \mathbb {E} \Big(\int_{\Omega} g^2 d\mu(x)\Big),
+$$
+where 
+$$
+h(\theta_1,\theta_2, \cdots, \theta_N) =  \int_{\Omega} \bigg(\mathbb E(g(x,\cdot))
+-\frac{1}{N}\sum_{i=1}^N g(x,\theta_i))\bigg)^2 d\mu(x).
+$$
+Since $\mathbb {E}_N (1) = 1$ and $\mathbb {E}_N (h) \le {1\over N} \mathbb {E} \Big(\int_{\Omega} g^2 d\mu(x)\Big)$, there exist $\theta_i^* \in G$ such that
+$$
+h(\theta_1^*, \theta_2^*, \cdots, \theta_N^*) \le  {1\over N}  \int_{\Omega} \mathbb {E} (g^2) d\mu(x).
+$$
+%Otherwise, $\mathbb {E}_n\left(h \right) >  {1\over n} \mathbb {E} \Big(\int_{\Omega} g^2 d\mu(x)\Big)$   if $h(\theta_1,\theta_2, \cdots, \theta_n) > {1\over n}  \int_{\Omega} \mathbb {E} (g^2)) d\mu(x)$. 
+This implies that
+$$
+	\mathbb{E}_n\|u-u_N\|_{L^2(\Omega)}^2 
+	\le\frac{\|\rho\|_{L^1(G)}}{N}
+	\int_G \|g(\cdot,\theta)\|_{L^2(\Omega)}^2\lambda(\theta)d\theta.
+	$$ 
+	The proof for \eqref{eq:hm} is similar to the above analysis for the $L^2$-error analysis, which completes the proof.
+\end{proof}
+\fi
+
+
+
+We also have a more general version of the above lemma.
+\begin{lemma}\label{lem:sampleHk}
+	Let 
+	\begin{equation} \label{uint}
+	u(x)=\int_{G}g(x,\theta)\lambda(\theta)d\theta  = \mathbb E (g)
+	\end{equation}
+	with $\|\lambda(\theta)\|_{L^1(\Theta)}=1$.
+	For any $N\ge 1$, there exist $\theta_i^*\in G$ such that
+	$$
+	\|u-u_N\|_{H^m(\Omega)}^2 
+	\le 
+	\int_G  \|g(\cdot,\theta)\|_{H^m(\Omega)}^2\lambda(\theta)d\theta
+	=\frac{1}{N} \mathbb E (\|g(\cdot,\theta)\|_{H^m(\Omega)}^2)
+	$$
+	where 
+	$$
+	u_N(x)=\frac{1}{N}\sum_{i=1}^N g(x,\theta_i^*)
+	$$
+	In particular, if 
+	\begin{equation}
+	\label{eq:4}
+	|D^\alpha g(x,\theta)|\le C, \quad\forall x, \theta, |\alpha|\le m
+	\end{equation}
+	Then
+	$$
+	\|u-u_N\|_{H^m(\Omega)}
+	\le 
+	\begin{pmatrix}
+	m+d\\
+	m
+	\end{pmatrix}^{1/2}
+	|\Omega|^{1/2}
+	N^{-1/2}.
+	$$
+\end{lemma}

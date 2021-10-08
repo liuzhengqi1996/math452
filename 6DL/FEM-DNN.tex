@@ -1,0 +1,168 @@
+\documentclass[leqno,labelfig,psfigt]{svmono}
+%\usepackage{showkeys}
+%\openup8pt
+
+%\DeclareMathAlphabet{\mathpzc}{OT1}{pzc}{m}{it}
+
+\makeatletter
+\providecommand*{\input@path}{}
+\edef\input@path{{./}{../}\input@path}% prepend
+%\makeatother
+
+\input{../Xmacros} 
+%\renewcommand{\mgnote}[1]{}
+
+\usepackage{geometry}
+\geometry{letterpaper}                   % ... or a4paper or a5paper or ...
+%\usepackage{listings} 
+\usepackage{mcode}
+\usepackage{textcomp}
+%\usepackage{algorithmic,algorithm}
+\usepackage{enumerate}
+\usepackage{empheq}
+\usepackage{multirow}
+\usepackage{undertilde}
+\usepackage{centernot}
+\usepackage{amscd}
+\usepackage{indentfirst}
+\usepackage{amsmath, amsfonts, amssymb}
+\usepackage{tikz}
+
+\makeatletter
+\newenvironment{breakablealgorithm}
+{% \begin{breakablealgorithm}Re: ML workshop
+	\begin{center}
+		\refstepcounter{algorithm}% New algorithm
+		\hrule height.8pt depth0pt \kern2pt% \@fs@pre for \@fs@ruled
+		\renewcommand{\caption}[2][\relax]{% Make a new \caption
+			{\raggedright\textbf{\ALG@name~\thealgorithm} ##2\par}%
+			\ifx\relax##1\relax % #1 is \relax
+			\addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##2}%
+			\else % #1 is not \relax
+			\addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##1}%
+			\fi
+			\kern2pt\hrule\kern2pt
+		}
+	}{% \end{breakablealgorithm}
+		\kern2pt\hrule\relax% \@fs@post for \@fs@ruled
+	\end{center}
+}
+\makeatother
+
+\usepackage{multirow}
+\usepackage{mathtools}
+
+%\newtheorem{properties}[theorem]{Properties}
+%\graphicspath{{figures/}{6DL/figures/}}
+\graphicspath{{../}{../figures/}{../6DL/figures/}}
+
+
+% add author name on header
+\usepackage{fancyhdr}
+
+%\pagestyle{fancy}
+%\fancyhf{}
+\rhead{\hfill Jinchao Xu}
+
+%\newcommand{\sh}{{\cal S}_h}
+
+\usepackage[style=numeric, backend=biber]{biblatex}
+\addbibresource{3FEM.bib,6DL/ref.bib}
+
+\begin{document}
+
+\title{Finite Element and Deep Neural Networks}
+\author{Jinchao Xu\\Penn State}
+\date{Spring 2020}
+\maketitle
+
+\begin{quote} 
+This set of notes are prepared by Jinchao Xu for the class MATH/CSE
+556 at Penn State in Spring 2019. All rights reserved.  Not to be
+disseminated without explicit permission of the author.
+\end{quote}
+\tableofcontents
+
+\chapter{Finite Element Method}
+\input{3FEM/FEspaces}
+\input{3FEM/Nodal-Interpolation}
+
+\chapter{Deep Neural Network Functions}
+\input{FEM2DNN}
+\input{6DL/WhyDeep}
+\input{6DL/DefineDNN}
+%\input{6DL/DNN_Qualitative}
+%\input{6DL/FourierRepresentation}
+%\input{6DL/DoubleFourier2}
+\chapter{Qualitative Approximation Properties of DNN
+}\label{ch:approx}
+
+Three categories of approximation theory.
+\begin{enumerate}
+	\item 
+	In Barron's paper, there is a section on the lower bound of
+	approximation using linear subspaces. If the basis is fixed, then the
+	rate $n^{-1/d}$ is not improvable. The DNN uses a basis adapt to the
+	function.
+	
+	The adaptive FEM we have studied before is indeed using linear
+	subspaces. For a given and fixed basis, select the best n term to
+	approximate a function. The non-linear approximation theory (by
+	DeVore) is to relax the smoothness of function to achieve the optimal
+	rate $n^{-1/d}$ but won't improve the rate.
+	
+	Now the problem is a truly nonlinear approximation problem, even the
+	basis can be changed according to $f$. The dimension independent rate
+	$n^{-1/2}$ seems also optimal. What we can improve is the
+	characterization of the smoothness.
+\end{enumerate}
+\input{6DL/PolyWeierstrass}
+\input{6DL/DNN_Qualitative}
+\chapter{Monte Carlo and Stratified Samplings}
+%\input{6DL/SampleLemma}
+\section{Sampling Techniques}
+\input{6DL/EEn}
+\input{6DL/MonteCarloBasic}
+\input{6DL/MonteCarlo}
+%\input{6DL/StratifiedL2}
+
+\chapter{Analysis for General Activation Functions}
+\section{Integral representation of functions}
+\input{6DL/FourierRepresentation}
+\input{6DL/Barron-L2}
+\input{6DL/Barron-Hk}
+\input{6DL/DoubleFourier2}
+\input{6DL/PeriodicActivation}
+\section{Barry approximation for sigmoidal function}
+\input{6DL/Barron-Approx}
+
+\chapter{Analysis for ReLU-Related Activation Functions}
+\section{ReLU fourier representation}
+\input{6DL/ReLUFourierSimple}
+\input{6DL/ReLUFourier}
+\input{6DL/Stratified-beta1} 
+\input{6DL/ReLU1d}
+\chapter{Maximum Norm Estimate using Dudley's Entropy Integral}
+\input{6DL/Dudley}
+
+%\input{3FEM/556/FEM-Exercises}
+
+%\input{6DL/DNN-Approx}
+%\input{6DL/WhyDeep}
+%%\input{6DL/Approxi_Sobolev}
+%\end{document}
+%
+%\chapter{Artificial Neural Network (ANN) and  Deep eural Networks
+%	(DNN)}
+%\chapter{Approximation Properties of Neural Network Function
+%Class}\label{ch:approx}
+%
+%\input{6DL/FEM2DNN}
+%%\input{6DL/DNN}  
+%\chapter{Approximation Properties of Neural Network Function
+%Class}\label{ch:approx}
+%\input{6DL/DNN-FEM}
+%\input{6DL/PolyWeierstrass}
+\end{document}
+
+ 

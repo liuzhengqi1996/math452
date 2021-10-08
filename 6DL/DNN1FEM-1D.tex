@@ -1,0 +1,28 @@
+\subsection{FEM ans ${\rm DNN}_1$ in 1D}
+Thanks to following connection between $\varphi(x)$ in \eqref{def_g} and ${\rm ReLU}(x) = \max(0,x )=x_+$
+\begin{equation}\label{key}
+\varphi(x) = 2{\rm ReLU}(x) - 4{\rm ReLu}({x-\frac{1}{2}}) + 2{\rm ReLU}(x-1),
+\end{equation}
+it suffices to show that each basis
+function $\varphi_{\ell,i}$ can be represented by a ReLU DNN. 
+We first note that  the basis
+function $\varphi_{\ell,i}$ has the support in $[x_{\ell,i-1},
+x_{\ell,i+1} ]$ can be easily written as
+\begin{equation}
+\label{1d-basisu}
+\varphi_{\ell,i}(x) = \frac{1}{h_{\ell}}{\rm ReLU}(x-x_{\ell,i-1}) -\frac{2}{h_{\ell}}{\rm ReLU}(x-x_{\ell,i}) +\frac{1}{h_\ell}{\rm ReLU}(x-x_{\ell,i+1}).
+\end{equation}
+More generally, consider a general  grid with vertex $\{x_i\}$, which is not necessarily uniform. The basis function $\varphi_i$ of the linear element with support $[x_{i-1},
+x_{i+1} ]$ can be easily written as
+\begin{equation}
+\label{1d-basis}
+\varphi_i(x) = \frac{1}{h_{i-1}}{\rm ReLU}(x-x_{i-1}) -(\frac{1}{h_{i-1}}+\frac{1}{h_i}){\rm ReLU}(x-x_i) +\frac{1}{h_i}{\rm ReLU}(x-x_{i+1}),
+\end{equation}
+where $h_i = x_{i+1} - x_i$.
+
+Thus is to say, we have the next theorem.
+\begin{theorem}\label{thm:1dLFEMDNN}
+	For $d=1$, and  $\Omega\subset \mathbb R^d$ is 
+	a bounded interval, then ${\rm DNN}_1$ can be used to cover all linear finite element 
+	function in on $\Omega$.
+\end{theorem}

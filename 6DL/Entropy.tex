@@ -1,0 +1,1424 @@
+
+%\section{Entropy and approximation rates}  
+The presentation in this section follows the paper \cite{siegel2021optimal}. 
+The recent success of deep learning \cite{lecun2015deep} has spurred a large amount of research into the mathematical foundations of neural networks. In addition, there is a rapidly growing interest in using neural networks as a function class for solving partial differential equations \cite{han2018solving,CiCP-28-1707} and simulating physical systems \cite{raissi2018hidden}. Of particular importance in both of these research directions are the approximation theory of neural networks, specifically the determination of how effectively neural networks can approximate high dimensional functions. Many recent theoretical results indicate that a wide class of functions, especially in high dimensions, can be efficiently approximated by both shallow \cite{wojtowytsch2020representation,ma2019priori,siegel2020approximation} and deep neural networks \cite{yarotsky2017error,lu2020deep,opschoor2020deep,daubechies2019nonlinear,devore2020neural,li2019better}, and that solving PDEs in high dimensions using neural networks is a viable approach \cite{lu2021priori,li2020multipole,luo2020two}.
+
+An important consideration when studying the approximation properties of neural networks, and non-linear approximation in general, is the existence of a stable numerical algorithm which can realize a given approximation rate. This is intimitely connected with the metric entropy of the class of functions under consideration, as observed in \cite{cohen2020optimal}. Consequently, calculating the metric entropy of neural network function classes is important for determining the theoretical limitations of using neural networks.
+
+In this work, we calculate the metric entropy of the class of functions which can be efficiently approximated by shallow ReLU$^k$ neural networks. This class of functions has been extensively studied in the statistics and machine learning literature \cite{barron1993universal,jones1992simple,klusowski2018approximation}. 
+
+We begin by considering a somewhat more general class of functions arising in the study of non-linear approximation by a dictionary of functions $\mathbb{D}\subset H$ in a Hilbert space $H$ \cite{devore1998nonlinear,barron2008approximation}. Let $H$ be Hilbert space and $\mathbb{D}\subset H$ a dictionary with $\sup_{d\in \mathbb{D}} \|d\|_H = K_\mathbb{D} < \infty$ (note here dictionary is simply another name for subset). 
+We introduce the set
+\begin{equation}\label{unit-ball-definition}
+ B_1(\mathbb{D}) = \overline{\left\{\sum_{j=1}^n a_jh_j:~n\in \mathbb{N},~h_j\in \mathbb{D},~\sum_{i=1}^n|a_i|\leq 1\right\}},
+\end{equation}
+which is the closure of the convex, symmetric hull of $\mathbb{D}$. Further, we define a norm, $\|\cdot\|_{\mathcal{K}_1(\mathbb{D})}$, on $H$ given by the guage (see for instance \cite{rockafellar1970convex}) of $B_1(\mathbb{D})$,
+\begin{equation}\label{norm-definition}
+ \|f\|_{\mathcal{K}_1(\mathbb{D})} = \inf\{c > 0:~f\in cB_1(\mathbb{D})\},
+\end{equation}
+which is defined so that $B_1(\mathbb{D})$ is the unit ball of $\|\cdot\|_{\mathcal{K}_1(\mathbb{D})}$. We also denote the space $\mathcal{K}_1(\mathbb{D})$ by 
+\begin{equation}\label{space-definition}
+\mathcal{K}_1(\mathbb{D}) := \{f\in H:~\|f\|_{\mathcal{K}_1(\mathbb{D})} < \infty\}.
+\end{equation}
+
+This norm has been introduced in different forms in the literature \cite{devore1998nonlinear,kurkova2001bounds,kurkova2002comparison,barron2008approximation}.  The notation and definition we use here was introduced in \cite{devore1998nonlinear}, where a more general $\mathcal{K}_\tau(\mathbb{D})$ space is considered for $0<\tau\leq \infty$. We restrict ourselves to the  case $\tau = 1$, which is the most important space for general dictionaries. In Section \ref{spectral-barron-section}, we discuss the properties of the $\mathcal{K}_1(\mathbb{D})$ space in more detail and compare with previously introduced notions, such as the Barron space introduced in \cite{ma2019barron}.
+
+The significance of the space $\mathcal{K}_1(\mathbb{D})$ is in connection with approximation from the set of $\ell^1$-bounded $n$-term linear combinations of dictionary elements,
+\begin{equation}
+ \Sigma_{n,M}(\mathbb{D}) = \left\{\sum_{j=1}^n a_jh_j:~h_j\in \mathbb{D},~\sum_{i=1}^n|a_i|\leq M\right\},
+\end{equation}
+where the coefficients $a_i$ are taken as either real or complex depending upon whether $H$ is a real or complex Hilbert space. A classical result by Maurey \cite{pisier1981remarques} (see also \cite{jones1992simple,barron1993universal,devore1998nonlinear}) is the following approximation rate for functions $f\in \mathcal{K}_1(\mathbb{D})$,
+\begin{equation}\label{fundamental-bound}
+ \inf_{f_n\in \Sigma_{n,M}(\mathbb{D})} \|f - f_n\|_H \leq K_\mathbb{D}\|f\|_{\mathcal{K}_1(\mathbb{D})}n^{-\frac{1}{2}},
+\end{equation}
+where the bound $M$ can be taken as $M = \|f\|_{\mathcal{K}_1(\mathbb{D})}$. An equivalent formulation of this result, which is sometimes more convenient is that for $f\in B_1(\mathbb{D})$ we have
+\begin{equation}
+ \inf_{f_n\in \Sigma_{n,1}(\mathbb{D})} \|f - f_n\|_H \leq K_\mathbb{D}n^{-\frac{1}{2}}.
+\end{equation}
+
+In this work, we are primarily interested in the following two types of dictionaries which are related to approximation by neural networks. Throughout the paper, we will consider the unit ball $B_1^d := \{x\in \mathbb{R}^d:~|x| \leq 1\}$ of $\mathbb{R}^d$. We remark that the results we obtain generalize in a straighforward manner to any bounded domain $\Omega\subset \mathbb{R}^d$, however. In particular, the upper bounds transfer to $\Omega$ since $\Omega$ is contained in a ball of sufficiently large radius, and the lower bounds transfer to $\Omega$ since $\Omega$ contains a ball of some sufficiently small positive radius. Thus, in passing to $\Omega$ only the implied constants will change.
+
+The first type of dictionary we will be interested in arises when studying networks with ReLU$^k$ activation function $\sigma_k(x) = \text{ReLU}^k(x) := [\max(0,x)]^k$ (here when $k=0$, we interpret $\sigma_k(x)$ to be the Heaviside function). Consider the dictionary
+\begin{equation}\label{relu-k-space-definition}
+ \mathbb{P}^d_k = \{\sigma_k(\omega\cdot x + b):~\omega\in S^{d-1},~b\in [-2,2]\}\subset L^2(B_1^d),
+\end{equation}
+where $S^{d-1} = \{\omega\in \mathbb{R}^d:~|\omega| = 1\}$ is the unit sphere. We remark that the constant $2$ above can be replaced by any $c > 1$ to obtain an equivalent norm. In addition, when $k=1$ this norm is equivalent to the Barron norm studied in \cite{ma2019barron,ma2019priori}. We discuss the definition \eqref{relu-k-space-definition} and its relationship with the Barron norm in more detail in Section \ref{spectral-barron-section}. The relationship with ReLU$^k$ networks arises because
+\begin{equation}
+ \Sigma_{n,M}(\mathbb{P}^d_k) = \left\{\sum_{j=1}^n a_j\sigma_k(\omega_j \cdot x + b_j):~\omega_j\in S^{d-1},~|b_j| \leq 2,~\sum_{i=1}^n|a_i|\leq M\right\}
+\end{equation}
+is the set of shallow ReLU$^k$ neural networks with bounded coefficients and $n$ hidden neurons.
+
+The second type of dictionary is the spectral dictionary of order $s \geq 0$, given by
+\begin{equation}
+ \mathbb{F}^d_s = \{(1+|\omega|)^{-s}e^{2\pi {\mathrm{i}\mkern1mu} \omega\cdot x}:~\omega\in \mathbb{R}^d\}\subset L^2(B_1^d).
+\end{equation}
+For this dictionary the space $\mathcal{K}_1(\mathbb{F}_s)$ can be completely characterized in terms of the Fourier transform. In particular
+\begin{equation}\label{barron-integral-condition}
+ \|f\|_{\mathcal{K}_1(\mathbb{F}^d_s)} = \inf_{f_e|_{B_1^d}= f} \int_{\mathbb{R}^d} (1+|\xi|)^s|\hat{f}_e(\xi)|d\xi,
+\end{equation}
+where the infemum is taken over all extensions $f_e\in L^1(\mathbb{R}^d)$. For reference, we provide a detailed proof of this result in Section \ref{spectral-barron-section}. The connection with ReLU$^k$ neural networks is due to the fact that $\mathcal{K}_1(\mathbb{F}^d_{k+1})\subset \mathcal{K}_1(\mathbb{P}^d_k)$, which was first observed in the case $k=0$ in \cite{barron1993universal}, in the case $k=1,2$ in \cite{klusowski2018approximation}, and extended to $k > 2$ in \cite{CiCP-28-1707}. Thus the integral condition \eqref{barron-integral-condition} defines a subspace of $\mathcal{K}_1(\mathbb{P}^d_k)$ which can be characterized via the Fourier transform. However, we remark that the inclusion here is strict \cite{wojtowytsch2020representation}, a point which we will come back to later.
+
+Next, we recall the notion of metric entropy first introduced by Kolmogorov \cite{kolmogorov1958linear}. The (dyadic) entropy numbers $\epsilon_n(A)$ of a set $A\subset H$ are defined by
+\begin{equation}
+ \epsilon_n(A)_H = \inf\{\epsilon > 0:~\text{$A$ is covered by $2^n$ balls of radius $\epsilon$}\}.
+\end{equation}
+Roughly speaking, the entropy numbers indicate how precisely we can specify elements of $A$ given $n$ bits of information.
+It is not necessary for the space $H$ to be a Hilbert space although that is the case we will be interested in here, see for instance \cite{lorentz1996constructive}, Chapter 15 for the general theory.
+
+Our main contribution is to calculate the entropy numbers of the unit balls $B_1(\mathbb{P}_k^d)$ and $B_1(\mathbb{F}_s^d)$ in $H = L^2(B_1^d)$. These are given in the following theorem.
+\begin{theorem}
+Let $k \geq 0$, $s > 0$ and $H = L^2(B_1^d)$. Then
+\begin{equation}\label{metric-entropy-rates}
+ \epsilon_n(B_1(\mathbb{P}_k^d))_H \eqsim_{k,d} n^{-\frac{1}{2} - \frac{2k+1}{2d}},~\epsilon_n(B_1(\mathbb{F}_s^d))_H \eqsim_{s,d} n^{-\frac{1}{2} - \frac{s}{d}}.
+\end{equation}
+\end{theorem}
+The estimates given here are weak equivalences, i.e. we have
+\begin{equation}
+ C_1n^{-\frac{1}{2} - \frac{2k+1}{2d}} \leq \epsilon_n(B_1(\mathbb{P}_k^d))_H \leq C_2n^{-\frac{1}{2} - \frac{2k+1}{2d}},
+\end{equation}
+for some constants $C_1 = C_1(k,d)$ and $C_2 = C_2(k,d)$, and an equivalent statement holds for $\epsilon_n(B_1(\mathbb{F}_s^d))$. (Generally, throughout this manuscript, we will use the notation $X\lesssim Y$ to mean that $X\leq CY$ for some constant $C$, $X\gtrsim Y$ to mean that $X \geq cY$ for some constant $c$, and $X\eqsim Y$ to mean that $X\gtrsim Y$ and $X\lesssim Y$. Moreover, if the constants may depend on a small number of parameters, these will be indicated as subscripts of corresponding symbol. For dependence upon many parameters, the dependence (or independence) will be indicated in the text.) Let us discuss some consequences of these metric entropy rates.
+
+The first consequence concerns approximation rates from $\Sigma_{n,M}(\mathbb{P}^d_k)$, with sufficiently large, but fixed, $M$ (i.e. the $\ell^1$-norm of the coefficients $a_j$ is kept bounded). An important result, first observed by Makovoz \cite{makovoz1996random}, is that for certain dictionaries the rate in \eqref{fundamental-bound} can be improved. In particular, for the dictionary $\mathbb{P}^d_0$ corresponding to neural networks with Heaviside activation function, Makovoz showed that for $f\in B_1(\mathbb{P}^d_0)$
+\begin{equation}\label{makovoz-original}
+ \inf_{f_n\in \Sigma_{n,M}(\mathbb{P}^d_0)} \|f - f_n\|_{L^2(B_1^d)} \lesssim_d n^{-\frac{1}{2}-\frac{1}{2d}}.
+\end{equation}
+(Note that here and in what follows the implied constant is independent of $n$, and the bound $M$ is fixed and independent of $n$.)
+Furthermore, improved rates have been obtained for other dictionaries. In particular, in \cite{klusowski2018approximation}, the dictionaries $\mathbb{P}^d_k$ corresponding to neural networks with activation function $\sigma = [\max(0,x)]^k$ are studied for $k=1,2$ and it is shown that for $f\in B_1(\mathbb{P}^d_k)$
+\begin{equation}
+ \inf_{f_n\in \Sigma_{n,M}(\mathbb{P}^d_k)} \|f - f_n\|_{L^2(B_1^d)} \lesssim_{k,d} n^{-\frac{1}{2}-\frac{1}{d}}.
+\end{equation}
+This analysis is extended to $k\geq 3$ in \cite{CiCP-28-1707}, where the same approximation rate is attained. This raises the natural question of what the optimal approximation rates for $\Sigma_{n,M}(\mathbb{P}^d_k)$ are. 
+
+Specifically, for each $k=0,1,2,...$ and dimension $d=2,...$ (the case $d=1$ is comparatively trivial), what is the largest possible value of $\alpha := \alpha(k,d)$ such that for $f\in B_1(\mathbb{P}^d_k)$ we have
+\begin{equation}
+ \inf_{f_n\in \Sigma_{n,M}(\mathbb{P}^d_k)} \|f - f_n\|_{L^2(B_1^d)} \lesssim_{k,d} n^{-\frac{1}{2}-\alpha(k,d)}.
+\end{equation}
+The result above imply that $\alpha(k,d) \geq \frac{1}{2d}$ for $k=0$ and $\alpha(k,d) \geq \frac{1}{d}$ for $k > 0$. When $d > 1$, the best available upper bounds on $\alpha(k,d)$ are $\alpha(d,k) \leq \frac{k+1}{d}$ (see \cite{makovoz1996random,klusowski2018approximation}), except in the case $k=0$, $d=2$, where Makovoz obtains the sharp bound $\alpha(0,2) = \frac{1}{4}$ \cite{makovoz1996random}.
+
+A consequence of the entropy calculation \eqref{metric-entropy-rates}, specifically the lower bound in Theorem \ref{relu-k-lower-bound-corollary} and the approximation rate in Theorem \ref{relu-k-rate-corollary}, is that $\alpha(k,d) = \frac{2k+1}{2d}$, i.e. that for $f\in B_1(\mathbb{P}_k^d)$, we have the rate
+\begin{equation}\label{reluk-approximation-rate}
+ \inf_{f_n\in \Sigma_{n,M}(\mathbb{P}_k)} \|f - f_n\|_{L^2(B_1^d)} \lesssim_{k,d} n^{-\frac{1}{2}-\frac{2k+1}{2d}},
+\end{equation}
+and that this exponent can not be improved. This solves the problems posed in \cite{makovoz1996random} and \cite{klusowski2018approximation} for approximation rates in $L^2(B_1^d)$. In particular, it shows that the rate \eqref{makovoz-original} obtained by Makovoz \cite{makovoz1996random} is optimal for all $d \geq 3$, and closes the gap between the best upper and lower bounds obtained in \cite{klusowski2018approximation} for approximation in $L^2(B_1^d)$ by neural networks with ReLU$^k$ activation function.
+
+The second important consequence concerns the more general stable non-linear approximation studied in \cite{cohen2020optimal}, instead of approximation by $\Sigma_{n,M}(\mathbb{P}^d_k)$. In \cite{cohen2020optimal}, for a subset $A\subset H$ and a fixed $\gamma > 0$, approximation schemes are considered which consist of a pair of $\gamma$-Lipschitz functions $a:H\rightarrow \mathbb{R}^n$, $M:\mathbb{R}^n\rightarrow H$. Here, one can think of $a$ as an encoding map and $M$ as a decoding map, which are both required to be Lipschitz. Then the stable manifold $n$-widths are defined as the reconstruction error of the best encoding scheme $a,M$,
+\begin{equation}
+ \delta^*_{n,\gamma}(A)_H = \inf_{a,M} \sup_{x\in A} \|x - M(a(x))\|_H.
+\end{equation}
+Note that in general we must choose a norm on $R^n$ as well, but since $H$ is a Hilbert space we may take the Euclidean norm (this follows from the results in \cite{cohen2020optimal}).
+
+The main results of \cite{cohen2020optimal} relate the stable manifold $n$-widths $\delta^*_{n,\gamma}(A)_H$ to the entropy numbers $\epsilon_n(A)_H$. Combining this with our calculation of the entropies of $B_1(\mathbb{P}_k^d)$ and $B_1(\mathbb{F}_s^d)$, we are able to calculate the stable manifold $n$-widths of these sets as well. In particular, combining the entropy rates \eqref{metric-entropy-rates} with Theorems 3.3 and 4.1 of \cite{cohen2020optimal}, we get the weak equivalences
+\begin{equation}
+ \delta^*_{n,2}(B_1(\mathbb{P}_k^d))_{H}  \eqsim_{k,d} n^{-\frac{1}{2} - \frac{2k+1}{2d}},~ \delta^*_{n,2}(B_1(\mathbb{F}_s^d))_{H} \eqsim_{s,d} n^{-\frac{1}{2} - \frac{s}{d}},
+\end{equation}
+where $H = L^2(B_1^d)$.
+Thus, the entropy rates \eqref{metric-entropy-rates} combined with the results of \cite{cohen2020optimal} give the theoretically best possible approximation rate that can be attained for the $B_1(\mathbb{P}_k^d)$, and thus for the Barron space when $k=1$, using any stable approximation scheme. Combined with the approximation rate \eqref{reluk-approximation-rate}, this shows that no stable approximation scheme can approximate functions $f\in B_1(\mathbb{P}_k^d)$ more efficiently than shallow neural networks.
+
+We note also that Carl's inequality \cite{carl1981entropy} can also be used in combination with \eqref{metric-entropy-rates} to derive lower bounds on the Kolmogorov $n$-widths of $B_1(\mathbb{P}_k^d)$ and $B_1(\mathbb{F}_s^d)$. Recall that the Kolmogorov $n$-widths of a set $A\subset H$ is given by
+\begin{equation}
+ d_n(A)_H = \inf_{Y_n}\sup_{x\in A}\inf_{y\in Y_n}\|x - y\|_H,
+\end{equation}
+where the first infemum is over the collection of subspaces $Y_n$ of dimension $n$. Using Carl's inequality, the entropy rates \eqref{metric-entropy-rates} imply the lower bounds
+\begin{equation}
+ d_n(B_1(\mathbb{P}_k^d))_{H}  \gtrsim_{k,d} n^{-\frac{1}{2} - \frac{2k+1}{2d}},~ d_n(B_1(\mathbb{F}_s^d))_{H} \gtrsim_{s,d} n^{-\frac{1}{2} - \frac{s}{d}},
+\end{equation}
+with $H = L^2(B_1^d)$. These results give a lower bound on how effectively the unit balls in these spaces can be approximated by linear methods.
+
+Further, the entropy rates \eqref{metric-entropy-rates} allow the comparison of the spaces $\mathcal{K}_1(\mathbb{P}_k^d)$ and $\mathcal{K}_1(\mathbb{F}_s^d)$ with each other and with more traditional function spaces. For instance, it is known that the entropy of the Sobolev unit ball $B(H^r) = \{f\in L^2(B_1^d):~\|f\|_{H^r(B_1^d)} \leq 1\}$ in the space $H = L^2(B_1^d)$ is given by (see \cite{lorentz1996constructive}, Chapter 15)
+\begin{equation}
+ \epsilon_n(B(H^r)) \eqsim_{r,d} n^{-\frac{r}{d}}.
+\end{equation}
+We observe that for fixed smoothness $k$, the entropy numbers of $B(H^k)$ decay very slowly in high dimensions. This phenomenon is known as the curse of dimensionality, and has the consequence that general high dimensional functions are difficult to approximate accurately. Comparing with the entropy rates \eqref{metric-entropy-rates}, we see that entropy of $B_1(\mathbb{P}_1^d)$ and $B_1(\mathbb{F}_s^d)$ exhibit a decay rate of at least $O(n^{-\frac{1}{2}})$ regardless of dimension. In general, to overcome the curse of dimensionality, it is necessary to find low entropy sets of functions which capture the phenomenon to be modelled.
+
+Finally, it is observed in \cite{wojtowytsch2020representation} that the inclusion $\mathcal{K}_1(\mathbb{F}_{k+1})\subset \mathcal{K}_1(\mathbb{P}_k)$ is strict. This leaves open the question of how much larger the Barron space $\mathcal{K}_1(\mathbb{P}_k)$ is, i.e. how much is lost by considering Barron's integral condition \eqref{barron-integral-condition} on the Fourier transform instead of the nore natural space $\mathcal{K}_1(\mathbb{P}_k)$. The entropy rates \eqref{metric-entropy-rates} give an answer to this question. In particular, we see that the entropy numbers $\epsilon_n(B_1(\mathbb{F}_{k+1}))$ decay faster by a factor of $n^{-\frac{1}{2d}}$, which, comparing with the entropy of Sobolev balls, is analogous to about half a derivative.
+
+The paper is organized as follows. In Section \ref{spectral-barron-section} we discuss some of the technical subleties in defining the $\mathcal{K}_1(\mathbb{D})$ spaces and the dictionaries $\mathbb{P}^d_k$. We also give a characterization of $\mathcal{K}_1(\mathbb{F}^d_s)$ in terms of the Fourier transform. Then in Section \ref{main-result-1-section} we give our first main result, which gives approximation rates from $\Sigma_{n,M}(\mathbb{D})$ and upper bounds on the entropy of $B_1(\mathbb{D})$ for dictionaries $\mathbb{D}$ which are parameterized by a compact manifold. We apply this to obtain an upper bound on the entropy numbers of $B_1(\mathbb{P}^d_k)$ and $B_1(\mathbb{F}^d_s)$. In Section \ref{main-result-2-section} we give our second main result, which gives a lower bound on the metric entropy numbers of convex hull of ridge functions. We use this to obtain matching lower bounds on the entropy numbers of $B_1(\mathbb{P}^d_k)$ and $B_1(\mathbb{F}^d_s)$. Finally, we give some concluding remarks and further research directions.
+
+
+
+\section{Properties of the spaces $\mathcal{K}_1(\mathbb{D})$, $\mathcal{K}_1(\mathbb{P}^d_k)$, and $\mathcal{K}_1(\mathbb{F}^d_s)$}\label{spectral-barron-section}
+In this section, we derive some fundamental properties of the spaces $\mathcal{K}_1(\mathbb{D})$ for a general dictionary $\mathbb{D}$. Further, we derive fundamental properties of the specific spaces $\mathcal{K}_1(\mathbb{P}_k)$ and their relationship with the Barron space considered in \cite{ma2019barron, wojtowytsch2020representation}. Finally, we characterize the $\mathcal{K}_1(\mathbb{F}_s)$ spaces in terms of the Fourier transform.
+
+\subsection{Basic Properties of $\mathcal{K}_1(\mathbb{D})$}
+We begin with an elementary and well-known lemma concerning the unit ball $B_1(\mathbb{D})$, the norm $\|\cdot\|_{\mathcal{K}_1(\mathbb{D})}$, and the space $\mathcal{K}_1(\mathbb{D})$. The most important point here is that the space $\mathcal{K}_1(\mathbb{D})$ is a Banach space.
+\begin{lemma}\label{fundamental-norm-lemma}
+ Suppose that $\sup_{d\in \mathbb{D}} \|d\|_H = K_\mathbb{D} < \infty$. Then the $\mathcal{K}_1(\mathbb{D})$ norm satisfies the following properties.
+ \begin{itemize}
+  \item $B_1(\mathbb{D}) = \{f\in H:\|f\|_{\mathcal{K}_1(\mathbb{D})}\leq 1\}$
+  \item $\|f\|_H\leq K_\mathbb{D}\|f\|_{\mathcal{K}_1(\mathbb{D})}$
+  \item $\mathcal{K}_1(\mathbb{D}) := \{f\in H:~\|f\|_{\mathcal{K}_1(\mathbb{D})} < \infty\}$ is a Banach space with the $\|\cdot\|_{\mathcal{K}_1(\mathbb{D})}$ norm
+ \end{itemize}
+ 
+\end{lemma}
+\begin{proof}
+ From definition \eqref{norm-definition} we see that $B_1(\mathbb{D}) \subset \{f\in H:\|f\|_{\mathcal{K}_1(\mathbb{D})}\leq 1\}$ since $r=1$ is an element of the infemum in \eqref{norm-definition}. For the reverse inclusion, let $\|f\|_{\mathcal{K}_1(\mathbb{D})}\leq 1$. By \eqref{norm-definition} this means that for every $n$ we must have $f\in (1 + \frac{1}{n})B_1(\mathbb{D})$, or in other words that $f_n = \frac{n}{n+1}f\in B_1(\mathbb{D})$. However, it is clear that $f_n\rightarrow f$ in $H$ and thus since $B_1(\mathbb{D})$ is closed, we have $f\in B_1(\mathbb{D})$. Thus $\{f\in H:\|f\|_{\mathcal{K}_1(\mathbb{D})}\leq 1\} = B_1(\mathbb{D})$, proving the first statement.
+ 
+ For the second statement, note that $\|d\|_H\leq K_\mathbb{D}$ for all $d\in \mathbb{D}$. This immediately implies that $\|f\|_H\leq K_\mathbb{D}$ for all $f\in B_1(\mathbb{D})$, which proves the result by an elementary scaling argument.
+ 
+ Finally, for the third statement we must show that the set $\mathcal{K}_1(\mathbb{D})$ is complete with respect to the $\|\cdot\|_{\mathcal{K}_1(\mathbb{D})}$ norm.
+ 
+ So let $\{f_n\}_{n=1}^\infty$ be a Cauchy sequence with respect to the $\|\cdot\|_{\mathcal{K}_1(\mathbb{D})}$ norm. By the second statement, we have $\|f_n - f_m\|_H\leq \|f_n - f_m\|_{\mathcal{K}_1(\mathbb{D})}$, so that the sequence is Cauchy with respect the the $H$-norm as well. Thus, there exists an $f\in H$, such that $f_n\rightarrow f$ in $H$.
+ 
+ We will show that in fact $f_n\rightarrow f$ in the $\mathcal{K}_1(\mathbb{D})$-norm as well (note that this automatically implies that $\|f\|_{\mathcal{K}_1(\mathbb{D})}<\infty$). 
+ 
+ To this end, let $\epsilon > 0$ and choose $N$ such that $\|f_n - f_m\|_{\mathcal{K}_1(\mathbb{D})} < \epsilon / 2$ for $n,m \geq N$ ($\{f_n\}$ is Cauchy, so this is possible). In particular, this means that $\|f_N - f_m\|_{\mathcal{K}_1(\mathbb{D})}\leq \epsilon / 2$ for all $m > N$. Now the first statement implies that $f_m - f_N \in (\epsilon / 2)B_1(\mathbb{D})$, or in other words that $f_m \in f_N + (\epsilon / 2)B_1(\mathbb{D})$. Since $f_m\rightarrow f$ in $H$, and $B_1(\mathbb{D})$ is closed in $H$, we get $f\in f_N + (\epsilon / 2)B_1(\mathbb{D})$. Hence $\|f - f_N\|_{\mathcal{K}_1(\mathbb{D})} \leq \epsilon / 2$ and the triangle inequality finally implies that $\|f - f_m\|_{\mathcal{K}_1(\mathbb{D})} \leq \epsilon$ for all $m \geq N$. Thus $f_n\rightarrow f$ in the $\mathcal{K}_1(\mathbb{D})$-norm and $\mathcal{K}_1(\mathbb{D})$ is complete.
+\end{proof}
+
+% Note that the properties proved in Lemma \ref{fundamental-norm-lemma} depend upon the fact that the unit ball $B_1(\mathbb{D})$ is closed in $H$. If the norm is instead defined differently, for instance using integral representations, we argue that it is important to ensure that the unit ball is closed in $H$ to ensure that the resulting space is well-behaved. For instance, let $\Omega\subset \mathbb{R}^d$ be a bounded domain and $\sigma:\mathbb{R}\rightarrow \mathbb{R}$ an activation function. Following \cite{ma2019barron}, which inspired the present work, define
+% \begin{equation}\label{E-barron-norm}
+%  \|f\|_{\mathcal{B}^\sigma(\Omega)} = \inf\left\{\int_{S_\sigma} d|\mu|(\omega,b):~f(x)=\int_{S_\sigma} \sigma(\omega\cdot x + b)d\mu(\omega,b)~\text{for}~x\in \Omega\right\},
+% \end{equation}
+% where $S_\sigma\subset \mathbb{R}^d\times\mathbb{R}$ is a subset of parameters defending upon $\sigma$.
+% 
+% We compare this space to the space $\mathcal{K}_1(\mathbb{D})$ for the dictionary
+% \begin{equation}
+%  \mathbb{D}^\sigma = \{\sigma(\omega\cdot x + b):~(\omega,b)\in S_\sigma\}\subset L^2(\Omega).
+% \end{equation}
+% It is clear that $\{f:\|f\|_{\mathcal{B}^\sigma(\Omega)} \leq 1\}\subset B_1(\mathbb{D}^\sigma)$ which implies that $\|\cdot\|_{\mathcal{K}_1(\mathbb{D}^\sigma)}\leq \|\cdot\|_{\mathcal{B}^\sigma(\Omega)}$ and $\mathcal{B}^\sigma(\Omega)\subset \mathbb{K}_1(\mathbb{D}^\sigma)$. However, if there are elements in the closure $B_1(\mathbb{D})$ which are not given by integral representations of the form in \eqref{E-barron-norm}, the reverse inclusion may not hold, as the following result shows.
+% 
+% \begin{proposition}
+%  Suppose $\Omega = [-1,1]^d$ and $\sigma$ is a smooth sigmoidal function. Let $S_\sigma = \mathbb{R}^d\times \mathbb{R}$. Then $\mathcal{B}^\sigma(\Omega)\subsetneq \mathbb{K}_1(\mathbb{D}^\sigma)$.
+% 
+% \end{proposition}
+% \begin{proof}
+%  Consider the Heaviside function
+%  \begin{equation}
+%   H(\tau\cdot x) = \begin{cases} 
+%       0 & \tau\cdot x\leq 0 \\
+%       1 & \tau\cdot x\geq 0.
+%    \end{cases}
+%  \end{equation}
+%  for $\tau\in S^{d-1}:=\{x\in \mathbb{R}^d:~|x| = 1\}$. Since $\sigma$ is sigmoidal, we have
+%  \begin{equation}
+%   \lim_{r\rightarrow \infty}\|H(\tau\cdot x) - \sigma(r\tau\cdot x)\|_{L^2(\Omega)} = 0.
+%  \end{equation}
+%  Thus $H(\tau\cdot x)\in B_1(\mathbb{D})$. However, since $\sigma$ is smooth, the discontinuous function $H(\tau\cdot x)$ cannot have an integral representation of the form \eqref{E-barron-norm} and so $H(\tau\cdot x)\notin \mathcal{B}^\sigma(\Omega)$.
+% 
+% \end{proof}
+% It is also not clear whether the space $\mathcal{B}^\sigma$ satisfies the conclusions of Lemma \ref{fundamental-norm-lemma} in general. Despite these issues for general activation functions $\sigma$, for specific activation functions such as the rectified linear unit, which are of primary interest in \cite{ma2019barron}, the space $\mathcal{B}^\sigma$ may in fact be bettter behaved.
+
+% We begin by noting that the definition \eqref{unit-ball-definition} of $B_1(\mathbb{D})$ contains a closure in $H$ instead of being written in terms of an infemum over integral representations \cite{ma2019barron} or representations by finite sums \cite{barron2008approximation}. This follows the approach taking previously in the literature \cite{devore1998nonlinear,kurkova2001bounds,kurkova2002comparison} and can result in a larger space for some dictionaries. As an example, consider the following situation.
+% 
+% Suppose that $\Omega\subset \mathbb{R}^d$ is bounded and $\sigma$ is a smooth sigmoidal function. Consider the dictionary
+% \begin{equation}
+%  \mathbb{D}_{\sigma} = \{\sigma(\omega\cdot x + b):~\omega\in \mathbb{R}^d,~b\in \mathbb{R}\}.
+% \end{equation}
+% 
+% By taking $\omega\rightarrow \infty$, we easily see that $B_1(\mathbb{P}_0)\subset B_1(\mathbb{D}_{\sigma})$ (this is the essence of the argument by Barron \cite{barron1993universal}). However, the discontinuous Heaviside function cannot be written as an integral representation of the smooth dictionary elements in $\mathbb{D}_\sigma$. Consequently the definition in terms of integral representations given in \cite{ma2019barron} would fail to capture such functions.
+
+Let us remark that for some dictionaries $\mathbb{D}$ the $\mathcal{K}_1(\mathbb{D})$ space can sometimes by substantially smaller than $H$. In fact, if the dictionary $\mathbb{D}$ is contained in a closed subspace of $H$, then we have the following elementary result.
+\begin{lemma}\label{subspace-lemma}
+ Let $K\subset H$ be a closed subspace of $H$. Then $\mathbb{D}\subset K$ iff $\mathcal{K}_1(\mathbb{D})\subset K$.
+\end{lemma}
+\begin{proof}
+ We have $\mathbb{D}\subset\mathcal{K}_1(\mathbb{D})$ so that the reverse implication is trivial. For the forward implication, since $\mathbb{D}\subset K$ and $K$ is closed, it follows that $B_1(\mathbb{D})\subset K$. Then, from the definition \eqref{norm-definition}, it follows that
+ \begin{equation}
+  \mathcal{K}_1(\mathbb{D}) = \bigcup_{r > 0} rB_1(\mathbb{D})\subset K.
+ \end{equation}
+
+\end{proof}
+ A simple example when this occurs is when considering a shallow neural network with activation function $\sigma$ which is a polynomial of degree $k$. In this case the space $\mathcal{K}_1(\mathbb{D})$ is contained in the finite-dimensional space of polynomials of degree $k$, and the $\|\cdot\|_{\mathcal{K}_1(\mathbb{D})}$ norm is infinite on non-polynomial functions. This is related to the well-known result that neural network functions are dense iff the activation function is not a polynomial \cite{leshno1993multilayer}. 
+\begin{proposition}
+ Let $\Omega\subset \mathbb{R}^d$ be a bounded domain and $\mathbb{D} = \{\sigma(\omega\cdot x + b):(\omega,b)\in \mathbb{R}^d\times \mathbb{R}\}\subset L^2(\Omega)$, where the activation function $\sigma\in L^\infty_{loc}(\mathbb{R})$. Suppose further that the set of discontinuities of $\sigma$ has Lebesgue measure $0$. Then $\mathcal{K}_1(\mathbb{D})$ is finite dimensional iff $\sigma$ is a polynomial (a.e.).
+\end{proposition}
+\begin{proof}
+ If $\sigma$ is a polynomial, $\mathbb{D}$ is contained in the space of polynomials of degree at most $\text{deg}(\sigma)$, which is finite dimensional. This implies the result by Lemma \ref{subspace-lemma}. For the reverse implication, we use Theorem 1 of \cite{leshno1993multilayer}, which states that if $\sigma$ is not a polynomial, then 
+ $$
+ C(\Omega) \subset \overline{\left\{\sum_{i=1}^na_i\sigma(\omega_i\cdot x + b_i)\right\}},
+ $$
+ where the closure is taken in $L^\infty(\Omega)$ (note that this cumbersome statement is necessary since $\sigma$ may not be continuous). This immediately implies that $\mathcal{K}_1(\mathbb{D})$ is dense in $L^2(\Omega)$ (since $C(\Omega)$ is dense in $L^2(\Omega)$), and thus obviously not finite dimensional.
+\end{proof}
+
+Next, we note that Maurey's approximation rate has a converse. In particular, if a function can be approximated by elements from $\Sigma_{n,M}(\mathbb{D})$ with fixed $M$, then it must be in the space $\mathcal{K}_1(\mathbb{D})$. In particular, we have
+\begin{theorem}
+$\quad$
+ \begin{enumerate}
+ \item Let $f\in H$ and suppose that $f_n\rightarrow f$ with $f_n\in \Sigma_{n,M}(\mathbb{D})$ for a fixed $M < \infty$. Then $f\in \mathcal{K}_1(\mathbb{D})$ and
+ \begin{equation}
+  \|f\|_{\mathcal{K}_1(\mathbb{D})} \leq M.
+  \end{equation}
+  \item If $f\in \mathcal{K}_1(\mathbb{D})$,
+  $$
+  \inf_{f_n\in \Sigma_{n,M}(\mathbb{D})} \|f-f_n\|_H\le n^{-\frac12}\|f\|_{H}
+  $$
+  \end{enumerate}
+ \end{theorem} 
+\begin{proof}
+ It is clear from the definitions that $\Sigma_{n,M}(\mathbb{D}) \subset MB_1(\mathbb{D})$ for every $n$. Thus $f_n\in MB_1(\mathbb{D})$ and since $MB_1(\mathbb{D})$ is closed, we get $f\in MB_1(\mathbb{D})$, so that $\|f\|_{\mathcal{K}_1(\mathbb{D})} \leq M$.
+
+
+ We follow the argument of \cite{barron1993universal}, see also \cite{jones1992simple,pisier1981remarques} to prove the second statement. The result is trivial if $M = 0$, so suppose that $M > 0$. By normalizing both $f$ and the coefficients $a_i$  by $M$, we reduce to the case where $M = 1$. In this case $f\in \mathcal{C}_\psi$ by Lemma \ref{fundamental-norm-lemma}.
+
+  Let $\epsilon > 0$. Then since $f\in \mathcal{C}_\psi$, i.e. $f$ is in the closure of the convex hull of $\{e^{{\mathrm{i}\mkern1mu}\phi}\psi_\theta:~\phi\in \mathbb{R},~\theta\in\Theta\}$, there exist $a_i$, $\theta_i$ with $i=1,...,N$, such that
+ \begin{equation}\label{eq_129}
+  \left\|f - \sum_{i=1}^Na_i\psi_{\theta_i}\right\|_H \leq \epsilon,
+ \end{equation}
+ and $\sum_{i=1}^N |a_i| = 1$ (note here that $N$ may depend upong $\epsilon$ and in particular may be very large). Next, draw $n$ samples $(i_1,...,i_n)$ from the discrete distribution on $\{1,...,N\}$ with the probability of index $i$ given by $|a_i|$, and form the random variable
+\begin{equation}
+ f_n = \frac{1}{n}\sum_{j=1}^n \frac{a_{i_j}}{|a_{i_j}|}\psi_{\theta_{i_j}} \in \Sigma_{n,M}(\mathbb{D}).
+\end{equation}
+We evidently have $\mathbb{E}(f_n) = \mathbb{E}(f_1) = \sum_{i=1}^Na_i\psi_{\theta_i}$ and $$\mathbb{V}(f_n) = \mathbb{E}(\|f_n-\mathbb{E}(f_n)\|_H^2) = \frac{1}{n}\mathbb{V}(f_1) = \frac{1}{n}(\mathbb{E}(\|f_1\|_H^2) - \|\mathbb{E}(f_n)\|_H^2)\leq \frac{\sup_{\theta\in \Theta} \|\psi_\theta\|^2_H}{n} = \frac{1}{n}.$$ 
+This means that there must exist a realization $\tilde{f}_n\in\Sigma_{n,M}(\mathbb{D})$ such that
+\begin{equation}
+ \|\tilde{f}_n - \sum_{i=1}^Na_i\psi_{\theta_i}\|_H^2 \leq \frac{1}{n}.
+\end{equation}
+Combining this with \eqref{eq_129}, we see that
+\begin{equation}
+ \inf_{f_n\in\Sigma_{n,M}(\mathbb{D})} \|f-f_n\|_H \leq n^{-\frac{1}{2}} + \epsilon.
+\end{equation}
+Since $\epsilon > 0$ was arbitrary, we obtain the desired result.
+\end{proof}
+
+
+Finally, we give a lemma which relates the space $\mathcal{K}_1(\mathbb{D})$ to the set of functions which have integral representations by elements of $\mathbb{D})$.
+\begin{lemma}\label{prokhorov-lemma}
+ Suppose that $\mathbb{D}\subset H$ is compact. Then $f\in \mathcal{K}_1(\mathbb{D})$ iff there exists a Borel measure $\mu$ on $\mathbb{D}$ such that
+ \begin{equation}
+  f = \int_\mathbb{D} hd\mu(h).
+ \end{equation}
+ Moreover,
+ \begin{equation}
+  \|f\|_{\mathcal{K}_1(\mathbb{D})} = \inf\left\{\int_\mathbb{D} d|\mu|(h):~f = \int_\mathbb{D} hd\mu(h)\right\}.
+ \end{equation}
+
+\end{lemma}
+\begin{proof}
+ It suffices to show that 
+ $$B_1(\mathbb{D}) = M(\mathbb{D}):=\left\{\int_\mathbb{D} hd\mu(h):~\int_\mathbb{D} d|\mu|(h) \leq 1\right\}.$$
+ By approximating the integral using simple functions we immediately see that $M(\mathbb{D})\subset B_1(\mathbb{D})$. To prove the inverse inclusion, we must show that $M(\mathbb{D})$ is closed. This follows immediately from Prokhorov's theorem \cite{prokhorov1956convergence} (see also \cite{dudley2018real}, Theorem 11.5.4, for instance). Indeed, let $f_n\rightarrow f$ with $f_n\in M(\mathbb{D})$ and let $\mu_n$ be a corresponding sequence of Borel measure on $\mathbb{D}$. By the compactness of $\mathbb{D}$ and Prokhorov's theorem, by taking a subsequence if necessary we may assume that the $\mu_n\rightarrow \mu$ weakly. This implies $f = \int_\mathbb{D} hd\mu(h)$ and $\int_\mathbb{D} d|\mu|(h) \leq 1$, so that $f\in M(\mathbb{D})$.
+\end{proof}
+
+
+\subsection{Properties of $\mathcal{K}_1(\mathbb{P}^d_k)$ and relationship with the Barron space}
+Next, we explain the precise definition \eqref{relu-k-space-definition}, i.e. how we define an appropriate dictionary corresponding to the ReLU$^k$ activation function. The problem with letting $\sigma_k(x) = [\max(0,x)]^k$ and setting
+\begin{equation}
+ \mathbb{D} = \{\sigma_k(\omega\cdot x + b):~\omega\in \mathbb{R}^d,~b\in \mathbb{R}\},
+\end{equation}
+is that unless $k=0$ the dictionary elements are not bounded in $L^2(B_1^d)$, since $\sigma_k$ is not bounded and we can shift $b$ arbitrarily. This manifests itself in the fact that $\|\cdot\|_{\mathcal{K}_1(\mathbb{D})}$ is a semi-norm which contains the set of polynomials of degree at most $k-1$ in its kernel (this occurs since the arbirtrarily large elements in $\mathbb{D}$ are polynomials on $B_1^d$).
+
+We rectify this issue by considering the dictionary
+\begin{equation}
+ \mathbb{P}^d_k = \{\sigma_k(\omega\cdot x + b):~\omega\in S^{d-1},~b\in [-2,2]\}.
+\end{equation}
+We remark that the constant $2$ above can be replaced by any $c > 1$, which results in an equivalent norm. This follows since the elements of $\mathbb{P}^d_k$ for which $|b| > 1$ are polynomials, and we only need finitely many of them to span the space of polynomials.
+
+% \begin{proposition}\label{constant-independence-proposition}
+%  Let $c > 1$ and consider the dictionary
+%  \begin{equation}
+%   \mathbb{P}^c_k = \{\sigma_k(\omega\cdot x + b):~\omega\in S^{d-1},~b\in [-cR_\Omega,cR_\Omega]\}
+%  \end{equation}
+%  The we have
+%  \begin{equation}
+%   \|f\|_{\mathcal{K}_1(\mathbb{P}_k^c)} \eqsim \|f\|_{\mathcal{K}_1(\mathbb{P}_k)},
+%  \end{equation}
+%  where the implied constant depends only upon $c$ and $k$.
+% \end{proposition}
+% For the proof of this proposition, we will need the following well-known lemma which we include for completeness.
+% \begin{lemma}\label{polynomial-basis-lemma}
+%  Let $b_1,...,b_{k+1}\subset \mathbb{R}$ be distinct points. Then $(x+b_1)^k,...,(x+b_{k+1})^k$ is a basis for the space of polynomials of degree at most $k$.
+% \end{lemma}
+% \begin{proof}
+%  We expand out the polynomials to get
+%  \begin{equation}
+%   (x+b_i)^k = \sum_{j=0}^k \binom{k}{j}b_i^jx^{k-j}.
+%  \end{equation}
+%  Thus the change of basis matrix from the monomials $1,x,...,x^k$ to $(x+b_1)^k,...,(x+b_{k+1})^k$ has entries $M_{ij} = \binom{k}{j}b_i^j$. This is a Vandermode matrix whose $j$-th column has been scaled by $\binom{k}{j}\neq 0$. Since the $b_i$ are distinct, its determinant is non-zero and thus $(x+b_1)^k,...,(x+b_{k+1})^k$ is a basis as claimed.
+% 
+% \end{proof}
+% 
+% \begin{proof}[Proof of Proposition \ref{constant-independence-proposition}]
+%  We will show that $\mathcal{K}_1(\mathbb{P}_k^{c_1})$ and $\mathcal{K}_1(\mathbb{P}_k^{c_2})$ are equivalent for any $c_1 > c_2 > 1$. We clearly have $\mathbb{P}_k^{c_1}\supset \mathbb{P}_k^{c_2}$, so that $
+%   \|f\|_{\mathcal{K}_1(\mathbb{P}_k^{c_1})} \leq \|f\|_{\mathcal{K}_1(\mathbb{P}^{c_2}_k)}$. We must prove the reverse inequality.
+%   
+%   This will follow if for some constant $K$ we can show that $\|g\|_{\mathcal{K}_1(\mathbb{P}^{c_2}_k)} \leq K$, i.e. $g\in KB_1(\mathbb{P}^{c_2}_k)$, for every $g\in \mathbb{P}_k^{c_1}$. To this end, let $g\in \mathbb{P}_k^{c_1}$. Then $g(x) = \sigma_k(\omega\cdot x + b)$ with $\omega\in S^{d-1}$ and $b\in [-c_1R_\Omega, c_1R_\Omega]$. If $b\in [-c_2R_\Omega, c_2R_\Omega]$, then clearly $g(x)\in \mathbb{P}_k^{c_2}$ so that $\|g\|_{\mathcal{K}_1(\mathbb{P}^{c_2}_k)} \leq 1$. So suppose that $b\notin [-c_2R_\Omega, c_2R_\Omega]$. Then since $c_2 > 1$ and $|\omega| = 1$, the quantity $\omega\cdot x + b$ does not change sign on $\Omega$ and so either 
+%   $$g(x) = \sigma_k(\omega\cdot x + b) = (\omega\cdot x + b)^k,$$
+%  or $g = 0$. In the latter case the conclusion is clear, so consider the case where $d = (\omega\cdot x + b)^k$. 
+%  
+%  Choose $k+1$ distinct numbers $b_1,...,b_{k+1}\in [R_\Omega, c_2R_\Omega]$. By Lemma \ref{polynomial-basis-lemma} the $(x+b_i)^k$ span the space of polynomials of degree $k$ and thus we can write $(\omega\cdot x + b)^k$ as a linear combination of $(\omega\cdot x+b_i)^k = \sigma_k(\omega\cdot x+b_i)\in \mathbb{P}_k^{c_2}$ for $i=1,...,k+1$. Moreover, the coefficients are continuous as a function of $b$ and thus can be uniformly bounded for $b\in [-c_1R_\Omega,c_1R_\Omega]$. This proves that there is a constant $K$ independent of $b$ such that $g(x) = \sigma_k(\omega\cdot x + b)\in KB_1(\mathbb{P}_k^{c_2})$, which completes the proof.
+% \end{proof}
+Next, we consider the relationship between $\mathcal{K}_1(\mathbb{P}_k^d)$ and the Barron norm introduced in \cite{ma2019barron}, which is given by
+\begin{equation}\label{barron-norm}
+ \|f\|_{\mathcal{B}} = \inf\left\{\mathbb{E}_\rho(|a|(|\omega|_1 + |b|)):~f(x) = \int_{\mathbb{R}\times\mathbb{R}^d\times\mathbb{R}} a\sigma_1(\omega\cdot x + b)\rho(da,d\omega,db)\right\},
+\end{equation}
+where we recall that $\sigma_1$ is the rectified linear unit and the infemum is taken over all integral representations of $f$. Here $\rho$ is a probability distribution on $\mathbb{R}\times\mathbb{R}^d\times\mathbb{R}$, and the expectation is taken with respect to $\rho$. It turns out that the $\mathcal{K}_1(\mathbb{P}^d_1)$ space is equivalent to the Barron space. 
+
+\begin{proposition}
+ We have
+ \begin{equation}
+  \|f\|_{\mathcal{K}_1(\mathbb{P}^d_1)} \eqsim_d \|f\|_{\mathcal{B}}.
+ \end{equation}
+
+\end{proposition}
+\begin{proof}
+ Consider the dictionary
+ \begin{equation}
+ \mathbb{B} = \{(|\omega|_1 + |b|)^{-1}\sigma_1(\omega\cdot x + b):~\omega\in \mathbb{R}^d,~b\in \mathbb{R}\}\subset L^2(B_1^d).
+\end{equation}
+From lemma \ref{prokhorov-lemma}, it is easy to see that $\|f\|_{\mathcal{K}_1(\mathbb{B})} = \|f\|_{\mathcal{B}}$, so it suffices to show that $\|f\|_{\mathcal{K}_1(\mathbb{P}^d_1)} \eqsim_d \|f\|_{\mathcal{K}_1(\mathbb{B})}$.
+
+ 
+ It suffices to show that $\mathbb{P}^d_1\subset CB_1(\mathbb{B})$ and $\mathbb{B}\subset CB_1(\mathbb{P}^d_1)$ for some constant $C$. 
+ 
+ So let $g\in \mathbb{P}^d_1$. This means that $g(x) = \sigma_1(\omega \cdot x + b)$ for some $\omega\in S^{d-1}$ and $b\in [-2,2]$. Thus $$(|\omega|_1 + |b|) \leq (\sqrt{d} + 2) \leq C:=C(d),$$
+ and since $(|\omega|_1 + |b|)^{-1}\sigma_1(\omega \cdot x + b)\in \mathbb{B}$, we see that $g\in CB_1(\mathbb{B})$. Thus $\mathbb{P}^d_1\subset CB_1(\mathbb{B})$.
+ 
+ Now, let $g\in \mathbb{B}$. Then $g(x) = (|\omega|_1 + |b|)^{-1}\sigma_1(\omega \cdot x + b)$ for some $\omega\in \mathbb{R}^d$ and $b\in \mathbb{R}$. 
+ 
+ Consider first the case when $\omega \neq 0$. Note that by the positive homogeneity of $\sigma_1$ we can assume that $|\omega| = 1$, i.e. that $\omega\in S^{d-1}$. Further, we have that $(|\omega|_1 + |b|)^{-1} \leq (1+|b|)^{-1}$. Thus, we must show that
+ \begin{equation}
+  \tilde g(x) := (1+|b|)^{-1}\sigma_1(\omega \cdot x + b)\in CB_1(\mathbb{P}^d_1) 
+ \end{equation}
+ for $\omega\in S^{d-1}$ and $b\in \mathbb{R}$. For $b\in [-2,2]$ this clearly holds with $C=1$ since $(1 + |b|)^{-1} \leq 1$ and for such values of $b$, we have $\sigma_1(\omega\cdot x + b)\in \mathbb{P}^d_1$. If $b < -2$, then $\tilde g(x) = 0$, so we trivially have $\tilde g\in B_1(\mathbb{P}^d_1)$. Finally, if $b > 2$, then $\omega\cdot x + b$ is positive on $B_1^d$, so that
+ $$
+ \tilde g(x) = (1+|b|)^{-1}(\omega\cdot x + b) = (1+|b|)^{-1}\omega\cdot x + b(1+|b|)^{-1}.
+ $$
+ Now $\omega\cdot x\in B_1(\mathbb{P}^d_1)$ and $1 = [\sigma_1(\omega\cdot x + 2) - \sigma_1(\omega\cdot x + 1)]\in 2 B_1(\mathbb{P}^d_1)$.
+ Combined with the above and the fact that $(1+|b|)^{-1},|b|(1+|b|)^{-1}\leq 1$, we get $\tilde g\in CB_1(\mathbb{P}^d_1)$.
+ 
+ Finally, if $\omega = 0$, then $g(x) = 1$ and by the above paragraph we clearly also have $g\in CB_1(\mathbb{P}_1)$. This completes the proof.
+\end{proof}
+
+Note that it follows from this result that the Barron space $\mathcal{B}$ is a Banach space, which was first proven in \cite{wojtowytsch2020representation}.
+
+\subsection{Characterization of $\mathcal{K}_1(\mathbb{P}^d_k)$}
+In one dimension, the space $\mathcal{K}_1(\mathbb{P}^d_k)$ has a relatively simple characterization in terms of the space of bounded variation (see \cite{wojtowytsch2020representation}, section 4 for a proof in the case $k=1$ in the context of the Barron space).
+
+\begin{theorem}\label{barron-space-1-d-characterization-theorem}
+ We have
+ \begin{equation}
+ \mathcal{K}_1(\mathbb{P}^1_k) = \{f\in L^2([-1,1]):~\text{$f$ is $k$-times differentiable a.e. and }f^{(k)}\in BV([-1,1])\}.
+ \end{equation}
+ In particular, it holds that
+ \begin{equation}
+  \|f\|_{\mathcal{K}_1(\mathbb{P}^1_k)} \eqsim_k \sum_{j=0}^{k-1} |f^{(j)}(-1)| + \|f^{(k)}\|_{BV([-1,1])}. 
+ \end{equation}
+
+\end{theorem}
+\begin{proof}
+ We first prove that 
+ \begin{equation}\label{upper-bound-barron-1-d}
+  \|f\|_{\mathcal{K}_1(\mathbb{P}^1_k)} \lesssim_k \sum_{j=0}^{k-1} |f^{(j)}(-1)| + \|f^{(k)}\|_{BV([-1,1])}. 
+ \end{equation}
+Note that the right hand side is uniformly bounded for all $f = \sigma_k(\pm x + b)\in \mathbb{P}^1_k$, since $\sigma_k^{(k)}$ is a multiple of the Heaviside function and $b$ is bounded by $2$. By taking convex combinations, this means that for some constant $C$, we have
+\begin{equation}
+ \left\{\sum_{j=1}^n a_jh_j:~h_j\in \mathbb{P}^1_k,~\sum_{i=1}^n|a_i|\leq 1\right\} \subset CB^1_{BV,k},
+\end{equation}
+where
+\begin{equation}
+ B^1_{BV,k}:=\left\{f\in L^2([-1,1]):~\sum_{j=0}^{k-1} |f^{(j)}(-1)| + \|f^{(k)}\|_{BV([-1,1])} \leq 1\right\}.
+\end{equation}
+It is well-known that $B^1_{BV,k}$ is compact in $L^1([-1,1])$ (see, for instance Theorem 4 of Chapter 5 in \cite{evans2015measure}). This implies that $B^1_{BV,k}$ is closed in $L^2([-1,1])$, since if $f_n\rightarrow_{L^2} f$ with $f_n\in B^1_{BV,k}$, then there must exist a subsequence $f_{k_n}\rightarrow_{L^1} f'\in B^1_{BV,k}$. Clearly $f=f'$ and so $B^1_{BV,k}$ is closed in $L^2([-1,1])$. From this it follows that $B_1(\mathbb{P}^1_k) \subset CB^1_{BV,k}$ and we obtain \eqref{upper-bound-barron-1-d}. 
+
+Next, we prove the reverse inequality. So let $f\in B^1_{BV,k}$. By Theorem 2 in Chapter 5 of \cite{evans2015measure}, there exist $f_n\in C^\infty\cap B^1_{BV,k}$ such that $f_n\rightarrow f$ in $L^1([-1,1])$. Further, since $f_n,f\in B^1_{BV,k}$, we have that $\|f - f_n\|_{L^\infty([-1,1])}$ is uniformly bounded. Thus $$\|f - f_n\|^2_{L^2([-1,1])} \leq \|f - f_n\|_{L^1([-1,1])}\|f - f_n\|_{L^\infty([-1,1])} \rightarrow 0$$
+and so $f_n\rightarrow f$ in $L^2([-1,1])$ as well.
+
+Using the Peano kernel formula, we see that
+\begin{equation}
+ f_n(x) = \sum_{j=0}^{k} \frac{f_n^{(j)}(-1)}{j!}(x+1)^j + \int_{-1}^1 \frac{f_n^{(k+1)}(b)}{k!}\sigma_k(x-b)db.
+\end{equation}
+From the definition of the $BV$-norm and the fact that $f_n\in B^1_{BV,k}$, we see that
+\begin{equation}
+ \sum_{j=0}^{k} \frac{|f_n^{(j)}(-1)|}{j!}+ \int_{-1}^1 \frac{|f_n^{(k+1)}(b)|}{k!}db \leq C_1
+\end{equation}
+for a fixed constant $C_1$. Choose $k+1$ distinct $b_1,...,b_{k+1}\in [1, 2]$. Then by construction $\sigma_k(x+b_i) = (x+b_i)^k$ is a polynomial on $[-1,1]$. Moreover, it is well-known that the polynomials $(x+b_i)^k$ span the space of polynomials of degree at most $k$. Combined with the coefficient bound
+\begin{equation}
+ \sum_{j=0}^{k} \frac{|f_n^{(j)}(-1)|}{j!} \leq C_1,
+\end{equation}
+we see that
+\begin{equation}
+ \sum_{j=0}^{k} \frac{f_n^{(j)}(-1)}{j!}(x-a)^j \in C_2B_1(\mathbb{P}^1_k)
+\end{equation}
+for a fixed constant $C_2$ (independent of $f_n$). Furthermore, since also
+\begin{equation}
+ \int_{-1}^1 \frac{|f_n^{(k+1)}(b)|}{k!}db \leq C_1,
+\end{equation}
+we obtain
+\begin{equation}
+ \int_{-1}^1 \frac{f_n^{(k+1)}(b)}{k!}\sigma_k(x-b)db\in C_1B_1(\mathbb{P}^1_k).
+\end{equation}
+This implies that $f_n\in CB_1(\mathbb{P}^1_k)$ for $C = C_1 + C_2$ and since $f_n\rightarrow f$ and $B_1(\mathbb{P}^1_k)$ is closed in $L^2([-1,1])$, we get $f\in CB_1(\mathbb{P}^1_k)$, which completes the proof.
+
+\end{proof}
+
+Theorem \ref{barron-space-1-d-characterization-theorem} only serves to characterize the space $\mathcal{K}_1(\mathbb{P}_k^1)$, but this result can be used to bound the $\|\cdot\|_{\mathcal{K}_1(\mathbb{P}^d_k)}$-norm of ridge functions which only vary in one direction in higher dimensions as well.
+\begin{corollary}\label{ridge-corollary}
+ If $f\in L^2([-1,1])$ is $k$-times differentiable a.e. and satisfies
+ \begin{equation}\label{bound-530}
+  \sum_{j=0}^{k-1} |f^{(j)}(-1)| + \|f^{(k)}\|_{BV([-1,1])} \leq 1,
+ \end{equation}
+ then for any $\omega\in S^{d-1}$, $\|f(\omega\cdot x)\|_{\mathcal{K}_1(\mathbb{P}^d_k)} \lesssim_k 1$.
+\end{corollary}
+
+\begin{proof}
+ This follows immediately from the one dimensional result, Theorem \ref{barron-space-1-d-characterization-theorem}, by considering the dictionary $\mathbb{P}_k^\omega = \{\sigma_k(\omega\cdot x + b):~b\in [-2,2]\}$.
+\end{proof}
+
+An important application of Corollary \ref{ridge-corollary} is to note that the functions $f_\omega(x) = e^{2\pi i \omega\cdot x}$ satisfy
+\begin{equation}\label{eq-550}
+ \sum_{j=0}^{k-1} |f_\omega^{(j)}(-1)| + \|f_\omega^{(k)}\|_{BV([-1,1])} \lesssim_k (1 + |\omega|)^{k+1},
+\end{equation}
+which leads immediately to the following result.
+\begin{theorem}
+ For $k \geq 0$ and $d \geq 1$, we have
+ \begin{equation}
+  \mathcal{K}_1(\mathbb{F}^d_{k+1}) \subset \mathcal{K}_1(\mathbb{P}^d_k).
+ \end{equation}
+
+\end{theorem}
+
+Using different language, an essentially equivalent result first appears for $k=0$ in \cite{barron1993universal}, for $k=1,2$ in \cite{klusowski2018approximation} and for $k \geq 3$ in \cite{CiCP-28-1707}. It is the basis of the Fourier integral condition introduced by Barron \cite{barron1993universal}. In \cite{wojtowytsch2020representation} it is remarked that $\mathcal{K}_1(\mathbb{P}_k)$ is actually significantly larger than $\mathcal{K}_1(\mathbb{F}_{k+1})$ when $k=1$. In later sections we quantify this observation by calculating the entropy of the unit balls of both spaces.
+
+In general, a function $f\in \mathcal{K}_1(\mathbb{P}^d_k)$ can be written as a superposition of one-dimensional ridge functions which satisfy \eqref{bound-530}. This leads to the following bound on $\mathcal{K}_1(\mathbb{P}^d_k)$ in higher dimensions.
+\begin{theorem}\label{bs-theorem}
+ We have
+ \begin{equation}\label{bs-label}
+ \|f\|_{\mathcal{K}_1(\mathbb{P}^d_k)} \lesssim_{k,d} \inf_{f_e|_{B_1^d} = f}\left\{\int_{S^{d-1}}\sum_{j=0}^{k-1} |g_\omega^{(j)}(-1)| + \|g_\omega^{(k)}\|_{BV([-1,1])} d\omega,~g_\omega(t) = \int_{-\infty}^\infty e^{2\pi i ts}\hat{f}_e(\omega s)s^{d-1}dx\right\}.
+\end{equation}
+where the infemum is over all extensions $f_e$ which satisfy $f_e, \hat{f}_e\in L^1(\mathbb{R}^d)$.
+\end{theorem}
+\begin{proof}
+ By the Fourier inversion formula, we have
+ \begin{equation}
+  f_e(x) = \int_{\mathbb{R}^d} e^{2\pi i \xi\cdot x}\hat{f}_e(\xi)d\xi = C_d\int_{S^{d-1}}\int_{0}^\infty e^{2\pi i s(\omega\cdot x)}\hat{f}_e(\omega s) s^{d-1}ds d\omega.
+ \end{equation}
+ This means that
+ \begin{equation}
+  f_e(x) = C_d\int_{\omega\in S^{d-1}} g_\omega(\omega\cdot x)d\omega.
+ \end{equation}
+ Combined with Corollary \ref{ridge-corollary}, this completes the proof.
+
+\end{proof}
+We conjecture that the bound in Theorem \ref{bs-theorem} in fact characterizes the space $\mathcal{K}_1(\mathbb{P}^d_k)$.
+
+\subsection{Characterization of $\mathcal{K}_1(\mathbb{F}^d_s)$}
+Here we characterize the space $\mathcal{K}_1(\mathbb{F}^d_s)$. In particular, have the following theorem.
+\begin{theorem}\label{spectral-barron-theorem}
+We have
+\begin{equation}\label{fourier-integral-condition}
+ \|f\|_{\mathcal{K}_1(\mathbb{F}^d_s)} = \inf_{f_e|_{B_1^d} = f} \int_{\mathbb{R}^d} (1+|\xi|)^s|\hat{f}_e(\xi)|d\xi,
+\end{equation}
+where the infemum is taken over all extensions $f_e\in L^1(\mathbb{R}^d)$.
+\end{theorem}
+
+The proof is a bit more involved due to the failure of Lemma \ref{prokhorov-lemma} when $s=0$, and requires the technical fact that the unit ball
+\begin{equation}
+ B_1^s(\Omega) = \left\{f:\Omega\rightarrow \mathbb{R}:~\inf_{f_e|_\Omega = f} \int_{\mathbb{R}^d} (1+|\xi|)^s|\hat{f}_e(\xi)|d\xi\leq 1\right\}
+\end{equation}
+is closed in $L^2(\Omega)$ (it is shown in \cite{siegel2020approximation} that $B_1^s\subset L^2(\Omega)$). Throughout the proof we will use the notation
+\begin{equation}\label{spectral-barron-integral-condition}
+ \|f\|_{\mathcal{B}^s(\Omega)} = \inf_{f_e|_\Omega = f} \int_{\mathbb{R}^d} (1+|\xi|)^s|\hat{f}_e(\xi)|d\xi
+\end{equation}
+for this infemum.
+
+We need the following simple lemmas.
+\begin{lemma}\label{fourier-cutoff-lemma}
+  Suppose that $\Omega\subset \mathbb{R}^d$ is bounded. Let $\epsilon > 0$ and $s\geq 0$. Then there exists a function $\phi\in L^1(\mathbb{R}^d)$, such that $\phi(x) = 1$ for $x\in \Omega$ and 
+  \begin{equation}
+  \int_{\mathbb{R}^d}(1+|\xi|)^s|\hat{\phi}(\xi)|d\xi \leq 1 + \epsilon.
+  \end{equation}
+ \end{lemma}
+ \begin{proof}
+  Since $\Omega$ is bounded, it suffices to consider the case where $\Omega = [-L,L]^d$ for a sufficiently large $L$. We consider separable $\phi = \phi_1(x_1)\cdots\phi_d(x_d)$, and note that
+  \begin{equation}
+   \int_{\mathbb{R}^d}(1+|\xi|)^s|\hat{\phi}(\xi)|d\xi \leq \int_{\mathbb{R}^d}\prod_{i=1}^d(1+|\xi_i|)^s|\hat{\phi}_i(\xi_i)|d\xi \leq \prod_{i=1}^d \int_{\mathbb{R}}(1+|\xi|)^s|\hat{\phi}_i(\xi)|d\xi,
+  \end{equation}
+  and this reduces us to the one-dimensional case where $\Omega = [-L,L]$.
+  
+  For the one-dimensional case, consider a Gaussian $g_R(x) = e^{-\frac{x^2}{2R}}$. A simple calculation shows that the Fourier transform of the Gaussian is $\hat{g}_R(\xi) = \sqrt{\frac{R}{2\pi}}e^{-\frac{R\xi^2}{2}}$. This implies that
+  \begin{equation}
+   \lim_{R\rightarrow \infty} \int_{\mathbb{R}}(1+|\xi|)^s|\hat{g}_R(\xi)|d\xi = 1,
+  \end{equation}
+  and thus by choosing $R$ large enough, we can make this arbitrarily close to $1$.
+  
+  Now consider $\tau_R\in C^{k}(\mathbb{R})$ for $k > s+2$ such that $\tau_R(x) = 1 - g_R(x)$ for $x\in [-L,L]$. Then we have 
+  $$\|\tau_R\|_{L^\infty([-L,L])}, \|\tau_R^\prime\|_{L^\infty([-L,L])}, \cdots, \|\tau_R^{k}\|_{L^\infty([-L,L])} \rightarrow 0$$
+  as $R\rightarrow \infty$.
+ Consequently, it is possible to extend $\tau_R$ to $\mathbb{R}$ so that
+ \begin{equation}
+  \|\tau_R\|_{L^1(\mathbb{R})}, \|\tau_R^{(k)}\|_{L^1(\mathbb{R})} \rightarrow 0.
+ \end{equation}
+ as $R\rightarrow \infty$. For instance, for $x > L$ we can take $\tau_R$ to be a polynomial which matches the first $k$ derivatives at $L$ times a fixed smooth cutoff function which is identically $1$ in some neighborhood of $L$ (and similarly at $-L$).
+ 
+ This implies that $\|\hat{\tau}_R(\xi)\|_{L^\infty(\mathbb{R})},\|\xi^{k}\hat{\tau}_R(\xi)\|_{L^\infty(\mathbb{R})}\rightarrow 0$ as $R\rightarrow \infty$. Together, these imply that
+ \begin{equation}
+  \lim_{R\rightarrow \infty} \int_{\mathbb{R}}(1+|\xi|)^s|\hat{\tau}_R(\xi)|d\xi \rightarrow 0,
+ \end{equation}
+ since $k-2 > s$.
+ 
+ Finally, set $\phi_R = g_R(x) + \tau_R(x)$. Then clearly $\phi_R = 1$ on $[-L,L]$ and also
+ \begin{equation}
+  \lim_{R\rightarrow \infty} \int_{\mathbb{R}}(1+|\xi|)^s|\hat{\phi}_R(\xi)|d\xi \leq \lim_{R\rightarrow \infty} \int_{\mathbb{R}}(1+|\xi|)^s|\hat{\tau}_R(\xi)|d\xi + \lim_{R\rightarrow \infty} \int_{\mathbb{R}}(1+|\xi|)^s|\hat{g}_R(\xi)|d\xi = 1.
+ \end{equation}
+ Choosing $R$ large enough, we obtain the desired result.
+\end{proof}
+
+Using this lemma, we can show that the infemum in \eqref{spectral-barron-integral-condition} can alternatively be given by an infemum over integral representations by Borel measures.
+\begin{lemma}
+ Let $\Omega\subset \mathbb{R}^d$ be a bounded domain and $s \geq 0$. Then
+ \begin{equation}\label{barron-norm-form-2}
+  \|f\|_{\mathcal{B}^s(\Omega)} = \inf\left\{\int_{\mathbb{R}^d} (1+|\xi|)^sd|\mu|(\xi):~f(x)=\int_{\mathbb{R}^d} e^{2\pi {\mathrm{i}\mkern1mu}   \xi\cdot x}d\mu(\xi)~\text{for}~x\in\Omega\right\}.
+ \end{equation}
+
+\end{lemma}
+\begin{proof}
+ By choosing $\mu = \hat{f}(\xi)d\xi$ it is clear that
+ \begin{equation}
+  \|f\|_{\mathcal{B}^s(\Omega)} \geq \inf\left\{\int_{\mathbb{R}^d} (1+|\xi|)^sd|\mu|(\xi):~f(x)=\int_{\mathbb{R}^d} e^{2\pi {\mathrm{i}\mkern1mu}   \xi\cdot x}d\mu(\xi)~\text{for}~x\in\Omega\right\}.
+ \end{equation}
+ The content of the theorem is the reverse inequality.
+
+ Let $\mu$ be a regular Borel measure such that the integral in \eqref{barron-norm-form-2} is finite (note this must mean that $\mu$ has finite mass) and 
+ \begin{equation}
+  f(x)=\int_{\mathbb{R}^d} e^{2\pi {\mathrm{i}\mkern1mu} \xi\cdot x}d\mu(\xi)
+ \end{equation}
+ for $x\in \Omega$. Choose $\epsilon > 0$. By Lemma \ref{fourier-cutoff-lemma} we can find a $\phi\in L^1(\mathbb{R}^d)$ such $\phi|_\Omega = 1$ and $$\int_{\mathbb{R}^d}(1+|\xi|)^s|\hat{\phi}(\xi)|d\xi \leq 1 + \epsilon.$$ 
+ We now set
+ \begin{equation}
+  f_e(x) = \phi(x)\left[\int_{\mathbb{R}^d} e^{2\pi {\mathrm{i}\mkern1mu} \xi\cdot x}d\mu(\xi)\right]\in L^1(\mathbb{R}^d),
+ \end{equation}
+ since $\phi\in L^1(\mathbb{R}^d)$ and $\mu$ has finite mass, so the second factor must be bounded.
+
+ Then we have that for $x\in \Omega$,
+ \begin{equation}
+  f(x) = f(x)\phi(x) = f_e(x),
+ \end{equation}
+ and $\hat{f}_e = \hat{\phi} * \mu$,
+ where the function $\hat{\phi} * \mu$ is given by
+ \begin{equation}
+  (\hat{\phi} * \mu)(\xi) = \int_{\mathbb{R}^d} \hat{\phi}(\xi - \nu)d\mu(\nu).
+ \end{equation}
+ We now calculate
+ \begin{equation}
+  \int_{\mathbb{R}^d}(1+|\xi|)^s|(\hat{\phi} * \mu)(\xi)|d\xi \leq \int_{\mathbb{R}^d}\int_{\mathbb{R}^d}(1+|\xi|)^s |\hat{\phi}(\xi - \nu)|d|\mu|(\nu)d\xi.
+ \end{equation}
+ Finally, we use the simple inequality $(1+|\xi|)^s \leq (1+|\nu|)^s(1+|\xi - \nu|)^s$ combined with a change of variables, to get
+ \begin{equation}
+ \begin{split}
+ \int_{\mathbb{R}^d}(1+|\xi|)^s|(\hat{\phi} * \mu)(\xi)|d\xi &\leq \left(\int_{\mathbb{R}^d}(1+|\xi|)^s|\hat{\phi}(\xi)|d\xi\right)\left(\int_{\mathbb{R}^d}(1+|\nu|)^s d|\mu|(\nu)\right)\\
+ &\leq (1+\epsilon)\left(\int_{\mathbb{R}^d}(1+|\nu|)^s d|\mu|(\nu)\right).
+ \end{split}
+ \end{equation}
+ This shows that
+ \begin{equation}
+  \|f\|_{\mathcal{B}^s(\Omega)} \leq (1+\epsilon)\inf\left\{\int_{\mathbb{R}^d} (1+|\xi|)^sd|\mu|(\xi):~f(x)=\int_{\mathbb{R}^d} e^{2\pi {\mathrm{i}\mkern1mu}   \xi\cdot x}d\mu(\xi)~\text{for}~x\in\Omega\right\}.
+ \end{equation}
+ Since $\epsilon > 0$ was arbitrary, we get the desired result.
+\end{proof}
+
+Finally, we prove that the unit ball $B_1^s(\Omega)$ is closed in $L^2(\Omega)$, from which Theorem \ref{spectral-barron-theorem} follows easily.
+
+\begin{proposition}
+ Let $\Omega\subset \mathbb{R}^d$ be a bounded domain and $s \geq 0$. Then
+ \begin{equation}
+ B_1^s(\Omega) = \{f\in L^2(\Omega):~\|f\|_{\mathcal{B}^s(\Omega)}\leq 1\} = \left\{f:\Omega\rightarrow \mathbb{R}:~\inf_{f_e|_\Omega = f} \int_{\mathbb{R}^d} (1+|\xi|)^s|\hat{f}_e(\xi)|d\xi\leq 1\right\}
+\end{equation}
+is closed in $L^2(\Omega)$.
+\end{proposition}
+\begin{proof}
+ Let $f_n\rightarrow f$ in $L^2(\Omega)$ with $\|f_n\|_{\mathcal{B}^s(\Omega)} \leq 1$. Choose $\epsilon > 0$ and consider the corresponding sequence of $h_n = \hat{f}_{n,e}$ in \eqref{spectral-barron-integral-condition} which satisfy
+ \begin{equation}
+  \int_{\mathbb{R}^d}(1+|\xi|)^s|h_n(\xi)|d\xi \leq 1 + \epsilon,~f_n(x)=\hat{h}_n(x) = \int_{\mathbb{R}^d} h_n(\xi)e^{2\pi {\mathrm{i}\mkern1mu} \xi\cdot x}d\xi.
+ \end{equation}
+ By assumption $f_n\rightarrow f$ in $L^2(\Omega)$ so that for any $g\in L^2(\Omega)$, we have
+ \begin{equation}
+  \langle f_n, g\rangle_{L^2(\Omega)} \rightarrow \langle f, g\rangle_{L^2(\Omega)}.
+ \end{equation}
+ Choose $g$ to be any element in the dense subset $C^\infty_c(\Omega)\subset L^2(\Omega)$ and note that in this case we have by Plancherel's theorem
+ \begin{equation}
+  \langle f_n, g\rangle_{L^2(\Omega)} = \langle h_n, \hat{g}\rangle_{L^2(\mathbb{R}^d)}.
+ \end{equation}
+ Note that $\hat{g}$ is a Schwartz function and so is in the space $C_{s,0}(\mathbb{R}^d)$, defined to be the following space of continuous, decaying functions
+ \begin{equation}
+  C_{s,0}(\mathbb{R}^d) = \{\phi\in C(\mathbb{R}):\lim_{\xi\rightarrow \infty} |(1+|\xi|)^s\phi(\xi)| = 0\}
+ \end{equation}
+ with norm
+ \begin{equation}
+  \|\phi\|_{C_{s,0}(\mathbb{R}^d)} = \sup_{\xi\in \mathbb{R}^d} |(1+|\xi|)^s\phi(\xi)|.
+ \end{equation}
+ 
+ This implies that the map
+ \begin{equation}
+  h:\phi \rightarrow \lim_{n\rightarrow \infty}\langle h_n, \phi\rangle_{L^2(\mathbb{R}^d)} 
+ \end{equation}
+ defines a bounded linear functional on the subspace of $C_{s,0}(\mathbb{R}^d)$ which is spanned by $\{\hat{g}:g\in C^\infty_c(\Omega)\}$, which has norm $\leq 1 + \epsilon$. 
+ 
+ By the Hahn-Banach theorem, we can extend $h$ to an element $\mu\in C^*_{s,0}(\mathbb{R}^d)$, such that $\|\mu\|_{C^*_{s,0}(\mathbb{R}^d)}\leq 1 + \epsilon$. By the Riesz-Markov theorem (Theorem 22 in \cite{markoff1938mean}), the dual space $C^*_{s,0}(\mathbb{R}^d)$ is exactly the space of Borel measures with norm given by
+ \begin{equation}
+  \|\mu\|_{C^*_{s,0}(\mathbb{R}^d)} = \int_{\mathbb{R}^d} (1+|\xi|)^s d|\mu|(\xi) \leq 1 + \epsilon.
+ \end{equation}
+ But we also have that for every $g\in C^\infty_c(\Omega)$, $\langle \mu, \hat{g}\rangle = \langle f,g\rangle$. Taking the Fourier transform, we see that the function
+ \begin{equation}
+  f_\mu = \int_{\mathbb{R}^d}e^{2\pi {\mathrm{i}\mkern1mu}  \xi\cdot x}d\mu(\xi)
+ \end{equation}
+ satisfies $\langle f_\mu, g\rangle = \langle f,g\rangle$ for all $g\in C^\infty_c(\Omega)$. Thus $f = f_\mu$ in $L^2(\Omega)$ and so by \eqref{barron-norm-form-2}, we have $\|f\|_{\mathcal{B}^{s}(\Omega)} \leq 1 + \epsilon$. Since $\epsilon$ was arbitrary, this completes the proof.
+
+\end{proof}
+
+\subsection{Relationship Between Entropy Numbers and Approximation Rates}\label{entropy-lemma-section}
+We end this section by proving a lemma which specifies the relationship between approximation rates from $\Sigma_{n,M}(\mathbb{D})$ and the entropy numbers of $B_1(\mathbb{D})$. Note also that this lemma implicitly appears in \cite{makovoz1996random,klusowski2018approximation} for the dictionaries $\mathbb{P}^d_k$ with $k=0,1,2$. See also the very similar Theorem 3.6 in \cite{cohen2020optimal}, which draws the same conclusion under different assumptions, and note that this lemma can be thought of as a variant of Carl's inequality for approximation from $\Sigma_{n,M}(\mathbb{D})$. The use of this lemma is in proving lower bounds on approximation rates from $\Sigma_{n,M}(\mathbb{D})$.
+\begin{lemma}\label{entropy-lemma}
+ Let $H$ be a Hilbert space and $\mathbb{D}\subset H$ be a dictionary with $K_\mathbb{D}:=\sup_{h\in \mathbb{D}} \|h\|_H < \infty$. Suppose that for some constants $0 < l < \infty$, $C < \infty$, the dictionary $\mathbb{D}$ can be covered by $C\epsilon^{-l}$ sets of diameter $\epsilon$ for any $\epsilon > 0$. If there exists an $M,K < \infty$ and $\alpha > 0$ such that for all $f\in B_1(\mathbb{D})$
+ \begin{equation}\label{approx-bound-estimate}
+  \inf_{f_n\in \Sigma_{n,M}(\mathbb{D})} \|f - f_n\|_H \leq Kn^{-\alpha},
+ \end{equation}
+ then the entropy numbers of $B_1(\mathbb{D})$ are bounded by
+ \begin{equation}
+  \epsilon_{n\log{n}}(B_1(\mathbb{D})) \lesssim n^{-\alpha},
+ \end{equation}
+ where the implied constant is independent of $n$.
+\end{lemma}
+\begin{proof}
+ The proof here essentially follows the argument in the proof of Theorem 4 in \cite{makovoz1996random}, but we provide it here for completeness. In what follows, all implied constants will be independent of $n$.
+ 
+ Using our assumption on $\mathbb{D}$ and setting $\epsilon = n^{-\alpha}$, we see that there is a subset $\mathcal{D}_n\subset \mathbb{D}$ such that $|\mathcal{D}_n| \leq Cn^{\alpha l}$ and
+ \begin{equation}
+  \sup_{d\in \mathbb{D}} \inf_{s\in \mathcal{D}_n} \|d - s\|_H \leq n^{-\alpha}.
+ \end{equation}
+ 
+ Furthermore, we can cover the unit ball in $\ell^1$ by $(1+\frac{2}{\epsilon})^n$ $\ell^1$-balls of radius $\epsilon$ (see \cite{pisier1999volume}, page $63$). Thus, setting $\epsilon = M^{-1}n^{-\alpha}$, we can find a subset $\mathcal{L}_n$ of the $n$-dimensional $\ell^1$-ball of radius $M$, $B_M(\ell_1^n) = \{x\in \mathbb{R}^d:~|x|_1\leq M\}$, such that $|
+ \mathcal{L}_n| \leq (1 + 2Mn^\alpha)^n \lesssim n^{2\alpha n}$, and
+ \begin{equation}
+  \sup_{x\in B_M(\ell_1^n)} \inf_{s\in \mathcal{L}_n} |d - s|_1 \leq n^{-\alpha}.
+ \end{equation}
+
+ Let $\mathcal{S}_n$ consist of all linear combinations of $n$ elements of $\mathcal{D}_{n}$ with coefficients in $\mathcal{L}_{n}$. Then clearly 
+ \begin{equation}\label{eq-707}
+ |\mathcal{S}_n| \leq |\mathcal{D}_{n}|^n|\mathcal{L}_{n}| \lesssim n^{\alpha ln + 2\alpha n} = n^{(l + 2)\alpha n}
+ \end{equation}
+ 
+ By \eqref{approx-bound-estimate}, we have for every $f\in B_1(\mathbb{D})$ an $f_n\in \Sigma_{n,M}(\mathbb{D})$ such that
+ \begin{equation}
+  f_n = \sum_{j=1}^n a_jh_j
+ \end{equation}
+ and $\|f - f_n\|_H \lesssim n^{-\alpha}$, $h_j\in \mathbb{D}$ and $\sum_{j=1}^n|a_j| \leq M$. 
+ 
+ We now replace the $h_j$ by their closest elements in $\mathcal{D}_{n}$ and the coefficients $a_j$ by their closest point in $\mathcal{L}_{n}$. Since $\|h_j\|_H\leq K_\mathbb{D}$ and $\sum_{j=1}^n|a_j| \leq M$, this results in a point $\tilde{f}_n\in \mathcal{S}_n$ with 
+ $$\|f_n - \tilde{f}_n\|_H \leq Mn^{-\alpha} + K_\mathbb{D}n^{-\alpha} \lesssim n^{-\alpha}.$$ Thus $\|f - \tilde{f}_n\|_H\lesssim n^{-\alpha}$ and so
+ \begin{equation}
+  \epsilon_{\log{|\mathcal{S}_n|}} \lesssim n^{-\alpha}.
+ \end{equation}
+ By equation \eqref{eq-707}, we see that $\log{|\mathcal{S}_n|} \lesssim n\log{n}$, which completes the proof.
+\end{proof}
+
+We note that the assumptions of Lemma \ref{entropy-lemma} hold for both of the dictionaries $\mathbb{P}^d_k$ and $\mathbb{F}^d_s$ for $s > 0$.
+
+\subsection{Upper bounds for smoothly parameterized dictionaries}\label{main-result-1-section}
+Let $H$ be a Hilbert space and consider a dictionary $\mathbb{D}\subset H$ which is parameterized by a smooth manifold $\mathcal{M}$, i.e. we have a surjection
+\begin{equation}
+ \mathcal{P}:\mathcal{M}\rightarrow \mathbb{D}.
+\end{equation}
+In this section, we consider dictionaries $\mathbb{D}$ which are parameterized in this way by a smooth compact manifold. For this class of dictionaries, we give upper bounds on the entropy of $B_1(\mathbb{D})$ and on the approximation rates for $B_1(\mathbb{D})$ from sparse convex combinations $\Sigma_{n,M}(\mathbb{D})$, which depend on the degree of smoothness of the parameterization map $\mathcal{P}$.
+
+We being by discussing the relevant notion of smoothness. These notions are well-studied for functions whose range is $\mathbb{R}$ (see, for instance \cite{lorentz1996constructive}), but we need to extend them to functions with range contained in the Hilbert space $H$.
+\begin{definition}
+ Let $H$ be a Hilbert space, $U\subset \mathbb{R}^d$ an open set, $k \geq 0$ and integer and $\alpha\in (0,1]$. A function $\mathcal{F}:U\rightarrow H$ is of smoothness class $k+\alpha$, written $\mathcal{F}\in {\rm Lip}(k+\alpha, L^\infty(U\rightarrow H))$, if
+ \begin{itemize}
+  \item The derivatives $D^j\mathcal{F}:(\mathbb{R}^d)^{\otimes j}\rightarrow H$ exist for $j\leq k$.
+  \item The $k$-the derivative $D^k\mathcal{F}$ is $\alpha$-H\"older continuous on $U$, i.e.
+  $$
+  \|D^k\mathcal{F}(x) - D^k\mathcal{F}(y)\|_{(\mathbb{R}^d)^{\otimes j}\rightarrow H} \lesssim_{\mathcal{F},\alpha} |x-y|^\alpha,
+  $$
+  where the norm on the left is the operator norm.
+ \end{itemize}
+
+\end{definition}
+
+\begin{definition}
+ Let $H$ be a Hilbert space and $\mathcal{M}$ a smooth $d$-dimensional manifold, $k \geq 0$ and integer and $\alpha\in (0,1]$. A map $\mathcal{P}:\mathcal{M}\rightarrow H$ is of smoothness class $k+\alpha$, written $\mathcal{P}\in {\rm Lip}(k+\alpha, L^\infty(M\rightarrow H))$ if for each coordinate chart $(U,\phi)$ we have $\mathcal{P}\circ \phi\in {\rm Lip}(k+\alpha, L^\infty(U\rightarrow H))$. 
+ \end{definition}
+ 
+ To illustrate this definition, we consider the two examples which arise in the study of neural networks, $\mathbb{P}^d_k$ and $\mathbb{F}^d_s$. 
+ 
+ First, note that the dictionary $\mathbb{P}^d_k$ is parameterized by the manifold $S^{d-1}\times [-2,2]$ via the map
+\begin{equation}\label{p-k-parameterization-definition}
+ \mathcal{P}^d_k(\omega,b) = \sigma_k(\omega\cdot x + b)\in L^2(B_1^d).
+\end{equation}
+We claim that the map $\mathcal{P}^d_k$ is of smoothness class $k + \frac{1}{2}$. Indeed, differentiating $k$ times we obtain
+\begin{equation}
+\begin{split}
+ D^k\mathcal{P}^d_k(\omega,b)\cdot[(\omega_1,b_1)\otimes\cdots\otimes(\omega_k,b_k)] &= \left[\prod_{i=1}^k (\omega_i\cdot x + b_i)\right]\sigma_k^{(k)}(\omega\cdot x + b) \\
+ & = k!\left[\prod_{i=1}^k (\omega_i\cdot x + b_i)\right]\sigma_0(\omega\cdot x + b)\in L^2(B_1^d),
+\end{split}
+\end{equation}
+and so
+\begin{equation}
+ \|D^k\mathcal{P}^d_k(\omega,b) - D^k\mathcal{P}^d_k(\omega',b')\|_{(\mathbb{R}^d)^{\otimes j}\rightarrow H} \lesssim_{k,d} \|\sigma_0(\omega\cdot x + b) - \sigma_0(\omega'\cdot x + b')\|_{L^2(B_1^d)}.
+\end{equation}
+Since $\sigma_0$ is the Heaviside function and $B_1^d$ is is the unit ball of $\mathbb{R}^d$, it is easy to see that $\sigma_0(\omega\cdot x + b) - \sigma_0(\omega'\cdot x + b')$ is non-zero only on a strip of width $\lesssim_d |\omega - \omega'| + |b - b'|$ (see for instance the argument in \cite{makovoz1996random}, Section 4). This means that
+\begin{equation}
+ \|\sigma_0(\omega\cdot x + b) - \sigma_0(\omega'\cdot x + b')\|_{B_1^d} \lesssim_d (|\omega - \omega'| + |b - b'|)^{\frac{1}{2}},
+\end{equation}
+and so $\mathcal{P}^d_k$ is of smoothness class $k+\frac{1}{2}$.
+
+Next, we observe that the dictionary $\mathbb{F}_s^d$ is parameterized by $S^d$ via the steriographic projection map $\mathcal{F}_s^d:S^d\rightarrow L^2(B_1^d)$ given by
+\begin{equation}\label{f-s-parameterization-definition}
+ \mathcal{F}^d_s(\nu) = \begin{cases} 
+          \left(1 + |\omega|\right)^{-s}e^{2\pi i \omega\cdot x} & \nu_{d+1} \neq -1 \\
+          0 & \nu_{d+1} = -1,
+       \end{cases}
+\end{equation}
+where $$\omega = (1+\nu_{d+1})^{-1}(\nu_1,...,\nu_d),~|\omega| = \sqrt{\frac{1-\nu_{d+1}}{1+\nu_{d+1}}}.$$
+
+It is easy to check that this map is infinitely smooth at every point except the south pole where $\nu_{d+1} = -1$. Moreover, the factor $\left(1 + |\omega|\right)^{-s}$ implies that $\mathcal{F}^d_s$ decays to order $s$ at the south pole. Taken together, this means that the map $\mathcal{F}^d_s$ is of smoothness class $s$.
+
+We proceed to bound the approximation rates from sparse convex combinations $\sigma_{n,M}(\mathbb{D})$ and the dyadic entropy numbers of $B_1(\mathbb{D})$ for dictionaries which are smoothly parameterized by a compact manifold.
+We will need the following simple lemma in what follows.
+\begin{lemma}\label{image-of-union-of-cubes-lemma}
+ Suppose that $\mathcal{M}$ is a d-dimensional compact smooth manifold and we are given a parameterization $\mathcal{P}\in {\rm Lip}(k+\alpha, L^\infty(M\rightarrow H))$. Then there exist finitely many maps $\mathcal{P}_j:[-1,1]^d\rightarrow H$, $j=1,...,T$, such that $\mathcal{P}_j\in {\rm Lip}(k+\alpha, L^\infty([-1,1]^d\rightarrow H))$ for each $j$ and
+ \begin{equation}
+  \mathcal{P}(\mathcal{M})\subset \bigcup_{j=1}^T \mathcal{P}_j([-1,1]^d).
+ \end{equation}
+
+\end{lemma}
+\begin{proof}
+ Let $\phi_i: U_i\rightarrow \mathcal{M}$ for $j=1,...,T:=T_{\mathcal{M}}$ be a coordinate atlas for $\mathcal{M}$, which can be taken finite since $\mathcal{M}$ is compact. Further, we can assume that the $U_j$ are bounded. By assumption the composition $\mathcal{P} \circ T_j$ is of smoothness class $k+\alpha$. We translate and dialate each $U_j$ such that they are contained in the unit cube $C = [-1,1]^d$ and apply Whitney's extension theorem \cite{whitney1934analytic} to obtain maps $\mathcal{P}_j:C\rightarrow H$ such that $\mathcal{P}_j|_{U_j} = \mathcal{P} \circ T_j$ which are still of smoothness class $k+\alpha$. Then the maps $\mathcal{P}_j$ satisfy the conclusion of the lemma.
+\end{proof}
+
+\section{Approximation rates for smoothly parameterized dictionaries}
+Here we give upper bounds on the approximation rates of $B_1(\mathbb{D})$ from sparse convex combinations $\Sigma_{n,M}(\mathbb{D})$ for smoothly parameterized dictionaries. In particular, we have the following theorem. 
+\begin{theorem}\label{upper-bound-theorem}
+ Let $k \geq 0$ be an integer and $\alpha\in (0,1]$. Suppose that $\mathcal{M}$ is a compact $d$-dimensional smooth manifold, $\mathcal{P}\in {\rm Lip}(k+\alpha, L^\infty(M\rightarrow H))$, and the dictionary $\mathbb{D}\subset \mathcal{P}(\mathcal{M})$. Then there exists an $M > 0$ such that for $f\in B_1(\mathbb{D})$ we have
+ \begin{equation}
+ \inf_{f_n\in \Sigma_{n,M}(\mathbb{D})} \|f - f_n\|_{H} \lesssim n^{-\frac{1}{2} - \frac{k+\alpha}{d}},
+ \end{equation}
+ where both $M$ and the implied constant are independent of $n$.
+\end{theorem}
+We note that although the implied constants here are independent of $n$, they may indeed be very large. The proof of this theorem is a higher-order generalization of the stratified sampling argument \cite{makovoz1996random,klusowski2018approximation}.
+Before proving this theorem, we note a corollary obtained when applying it to the dictionary $\mathbb{P}^d_k$. 
+\begin{theorem}\label{relu-k-rate-corollary}
+ Let $k\geq 0$. Then there exists an $M = M(k,d) > 0$ such that for all $f\in B_1(\mathbb{P}^d_k)$ we have
+ \begin{equation}
+  \inf_{f_n\in \Sigma_{n,M}(\mathbb{P}^d_k)} \|f - f_n\|_{L^2(B_1^d)} \lesssim_{k,d} n^{-\frac{1}{2}-\frac{2k+1}{2d}}.
+ \end{equation}
+\end{theorem}
+\begin{proof}
+ This follows immediately from Theorem \ref{upper-bound-theorem} given the smoothness condition of the map $\mathcal{P}^d_k$ defined in \eqref{p-k-parameterization-definition} and the fact that $S^{d-1}\times [-2,2]$ is a compact $d$-dimensional manifold. 
+\end{proof}
+
+Note also that the approximation rates for cosine networks obtained in \cite{siegel2020high} follow from Theorem \ref{upper-bound-theorem} by considering the parmeterization \eqref{f-s-parameterization-definition}.
+
+\begin{proof}[Proof of Theorem \ref{upper-bound-theorem}]
+ We apply lemma \ref{image-of-union-of-cubes-lemma} to $\mathcal{P}$ and $\mathcal{M}$ to obtain a collection of maps $\mathcal{P}_j:C:=[-1,1]^d\rightarrow H$ such that $\mathbb{D}\subset \cup_{j=1}^T\mathcal{P}_j(C)$ and $\mathcal{P}_j\in {\rm Lip}(k+\alpha, L^\infty(C\rightarrow H))$. 
+ 
+ It suffices to prove the result for $\mathbb{D} = \mathbb{D}_j := \mathcal{P}_j(C)$, since $B_1(\mathbb{D}) \subset \text{conv}(\cup_{j=1}^T B_1(\mathbb{D}_j))$ and if $f = \alpha_1f_1 +\cdots + \alpha_Tf_T$ with $f_j\in B_1(\mathbb{D}_j)$ and $\sum_{i=1}^T \alpha_j= 1$, then
+ \begin{equation}
+  \inf_{f_n\in \Sigma_{Tn,M}(\mathbb{D})} \|f - f_n\|_{H} \leq \sum_{j=1}^T \alpha_j\inf_{f_{n,j}\in \Sigma_{n,M}(\mathbb{D}_j)} \|f_j - f_{n,j}\|_{H},
+ \end{equation}
+ which easily follows by setting $f_n = \sum_{j=1}^T\alpha_jf_{n,j}$.
+ 
+So in what follows we consider $\mathbb{D} = \mathbb{D}_j$, $\mathcal{P} = \mathcal{P}_j$ and $\mathcal{M} = C$. In other words, we assume without loss of generality that $T=1$ (at the cost of introducing a constant which depends upon $T$ and thus upon $\mathcal{P}$ and $\mathcal{M}$).
+ 
+ Now let $f\in B_1(\mathbb{D})$ and $\delta > 0$. Then there exists a convex combination (with potentially very large $N:=N_\delta$)
+ \begin{equation}\label{eq-176}
+  f_\delta = \sum_{i=1}^N a_id_i,
+ \end{equation}
+ with $d_i\in \mathbb{D}$, $\sum|a_i| \leq 1$, and $\|f - f_\delta\|_H  < \delta$. Since $\mathbb{D} = \mathcal{P}(C)$, each $d_i = \mathcal{P}(x_i)$ for some $x_i\in C$, so we get 
+ \begin{equation}
+  f_\delta = \sum_{i=1}^{N} a_i\mathcal{P}(x_i).
+ \end{equation}
+ We remark that in what follows all implied constants will be independent of $n$ and $\delta$.
+ 
+ Let $n \geq 1$ be given and subdivide the cube $C$ into $n$ sub-cubes $C_1,...,C_n$ such that each $C_l$ has diameter $O(n^{-\frac{1}{d}})$. This can easily be done by considering a uniform subdivision in each direction.
+ 
+ We proceed to approximate the map $\mathcal{P}$ by a piecewise polynomial on the subcubes $C_1,...,C_n$. To this end, let $z_1,...,z_{(k+1)^d}\in C$ be the $d$-fold tensor product of the roots of the Chebyshev polynomials of degree $k$ (any other interpolation points will do just as well). Further, let $p_1,...,p_{(k+1)^d}$ be the corresponding Lagrange polynomials satisfying $p_i(z_j) = \delta_{ij}$. 
+ 
+ We note that these polynomials span the space of polynomials whose monomials $z^\alpha$ satisfy $|\alpha|_\infty \leq k$, which in particular contains the space of polynomials of degree at most $k$.
+ 
+ Considering the images of these points and polynomials on the sub-cube $C_l$, which we write $z_1^l,...,z_{(k+1)^d}^l$ and $p^l_1,...,p^l_{(k+1)^d}$, we rewrite $f_\delta$ as
+ \begin{equation}\label{eq-194}
+  f_\delta = \sum_{l=1}^{n}\sum_{x_i\in C_l}a_iP_l(x_i) +  \sum_{l=1}^{n}\sum_{x_i\in C_l}a_iE_l(x_i),
+ \end{equation}
+ where the polynomial approximation is given by
+ \begin{equation}\label{eq-198}
+  P_l(x_i) = \sum_{m=1}^{(k+1)^d} \mathcal{P}(z_m^l)p_m^l(x_i),
+ \end{equation}
+ and the error in the approximation is given by
+ \begin{equation}
+  E_l(x_i) = \mathcal{P}(x_i) - P_l(x_i).
+ \end{equation}
+ We now utilize the fact that in \eqref{eq-198} we only evaluate $\mathcal{P}$ at the fixed interpolation points $z_m^l$ and that the Lagrange polynomials are bounded to see that the first term of \eqref{eq-194} satisfies
+ \begin{equation}
+  g_{\delta,1} = \sum_{l=1}^{n}\sum_{x_i\in C_l}a_iP_l(x_i) \in \Sigma_{(k+1)^dn,M}(\mathbb{D}),
+ \end{equation}
+ for some constant $M = M(k,d) = \sup_{x\in C}\left|\sum_{m=1}^{(k+1)^d} p_m(x)\right|$.
+ 
+ The next step is to bound the error $E_l(x_i)$ uniformly and to apply a sampling argument to the second term in \eqref{eq-194}. To bound $E_l(x_i)$ we use the smoothness of the parameterization $\mathcal{P}_j$ and a standard Bramble-Hilbert lemma \cite{bramble1970estimation} type argument from numerical analysis (see also \cite{xu1982error} for instance). There are two important points concerning the bound here. First, we are dealing with Hilbert space valued functions, and second, it is important that we are bounding the error to the interpolation polynomial instead of to averaged Taylor polynomials, as is commonly done when proving the Bramble-Hilbert lemma.
+ 
+ We proceed as follows, consider any point $x\in C_l$ and let $x_m(t) = x(1-t) + tz^l_m$ be the line segment from $x$ to the Lagrange point $z^l_m$. Using the differentiability of the parameterization map $\mathcal{P}$, we get
+ \begin{equation}
+  \mathcal{P}(z^l_m) - \mathcal{P}(x) = \mathcal{P}(x_m(1)) - \mathcal{P}(x_m(0)) = \sum_{s=1}^k \frac{1}{s!}r_{m}^{(s)}(0) + \frac{1}{k!}\int_0^1 [r_{m}^{(k)}(t) - r_{m}^{(k)}(0)]dt,
+ \end{equation}
+ where $r_{m}(t) = \mathcal{P}(x_m(t))$. We now calculate that
+ \begin{equation}
+  r_{m}^{(s)}(t) = D^s\mathcal{P}(x_m(t))\cdot(z_m^l - x)^{\otimes s}.
+ \end{equation}
+ This gives us that
+ \begin{equation}
+  \mathcal{P}(z^l_m) - \mathcal{P}(x) = \sum_{s=1}^k \frac{1}{s!}D^s\mathcal{P}(x)\cdot(z_m^l - x)^{\otimes s} + \frac{1}{k!}\left(\int_0^1 [D^k\mathcal{P}(x_m(t)) - D^k\mathcal{P}(x)]dt\right)\cdot(z_m^l - x)^{\otimes k}.
+ \end{equation}
+ We now multiply this equation by the interpolation weights $p_m^l(x)$, sum over $m$, and use the following standard facts. First, for every $x$
+ \begin{equation}
+  \sum_{m=1}^{(k+1)^d} p_m^l(x) = 1,
+ \end{equation}
+ since this is just the interpolation of the constant function $1$. Second, for $s=1,...,k$ and every $x$ we have
+ \begin{equation}
+  \sum_{m=1}^{(k+1)^d} p_m^l(x)(z_m^l - x)^{\otimes s} = 0,
+ \end{equation}
+ since this is the interpolation of the function $g(z) = (z-x)^{\otimes s}$ evaluated at $x$. Note that $g$ is a polynomial of degree at most $k$ (hence is reproduced exactly) and vanishes at $x$. This gives the bound
+ \begin{equation}
+  \|E_l(x)\|_H = \|\mathcal{P}(x) - P_l(x)\|_H \leq \frac{1}{k!}\sum_{m=1}^{(k+1)^d} p_m^l(x)|z_m^l - x|^k\int_0^1\|D^k\mathcal{P}(x_m(t)) - D^k\mathcal{P}(x)]\|dt.
+ \end{equation}
+ Finally, we use the fact that the Lagrange polynomials are bounded, combined with the smoothness condition on the parameterization $\mathcal{P}$ and the fact that $|z_m^l - x|$ is at most the diameter of $C_l$ (which is $O(n^{-\frac{1}{d}})$ by construction) to conclude that
+ \begin{equation}
+  \|E_l(x)\|_H \lesssim n^{-\frac{k+\alpha}{d}}.
+ \end{equation}
+ 
+ We use this bound, combined with sampling argument of Lemma 1 in \cite{barron1993universal} (essentially the approximation rate \eqref{fundamental-bound}) to conclude that there exists an $n$-term convex combination
+ \begin{equation}
+  g_{\delta,2} = \frac{1}{n}\sum_{s=1}^n E_{l_s}(x_{i_s}),
+ \end{equation}
+such that
+ \begin{equation}
+  \left\|g_{\delta,2} -  \sum_{l=1}^{n}\sum_{x_{i}\in C_l}a_{i}E_l(x_{i})\right\|_H \lesssim n^{-\frac{1}{2}-\frac{k+\alpha}{d}}.
+ \end{equation}
+ Adding this to $g_{\delta,1}$, we get
+ \begin{equation}
+  f_n = g_{\delta,1} + g_{\delta,2}\in \Sigma_{[(k+1)^d+1]n,2M}(\mathbb{D}),
+ \end{equation}
+ such that
+ \begin{equation}
+  \|f_\delta - f_n\|_H \lesssim n^{-\frac{1}{2}-\frac{k+\alpha}{d}}.
+ \end{equation}
+ Since $\delta > 0$ was arbitrary, this yields the desired result.
+
+\end{proof}
+
+\subsection*{Entropy bounds for smoothly parameterized dictionaries}
+Next, we bound the entropy of $B_1(\mathbb{D})$ for smoothly parameterized dictionaries $\mathbb{D}$. We have the following theorem.
+\begin{theorem}\label{entropy-upper-bound-theorem}
+ Let $k \geq 0$ be an integer and $\alpha\in (0,1]$. Suppose that $\mathcal{M}$ is a compact $d$-dimensional smooth manifold, $\mathcal{P}\in {\rm Lip}(k+\alpha, L^\infty(M\rightarrow H))$, and the dictionary $\mathbb{D}\subset \mathcal{P}(\mathcal{M})$. Then
+ \begin{equation}\label{entropy-bound-equation}
+ \epsilon_n(B_1(\mathbb{D})) \lesssim n^{-\frac{1}{2} - \frac{k+\alpha}{d}},
+ \end{equation}
+ where the implied constant is independent of $n$.
+\end{theorem}
+Combining Theorem \ref{upper-bound-theorem} with lemma \ref{entropy-lemma}, we obtain a bound of $\epsilon_{n\log{n}}(B_1(\mathbb{D}) \lesssim n^{-\frac{1}{2} - \frac{k+\alpha}{d}}$. The content of Theorem \ref{entropy-upper-bound-theorem} is to show that the logarithmic factor can be removed with a much more careful analysis.
+
+Before proving this theorem, we note that by using the smoothness of the parameterizations \eqref{p-k-parameterization-definition} and \eqref{f-s-parameterization-definition}, we obtain
+\begin{equation}
+ \epsilon_n(B_1(\mathbb{P}_k^d)) \lesssim_{k,d} n^{-\frac{1}{2} - \frac{2k+1}{2d}},~\epsilon_n(B_1(\mathbb{F}_s^d)) \lesssim_{s,d} n^{-\frac{1}{2} - \frac{s}{d}}.
+\end{equation}
+Further, Theorem 4.1 in \cite{cohen2020optimal} implies that these rates can be attained with a stable (i.e. Lipschitz) non-linear approximation scheme.
+
+In the proof of Theorem \ref{entropy-upper-bound-theorem}, which draws heavily on the ideas in \cite{ball1990entropy}, it will be convenient to use the notion of entropy numbers of an operator $T:X\rightarrow Y$ between two Banach spaces $X$ and $Y$, which we briefly recall.  For such an operator $T$, we simply define $\epsilon_n(T) = \epsilon_n(T(B_X))$ where $B_X = \{x\in X:~\|x\|_X\leq 1|\}$ is the unit ball in $X$. This notion has itself been significantly studied and corresponds to a measure of the degree of compactness of the operator $T$. We will make use of the following two lemmas in the proof of Theorem \ref{entropy-upper-bound-theorem}.
+
+The first is well-known and is simply due to the triangle inequality and the definition of the entropy.
+\begin{lemma}\label{triangle-inequality-entropy-lemma}
+ Let $S,T:X\rightarrow Y$. Then for any $0 \leq m\leq n$
+ \begin{equation}
+  \epsilon_n(S+T) \leq \epsilon_m(S) + \epsilon_{n-m}(T).
+ \end{equation}
+
+\end{lemma}
+
+The second, due to Carl (Proposition 1 in \cite{carl1985inequalities}), is the following bound on the entropy of operators whose domain is a finite-dimensional $\ell^1$-space.
+\begin{lemma}\label{carls-lemma}
+ Let $T:\ell_1^n\rightarrow H$, where $\ell_1^n$ is the $n$-dimensional $\ell^1$ space (i.e. $\mathbb{R}^n$ with the $\ell^1$-norm) and $H$ is a Hilbert space. Then
+ \begin{equation}
+  \epsilon_m(T) \lesssim \begin{cases} 
+         \|T\| & m=0 \\
+          \sqrt{1+\log{\frac{n}{m}}}m^{-\frac{1}{2}}\|T\| & 1\leq m\leq n \\
+          2^{-\frac{m}{n}}n^{-\frac{1}{2}}\|T\| & m\geq n.
+       \end{cases}
+ \end{equation}
+ (Note here the implied constant is absolute.)
+
+\end{lemma}
+
+
+\begin{proof}[Proof of Theorem \ref{entropy-upper-bound-theorem}]
+ As in the proof of Theorem \ref{upper-bound-theorem}, we apply lemma \ref{image-of-union-of-cubes-lemma} to $\mathcal{P}$ and $\mathcal{M}$ to obtain a collection of maps $\mathcal{P}_j:C:=[-1,1]^d\rightarrow H$ such that $\mathbb{D}\subset \cup_{j=1}^T\mathcal{P}_j(C)$ and $\mathcal{P}_j\in {\rm Lip}(k+\alpha, L^\infty(C\rightarrow H))$. 
+ 
+ It suffices to prove the result for $\mathbb{D} = \mathbb{D}_j := \mathcal{P}_j(C)$, since $B_1(\mathbb{D}) \subset \sum_{j=1}^T B_1(\mathbb{D}_j)$ and so by lemma \ref{triangle-inequality-entropy-lemma}
+ \begin{equation}
+  \epsilon_{Tn}(B_1(\mathbb{D})) \leq \sum_{j=1}^T \epsilon_n(B_1(\mathbb{D}_j)).
+ \end{equation}
+ So in what follows, we assume without loss of generality that $T=1$, i.e. that $\mathcal{M} = C$ (doing so introduces at most a constant independent of $n$).
+ 
+ Consider the $\ell_1$ space on the set $C = [-1,1]^d$, i.e. 
+ \begin{equation}
+ \ell_1(C) = \left\{f:C\rightarrow \mathbb{R}:~\|f\|_{1,C} := \sup \left\{\sum_{i=1}^N |f(x_i)|:~\text{$x_1,...,x_N\in C$ are distinct}\right\} < \infty\right\},
+ \end{equation}
+ and its unit ball $B_1(\ell_1(C)) = \{f\in \ell_1(C):~\|f\|_{1,C} \leq 1\}$.
+ 
+ We observe that $B_1(\mathbb{D}) = \overline{\mathcal{S}(B_1(\ell_1(C)))}$, where the operator $\mathcal{S}:\ell_1(C)\rightarrow H$ is given by $\mathcal{S}(f) = \sum_{x\in C} f(x)\mathcal{P}(x)$. Since the entropy numbers don't change when taking the closure, the problem is reduced to bounding the entropy numbers of the operator $\mathcal{S}$.
+ 
+ We do this by decomposing $\mathcal{S} = \sum_{i=1}^\infty \mathcal{S}_i$ as follows. For each $i$, consider a decomposition of the cube $C$ into $N_i = 2^{id}$ subcubes $C_1,...,C_{N_i}$ with side length $2^{-i}$. As in the proof of Theorem \ref{upper-bound-theorem}, we introduce the interpolation points $z_1^l,...,z_{(k+1)^d}^l$ and Lagrange polynomials $p_1^l,...,p_{(k+1)^d}^l$ on each subcube $C_l$. Given a function $\mathcal{F}:C\rightarrow H$, consider the piecewise polynomial interpolation of $\mathcal{F}$ on the cubes $C_1,...,C_{N_i}$, which we denote by
+ \begin{equation}
+  \pi_i(\mathcal{F})(x) = \sum_{m=1}^{(k+1)^d}p_m^l(x)\mathcal{F}(z_m^l)~\text{for $x\in C_l$}.
+ \end{equation}
+ Further, we let $\pi _0(\mathcal{F}) = 0$. We now set
+ \begin{equation}
+  \mathcal{S}_i(f) = \sum_{x\in C} f(x)(\pi_i(\mathcal{P}) - \pi_{i-1}(\mathcal{P}))(x).
+ \end{equation}
+ It is evident that $\sum_{i=1}^\infty \mathcal{S}_i(f) = \lim_{i\rightarrow \infty} \sum_{x\in C} f(x)\pi_i(\mathcal{P})(x) = \sum_{x\in C} f(x)\mathcal{P}(x) = \mathcal{S}(f)$.
+ 
+Since $\pi_j(\mathcal{P})$ is a piecewise polynomial on $C_1,...,C_{N_j}$ and the cubes $C_1,...,C_{N_i}$ for $i > j$ refine the cubes $C_1,...,C_{N_j}$, we clearly have $\pi_i(\pi_j(\mathcal{F})) = \pi_j(\mathcal{F})$ whenever $i > j$. This allows us to write
+ \begin{equation}
+  \mathcal{S}_i(f) = \sum_{x\in C} f(x)(\pi_i(\mathcal{P} - \pi_{i-1}\mathcal{P}))(x).
+ \end{equation}
+From this, we see that each $\mathcal{S}_i$ factors through an $\ell^1$ subspace of dimension $n_i := (k+1)^d2^{id}$. Namely, $\mathcal{S}_i = \mathcal{U}_i\circ \mathcal{V}_i$, where $\mathcal{V}_i:\ell_1(C)\rightarrow \ell_1^{n_i}$ is given by
+\begin{equation}
+ \mathcal{V}_i(f) = \left(\sum_{x\in C_l}f(x)p_m^l(x)\right)_{(m,l)},
+\end{equation}
+and $\mathcal{U}_i: \ell_1^{n_i}\rightarrow H$ is given by
+\begin{equation}
+ \mathcal{U}_i((y)_{(m,l)}) = \sum_{l=1}^{N_i} \sum_{m=1}^{(k+1)^d} y_{(m,l)} \left[\mathcal{P}(z_m^l) - \pi_{i-1}(\mathcal{P})(z_{m}^l)\right].
+\end{equation}
+Here the indexing set $(m,l)$ runs over $\{1,...,(k+1)^d\}\times \{1,...,N_i\}$.
+
+From this it is evident that $\|\mathcal{V}_i\| \leq M = M(k,d) = \sup_{x\in C}\left|\sum_{m=1}^{(k+1)^d} p_m(x)\right|$. 
+
+Furthermore, via a Bramble-Hilbert lemma \cite{bramble1970estimation} type argument analogous to that in the proof of Theorem \ref{upper-bound-theorem}, we get that 
+\begin{equation}
+ \|\mathcal{P}(z_m^l) - \pi_{i-1}(\mathcal{P})(z_{m}^l)\|_H \lesssim 2^{-i(k+\alpha)},
+\end{equation}
+since $\mathcal{P}$ is of smoothness class $k+\alpha$ and the diameter of each of the cubes $C_1,...,C_{N_i}$ is $O(2^{-i})$. This means that $\|\mathcal{U}_i\| \lesssim 2^{-i(k+\alpha)}$. Note that here and in what follows all implied constants are independent of $i$.
+
+We now bound, using lemma \ref{triangle-inequality-entropy-lemma},
+\begin{equation}\label{eq-912}
+ \epsilon_n(\mathcal{S}) \leq \sum_{i=1}^\infty \epsilon_{m_i}(\mathcal{S}_i)\leq \sum_{i=1}^\infty \|\mathcal{V}_i\|\epsilon_{m_i}(\mathcal{U}_i) \leq M\sum_{i=1}^\infty\epsilon_{m_i}(\mathcal{U}_i),
+\end{equation}
+for any $m_i$ which satisfy $\sum_{i=1}^\infty m_i \leq n$ (the $\leq$ can be taken by monotonicity of the entropy).
+
+Now let $K = (k+1)^d$ and $c > 0$ be a fixed integer to be specified later. Note that by the monotonicity of the entropy numbers it suffices to prove \eqref{entropy-bound-equation} for $n = K2^{rd}$ for integers $r \geq 2c$. This corresponds to showing that
+\begin{equation}
+ \epsilon_n(\mathcal{S}) \lesssim 2^{-r\left(k+\alpha+\frac{d}{2}\right)}
+\end{equation}
+for $n = K2^{rd}$, where here and in what follows the implied constant is independent of $r$ (and also $i$, if applicable).
+
+To simplify the notation in what follows, we set $\beta = k+\alpha+\frac{d}{2}$. Further, we introduce two indices $i_1 = r-c$ and $i_2 = \lfloor r\beta(k+\alpha)^{-1}\rfloor$. In equation \eqref{eq-912} we set
+\begin{equation}
+ m_i = \begin{cases} 
+         K\lceil(r-i)(\beta + 1)2^{id}\rceil & 1\leq i\leq i_1 \\
+         K\lfloor2^{i_1d - (i - i_1)\delta}\rfloor & i_1 < i\leq i_2 \\
+         0 & i > i_2,
+       \end{cases}
+\end{equation}
+where $\delta = \frac{d}{2}\left(1 + \frac{d}{2(k+\alpha)}\right)^{-1} > 0$.
+
+This choice of $\delta$ ensures that, since $r \geq 2c$,
+\begin{equation}
+\begin{split}
+i_1d - (i_2 - i_1)\delta \geq i_1d - i_2\delta &\geq (r-c)d - r\beta(k+\alpha)^{-1}\delta \\
+& = (r - c)d - r\delta\left(1 + \frac{d}{2(k+\alpha)}\right) \\
+& \geq r\left(\frac{d}{2} - \delta\left(1 + \frac{d}{2(k+\alpha)}\right)\right) \geq 0.
+\end{split}
+\end{equation}
+This means that for $i_1 < i\leq i_2$, we have $2^{i_1d - (i - i_1)\delta} \geq 1$ so that
+\begin{equation}\label{delta-choice-bound}
+ \lfloor2^{i_1d - (i - i_1)\delta}\rfloor \geq 2^{i_1d - (i - i_1)\delta - 1}.
+\end{equation}
+In addition, it is easy to verify that $\delta < k+\alpha$. These facts will be important later when we bound the sum in \eqref{eq-912}.
+
+We proceed to check that for $c$ sufficiently large (independently of $r$) we can ensure that $\sum_{i=1}^\infty m_i \leq n$. To this end, we calculate
+\begin{equation}\label{eq-932}
+ \sum_{i=1}^\infty m_i = K\sum_{i=1}^{i_1} \lceil(r-i)(\beta + 1)2^{id}\rceil + K\sum_{i=i_1+1}^{i_2} \lfloor2^{i_1d - (i - i_1)\delta}\rfloor.
+\end{equation}
+The first sum above is bounded by (recall that $i_1 = r-c$)
+\begin{equation}
+ \sum_{i=1}^{i_1} K\lceil(r-i)(\beta + 1)2^{id}\rceil \leq (r-c) + (\beta + 1)\sum_{i=1}^{r-c} (r-i)2^{id} \leq [2(\beta + 1)(c+1) + 1]2^{(r-c)d},
+\end{equation}
+by noting that $(r-c) \leq 2^{(r-c)d}$ and by writing 
+$$\sum_{i=1}^{r-c} (r-i)2^{id} = c\sum_{i=1}^{r-c} 2^{id} + \sum_{i=1}^{r-c-1}\sum_{j=1}^{i}2^{jd},$$ 
+and bounding the geometric series.
+
+The second sum in \eqref{eq-932} is bounded by (again recall that $i_1 = r-c$)
+\begin{equation}
+ \sum_{i=i_1+1}^{i_2} \lfloor2^{i_1d - (i - i_1)\delta}\rfloor \leq \sum_{i=i_1+1}^{\infty} 2^{i_1d - (i - i_1)\delta} = 2^{-\delta}(1 - 2^{-\delta})^{-1}2^{(r-c)d}.
+\end{equation}
+Thus, if we choose $c$ large enough so that
+$$
+ [2(\beta + 1)(c+1) + 1]2^{-cd} \leq \frac{1}{2}~\text{and}~2^{-\delta}(1 - 2^{-\delta})^{-1}2^{-cd} \leq \frac{1}{2},
+$$
+then we will have that $\sum_{i=1}^\infty m_i \leq K2^{rd} = n$. (Note that such a $c$ can be chosen independently of $r$.)
+
+Finally, we bound the sum in equation \eqref{eq-912} using lemma \ref{carls-lemma}. We note that for $i \leq i_1 = r-c$, we have 
+$$m_i = K\lceil(r-i)(\beta + 1)2^{id}\rceil \geq K2^{id} = n_i.$$ 
+Thus lemma \ref{carls-lemma} gives the bound (recall that $\|\mathcal{U}_i\|\lesssim 2^{-i(k+\alpha)}$)
+\begin{equation}
+\begin{split}
+ \epsilon_{m_i}(\mathcal{U}_i) \leq 2^{-\frac{m_i}{n_i}}n_i^{-\frac{1}{2}}\|\mathcal{U}_i\| \lesssim 2^{-(r-i)(\beta + 1)}\sqrt{2^{-id}}2^{-i(k+\alpha)} &= 2^{-(r-i)(\beta + 1)}2^{-i\beta} \\
+ & = 2^{-r\beta}2^{-(r-i)},
+ \end{split}
+\end{equation}
+since $\frac{m_i}{n_i} \geq (r-i)(\beta + 1)$.
+
+Similarly, for $i_1 < i\leq i_2$, we note that
+$$m_i = K\lfloor2^{i_1d - (i - i_1)\delta}\rfloor \leq K2^{id} = n_i,$$
+and thus lemma \ref{carls-lemma}, using \eqref{delta-choice-bound}, gives the bound
+\begin{equation}
+\begin{split}
+ \epsilon_{m_i}(\mathcal{U}_i) \leq \sqrt{1+\log{\frac{n_i}{m_i}}}m_i^{-\frac{1}{2}}\|\mathcal{U}_i\| &\lesssim \sqrt{2 + (i-i_1)(d + \delta)}2^{-i_1\frac{d}{2}+(i-i_1)\frac{\delta}{2}}2^{-i(k+\alpha)} \\
+ & = \sqrt{2 + (i-i_1)(d + \delta)}2^{-i_1\left(\frac{d}{2}+k+\alpha\right)}2^{-(i-i_1)\left(k+\alpha - \frac{\delta}{2}\right)} \\
+ & \lesssim 2^{-r\beta}\sqrt{2 + (i-i_1)(d + \delta)}2^{-(i-i_1)\left(k+\alpha - \frac{\delta}{2}\right)}.
+ \end{split}
+\end{equation}
+Here we have used that $\log{\frac{m_i}{n_i}} \leq 1 + (i-i_1)(d + \delta)$, which follows from \eqref{delta-choice-bound}, and that $i_1 = r-c$ and $\beta = \frac{d}{2}+k+\alpha$, so that $2^{-i_1\left(\frac{d}{2}+k+\alpha\right)} \lesssim 2^{-r\beta}$.
+
+Finally, if $i > i_2$, then $m_i = 0$ so that lemma \ref{carls-lemma} implies that
+\begin{equation}
+ \epsilon_{m_i}(\mathcal{U}_i) \leq \|\mathcal{U}_i\| \lesssim 2^{-i(k+\alpha)}.
+\end{equation}
+
+Plugging these bound into equation \eqref{eq-912}, we get
+\begin{equation}\label{eq-998}
+\begin{split}
+ \epsilon_n(\mathcal{S})
+ & \lesssim 2^{-r\beta}\sum_{i=1}^{i_1}2^{-(r-i)} + 2^{-r\beta}\sum_{i=i_1+1}^{i_2}\sqrt{2 + (i-i_1)(d + \delta)}2^{-(i-i_1)\left(k+\alpha - \frac{\delta}{2}\right)} + \sum_{i=i_2+1}^\infty2^{-i(k+\alpha)} \\
+ & \leq 2^{-r\beta}\sum_{i=c}^{\infty}2^{-i} + 2^{-r\beta}\sum_{i=1}^{\infty}\sqrt{2 + i(d + \delta)}2^{-i\left(k+\alpha - \frac{\delta}{2}\right)} + \sum_{i=i_2+1}^\infty2^{-i(k+\alpha)}.
+ \end{split}
+\end{equation}
+Finally, we have the following bounds:
+\begin{equation}
+\begin{split}
+ &\sum_{i=c}^{\infty}2^{-i} \leq 2^{1-c} \leq 1,\\
+ &\sum_{i=1}^{\infty}\sqrt{2 + i(d + \delta)}2^{-i\left(k+\alpha - \frac{\delta}{2}\right)} \lesssim 1, \\
+ &\sum_{i=i_2+1}^\infty2^{-i(k+\alpha)} \lesssim 2^{-i_2(k+\alpha)} \lesssim 2^{-r\beta(k+\alpha)^{-1}(k+\alpha)} = 2^{-r\beta},
+ \end{split}
+\end{equation}
+by summing geometric series and using that $k+\alpha - \frac{\delta}{2} > 0$ since $\delta < k+\alpha$.
+
+Plugging these bounds into \eqref{eq-998}, we finally get for $n=K2^{rd}$
+\begin{equation}
+ \epsilon_n(\mathcal{S}) \lesssim 2^{-r\beta} = 2^{-r\left(k+\alpha+\frac{d}{2}\right)},
+\end{equation}
+where, importantly, the implied constant is independent of $r$ (and thus $n$). This completes the proof.
+\end{proof}
+
+\section{Lower bounds for ridge function dictionaries}\label{main-result-2-section}
+In this section, we consider lower bounds on the entropy of convex subsets $A$ of $L^2(B_1^d)$. We show that if $K$ contains a certain class of ridge functions, then its entropy must be bounded below. This result is useful for analyzing the entropy of $B_1(\mathbb{D})$ when $\mathbb{D}$ is a dictionary of ridge functions.
+
+We begin with a general Lemma which is useful for lower bounding the entropy numbers of convex subsets of a Hilbert space. This Lemma is a modest generalization of Lemma 3 in \cite{makovoz1996random}. A slightly different version has also appeared in  \cite{klusowski2018approximation} in the context of lower bounding approximation rates of ReLU networks. The proofs given in these references rely on a combinatorial lemma which concerns covering numbers of the cube by Hamming balls (see  Lemma 8 in \cite{lorentz1966metric} or Lemma 2.2 of Chapter 15 in \cite{lorentz1996constructive}, for instance). For completeness, we provide here a simpler proof which we found more enlightening.
+\begin{lemma}\label{lower-eigenvalue-lemma}
+ Let $H$ be a hilbert space and $A\subset H$ a convex and symmetric set. Suppose that $g_1,...,g_n\subset A$. Then
+ \begin{equation}\label{lemma-lower-bound}
+  \epsilon_{n}(A)\geq \frac{1}{2}\sqrt{\frac{\lambda_{min}}{n}},
+ \end{equation}
+ where $\lambda_{min}$ is the smallest eigenvalue of the Gram matrix $G$ defined by $G_{ij} = \langle g_i,g_j\rangle_H$.
+\end{lemma}
+\begin{proof}
+ Consider a maximal set of points $x_1,...,x_N\in b_1^n(0,1):=\{x\in \mathbb{R}^n:~|x|_1\leq 1\}$ in the $\ell^1$-unit ball satisfying $|x_i - x_j| \geq \frac{1}{2}$ for each $i\neq j$. We claim that $N \geq 2^n$. Indeed, if the set $\{x_i\}_{i=1}^N$ is maximal, then the balls 
+ $$b^n_1(x_i,1/2) = \left\{x\in \mathbb{R}^n:~|x-x_i|_1\leq \frac{1}{2}\right\}$$
+ must cover the ball $b_1^n(0,1)$. This implies that
+ \begin{equation}
+  \sum_{i=1}^N |b^n_1(x_i,1/2)| \geq |b_1^n(0,1)|.
+ \end{equation}
+ Since we obviously have $|b^n_1(x_i,1/2)| = (1/2)^n|b_1^n(0,1)|$ for each $i$, it follows that $N \geq 2^n$.
+ 
+Consider the collection of elements $f_1,...,f_N\in H$ defined by
+ \begin{equation}
+  f_i = \sum_{k=1}^nx^k_ig_k.
+ \end{equation}
+ Since $A$ is symmetric and convex, we have $f_i\in A$ for each $i=1,...,N$. Moreover, if $i\neq j$, then
+ \begin{equation}
+  \|f_i-f_j\|^2_H = v^T_{ij}Gv_{ij},
+ \end{equation}
+ where $v_{ij} = x_i - x_j$. Since $|x_i - x_j|_1 \geq \frac{1}{2}$, it follows from H\"older's inequality that $|v_{ij}|^2_2 \geq \frac{1}{4n}$. From the eigenvalues of $G$ we then see that $\|f_i-f_j\|^2_H \geq \frac{\lambda_{min}}{4n}$ for all $i\neq j$. This gives the lower bound \eqref{lemma-lower-bound}.
+\end{proof}
+
+This Lemma can be applied to sequences of almost orthogonal vectors to obtain Lemma 3 from \cite{makovoz1996random}, which we state here as a corollary for completeness.
+\begin{corollary}\label{entropy-lower-bound-corollary}
+ Let $H$ be a hilbert space and $A\subset H$ a convex and symmetric set. Suppose that $g_1,...,g_n\subset A$ and the the $g_i$ are almost orthogonal in the sense that for all $i = 1,...,n$,
+ \begin{equation}\label{diagonal-dominant}
+  \sum_{j\neq i}|\langle g_i,g_j\rangle_H| \leq \frac{1}{2}\|g_i\|_H^2.
+ \end{equation}
+ Then
+ \begin{equation}
+  \epsilon_{n}(A)\geq \frac{\min_i \|g_i\|_H}{\sqrt{8n}}.
+ \end{equation}
+\end{corollary}
+\begin{proof}
+ This follows from Lemma \ref{lower-eigenvalue-lemma} if we can show that the Gram matrix $G$ satisfies
+ \begin{equation}
+  \lambda_{min}(G) \geq \frac{1}{2}\min_i \|g_i\|^2_H.
+ \end{equation}
+ This follows immediately from the diagonal dominance condition \ref{diagonal-dominant} and the Gerschgorin circle theorem (see the proof in \cite{makovoz1996random} for details).
+\end{proof}
+
+Using these results, it is a relatively simple matter to obtain lower bounds on the entropy of $B_1(\mathbb{F}_s^d)$.
+\begin{proposition}
+ Let $d \geq 1$. Then
+ \begin{equation}
+  \epsilon_n(B_1(\mathbb{F}_s^d)) \gtrsim_{s,d} n^{-\frac{1}{2}-\frac{s}{d}}.
+ \end{equation}
+\end{proposition}
+\begin{proof}
+ Consider the cube $C = [-d^{-\frac{1}{2}},d^{-\frac{1}{2}}]\subset B_1^d$. It suffices to lower bound the $\epsilon_n(B_1(\mathbb{F}_s^d))$ with respect to $H = L^2(C)$. For this, we consider the collection of functions $g_\xi(x) = (1 + \sqrt{d}|\xi|)^{-s}e^{2\pi i \sqrt{d}\xi \cdot x}\in B_1(\mathbb{F}_s^d)$ for $\xi\in \mathbb{Z}^d$ with $|\xi|_\infty \leq N$. This collection of functions is clearly orthogonal, and so satisfies the condition of Corollary \ref{entropy-lower-bound-corollary}. Thus we get
+ \begin{equation}
+  \epsilon_n(B_1(\mathbb{F}_s^d)) \gtrsim n^{-\frac{1}{2}}\min_{\xi}\|g_{\xi}\|_H = n^{-\frac{1}{2}}(1+dN)^{-s} \gtrsim_{s,d} n^{-\frac{1}{2}}N^{-s},
+ \end{equation}
+ where $n = (2N+1)^d$ is the total number of functions $g_\xi$. Thus $N \lesssim_d n^{\frac{1}{d}}$ and so
+ \begin{equation}
+  \epsilon_n(B_1(\mathbb{F}_s^d))\gtrsim_{s,d} n^{-\frac{1}{2}-\frac{s}{d}}.
+ \end{equation}
+ This only holds a priori for $n$ of the form $n = (2N+1)^d$, but the monotonicity of the entropy extends the bound to all $n$.
+\end{proof}
+
+Since $\mathcal{K}_1(\mathbb{F}_{k+1}^d)\subset \mathcal{K}_1(\mathbb{P}_k^d)$, this result immediately implies that $\epsilon_n(B_1(\mathbb{P}_k^d)) \gtrsim_{k,d} n^{-\frac{1}{2}-\frac{k+1}{d}}$, as observed in \cite{makovoz1996random,klusowski2018approximation}. However, it is known that this inclusion is strict \cite{wojtowytsch2020representation}, and so it may be possible to get a better lower bound on $\epsilon_n(B_1(\mathbb{P}_k^d))$ which does not come from $\mathcal{K}_1(\mathbb{F}_{k+1}^d)$. This would separate the two spaces in a quantifiable way, showing precisely how much larger $\mathcal{K}_1(\mathbb{P}_k^d)$ is. 
+
+The first such improved lower bound on $\epsilon_n(B_1(\mathbb{P}_k^d))$ is obtained by Makovoz \cite{makovoz1996random} in the case $k=0$, $d=2$, and it is conjectured that an improved lower bound holds more generally. We settle this conjecture by deriving an improved lower bound for all $k \geq 0$ and $d\geq 2$, which requires a much more careful analysis.
+
+\begin{theorem}\label{lower-bound-theorem}
+ Let $d \geq 2$, $k\geq 0$, and $A\subset L^2(B_1^d)$ be a convex and symmetric set. Suppose that for every profile $\phi\in C_c^\infty([-2,2])$ such that $\|\phi^{(k+1)}\|_{L^1(\mathbb{R})}\leq 1$, and any direction $\omega\in S^{d-1}$, the ridge function $\phi(\omega\cdot x)\in L^2(B_1^d)$ satisfies
+ \begin{equation}
+  \phi(\omega\cdot x)\in A.
+ \end{equation}
+ Then
+ \begin{equation}
+  \epsilon_n(A) \gtrsim_{k,d} n^{-\frac{1}{2}-\frac{2k+1}{2d}}.
+ \end{equation}
+
+\end{theorem}
+The argument we give here adapts the argument in the proof of Theorem 4 in \cite{makovoz1996random}. A careful analysis allows us extend the result to higher dimensions and remove a logarithmic factor. The key is to consider profiles $\phi$ whose higher order moments vanish. 
+
+Before we give the proof, we observe that the Peano kernel formula
+\begin{equation}
+ \phi(x) = \frac{1}{k!}\int_{-2}^2 \phi^{(k+1)}(t)[\max(0,x-t)]^kdt = \frac{1}{k!}\int_{-2}^2 \phi^{(k+1)}(t)\sigma_k(0,x-t)dt,
+\end{equation}
+which holds for all $\phi\in C_c^\infty([-2,2])$, implies that for a constant $C = C(k,d)$, the unit ball $CB_1(\mathbb{P}^d_k)$ satisfies the conditions of Theorem \ref{lower-bound-theorem}. This yields the result
+\begin{theorem}\label{relu-k-lower-bound-corollary}
+ Let $d \geq 2$. Then
+ \begin{equation}
+  \epsilon_n(B_1(\mathbb{P}^d_k)) \gtrsim_{k,d} n^{-\frac{1}{2}-\frac{2k+1}{2d}}.
+ \end{equation}
+
+\end{theorem}
+
+\begin{proof}[Proof of Theorem \ref{lower-bound-theorem}]
+ We introduce the weight $$d\mu = (1-|x|^2)_+^{\frac{d}{2}}dx$$ of Bochner-Riesz type on $B_1^d$ and consider the space $H = L^2(B_1^d,d\mu)$. Since $1-|x|^2 \leq 1$, it follows that
+ $\|f\|_H \leq \|f\|_{L^2(\Omega)}$, and so it suffices to lower bound the entropy of $A$ with respect to the weighted space $H$.
+ 
+ Choose $0\neq \psi\in C^\infty_c([-1,1])$ such that $2d-1$ of its moments vanish, i.e. such that
+ \begin{equation}
+  \int_{-1}^1 x^r\psi(x)dx = 0,
+ \end{equation}
+ for $r=0,...,2d-2$. Such a function $\psi$ can easily be obtained by convolving an arbitrary compactly supported function whose moments vanish (such as a Legendre polynomial) with a $C^\infty$ bump function.
+ 
+ Our assumptions on the set $A$ imply that by scaling $\psi$ appropriately, we can ensure that for $0 < \delta < 1$
+ \begin{equation}
+   \delta^{k}\psi(\delta^{-1}\omega\cdot x + b)\in A,
+  \end{equation}
+ for any $\omega\in S^{d-1}$ and $b\in[-\delta^{-1},\delta^{-1}]$. Note that $\psi$, which will be fixed in what follows, depends upon both $d$ and $k$.
+ 
+ Let $N \geq 1$ be an integer and fix $n = N^{d-1}$ directions $\omega_1,...,\omega_n\in S^{d-1}$ with $\min(|\omega_i - \omega_j|_2, |\omega_i + \omega_j|_2) \gtrsim_d N^{-1}$. This can certainly be done since projective space $P^{d-1} = S^{d-1}/\{\pm\}$ has dimension $d-1$. In particular, if $\omega_1,...,\omega_n$ is a maximal set satisfying $\min(|\omega_i - \omega_j|_2, |\omega_i + \omega_j|_2) \geq cN^{-1}$, then balls of radius $cN^{-1}$ centered at the $\omega_i$ must cover $P^{d-1}$. So we must have $n = \Omega(N^{d-1})$, and by choosing $c$ appropriately we can arrange $n = N^{d-1}$.
+ 
+ Further, let $a \leq \frac{1}{4}$ be a sufficiently small constant to be specified later and consider for $\delta = aN^{-1}$ the collection of functions
+ \begin{equation}
+  g_{p,l}(x) = \delta^{k}\psi(\delta^{-1}\omega_p \cdot x + 2l)\in A,
+ \end{equation}
+ for $p=1,...,n$ and $l = -\frac{N}{2},...,\frac{N}{2}$. 
+ 
+ The intuition here is that $g_{p.l}$ is a ridge function which varies in the direction $\omega_p$ and has the compactly supported profile $\psi$ dialated to have width $\delta$ (and scaled appropriately to remain in $A$). The different values of $l$ give different non-overlapping shifts of these functions.  The proof proceeds by checking that the $g_{p,l}$ can be made `nearly orthogonal' by choosing $a$ sufficiently small.
+ 
+ Indeed, we claim that if $a$ is chosen small enough, then the $g_{p,l}$ satisfy the conditions of Corollary \ref{entropy-lower-bound-corollary}, i.e. for each $(p,l)$
+ \begin{equation}
+  \sum_{(p',l')\neq (p,l)} |\langle g_{p,l}, g_{p',l'}\rangle_H| \leq \frac{1}{2}\|g_{p,l}\|^2_H.
+ \end{equation}
+ 
+ To see this, we begin by estimating $\|g_{p,l}\|^2_H$, as follows
+ \begin{equation}
+  \|g_{p,l}\|^2_H = \delta^{2k}\int_{B_1^d} |\psi(\delta^{-1}\omega_p \cdot x + 2l)|^2(1-|x|^2)^{\frac{d}{2}}dx.
+ \end{equation}
+ We proceed to complete $\omega_p$ to an orthonormal basis of $\mathbb{R}^d$, $b_1 = \omega_p, b_2,...,b_d$ and denote the coordinates of $x$ with respect to this basis by $y_i = x\cdot b_i$. Rewriting the above integral in this new orthonormal basis, we get
+ \begin{equation}
+ \begin{split}
+  \|g_{p,l}\|^2_H &= \delta^{2k}\int_{B_1^d}|\psi(\delta^{-1}y_1 + 2l)|^2\left(1-\sum_{i=1}^d y_i^2\right)^{\frac{d}{2}}dy_1\cdots dy_d \\
+  &= \delta^{2k}\int_{-1}^1|\psi(\delta^{-1}y_1 + 2l)|^2 \rho_d(y_1)dy_1,
+  \end{split}
+ \end{equation}
+ where
+ \begin{equation}
+ \begin{split}
+  \rho_d(y) &= \int_0^{\sqrt{1-y^2}} (1-y^2-r^2)^{\frac{d}{2}}r^{d-2}dr\\ 
+  &= (1-y^2)^{d-\frac{1}{2}}\int_0^{1} (1-r^2)^{\frac{d}{2}}r^{d-2}dr = K_d(1-y^2)^{d-\frac{1}{2}},
+  \end{split}
+ \end{equation}
+ for a dimension dependent constant $K_d$.
+
+ Further, we change variables, setting $y = \delta^{-1}y_1 + 2l$ and use the fact that $\psi$ is supported in $[-1,1]$, to get
+ \begin{equation}
+  \|g_{p,l}\|^2_H = K_d\delta^{2k+1}\int_{-1}^1 |\psi(y)|^2 (1-[\delta(y-2l)]^2)^{d-\frac{1}{2}} dy.
+ \end{equation}
+  Since $|y| \leq 1$ and $|2l| \leq N$, as long as $\delta(N+1) \leq 1/2$, which is guaranteed by $a \leq \frac{1}{4}$, the coordinate $y_1 = \delta(y-2l)$ will satisfy $|y_1| \leq 1/2$. This means that $$(1-[\delta(y-2l)]^2)^{d-\frac{1}{2}} = (1-y_1^2)^{d-\frac{1}{2}} \geq (3/4)^{d-\frac{1}{2}}$$ uniformly in $p,l,N$ and $\delta$, and thus
+ \begin{equation}\label{lower-bound}
+  \|g_{p,l}\|^2_H \geq K_d(3/4)^{d-\frac{1}{2}}\delta^{2k+1}\int_{-1}^1 |\psi(y)|^2dy \gtrsim_{k,d} \delta^{2k+1}.
+ \end{equation}
+ 
+ Next consider $|\langle g_{p,l}, g_{p',l'}\rangle_H|$ for $(p,l)\neq (p',l')$. 
+ 
+ If $p=p'$, then $\omega_p = \omega_{p'}$, but $l\neq l'$. In this case, we easily see that the supports of $g_{p,l}$ and $g_{p,l'}$ are disjoint and so the inner product $\langle g_{p,l}, g_{p',l'}\rangle_H = 0$. 
+ 
+ On the other hand, if $p\neq p'$ we get
+ \begin{equation}
+  \langle g_{p,l}, g_{p',l'}\rangle_{H} = \delta^{2k}\int_{B_1^d} \psi(\delta^{-1}\omega_p\cdot x + 2l)\psi(\delta^{-1}\omega_{p'}\cdot x + 2l')(1-|x|^2)^{\frac{d}{2}}dx.
+ \end{equation}
+ Since $p\neq p'$, the vectors $\omega_p$ and $\omega_{p'}$ are linearly independent and we complete them to a basis $b_1 = \omega_p, b_2 = \omega_{p'}, b_3,...,b_d$, where $b_3,...,b_d$ is an orthonormal basis for the subspace orthogonal to $\omega_p$ and $\omega_{p'}$. 
+ 
+ Letting $b_1',b_2',b_3'=b_3,...,b_d'=b_d$ be a dual basis (i.e. satisfying $b_i'\cdot b_j = \delta_{ij}$) and making the change of variables $x = y_1b_1' + \cdots + y_db_d'$ in the above integral, we get
+ \begin{equation}\label{inner-product-equation}
+  \langle g_{p,l}, g_{p',l'}\rangle_{H} = \delta^{2k}\det(D_{p,p'})^{-\frac{1}{2}} \int_{-\infty}^\infty \int_{-\infty}^\infty \psi(\delta^{-1}y_1+2l)\psi(\delta^{-1}y_2+2l') \gamma_d(|y_1b_1' + y_2b_2'|) dy_1dy_2,
+ \end{equation}
+ where $D_{p,p'}$ is the Graham matrix of $\omega_1$ and $\omega_2$ (notice that then $D_{p,p'}^{-1}$ is the Graham matrix of $b_1'$ and $b_2'$) and
+\begin{equation}
+ \begin{split}
+  \gamma_d(y) &= \int_0^{\sqrt{1-y^2}} (1-y^2-r^2)^{\frac{d}{2}}r^{d-3}dr\\ 
+  &= (1-y^2)_+^{d-1}\int_0^{1} (1-r^2)^{\frac{d}{2}}r^{d-3}dr = K'_d(1-y^2)_+^{d-1},
+  \end{split}
+ \end{equation}
+ for a second dimension dependent constant $K'_d$. (Note that if $d=2$, then the above calculation is not correct, but we still have $\gamma_d(y) =  (1-y^2)_+^{\frac{d}{2}} = (1-y^2)_+^{d-1}$.) We remark that the choice of Bochner-Riesz weight $d\mu = (1 - |x|^2)_+^{\frac{d}{2}}$ was made precisely so that $\gamma_d$ is a piecewise polynomial with continuous derivatives of order $d-2$, which will be important in what follows.
+ 
+ Next, we fix $y_1$ and analyze, as a function of $z$,
+ $$\tau_{p,p'}(y_1,z) = \gamma_d(|y_1b_1' + zb_2'|) = K'_d(1-q_{p,p'}(y_1,z))_+^{d-1},$$
+ where $q_{p,p'}$ is the quadratic 
+ \begin{equation}\label{definition-of-q}
+ q_{p,p'}(y_1,z) = (b_1'\cdot b_1')y_1^2-2(b_1'\cdot b_2')y_1z-(b_2'\cdot b_2')z^2,
+ \end{equation}
+ We observe that, depending upon the value of $y_1$, $\tau_{p,p'}(y_1,z)$ is either identically $0$ or is a piecewise polynomial function of degree $2d-2$ with exactly two break points at the roots $z_1,z_2$ of $q_{p,p'}(y_1,z) = 1$. Furthermore, utilizing Fa\`a di Bruno's formula \cite{di1857note} and the fact that $q_{p,p'}(y_1,\cdot)$ is quadratic, we see that
+ \begin{equation}\label{derivative-of-tau}
+  \left.\frac{d^k}{dz^k} \tau_{p,p'}(y_1,z)\right|_{z_i} = \sum_{m_1+2m_2=k} \frac{k!}{m_1!m_2!2^{m_2}}f_d^{(m_1+m_2)}(1)\left[\frac{d}{dz}q_{p,p'}(y_1,z)|_{z_i}\right]^{m_1}\left[\frac{d^2}{dz^2}q_{p,p'}(y_1,z)|_{z_i}\right]^{m_2},
+ \end{equation}
+ where $f_d(x) = (1-x)^{d-1}$. 
+ 
+ Since $f^{(m)}_d(1) = 0$ for all $m \leq d-2$, we see that
+ the derivative in \eqref{derivative-of-tau} is equal to $0$ for $0 \leq k\leq d-2$. Thus the function $\tau_{p,p
+ }(y_1,\cdot)$ has continuous derivatives up to order $d-2$ at the breakpoints $z_1$ and $z_2$. Moreover, if we consider the derivative of order $k=d-1$, then only the term with $m_2 = 0$ in \eqref{derivative-of-tau} survives and we get
+ \begin{equation}
+  \left.\frac{d^{d-1}}{dz^{d-1}} \tau_{p,p'}(y_1,z)\right|_{z_i} = f_d^{(d-1)}(1)\left[\frac{d}{dz}q_{p,p'}(y_1,z)|_{z_i}\right]^{d-1} = (-1)^{d-1}(d-1)!\left[\frac{d}{dz}q_{p,p'}(y_1,z)|_{z_i}\right]^{d-1}.
+ \end{equation}
+ Utilizing the fact that the derivative of a quadratic $q(x) = ax^2 + bx + c$ at its roots is given by $\pm\sqrt{b^2 - 4ac}$ combined with the formula for $q_{p,p'}$ \eqref{definition-of-q}, we get
+ \begin{equation}
+  \frac{d}{dz}q_{p,p'}(y_1,z)|_{z_i} = \pm 2\sqrt{(b_1'\cdot b_1')(b_1'\cdot b_2')^2-(b_2'\cdot b_2')(b_1'\cdot b_1')} = \pm 2\det(D_{p,p'})^{-\frac{1}{2}}.
+ \end{equation}
+ Taken together, this shows that the jump in the $d-1$-st derivative of $\tau_{p,p'}(y_1,z)$ at the breakpoints $z_1$ and $z_2$ has magnitude
+ \begin{equation}\label{derivative-bound}
+ \left|\left.\frac{d^{d-1}}{dz^{d-1}} \tau_{p,p'}(y_1,z)\right|_{z_i}\right| \lesssim_d \det(D_{p,p'})^{-\frac{d-1}{2}}.
+ \end{equation}
+
+ Going back to equation \eqref{inner-product-equation}, we see that due to the compact support of $\psi$, the integral in \eqref{inner-product-equation} is supported on a square with side length $2\delta$ in $y_1$ and $y_2$. To clarify this, we make the change of variables $s = \delta^{-1}y_1+2l$, $t = \delta^{-1}y_2+2l'$, and use that $\psi$ is supported on $[-1,1]$, to get (for notational convenience we let $y(s,l) = \delta (s-2l)$)
+ \begin{equation}
+  \langle g_{p,l}, g_{p',l'}\rangle_{H} = \delta^{2k+2}\det(D_{p,p'})^{-\frac{1}{2}} \int_{-1}^1 \int_{-1}^1 \psi(s)\psi(t) \tau_{p,p'}(y(s,l), y(t,l'))ds dt.
+ \end{equation}
+ We now estimate the sum over $l'$ as
+  \begin{equation}\label{big-equation}
+  \begin{split}
+  \sum_{l'=-\frac{N}{2}}^{\frac{N}{2}} |\langle g_{p,l}, g_{p',l'}\rangle_{H}| &= \delta^{2k+2}\det(D_{p,p'})^{-\frac{1}{2}}\sum_{l'=-\frac{N}{2}}^{\frac{N}{2}}\left|\int_{-1}^1\int_{-1}^1 \psi(s)\psi(t)\tau_{p,p'}(y(s,l), y(t,l'))dsdt\right| \\
+  &\leq \delta^{2k+2}\det(D_{p,p'})^{-\frac{1}{2}}\sum_{l'=-\frac{N}{2}}^{\frac{N}{2}}\int_{-1}^1\left|\int_{-1}^1 \psi(s)\psi(t)\tau_{p,p'}(y(s,l), y(t,l'))dt\right|ds \\
+  & = \delta^{2k+2}\det(D_{p,p'})^{-\frac{1}{2}}\int_{-1}^1|\psi(s)|\sum_{l'=-\frac{N}{2}}^{\frac{N}{2}}\left|\int_{-1}^1 \psi(t)\tau_{p,p'}(y(s,l), y(t,l'))dt\right|ds.
+  \end{split}
+ \end{equation}
+ For fixed $s$ and $l$, consider the inner sum
+ \begin{equation}\label{sum-to-bound}
+  \sum_{l'=-\frac{N}{2}}^{\frac{N}{2}}\left|\int_{-1}^1 \psi(t)\tau_{p,p'}(y(s,l), y(t,l'))dt\right| = \sum_{l'=-\frac{N}{2}}^{\frac{N}{2}}\left|\int_{-1}^1 \psi(t)\tau_{p,p'}(y(s,l), \delta (t - 2l'))dt\right|.
+ \end{equation}
+ In the integrals appearing in this sum, the variable $z = \delta (t - 2l')$ runs over the line segment $[\delta(2l'-1),\delta(2l'+1)]$. These segments are disjoint for distinct $l'$ and are each of length $2\delta$. 
+ 
+ Further, recall that for fixed $y_1 = y(s,l)$, the function $\tau_{p,p'}(y_1, z)$ is a piecewise polynomial of degree $2d-2$ with at most two breakpoints $z_1$ and $z_2$. Combined with the fact that $2d-1$ moments of $\psi$ vanish, this implies that at most two terms in the above sum are non-zero, namely those where the corresponding integral contains a breakpoint.
+ 
+ Furthermore, the bound on the jump in the $d-1$-st order derivatives at the breakpoints \eqref{derivative-bound} implies that in the intervals (of length $2\delta$) which contain a breakpoint, there exists a polynomial $q_i$ of degree $d-2$ for which
+ \begin{equation}
+  |\tau_{p,p'}(y_1,z) - q_i(z)| \leq \frac{(2\delta)^{d-1}}{(d-1)!}M_d \det(D_{p,p'})^{-\frac{d-1}{2}} \lesssim_d \delta^{d-1} \det(D_{p,p'})^{-\frac{d-1}{2}}
+ \end{equation}
+ on the given interval. Using again the vanishing moments of $\psi$, we see that the nonzero integrals in the sum \eqref{sum-to-bound} (of which there are at most $2$) satisfy
+ $$
+ \left|\int_{-1}^1 \psi(t)\tau_{p,p'}(y(s,l), \delta (t - 2l'))dt\right| \lesssim_{k,d} \delta^{d-1}\det(D_{p,p'})^{-\frac{d-1}{2}}.
+ $$
+ So for each fixed $s$ and $l$, we get the bound
+ \begin{equation}
+  \sum_{l'=-\frac{N}{2}}^{\frac{N}{2}}\left|\int_{-1}^1 \psi(t)\tau_{p,p'}(y(s,l), y(t,l'))dt\right| \lesssim_{k,d} \delta^{d-1} \det(D_{p,p'})^{-\frac{d-1}{2}}.
+ \end{equation}
+ Plugging this into equation \eqref{big-equation}, we get
+ \begin{equation}
+  \sum_{l'=-\frac{N}{2}}^{\frac{N}{2}} |\langle g_{p,l}, g_{p',l'}\rangle_{H}| \lesssim_{k,d} \delta^{2k+d+1}\det(D_{p,p'})^{-\frac{d}{2}}\int_{-1}^1|\psi(s)| ds \lesssim_{k,d} \delta^{2k+d+1}\det(D_{p,p'})^{-\frac{d}{2}}.
+ \end{equation}
+We analyze the $\det(D_{p,p'})^{-\frac{d}{2}}$ term using that $\omega_p$ and $\omega_{p'}$ are on the sphere to get
+\begin{equation}
+ \det(D_{p,p'})^{-\frac{d}{2}} = (1-\langle \omega_p,\omega_{p'}\rangle^2)^{-\frac{d}{2}} = \frac{1}{\sin(\theta_{p,p'})^d},
+\end{equation}
+where $\theta_{p,p'}$ represents the angle between $\omega_p$ and $\omega_{p'}$.
+
+Summing over $p'\neq p$, we get
+\begin{equation}\label{eq-1357}
+ \sum_{(p',l')\neq (p,l)} |\langle g_{p,l}, g_{p',l'}\rangle_H| \lesssim_{k,d} \delta^{2k+d+1}\sum_{p'\neq p}\frac{1}{\sin(\theta_{p,p'})^d}.
+\end{equation}
+The final step is to bound the above sum. This is done in a relatively straightforward manner by noting that this sum is comparable to the following integral 
+\begin{equation}
+ \sum_{p'\neq p}\frac{1}{\sin(\theta_{p,p'})^d} \eqsim_d N^{d-1}\int_{P^{d-1}-B(p,r)} |x-p|^{-d}dx,
+\end{equation}
+where we are integrating over projective space minus a ball of radius $r \gtrsim_d N^{-1}$ around $p$. Integrating around this pole of order $d$ in the $d-1$ dimensional $P^{d-1}$, this gives
+\begin{equation}
+ \sum_{p'\neq p}\frac{1}{\sin(\theta_{p,p'})^d} \eqsim_d N^d.
+\end{equation}
+To be more precise, we present the detailed estimates in what follows.
+
+We bound the sum over one hemisphere
+\begin{equation}
+ \sum_{0 < \theta_{p,p'}\leq \frac{\pi}{2}}\frac{1}{\sin(\theta_{p,p'})^d},
+\end{equation}
+and note that the sum over the other hemisphere can be handled in an analogous manner. To this end, we decompose this sum as
+\begin{equation}\label{eq-1365}
+ \sum_{0 < \theta_{p,p'}\leq \frac{\pi}{2}}\frac{1}{\sin(\theta_{p,p'})^d} = \sum_{0 < \theta_{p,p'}\leq \frac{\pi}{4}}\frac{1}{\sin(\theta_{p,p'})^d} + \sum_{\frac{\pi}{4} < \theta_{p,p'}\leq \frac{\pi}{2}}\frac{1}{\sin(\theta_{p,p'})^d}.
+\end{equation}
+For the second sum, we note that $\sin(\theta_{p,p'}) \geq \frac{1}{\sqrt{2}}$, and the number of terms is at most $n = N^{d-1}$, so that the second sum is $\lesssim N^{d-1}$. 
+
+To bound the first sum in \eqref{eq-1365}, we rotate the sphere so that $\omega_p = (0,...,0,1)$ is the north pole. We then take the $\omega_{p'}$ for which $\theta_{p,p'}\leq \frac{\pi}{4}$ and project them onto the tangent plane at $\omega_p$. Specifically, this corresponds to the map $\omega_{p'} = (x_1,...x_{d-1},x_d)\rightarrow x_{p'} = (x_1,...x_{d-1})$, which removes the last coordinate. 
+
+It is now elementary to check that this maps distorts distances by at most a constant (since the $\omega_{p'}$ are all contained in a spherical cap of radius $\frac{\pi}{4}$), i.e. that for $p'_1\neq p'_2$, we have
+\begin{equation}
+ |x_{p'_1} - x_{p'_2}| \leq |\omega_{p'_1} - \omega_{p'_2}| \lesssim |x_{p'_1} - x_{p'_2}|,
+\end{equation}
+and also that $\sin(\theta_{p,p'}) = |x_{p'}|$.
+
+This allows us to write the first sum in \eqref{eq-1365} as
+\begin{equation}
+ \sum_{0 < \theta_{p,p'}\leq \frac{\pi}{4}}\frac{1}{\sin(\theta_{p,p'})^d} = \sum_{0<|x_{p'}|\leq \frac{1}{\sqrt{2}}}\frac{1}{|x_{p'}|^d},
+\end{equation}
+where by construction we have $|\omega_{p'_1} - \omega_{p'_2}| \gtrsim_d N^{-1}$ for $p'_1\neq p'_2$, and thus $|x_{p'_1} - x_{p'_2}|\gtrsim_d N^{-1}$ as well. In addition, $|\omega_p - \omega_{p'}| \gtrsim_d N^{-1}$ and thus also $|x_{p'}| \gtrsim_d N^{-1}$.
+
+Now let $r\gtrsim_d N^{-1}$ be such that the balls of radius $r$ around each of the $x_{p'}$, and around $0$, are disjoint. Notice that since $|x|^{-d}$ is a subharmonic function on $\mathbb{R}^{d-1} / \{0\}$, we have
+\begin{equation}
+ \frac{1}{|x_{p'}|^d} \leq \frac{1}{|B(x_{p'},r)|}\int_{B(x_{p'},r)}|y|^{-d}dy \lesssim_d N^{d-1}\int_{B(x_{p'},r)}|y|^{-d}dy.
+\end{equation}
+Since all of the balls $B(x_{p'},r)$ are disjoint and are disjoint from $B(0,r)$, we get (note that these integrals are in $\mathbb{R}^{d-1}$)
+\begin{equation}
+ \sum_{0<|x_{p'}|\leq \frac{1}{\sqrt{2}}}\frac{1}{|x_{p'}|^d} \lesssim_d N^{d-1}\int_{r \leq |y| \leq \frac{\pi}{2} + r} |y|^{-d}dy \leq N^{d-1}\int_{r \leq |y|} |y|^{-d}dy \lesssim_d N^{d-1}r^{-1} \lesssim_d N^d.
+\end{equation}
+Plugging this into equation \eqref{eq-1365} and bounding the sum over the other hemisphere in a similar manner, we get
+\begin{equation}
+ \sum_{p'\neq p}\frac{1}{\sin(\theta_{p,p'})^d} \lesssim_d N^d.
+\end{equation}
+Using equation \eqref{eq-1357}, we finally obtain
+\begin{equation}
+ \sum_{(p',l')\neq (p,l)} |\langle g_{p,l}, g_{p',l'}\rangle_H| \lesssim_{k,d} \delta^{2k+d+1}N^d.
+\end{equation}
+Combined with the lower bound \eqref{lower-bound}, which gives $\|g_{p,l}\|_H^2 \gtrsim_{k,d} \delta^{2k+1}$, we see that by choosing the factor $a$ in $\delta = aN^{-1}$ small enough (independently of $N$, of course), we can in fact guarantee that the conditions of Corollary \ref{entropy-lower-bound-corollary} are satisfied.
+
+Applying the Corollary, we see that
+\begin{equation}
+ \epsilon_{n}(A) \geq \frac{\min_{(p,l)} \|g_{p,l}\|_H}{\sqrt{8n}} \gtrsim_{k,d} n^{-\frac{1}{2}} \delta^{\frac{2k+1}{2}} \gtrsim_{k,d,a} n^{-\frac{1}{2}}N^{-\frac{2k+1}{2}},
+\end{equation}
+where $n = N^d$ is the total number of functions $g_{p,l}$. This finally gives (since $a$ is fixed depending upon $k$ and $d$)
+\begin{equation}
+ \epsilon_{n}(A)\gtrsim_{k,d} n^{-\frac{1}{2}-\frac{2k+1}{2d}}.
+\end{equation}
+As before, the monotonicity of the entropy extends this bound to all $n$. This completes the proof.
+
+\end{proof}
+
+
+\section{Conclusion}
+We introduce the natural approximation spaces for shallow neural networks with ReLU$^k$  and cosine activation functions and show that this space is equivalent to the Barron space when $\sigma = \text{ReLU}$ and the spectral Barron space when $\sigma = \cos$. Further, we calculate the precise asymptotics of the metric entropy of these spaces with respect to the $L^2$-norm. This has allowed us to calculate optimal approximation rates for shallow ReLU$^k$ neural networks, closing the gap between upper and lower bounds previously attained. 
+
+There are a few further questions we would like to propose. First, it is unclear how to extend these bounds to Banach spaces which are not Hilbert spaces, such as $L^1$ or $L^\infty$, which have been studied in \cite{klusowski2018approximation,makovoz1998uniform}, for example. Second, we would like to extend this theory to approximation by deeper neural networks. Finally, although it is known that greedy algorithms can attain an $O(n^{-\frac{1}{2}})$ approximation rate \cite{barron2008approximation} when approximating functions from $\mathcal{K}_1(\mathbb{D})$, as far as we know it is not known whether the higher order approximation rates derived here can be attained algorithmically.
+
+

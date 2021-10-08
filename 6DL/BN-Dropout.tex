@@ -1,0 +1,361 @@
+\chapter{Weight initialization, batch normalization and dropout}
+In this chapter, we will discuss several basic techniques used in the training of neural networks, including
+\begin{enumerate}
+\item Weights initialization
+\item Batch normalization
+\item Dropout
+\end{enumerate}
+\section{Weights Initialization}
+They adopt the strategy from Glorot \& Bengio 2010 ``Understanding the difficulty of training deep feedforward neural networks". Basically speaking, Bengio's results come from the idea to analyse the statistical properties for totally linear deep neural network cases i.e take nonlinear activation function as identity.
+
+\section{Batch Normolization}
+This method is closed related to SGD with mini-batch. For example, in every step to update, the real objective function is
+\begin{equation}
+\sum_{i \in S} \|f^J(x_i) - y_i\|^2,
+\end{equation}
+with $S$ is a mini-batch of the whole data.
+
+Generally speaking, we need do some initialization for whole data $\{x_i, y_i\}$ like:
+\begin{equation}
+\tilde x_{i} = \frac{x_i - \mu}{\sigma},
+\end{equation}
+with $\mu$ is the average of data $x_i$ and $\sigma$ is the standard deviation of data, i.e the square of variance. Here we can extend this normolization method like the deep learning idea i.e stack this operation.
+
+The batch normolization operation can be seen as do this initialization operation for every layers w.r.t the mini-batch. In our notation, this skill can be explained as do one step gradient descent for the next model:
+\begin{equation}
+\sum_{i \in S} \|\tilde {f}^J(x_i) - y_i\|^2,
+\end{equation}
+with
+\begin{equation}
+\tilde f^j = \theta^j \circ g^j \circ (\gamma^j BN_{S} (\tilde f^{j-1}) + \beta^j).
+\end{equation}
+%\footnote{The following order seems to be more reasonable:
+%\begin{equation}
+%\tilde f^j = \theta^j \circ g^j \circ BN_{S} (\tilde f^{j-1}).
+%\end{equation}
+%Please see \S3.2 (page 5) of the original paper by Ioffe and Szegedy.
+%}
+Here
+\begin{equation}
+BN_{S}( \tilde f^{j-1}(x_i) )= \frac{\tilde f^{j-1}(x_i) - \mu^j}{\sigma^j},
+\end{equation}
+where
+\begin{equation}
+\mu^j = \frac{\sum_{i\in S}  \tilde f^{j-1}(x_i) }{|S|},
+\end{equation}
+and
+\begin{equation}
+\sigma^j  = \sqrt{ \delta + \frac{ \sum_{i\in S} (  \tilde f^{j-1}(x_i) - \mu^j)^2}{|S|} }.
+\end{equation}
+Here $(  \tilde f^{j-1}(x_i) - \mu^j)^2$ means element-wise operation, i.e $\rm{dim}(\tilde f^{j-1}) = \rm{dim}(\mu^j) = \rm{dim}(\sigma^j)$.
+{\bf{Here the have a very important assumption: $\tilde f^{(j-1)}$ is an random vector with elements are independent.} }
+
+What's more, here $\gamma^j$ and $\eta^j$ are two new parameters to be trained which helps to change the mean and stander deviation for the out put after BN. This seems making no sense, but this change some really because now the mean and stander deviation can be chosen adaptively not just have a very complex dependence with previous layers parameters.
+
+\begin{remark}
+Here to apply $BN_S$ just after $\tilde f^{j-1}$ or $g^j(\tilde f^{j-1})$ makes difference. In the first paper about BN, the author suggest to apply $BN_S$ just after $\tilde f^{j-1}$ because generally speaking,
+\begin{equation}
+\tilde f^{j-1}(X_i) = WX_i + b,
+\end{equation}
+if note
+\begin{equation}
+X_i = g^{j-1}(\tilde f^{j-2}(x_i)),
+\end{equation}
+then we have
+\begin{equation}
+BN_{S}(WX_i + b) = BN_S(WX_i),
+\end{equation}
+i.e we can ignore those bais term.
+
+\end{remark}
+
+
+Here we need to mention that, the $BN$ function will influence taking gradient in training process. For example:
+\begin{align}
+\frac{\partial \tilde f^j}{ \partial \theta^{j-1}} &= \theta^j \circ (g^j)' \circ \frac{\partial BN_{S} (\tilde f^{j-1})}{ \partial \theta^{j-1}}, \\
+&=  \theta^j \circ (g^j)' \circ (\frac{\partial BN_{S} (\tilde f^{j-1})}{ \partial \mu^j}\frac{\partial \mu^j}{\partial \theta^j} + \frac{\partial BN_{S} (\tilde f^{j-1})}{ \partial \sigma^j}\frac{\partial \sigma^j}{\partial \theta^j} + \frac{\partial BN_{S} (\tilde f^{j-1})}{ \partial \tilde f^j}\frac{\partial \tilde f^j}{\partial \theta^j}  )
+\end{align}
+
+\subsection{One question}
+\begin{quote}
+  \bf Since the normalization is carried out in each batch, what is
+  the final outcome of the trained neural network (which should be
+  independent of batches)?
+\end{quote}
+{\bf For test phase}, to the $\hat \mu^j$ and $\hat \sigma^j$ are computed
+by averaging those $\mu^j$ and $\sigma^j$ in training phase. In training phase, suppose we have those next training process with mini-batch $S_t$ for $t = 1:T$. So, after $T$ steps gradient descent, those $\theta^j$ have been trained well, and we get:
+\begin{equation}
+\mu^j_{t}, \sigma^j_t, \quad t = 1:T,
+\end{equation}
+So the test model is
+\begin{equation}
+f(x) = \hat{f}^J(x),
+\end{equation}
+with
+\begin{equation}
+ \hat{f}^j(x) = \theta^j \circ g^j \circ \hat{BN}^j(\hat f^{j-1})
+\end{equation}
+for
+\begin{equation}
+\hat{BN}^j( \hat f^{j-1}(x_i) )= \frac{\hat f^{j-1}(x_i) - \hat \mu^j}{\hat \sigma^j},
+\end{equation}
+where
+\begin{equation}
+\hat \mu^j =\frac{\sum_{i=1}^T \mu^j_t }{T},
+\end{equation}
+and
+\begin{equation}
+\hat \sigma^j  = \frac{\sum_{i=1}^T \sigma^j_t }{T}.
+\end{equation}
+
+In some situation, they may use the similar strategy like the momentum for SGD, then may get $\hat \mu^j$ and $\hat \sigma^j$ by: For $t= 1 :T$
+\begin{equation}
+\hat \mu^j = 0.9 \hat \mu^j + 0.1 \mu^j_t,
+\end{equation}
+and the similar operation for $\hat \sigma^j$
+
+\subsection{An example in DL book}
+Now we consider a very simple case, i.e
+\begin{itemize}
+\item No nonlinear activation function, i.e $g = id$,
+\item All layers just have one neuron and no bais, i.e $\theta(x) = wx$.
+\end{itemize}
+Suppose we have a network with $J$ layers, i.e
+\begin{equation}
+f(x) = w_J w_{J-1} \cdots w_2 w_1 x
+\end{equation}
+And the loss function is:
+\begin{equation}
+L(w_1, \cdots, w_J) = \sum_{i = 1}^N\frac{1}{2} (f(x_i) - y_i)^2.
+\end{equation}
+
+Now we have
+\begin{equation}
+\frac{\partial L}{\partial f(x_i)} = 1,
+\end{equation}
+this means that when we update $\bm{w} = (x_1, \cdots, w_J)$ in this steps, we just need to compute
+\begin{equation}
+\bm{g} = \frac{\partial L}{\partial \bm{w}} = \sum_{i=1}^J \nabla_{\bm{w}} f(x_i).
+\end{equation}
+
+Now we suppose to decrease the value for $f$ by $0.1$ at $x$. With the first order approximation of $f$, we know that $f$ will decrease about
+\begin{equation}
+\epsilon \|\bm{g}\|^2,
+\end{equation}
+with
+\begin{equation}
+\bm{w} \leftarrow \bm{w} - \epsilon \bm{g}.
+\end{equation}
+
+However, for really situation, we have
+\begin{equation}
+f(x) = (w_J - \epsilon g_J)\cdots(w_1 - \epsilon g_1)x.
+\end{equation}
+For one term in seconder approximation like:
+\begin{equation}
+\epsilon^2 g_1 g_2 \Pi_{i=3}^J w_i x.
+\end{equation}
+Because we connot control the value of $\Pi_{i=3}^J w_i x$, it can be very small or extremely large so {\bf it it very difficult to choose suitable learning rate.}
+
+But, if we adopt the BN operation, which means our model has been changed to
+\begin{equation}
+\tilde f(x) = w_J \tilde f^{J-1}(x),
+\end{equation}
+with $\tilde f^{J-1}$ has the stander statistics( or $\gamma$ and $\eta$ by adaptivity). If we don't use BN, we know that for any $w_j$ with $j = 1:J-1$ can effect the $f(x)$ remarkably like $w_j = 0$ makes this network degeneration or $w_j = -w_j$ changes the prediction of $f(x)$ totally. Without normalization, nearly every update would have an extreme effect on the statistics of $f^{J-1}$.
+
+Now suppose that $x$ is drawn from a unit Gaussian i.e:
+\begin{equation}
+x \sim \mathcal{N}(0,1).
+\end{equation}
+ Then the original method $f$ is also Gaussian but not unit it depended w.r.t $\bm{w}$:
+\begin{equation}
+f \sim \mathcal{N}(\mu({\bm{w}}),\sigma(\bm{w})).
+\end{equation}
+But if we use BN, here $\tilde h^{J-1}$ becomes unit Gaussian again, i.e
+\begin{equation}
+\tilde f^{J-1} \sim \mathcal{N}(0,1).
+\end{equation}  So $\tilde f$ is an Gaussian only depends on $\omega_J$,
+\begin{equation}
+\tilde f \sim \mathcal{N}(\mu(w_J),\sigma(w_J)).
+\end{equation}  which means we just need to trained $w_J$ all $w_j$ for $j=1:J-1$ make no sense for this model. So, what we only need to train is only $w_J$, this make the training process very fast.
+
+Those results comes from those expression from this book:
+``Batch normalization has thus made this model significantly easier to learn. In this example, the ease of learning of course came at the cost of making the lower layers useless. In our linear example, the lower layers no longer have any harmful effect, but they also no longer have any beneficial effect. This is because we have normalized out the first and second order statistics, which is all that a linear network can influence. In a deep neural network with nonlinear activation functions, the lower layers can perform nonlinear transformations of the data, so they remain useful. Batch normalization acts to standardize only the mean and variance of each unit in order to stabilize learning, but allows the relationships between units and the nonlinear statistics of a single unit to change."
+
+But to understand this exactly, we need some basic idea for statistics I think.
+
+%\section{Dropout}
+%\include{6DL/dropout}
+
+\section{Introduction}
+Consider the (fully connected) neural network 
+\begin{equation}\label{nn}
+\begin{aligned}
+f(x)=W_2g(W_1x+b_1)+b_2,\\ 
+W_2\in\mathbb{R}^{c\times n_1},
+W_1\in\mathbb{R}^{n_1\times n},
+\end{aligned}
+\end{equation}
+where $x\in\mathbb{R}^n$ is the input vector, $g$ is a non-linear function (activation). 
+
+Every update of $f$ is done with a (randomly chosen) mini-batch \[X=\{x^i|i=1,...,m\}.\]
+Denote $\theta=(W_2,W_1,b_2,b_1)$, each (SGD) update can be written as
+\begin{equation}\label{SGD}
+\theta=\theta-\eta\nabla_\theta \frac{1}{m}\sum_{i=1}^m\|f(x^i)-p^i\|_2^2,
+\end{equation}
+where $\eta$ is called the step size, or the learning rate.
+
+To improve the performance of \eqref{SGD}, there are many different normalization methods, among which are
+\begin{enumerate}
+	\item batch normalization (BN), 2015 \cite{ioffe2015batch},
+	\item layer normalization (LN), 2016 \cite{2016arXiv160706450L},
+	\item weight normalization (WN), 2016 \cite{2016arXiv160207868S},
+	\item cosine normalization (CN), 2017 \cite{2017arXiv170205870L},
+\end{enumerate}
+We also consider an additional spectral norm regularization (SN), 2017 \cite{2017arXiv170510941Y}.
+
+\newpage
+%All of them, denoted as a function $h(x,X)$, 
+%are added to \eqref{nn} like
+%\begin{equation}
+%	f(x)=W_2g(h(W_1x+b_1))+b_2,
+%\end{equation}
+%and have the same scheme
+%\begin{equation}
+%	\begin{aligned}
+%		h(y)=\gamma\cdot\frac{y-\mu}{\sigma}+\beta,\\
+%		y=Wx+b,\quad x\in X,
+%	\end{aligned}
+%\end{equation}
+%(we also denote $y^i=Wx^i+b$) where,
+%\begin{enumerate}
+%	\item for BN,
+%		\begin{equation}
+%			\mu=\frac{1}{m}\sum_{i=1}^m y^i,\quad \sigma=\sqrt{\frac{1}{m}\sum_{i=1}^m(y^i-\mu)^2}.
+%		\end{equation}
+%		$\mu,\sigma\in\mathbb{R}^n$, and the division by $\sigma$ is element-wise. 
+%		
+%		$\gamma,\beta$ are trainable parameters.
+%	\item for LN, recall that $W_1\in\mathbb{R}^{n_1\times n}$, and denote $\mathbf{1}=(1,...,1)^T\in\mathbb{R}^{n_1}$,
+%		\begin{equation}
+%		\mu=\frac{1}{n_1}\sum_{i=1}^{n_1}y_i,\quad \sigma=\sqrt{\frac{1}{n_1}\sum_{i=1}^{n_1}(y-\mu)^2},
+%		\end{equation}
+%		where $y_i$ is the $i$th element of $y$, and $\mu,\beta\in\mathbb{R}$. 
+%		
+%		$\gamma=1,\beta=0$.
+%	\item for WN,
+%		\begin{equation}
+%		\mu=0,\quad 
+%		\sigma\in\mathbb{R}^{n_1},\ \sigma_j=\|w_j\|_2,\ w_j\text{ is the $j$th row of $W$}.
+%		\end{equation}
+%		The division by $\sigma$ is element-wise. 
+%		
+%		$\gamma$ is trainable, $\beta=0$.
+%	\item for CN,
+%		\begin{equation}
+%		\mu=0,\quad
+%		\sigma\in\mathbb{R}^{n_1},\ \sigma_j=\|x\|_2\|w_j\|_2,\ w_j\text{ is the $j$th row of $W$}.
+%		\end{equation}
+%		$\gamma=1,\beta=0$.
+%	\item for SN,
+%		\begin{equation}
+%			\mu=0,\sigma=1,\gamma=1,\beta=0,
+%		\end{equation}
+%		i.e. $h(x)=x$. SN in fact only changes the loss function $L(X)$ to
+%		\begin{equation}
+%			L_\text{SN}(X)=\frac{1}{m}\sum_{i=1}^m\|f(x^i)-p^i\|_2^2+\frac{\lambda}{2}\sum_{l=1}^{n_L}\sigma(W_l)^2,
+%		\end{equation}
+%		where $\lambda$ is a hyperparameter, $n_L=2$ is the number of layers, and $\sigma(W)$ is the spectral of $W$, 
+%		\begin{equation}
+%			\sigma(W)=\max_{x\neq0}\frac{\|Wx\|_2}{\|x\|_2}.
+%		\end{equation}
+%\end{enumerate}
+
+\newpage
+\section{Ideas behind the normalizations}
+\subsection{Batch Normalization}
+Batch normalization aims at solving the so called \textbf{internal covariate shift} (ICS) problem. 
+
+By definition, ICS means the change in the distribution of network activations, due to the change in network parameters during training.
+
+In neural networks, the output of the first layer feeds into the second layer, the output of the second layer feeds into the third, and so on. When the parameters of a layer change, so does the distribution of inputs to subsequent layers\footnote{See \href{this}{https://machinelearning.wtf/terms/internal-covariate-shift/}.}.
+
+That is to say, the distribution of the random variable 
+\begin{equation}
+z(x)=Wx+b,x\in X
+\end{equation}
+changes with $W$ and $b$ changing.
+
+Notice that $y$ is the input of the activation $g$.
+
+BN tries to keep the distribution of each output in each layer, or at least to keep some statistics of them. It in fact keeps the mean and variance, with a possible scale $\gamma$ and shift $\beta$ to the distribution.
+
+As a result, BN can be written as
+\begin{equation}
+h_{\text{BN}}(x,X,W,b,\gamma,\beta)=\gamma\cdot\frac{z-\mu}{\sigma}+\beta,
+\end{equation}
+where
+\begin{equation}
+\begin{aligned}
+z=Wx+b,\quad x\in X,\\
+z^i=Wx^i+b,\quad x^i\in X,\\
+\mu=\frac{1}{m}\sum_{i=1}^m z^i,\quad \sigma=\sqrt{\frac{1}{m}\sum_{i=1}^m(z^i-\mu)^2}.\\		
+\end{aligned}
+\end{equation}
+
+Many people argue that the variance should use Bessel's correction.
+\newpage
+\subsection{Layer Normalization}
+Layer normalization considers another distribution, the one of the random variable for any given input $x$,
+\begin{equation}
+z_i=(Wx+b)_i,\quad i\in I.
+\end{equation}
+Like BN, It also tries to keep the mean and the variance. It can be written as
+\begin{equation}
+h(z)=\frac{z-\mu}{\sigma},\quad z=Wx+b,
+\end{equation}
+where
+\begin{equation}
+\begin{aligned}
+\mu=\frac{1}{n_1}\sum_{i=1}^{n_1}z_i,\quad \sigma=\sqrt{\frac{1}{n_1}\sum_{i=1}^{n_1}(z_i-\mu)^2},\\
+\end{aligned}
+\end{equation}
+where $z_i$ is the $i$th element of $z$.
+
+\subsection{Weight Normalization}
+Weight normalization considers the distribution of the random variable
+\begin{equation}
+w_i, i\in I,
+\end{equation}
+where $w_i$ is the $i$th row of $W$. 
+
+It tries to normalize $w_i$, i.e. keep the 2-norm of $w_i$ to $1$, with an extra scale $\gamma_i\in\mathbb{R}$ on it. WN finally can be written as
+\begin{equation}
+h(x,W,b,\gamma),\quad(h(x,W,b,\gamma))_i=\gamma_i\frac{w_ix+b_i}{\|(w_i,b_i)\|_2}.
+\end{equation}
+
+\subsection{Cosine Normalization}
+Cosine normalization normalizes the random variable 
+\begin{equation}
+u_i=(Wx+b)_i,\quad i\in I,
+\end{equation}
+for any given $x$. It can be written as
+\begin{equation}
+h(x,W,b),\quad (h(x,W,b))_i=\frac{w_ix+b_i}{\|(x;1)\|_2\|(w_i,b_i)\|_2},
+\end{equation}
+where $(x;1)\in\mathbb{R}^{n+1}$, $(w_i,b_i)^T\in\mathbb{R}^{n+1}$.
+
+\subsection{Spectral Norm Regularization}
+Spectral normalization devotes to normalize the parameters $W$, i.e. $W_1$ and $W_2$ in this case. It chooses to control the spectral of $W$, 
+\begin{equation}
+\sigma(W)=\max_{x\neq0}\frac{\|Wx\|_2}{\|x\|_2}.
+\end{equation}
+
+The authors of SN argues that an advantage of smaller $\sigma(W)$ is that $Wx$ is less sensitive to the perturbation $\xi$ on $x$, because
+\begin{equation}
+\frac{\|(W(x+\xi)+b)-(Wx+b)\|}{\|\xi\|}=\frac{\|W\xi\|}{\|\xi\|}\leq\sigma(W).
+\end{equation}
+$\sigma(W)$ is thus added to the loss function, and gives
+\begin{equation}
+L_\text{SN}(X)=\frac{1}{m}\sum_{i=1}^m\|f(x_i)-y_i\|_2^2+\frac{\lambda}{2}\sum_{l=1}^{n_L}\sigma(W_l)^2.
+\end{equation}

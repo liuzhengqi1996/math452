@@ -1,0 +1,114 @@
+\section{Plan}
+\subsection{MgNet and its variants on popular datasets}
+
+\begin{enumerate}
+\item Conference: International Conference on Learning Representations (ICLR)
+\item DDL: Sep 28 2020
+\item Participants: Juncai He, Huang Huang, Jinchao Xu, Lian Zhang, Jianqing Zhu
+\item GPU Requirements: \\
+Huang Huang (at least 8 GPUs, 16 GPUs better)\\
+Jianqing Zhu (at least 8 GPUs, 16 GPUs better)\\
+
+\item Summary: 
+\begin{itemize}
+\item MgNet can achieve state-of-the-art results on popular datasets.
+\item Common used data augmentation works well on MgNet
+\item The good architecture properties of MgNet
+\end{itemize}
+\item Plan:
+\begin{itemize}
+\item MgNet on Cifar10, Cifar100 (Done. Currently MgNet achieve higher accuracy than ResNet18)
+% Huang add a table 
+\item MgNet on ImageNet (On going. DDL: August 30. Huang, Lian)
+\item MgNet with data augmentation FAA and cutout on Cifar10, Cifar100. (Done.)
+% Jianqing add a table 
+\item MgNet with data augmentation FAA and cutout on ImageNet.  (To Do. DDL: August 30. Jianqing, Juncai)
+\item Architecture properties of MgNet (On going. DDL: August 30. Juncai He, Huang Huang, Lian Zhang, Jianqing Zhu)
+\item MgNet with Chebyshev-semi and Multi-step method on Cifar100 (On going. DDL: July 30. Jianqing, Juncai)
+\item MgNet with Chebyshev-semi and Multi-step method on Cifar10 and ImageNet (To Do. DDL: August 15. Jianqing, Juncai)
+\item Write a draft of paper (To Do. DDL: September 20)
+\item Send to Prof. Xu for revision (To Do. DDL: September 20)
+\end{itemize}
+\end{enumerate}
+
+
+
+\subsection{Training a neural network with Random features}
+
+\begin{enumerate}
+	\item Conference: AAAI 2021
+	\item DDL: 15 Aug 2020 (Estimated)
+	\item Participants: Juncai He, Jonathan Siegel, Jinchao Xu, Lian Zhang
+	\item GPU Requirements: \\
+	Lian Zhang (2 GPUs)\\
+
+	
+	\item Summary: 
+	\begin{itemize}
+		\item For one hidden layer neural network with random parameters, training the logistic regression gives $100\%$ training accuracy.
+		\item Working on the theoretical analysis
+	\end{itemize}
+	\item Plan:
+	\begin{itemize}
+		\item Preliminary results on Cifar10, Cifar100 and ImgeNet (Done)
+		\item Working on the theoretical analysis (On going. DDL: July 15. Juncai, Jonathan)
+		\item Add more numerical results based on the theoretical analysis (To Do. DDL: July 15. Lian)
+		\item Write a draft of paper (To Do. DDL: July 30)
+		\item Send to Prof. Xu for revision (To Do. DDL: August 15)
+	\end{itemize}
+\end{enumerate}
+
+
+
+\subsection{Constrained Linear Data-feature Mapping for Image Classification}
+
+\begin{enumerate}
+	\item Conference: NeurIPS
+	\item DDL: Due now.
+	\item Participants: Juncai He, Yuyan Chen, Lian Zhang, Jinchao Xu
+	\item GPU Requirements: \\
+	Lian Zhang (8 GPUs)\\
+	\item Summary: 
+	\begin{itemize}
+		\item Working on the ImageNet.
+	\end{itemize}
+	\item Plan
+	\begin{itemize}
+	\item Working on the ImageNet (On going. DDL: July 15. Lian)
+	\end{itemize}
+\end{enumerate}
+
+\subsection{Training Sparse Neural Networks using Compressed Sensing}
+
+\begin{enumerate}
+\item Conference: International Conference on Learning Representations (ICLR)
+\item DDL: Sep 25 2020 (Estimated)
+	\item Participants: Jonathan Siegel, Jianhong Chen, Jinchao Xu
+	\item GPU Requirements: \\
+	Jianhong Chen, (4 GPUs)\\
+		\item Plan
+	\begin{itemize}
+		\item Working on the ImageNet (On going. DDL: Sep 1.)
+	\end{itemize}
+\end{enumerate}
+
+
+\subsection{Wider Linear Neural Network Converge Faster Using Full Gradient Descent}
+
+\begin{enumerate}
+    \item Conference: TBD
+    \item DDL: 
+	\item Participants:  Li Jiang, Jinchao Xu
+	\item GPU Requirements: \\
+	None.\\
+
+	\item Plan:
+	\begin{itemize}
+		\item Do some experiments on MNIST. (done)
+		\item Analyse 1D1data situation. (done)
+		\item Analyse 1D2data situation. (On going. DDL: June 15. Li)
+		\item Building a convergence theorem related to the width of hidden layer in deep linear neural networks.
+	\end{itemize}
+\end{enumerate}
+
+

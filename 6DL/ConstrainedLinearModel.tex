@@ -1,0 +1,77 @@
+\section{Constrained linear data-feature mapping from MgNet to interpret ResNet}
+In this section, we will establish a new understanding of pre-act ResNet  
+by involving the idea that the pre-act ResNet block is an iterative scheme for solving some 
+hidden model in each grid, which is also the fundamental assumption in MgNet. 
+More details about this mathematical interpreting model for CNN can be found
+in~\cite{he2019constrained}.
+
+The main point here is the introduction of 
+the so-called data and feature space for CNN, which is analogous to the 
+function space and its duality in the theory of multigrid 
+methods~\cite{xu2017algebraic}. 
+Namely, following~\cite{he2019mgnet} we introduce 
+the next data-feature mapping model in every grid level follows:
+\begin{equation}\label{eq:fmapping}
+A^{\ell} \ast u^\ell = f^{\ell},
+\end{equation}
+where $f^\ell$ and $u^\ell$ belong to the data and feature space at $\ell$-th grid. 
+We now make the following two important observations for this data-feature mapping:
+\begin{itemize}
+	\item The mapping in \eqref{eq:fmapping} is linear, more specifically it is just a convolution with multichannel, zero
+	padding and stride one as in pre-act ResNet.
+	\item In each level, namely between two consecutive pooling, there is only one
+	data-feature mapping, or we say that $A^\ell$ only depends on $\ell$, but not on number of layers.
+\end{itemize}
+We note that the assumption that these linear data-feature mapping
+depend only on the grid level $\ell$ is motivated from a basic property of 
+multigrid methods~\cite{xu1992iterative, hackbusch2013multi, xu2017algebraic}.
+
+Besides \eqref{eq:fmapping}, we introducing an important constrained condition
+in feature space that
+\begin{equation}\label{eq:positive}
+u^{\ell,i} \ge 0.
+\end{equation}
+The rationality of this constraint in feature space can be interpreted as follows.
+First of all, from the real neural system, the real neurons will only be
+active if the electric signal is greater than certain thresholding value. 
+Namely, we can think that human brains can only see features 
+with certain threshold.
+On the other hand, the ``shift'' invariant property of feature space in CNNs,
+namely, $u+a$ will not change the classification results. This means that $u+a$ should
+have the same classification result with $u$. That is to say, we may assume that
+$u \ge 0$ to reduce some redundancy of $u$.
+
+Based on these assumptions above, what we need to do next is to
+solve the data-feature mapping equation in \eqref{eq:fmapping}.
+We will adopt some classical iterative methods~\cite{xu1992iterative} in scientific computing
+to solve the system \eqref{eq:fmapping} and obtain that 
+\begin{equation}\label{BAmapping}
+u^{\ell,i} = u^{\ell,i-1} + B^{\ell,i} \ast (f^{\ell} - A^{\ell}\ast u^{\ell,i-1}),~ i = 1:\nu_\ell,
+\end{equation}
+where $u^{\ell} \approx u^{\ell,\nu_\ell}$. 
+For more details about iterative methods
+in numerical analysis, we refer to~\cite{xu1992iterative, hackbusch1994iterative, golub2012matrix}.
+To preserve \eqref{eq:positive}, we naturally use the ReLU activation function $\sigma$
+to modify \eqref{BAmapping} as follows
+\begin{equation}
+\label{eq:uBfAu}
+u^{\ell,i} = u^{\ell,i-1} + \sigma \circ B^{\ell,i}\ast \sigma  (f^\ell -  A^\ell
+\ast u^{\ell,i-1}), \quad i=1:\nu_\ell,
+\end{equation}
+which leads the the basic iterative scheme in MgNet.
+
+Now, let us consider the iteration for residual. Because of the linearity of convolution in data-feature mapping,
+if we consider the residual $r^{\ell,j} = f^{\ell} - A^{\ell}\ast u^{\ell,j}$, 
+\eqref{eq:uBfAu} leads to the next iterative forms for residuals
+\begin{equation}\label{eq:pre-actResNet_residual}
+r^{\ell, i} = r^{\ell,i-1} - A^\ell \ast \sigma \circ B^{\ell,i}\ast \sigma(r^{\ell,i-1}).
+\end{equation}
+This is the same as \eqref{eq:pre-act ResNet} under the constraint $A^{\ell,i} = A^{\ell}$ in pre-act ResNet.
+
+We summarize the above derivation in the following simple theorem.
+\begin{theorem}\label{thm:1} Under the assumption that there is only
+	one linear data-feature mapping in each grid $\ell$, i.e. $A^{\ell,i} = A^{\ell}$, 
+	the iterative form in feature space as in \eqref{BAmapping} is equivalent to 
+	\eqref{eq:pre-actResNet_residual} if $A^\ell$ is invertible where $r^{\ell,i} = f^\ell - A^{\ell}\ast u^{\ell,i}$.
+\end{theorem}
+

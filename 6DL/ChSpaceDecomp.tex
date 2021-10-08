@@ -1,0 +1,202 @@
+%\chapter{Space Decomposition and Coordinate Descent Methods} 
+\subsection{Space decomposition versus function decomposition}
+For simplicity of exposition, we assume that 
+$$
+\mathcal X=\mathbb R^n.
+$$
+
+\subsubsection{Space decomposition}
+$$
+\mathcal X=\sum_{j=1}^m\mathcal X_j
+$$
+
+Observation: The space-alternating iterative optimization algorithm
+usually converges if the subspace optimization iterative method
+converges.  Randomization does improve convergence, see
+Xu~\cite{xu1992iterative}, \cite{xu2002method},  Tai and Xu
+\cite{tai2002global}, and Hu and Xu (2017).
+
+Many optimization algorithms are those type, especially some multigrid
+method for optimization. And coordinate descent type methods. By the
+way, the popular ADMM method is also closely related to this type.
+
+Chen, He, Ye and Yuan \cite{chen2016direct} gave a counter example for ADMM for
+$m=3$, that is divergent.  But the randomized version converges.  see
+Xu, Xu and Ye \cite{xu2017derandomized} and the reference cited
+therein.
+
+\subsubsection{Function decomposition}
+If we write 
+\begin{equation}
+\label{function-decomposition}
+f=\frac{1}{N}\sum_{i=1}^Nf_i  
+\end{equation}
+Here is a basic question:
+\begin{quote}
+	Can we find $\argmin f$ by alternatively finding $\argmin f_i$?
+\end{quote}
+
+We first state the consistency and inconsistency definition for those kinds questions:
+\begin{definition}
+	Denote 
+	$$
+	X^* = \mathop{\arg\min}_{x} f(x),
+	$$
+	and 
+	$$
+	X_i^* =  \mathop{\arg\min}_{x} f_i(x) \quad i = 1:m.
+	$$
+	We say that the function decomposition
+	\eqref{function-decomposition} is consistent if 
+	\begin{equation}
+	\label{xxi0}
+	X^* \subset \bigcap_{i=1}^m X_i^*. 
+	\end{equation}
+	Or equivalently
+	\begin{equation}
+	\label{xxi1}
+	X^* = \bigcap_{i=1}^m X_i^*,          
+	\end{equation}
+	since
+	$$
+	\min_x f(x) = \min_x \sum_{i=1}^m f_i(x) \ge \sum_{i=1}^m \min_x f_i(x).
+	$$
+\end{definition}
+
+
+For each $i$, we assume that we are given an iterative algorithm for
+optimizing $f_i$ such as
+\begin{equation}
+\label{alg-i}
+x\leftarrow x+g_i(x),
+\end{equation}
+We note that a necessary condition for convergence of \eqref{alg-i} is
+that 
+\begin{equation}\label{single-conv}
+g_i(x) = 0, \quad\forall x \in X_i^*.
+\end{equation}
+
+It is then natural to consider the following algorithm:
+\begin{algorithm}\caption{Alternative subfunction iteration (constant step-size)}\label{CIGD-constant}
+	For $t = 1,2,\cdots, T$
+	$$
+	x\leftarrow x+  g_{i_t}(x)
+	$$
+	with
+	$$
+	i_t \equiv t \mod(m), \quad i_t \in 1:m,
+	$$
+\end{algorithm}
+
+Observation 1:  If gradient type methods are applied(i.e $g_i = -\eta_t \nabla f_i$), the alternating optimization algorithm with constant stepsize does not
+converge for inconsistent case, even if the underlying iterative method converges for each
+$i$.  
+
+\begin{comment}
+There is a counter example(see Bertsekas's book ``Convex optimization
+algorithms" in chapter 2.1.5) that: $m=3$ and
+$$
+f_i = (c_i \cdot x + b_i)^2,
+$$
+with $c_i, x \in \mathbb{R}^2$ and $b_i \in \mathbb{R}$ with $i \in 1:m$.
+\begin{theorem}
+There exist some choices of  $c_i, b_i$ such that this system is inconsistent and this Algorithm~\ref{CIGD-constant} does not converge with any constant step-size. 
+\end{theorem}
+\end{comment}
+A more abstract and simpler result is that:
+\begin{theorem}
+	If $f_i$ is convex and $X^* = \{x^*\}$ is a single point set and the
+	function decomposition is inconsistent, the above
+	Algorithm~\ref{CIGD-constant} with gradient descent type cannot
+	converge.
+\end{theorem}
+\begin{proof}
+	If it converges, we have $x_t \to x^* $, which means that 
+	$$
+	x^* = x^* + \alpha g_i(x^*), \quad \forall i = 1:m.
+	$$
+	Because of the inconsistency, exist a $1 \le i \le m$ such
+	that $x^* \notin X_i^*$, this is contrary to the convexity of
+	$f_i$ and \ref{single-conv}.
+\end{proof}
+
+
+Observation 2:  by introducing diminishing damping parameter, the
+aforementioned divergent method can be made convergent:
+\begin{algorithm}\caption{Alternative subfunction iteration(diminishing step-size)}\label{CIGD-diminishing}
+	For $t = 1,2,\cdots, T$
+	$$
+	x\leftarrow x+ \eta_t g_{i_t}(x), \quad \eta_t \to 0,
+	$$
+	with
+	$$
+	i_t \in 1:m,
+	$$
+	randomly or alternatively.
+\end{algorithm}
+
+\begin{theorem} For inconsistent function decomposition, a necessary
+	condition for converge with both choosing $i_t$ randomly or alternatively is that the learning rate
+	$\eta_t\to 0$ as $t\to\infty$.
+\end{theorem}
+
+\subsection{Connection between space decomposition and function decomposition}
+When linear case, i.e each $f_i$ is like $(a_i \cdot x + b_i)^2$, those two methods will consistent. An simple idea is that, 
+$$
+\nabla f_i \in span\{a_i\}.
+$$
+Examples:  Kaczmarz method. The original idea of Kacamarz algorithm is to solve the next consistent linear system:
+$$
+Ax = b,
+$$
+with full rank $A$ and $A \in \mathbb{R}^{m\times n}$ for $m \ge n$. 
+The iterative scheme of Kaczmarz algorithm is:
+\begin{algorithm}\caption{Kaczmarz Algorithm for $Ax = b$}\label{algo:Kacamarz}
+	For $t = 1,2,\cdots, T$
+	\begin{equation}\label{KacamarzAlgo}
+	x_{t+1} = x_t -  \frac{1}{\|A_{i_t}\|^2}(A_{i_t} \cdot x_t - b_{i_t})A_{i_t}. 
+	\end{equation}
+	with
+	$$
+	i_t \in 1:m,
+	$$
+	randomly or alternatively.
+\end{algorithm}
+
+From the optimization point of view, we have the next two strategies to understand it as:
+\begin{itemize}
+	\item Using CIGD to optimize $f = \sum_{i=1}^m f_i(x)$ with 
+	$$
+	f_i(x) = \frac{1}{2}(A_i \cdot x + b_i)^2
+	$$
+	with learning rate $\eta_{i_t} = \frac{1}{\|A_{i_t}\|^2}$.
+	\item Using CIGD to optimize $f = \sum_{i+1}^m f_i(x)$ with 
+	$$
+	f_i(x) = \frac{1}{2\|A_{i_t}\|^2}(A_i \cdot x + b_i)^2
+	$$
+	with learning rate $\eta_{i_t} = 1$.
+\end{itemize}
+
+However, we can also understand a this algorithm using the method of subspace correction. Denote the new system as:
+\begin{equation}\label{eq:KacamarzLinear}
+AA^T y = b.
+\end{equation}
+If we apply the stander Gauss-Seidel iterative scheme for the above problem, we have 
+\begin{equation}\label{eq:G-SKaca}
+y_{t+1} = y_t -  \frac{1}{\|A_{i_t}\|^2}e_{i_t}^T(AA^Ty_t - b) e_{i_t}. 
+\end{equation}
+and 
+$$
+A^Ty_{t+1} =A^T y_t -  \frac{1}{\|A_{i_t}\|^2}e_{i_t}^T(AA^Ty_t - b) A^Te_{i_t}. 
+$$
+which means we also go the Kacamarz iteration:
+$$
+x_{t+1} =x_t -  \frac{1}{\|A_{i_t}\|^2}e_{i_t}^T(Ax_t - b) A^Te_{i_t}. 
+$$
+
+Because of the well-studied of MSC, many result in traditional
+analysis of Kacamarz method can be obtained from MSC framework.
+
+Details of the above results and generalization can be found in He and
+Xu \cite{he2018iterative}.
+

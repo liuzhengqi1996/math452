@@ -1,0 +1,366 @@
+
+\section{1D example}
+Consider the 1D case of Theorem \ref{lem:stratifiedapprox2}
+\begin{theorem}
+Suppose $x\in [-T, T]$ and $f\in \mathcal{B}^{m+1, 1}([-T, T])$.
+%$$
+% \int_{\mathbb{R}^{d}} |\hat{f}(\omega)|\|\omega\|_{\ell_q}^{m+1} d\omega<\infty.
+%$$
+There exist $\beta_j\in \{-1, 1\}$, $\bar \omega_j\in\{1, -1\}$, $t\in [0,T]$ such that 
+\begin{equation}\label{1drepresentation}
+f_n(x)= \sum_{k\le m}{1\over k!}f^{(k)}(0) x^k + {\nu\over m!n}\sum_{j=1}^{n}\beta_j (\bar \omega_j x - t_j)_+^m
+\end{equation} 
+with $\nu=\int_{\{-1,1\}\times [0,T]\times \mathbb{R}^{d}} \rho(\theta)d\theta$ and $\rho(\theta)$  defined in \eqref{eq:straglam} 
+satisfies the following estimate
+\begin{equation}
+\|f - f_n \|_{H^k(\Omega)} \leq C(m,k,\Omega) n^{-{1\over 2}-{1\over d+2}}\|f\|_{\mathcal B^{m+1, q}(\Omega)},\qquad k\le m.
+\end{equation} 
+Especially,
+\begin{equation}
+\|f - f_n \|_{L^2(\Omega)} \leq {(2T)^m|\Omega|^{1\over 2}\over (m-1)!} n^{-{1\over 2}-{1\over d+2}}\|f\|_{\mathcal B^{m+1, q}(\Omega)}.
+\end{equation} 
+%\begin{equation}
+%\|D^\beta (f(x)- f_n(x))\|_{L^2(\Omega)}\le \sqrt{2^{m-k-2}(2m-k)\over k!(m-k)!}|\Omega|^{1/2} n^{-{1\over 2}-{1\over d}},\quad |\beta|=k\le m.
+%\end{equation}
+\end{theorem} 
+
+If $\bar \omega_j=-1$,
+\begin{equation} 
+\beta_j (\bar \omega_j  x - t_j)_+^m = \beta_j (- (x - (-t_j)))_+^m.
+\end{equation} 
+If $m$ is odd, 
+\begin{equation} 
+\beta_j (\bar \omega_j  x - t_j)_+^m = - \beta_j (x - (-t_j))_-^m = \tilde \beta_j(x - \tilde t_j)_-^m
+\end{equation} 
+with $\tilde \beta_j=-\beta_j\in \{-1, 1\}$ and $\tilde t_j\in[-T, 0]$.
+If $m$ is even, 
+\begin{equation} 
+\beta_j (\bar \omega_j  x - t_j)_+^m = \tilde \beta_j (x - \tilde t_j)_-^m
+\end{equation} 
+with $\tilde \beta_j=\beta_j\in \{-1, 1\}$ and $\tilde t_j\in[-T, 0]$.
+
+
+\begin{equation}
+\begin{split}
+&f(x) - \sum_{k\le m}{1\over k!}f^{(k)}(0) x^k 
+\\ 
+=&{\rm Re} \bigg ({i^{m+1}\over m!}\int_{\mathbb{R}^d} \int_{0}^T\left[(\bar \omega  x - t)_+^me^{i|\omega|t}
++(-1)^{m-1}(-\bar \omega x - t)_+^me^{-i|\omega|t} \right]\hat{f}(\omega)|\omega|^{m+1}dt d\omega\bigg ) 
+\end{split}
+\end{equation}
+If $m$ is odd,
+$$
+(\bar \omega  x - t)_+^me^{i|\omega|t}
++(-1)^{m-1}(-\bar \omega x - t)_+^me^{-i|\omega|t}
+=
+(x - t)_+^me^{i\omega t}
++(- x - t)_+^me^{-i\omega t}.
+$$
+Thus,
+\begin{equation}
+\begin{split}
+&f(x) - \sum_{k\le m}{1\over k!}f^{(k)}(0) x^k 
+\\ 
+=&{\rm Re} \bigg ({1\over m!}\int_{\mathbb{R}^d} \int_{0}^T\left[(x - t)_+^me^{i \omega t}
++ (- x - t)_+^me^{-i \omega t} \right]\hat{f}(\omega) (i\omega)^{m+1}dt d\omega\bigg ) 
+\end{split}
+\end{equation}
+Note that
+\begin{equation}
+f^{(m)}(t)=\int (i\omega)^m\hat{f}(\omega)e^{i\omega t}d\omega 
+\end{equation} 
+It holds that
+\begin{equation}
+\begin{split}
+&f(x) - \sum_{k\le m}{1\over k!}f^{(k)}(0) x^k 
+\\ 
+=&{\rm Re} \bigg ({1\over m!}\int_{\mathbb{R}^d} \int_{0}^T\left[(x - t)_+^me^{i \omega t}
++ (- x - t)_+^me^{-i \omega t} \right]\hat{f}(\omega) (i\omega)^{m+1}dt d\omega\bigg ) 
+\\
+=& {1\over m!} \int_{0}^T\left[(x - t)_+^m f^{(m+1)}(t)
++ (- x - t)_+^mf^{(m+1)}(-t) \right] dt  
+\end{split}
+\end{equation} 
+
+\noindent\textbf{1D case from Taylor expansion}
+
+Consider the case that $\Omega=[0,1]$, the integral form of Taylor remainder reads
+\begin{equation}
+\begin{aligned}
+f(x) - \sum_{k\le m}{1\over k!}f^{(k)}(0) x^k &={1\over m!}\int_0^x f^{(m+1)}(t)(x-t)^mdt
+\\
+&={1\over m!}\int_0^1 f^{(m+1)}(t)(x-t)_+^mdt.
+\end{aligned}
+\end{equation}
+Let the probability density be
+\begin{equation}
+\lambda(t)= {|f^{(m+1)}(t)|\over \|f^{(m+1)}\|_{L^1}}.
+\end{equation}
+Thus,
+\begin{equation}
+\begin{aligned}
+f(x) - \sum_{k\le m}{1\over k!}f^{(k)}(0) x^k &={ \|f^{(m+1)}\|_{L^1}\over m!}\int_0^1 sgn(f^{(m+1)}(t))(x-t)_+^m\lambda(t)dt.
+\end{aligned}
+\end{equation}
+\begin{lemma}
+	 There exists 
+	 \begin{equation}
+\begin{aligned}
+f_n(x) = \sum_{k\le m}{1\over k!}f^{(k)}(0) x^k + { \|f^{(m+1)}\|_{L^1}\over m!n}\sum_{i=1}^n\beta_i  (x-t)_+^m.
+\end{aligned}
+\end{equation}
+with $\beta_i\in [-2,2]$
+ such that
+	\begin{equation} 
+	\|f-f_n\|_{H^k(\Omega)} \leq n^{-3/2}|\Omega|^{1/2}.
+	\end{equation}  
+	\end{lemma}
+
+\begin{proof}
+Note that $\displaystyle f(x)-f_n(x)={ \|f^{(m+1)}\|_{L^1}\over m!}\left(r(x) - r_n(x)\right)$ with
+\begin{equation}
+r(x) = \int_0^1 sgn(f^{(m+1)}(t))(x-t)_+^m\lambda(t)dt,\quad r_n(x)= {1\over n}\sum_{i=1}^n\beta_i  (x-t)_+^m.
+\end{equation}
+Consider a $\epsilon$-covering decomposition $G=\cup_{i=1}^M G_i$ of $\Omega$ such that 
+\begin{equation}
+sgn(f^{(m+1)}(t))= sgn(f^{(m+1)}(t')), \quad |t-t'|<\epsilon, \quad \forall t,\ t'\in G_i.
+\end{equation}
+Let $n_j=\lceil \lambda(G_j)n\rceil$ and $t_{i,j} \in G_j(1\leq i\leq n_j)$ and 
+\begin{equation}
+r(x) = \int_0^1 g(x, t)\lambda(t)dt,\quad r_n(x)= \sum_{i=1}^M \lambda(G_i) g_{n_i}^i,\quad \mbox{ with }\ g(x, t)=(x-t)_+^m,\ g_{n_i}^i ={1\over n_i}  \sum_{j=1}^{n_i}(x-t_{ij})_+^m.
+\end{equation}
+Define
+\begin{equation}
+\begin{aligned}
+f_n(x) = \sum_{k\le m}{1\over k!}f^{(k)}(0) x^k + { \|f^{(m+1)}\|_{L^1}\over m!}r_n(x).
+\end{aligned}
+\end{equation}
+Thus, $\displaystyle f(x)-f_n(x)={ \|f^{(m+1)}\|_{L^1}\over m!}\left(r(x) - r_n(x)\right)$. Note that 
+\begin{equation}
+\begin{aligned}
+r(x) = \mathbb{E}_G g =  \sum_{i=1}^{M}\lambda(G_i) \mathbb{E}_{G_i} g.
+\end{aligned}
+\end{equation}
+By Lemma \ref{MC},
+\begin{equation}
+\begin{split}
+\mathbb{E}_n\| r^{(k)} - r_n^{(k)} \|_{L^2(\Omega)}^2=& 
+ \sum_{j=1}^{M}{\lambda^2(G_i) \over n_i}\mathbb{E}_{G_i}\|\mathbb{E}_{G_i} \partial_x g -  \partial_x g^{(k)}\|^2_{L^2(\Omega)}
+\\
+\le & \sum_{i=1}^{M} {\lambda^2(G_i)\over n_i}\sup_{t,t'\in G_i} \|\partial_x  g(x, t) - \partial_x g(x,t')\|^2_{L^2(\Omega)}.
+\end{split}
+\end{equation} 
+Since ${\lambda(G_i)\over n_i}\le {1\over n}$ and $\displaystyle \sum_{i=1}^M \lambda(G_i)=1$,
+\begin{equation}
+\mathbb{E}_n\| r^{(k)} - r_n^{(k)} \|_{L^2(\Omega)}^2\leq n^{-1}\max_{1\le i\le M}\sup_{t,t'\in G_i} \| \partial_x g(x,t) - \partial_x g(x,t')\|^2_{L^2(\Omega)}.
+\end{equation}
+Notice that for any $1\le i\le M$,
+\begin{equation}
+\sup_{t,t'\in G_i} \| \partial_x g(x,t) - \partial_x g(x,t')\|^2_{L^2(\Omega)}\lesssim |t-t'|^2|\Omega| \le | \Omega| \epsilon^2.
+\end{equation}
+Since $\epsilon \sim M^{-1}$,
+there exist $\{t_{i,j}^\ast\}$ such that $t_{i,j}^\ast\in G_i$ and 
+\begin{equation}
+\| f^{(k)} -  f_n^{(k)} \|_{L^2(\Omega)}^2\leq (M^2n)^{-1}| \Omega|.
+\end{equation}
+Suppose $\displaystyle N=\sum_{j=1}^M n_j$, $n\le N\le n+M$,
+$$
+r_n(x) =  {1\over N}\sum_{i=1}^{M}\frac{N\lambda(G_i)}{n_i}\sum_{j=1}^{n_i} (x - t_{i,j}^\ast)_+^m
+ =  {1\over N}\sum_{i=1}^{M}\beta_{i,j}\sum_{j=1}^{n_i} (x - t_{i,j}^\ast)_+^m
+$$ 
+with
+\begin{equation}
+\beta_{i,j}= \frac{N\lambda(G_j)}{n_j}\le \frac{\lambda(G_j)(M+n)}{\lambda(G_j)n}\le {M+n\over n}.
+\end{equation}
+Let $M=n$. There exist $\{t_{i,j}^\ast\}$ such that $t_{i,j}^\ast\in G_i$ and 
+\begin{equation}
+\| f -  f_n \|_{H^k(\Omega)}^2\leq N^{-3}| \Omega|,
+\end{equation}
+which completes the proof. 
+\end{proof}
+
+\begin{theorem} 
+	 There exists 
+	 \begin{equation}
+\begin{aligned}
+f_n(x) = \sum_{k\le m}{1\over k!}f^{(k)}(0) x^k + { \|f^{(m+1)}\|_{L^1}\over m!n}\sum_{i=1}^n (x-t)_+^m.
+\end{aligned}
+\end{equation}
+ such that
+	\begin{equation} 
+	\|f-f_n\|_{H^k(\Omega)} \leq n^{-{3\over 4}}|\Omega|^{1/2}.
+	\end{equation}  
+\end{theorem} 
+
+\begin{proof}
+Consider the same decomposition $G=G_1\cup \cdots \cup G_M$ of $\Omega$ such that
+$$
+|t -t'| \leq \epsilon \le M^{-1},\quad t, t'\in G_i.
+$$ 
+Let  $t_{i,j} \in G_i(1\leq j\leq n_i)$,  $n_i$ equal $\lceil \lambda(G_i)n\rceil$ and $\lfloor \lambda(G_i)n\rfloor$ with probabilities chosen to make its mean equal to $\lambda(G_i)n$ and $m_i=n_i + \mathbb{I}(n_i=0)$. Then
+\begin{align} 
+\sum_{i=1}^M m_i&=\sum_{i=1}^M n_i\mathbb{I}(n_i>0) + \sum_{i=1}^M n_i\mathbb{I}(n_i=0)
+\\
+&\le \sum_{i=1}^M (n\lambda(G_i) + 1)\mathbb{I}(n_i>0) + \sum_{i=1}^M \mathbb{I}(n_i=0)
+\\
+&\le  n\sum_{i=1}^M \lambda(G_i)\mathbb{I}(n_i>0) + M
+\le n+M.
+\end{align} 
+Define $\displaystyle N=\sum_{i=1}^Mn_i$  and
+$$
+r_{n}(x)= {1\over N}\sum_{i=1}^M {n_i\over m_i} \sum_{j=1}^{m_i} g(x, t_{i,j}).
+$$
+By the definition of $m_i$, $\displaystyle {n_i\over m_i}=0$ or $1$.  This means that $r_{n}(x) $ is in the form of  $\displaystyle {1\over N}\sum_{i=1}^Ng(x,\theta_i)$.  Define
+$$
+\bar{r}_{n}(x)= \sum_{i=1}^M {n_i\over N}\mathbb{E}_{G_i}g.
+$$
+Since
+$
+\displaystyle r(x)=\mathbb{E}_G g= \sum_{i=1}^M \lambda(G_i) \mathbb{E}_{G_i}g,
+$  
+\begin{align}  
+r_{n} - r  &= r_{n} - \bar{r}_{n} + \bar{r}_{n} - r
+\\
+&= {1\over N}\sum_{i=1}^M {n_i\over m_i} \sum_{j=1}^{m_i} \big (g(x,t_{i,j}) - \mathbb{E}_{G_i}g \big ) + {1\over N}\sum_{i=1}^M (n_i - \lambda(G_i)N)  \mathbb{E}_{G_i}g.
+\end{align}  
+It follows that  
+\begin{align}  
+\|r_{n} - r \|_{L^2(\Omega)}^2 &
+\le {1\over N^2}\sum_{i=1}^M {n_i\over m_i} \sum_{j=1}^{m_i} \|g(x,t_{i,j}) - \mathbb{E}_{G_i}g \|_{L^2(\Omega)}^2 
++  {1\over N^2}\sum_{i=1}^M (n_i - \lambda(G_i)N)^2  \|\mathbb{E}_{G_i}g\|_{L^2(\Omega)}^2.
+\end{align} 
+For the first term on the right-hand side of the above equation,
+\begin{align}  
+{1\over N^2}\sum_{i=1}^M {n_i\over m_i} \sum_{j=1}^{m_i} \|g(x,t_{i,j}) - \mathbb{E}_{G_i}g \|_{L^2(\Omega)}^2 
+\le {|\Omega|\epsilon^2\over N^2}\sum_{i=1}^M n_i ={|\Omega|\epsilon^2\over N}.
+\end{align} 
+Recall 
+$
+g(x, t)= (x - t)_+^m {\rm sgn} s(zt,\omega),
+$
+which is bounded, say $|g(x, t)|\le C$. Note that $|n-N|\le M$. Thus,
+\begin{align}
+ {1\over N^2}\sum_{i=1}^M (n_i - \lambda(G_i)N)^2  \|\mathbb{E}_{G_i}g\|_{L^2(\Omega)}^2& \le {1 \over N^2}\sum_{i=1}^M  (M^2 + {1\over \lambda^2(G_i)}) \int_\Omega \int_{G_i} g^2(x, t)\lambda^2(t)dt d\mu(x)
+\\
+&\le  {C^2|\Omega|\over N^2}(M^2 +M)\le {\tilde C\over N^2}M^2.
+\end{align}  
+It follows that 
+\begin{align}  
+\mathbb{E}_n \|r_{n} - r \|_{L^2(\Omega)}^2 
+\le {\epsilon^2 \over N} + {\tilde C\over N^2}M^2\label{stratify2t}.
+\end{align}  
+Choose $\displaystyle {\epsilon^2 \over N} = {\tilde C\over N^2}M^2$, then $M^2\sim N\epsilon^2$ and 
+$$
+\mathbb{E}_n \|r_{n} - r \|_{L^2(\Omega)}^2 \le {2\epsilon^2 \over N} \lesssim N^{-{3\over 2}}.
+$$ 
+There exist $\{t_{i,j}^\ast\}$ such that $t_{i,j}^\ast\in G_i$ and 
+\begin{equation}
+\| f -  f_n \|_{L^2(\Omega)}\le {\nu\over m!}\|r_{n} - r\|_{L^2(\Omega)}\lesssim N^{-{3\over 4}}.
+\end{equation}
+which completes the proof. 
+
+\end{proof}
+
+
+
+
+\hrule
+
+\vspace{1cm}
+If $x>0$,
+\begin{equation}
+\begin{aligned}
+f(x) - \sum_{k\le m}{1\over k!}f^{(k)}(0) x^k &={1\over m!}\int_0^T f^{(m+1)}(t)(x-t)_+^mdt;
+\end{aligned}
+\end{equation}
+If $x<0$, since $u_-=-(-u)_+$ ,
+\begin{equation}
+\begin{aligned}
+f(x) - \sum_{k\le m}{1\over k!}f^{(k)}(0) x^k &=-{1\over m!}\int_0^{-x} f^{(m+1)}(-t)(x+t)^mdt
+\\
+&=-{1\over m!}\int_0^T f^{(m+1)}(-t)(x+t)_-^mdt
+\\
+&={(-1)^{m+1}\over m!}\int_0^T f^{(m+1)}(-t)(-x-t)_+^mdt
+\end{aligned}
+\end{equation}
+This implies that
+\begin{equation}
+\begin{aligned}
+f(x) - \sum_{k\le m}{1\over k!}f^{(k)}(0) x^k 
+&={1\over m!}\int_0^T f^{(m+1)}(t)(x-t)_+^m + (-1)^{m+1}f^{(m+1)}(-t)(-x-t)_+^mdt
+\\
+&={1\over m!}\int_{\{-1,1\}}\int_0^T z^{m+1}f^{(m+1)}(zt)(zx-t)_+^m dtdz
+\\
+&={1\over m!}\int_{\{-1,1\}}\int_0^T |f^{(m+1)}(zt)| s(z, t)(zx-t)_+^m dtdz
+%\\
+%&={1\over m!}\int_0^T |f^{(m+1)}(t)|s_1(t)(x-t)_+^m + |f^{(m+1)}(-t)|s_2(t)(-x-t)_+^mdt
+\end{aligned}
+\end{equation}
+with $s(z, t)= z^{m+1}sgn (f^{(m+1)}(zt))$.
+%with $s_1(t)=sgn (f^{(m+1)}(t))$ and $s_2(t)=sgn ((-1)^{m+1}f^{(m+1)}(-t))$. 
+It can be written as 
+\begin{equation}
+\begin{aligned}
+f(x) - \sum_{k\le m}{1\over k!}f^{(k)}(0) x^k &={\|f^{(m+1)}\|_{L^1}\over m!}\int_{[0,T]\times \{-1, 1\}}s(z,t)(zx-t)_+^m \lambda(z,t)dtdz
+\end{aligned}
+\end{equation}
+where 
+\begin{equation}
+\begin{aligned}
+\lambda(z,t)={|f^{(m+1)}(zt)|\over \int_{[0,T]\times \{-1, 1\}} |f^{(m+1)}(zt)| dt dz}
+\end{aligned}
+\end{equation}
+By Monte Carlo, there exist $t_j\in [0, T]$ and $\beta_j\in \{-1, 1\}$ such that
+\begin{equation}
+\begin{aligned}
+\|f(x) - f_n(x)\|_{L^2} \le {1\over n^{1/2}}
+\end{aligned}
+\end{equation}
+with
+\begin{equation}
+\begin{aligned}
+f_n(x) = \sum_{k\le m}{1\over k!}f^{(k)}(0) x^k + {\|f^{(m+1)}\|_{L^1}\over m!n}\sum_{j=1}^n\beta_j (z_jx-t_j)_+^m
+\end{aligned}
+\end{equation}
+
+\noindent\textbf{Higher dimension case from Taylor expansion}
+
+The Taylor expansion reads
+\begin{equation}
+f(x)=f(0)+\sum_{1\le |\alpha| \leqslant k} \partial^\alpha f(0) x^{\alpha}+\sum_{|\alpha|=k+1} \frac{k+1}{\alpha !} x^{\alpha} \int_{0}^{1}(1-t)^{k} \partial^\alpha f(t x) \quad d t
+\end{equation}
+Let $y=tx$.
+\begin{equation}
+\begin{aligned}
+x^{\alpha}(1-t)^{k} \partial^{\alpha} f(t x) d t &=(1-t)^{k} \partial^{\alpha} f(y) \prod_{i=1}^{N} x^{\alpha_{i}} d t\\
+&=\partial^{\alpha} f(y) (1-t)^{k} \frac{y^{\alpha}}{t^{k+1}} d t \\
+&=\partial^{\alpha} f(y)  \frac{1}{t} \prod_{i=1}^{N}\left(\frac{1}{t}-1\right)^{\alpha_{i}} y_{i}^{\alpha_{i}} d t \\
+&=\partial^{\alpha} f(y)  \frac{1}{t} \prod_{i=1}^{N}\left(x_{i}-y_{i}\right)^{\alpha_{i}} d t \\
+&=\partial^{\alpha} f(y)  (x-y)^{\alpha} \frac{1}{t} d t
+\end{aligned}
+\end{equation}
+Thus 
+\begin{equation}
+f(x)=f(0)+\sum_{1\le |\alpha| \leqslant k} \partial^\alpha f(0) x^{\alpha}+\sum_{|\alpha|=k+1} \frac{k+1}{\alpha !}  \int_{0}^{\infty} \partial^\alpha f(y) (x-y)_+^\alpha  d s
+\end{equation}
+with 
+\begin{equation}
+(x-y)_{+}^{\alpha}=\left\{\begin{array}{ccc}
+(x-y)^{\alpha} & \text { if }  
+y=sx,\ 0\le s \le 1 
+\\
+0 &  \text { othemise } 
+\end{array}\right.
+\end{equation}
+
+
+\noindent\textbf{Higher dimension case from Taylor expansion 2}
+
+
+
+
+
+
+
+
+

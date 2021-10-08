@@ -1,0 +1,131 @@
+\section{Supervised learning on image classification}\label{sec:MLbasics}
+We consider a basic machine learning problem for classifying a
+collection of images into $\kappa$ distinctive classes.  As an
+example, we consider a two-dimensional image which is usually
+represented by a tensor
+$$
+f\in  {\mathcal D} := \mathbb{R}^{c \times m\times n}.
+$$
+Here 
+\begin{equation}
+\label{data-c}
+c=
+\left\{
+\begin{array}[rl]{rl}
+1 & \mbox{for grayscale image},\\    
+3 & \mbox{for color image}.
+\end{array}
+\right.
+\end{equation}
+
+A typical supervised machine learning problem begins with a data set (training data)
+$$
+D := \{(f_i, y_i)\}_{i=1}^N,
+$$ 
+with
+$$
+\{f_i\}_{i=1}^N \subset {\mathcal D},
+$$
+and $y_i \in \mathbb{R}^{\kappa}$ is the label for data $f_i$, with
+$[y_i]_j$ as the probability for $f_i$ in classes $j$. 
+
+
+Roughly speaking, a supervised learning problem can be thought as a data fitting
+problem in a high dimensional space ${\mathcal D}$.
+Namely, we need to find a mapping
+$H:  \mathbb R^{c\times m\times n}\mapsto \mathbb R^\kappa,$
+such that, for a given $f\in  {\mathcal D}$, 
+\begin{equation}\label{eq:idealouput}
+H(f)\approx e_i\in \mathbb R^\kappa,
+\end{equation}
+if $f$ is in class $i$, for $1\le i\le \kappa$. 
+For the general setting above, we use a probatilistic model for understanding the
+output $H(f) \in \mathbb{R}^{\kappa}$ as a discrete 
+distribution on $\{1, \cdots,\kappa\}$, with $[H (f)]_i$ as the probability
+for $f$ in the class $i$, namely
+\begin{equation}
+\label{distrib}
+0 \le [H(f)]_i \le 1,\quad 
+\sum_{i=1}^\kappa  [H(f)]_i=1. 
+\end{equation}
+At last, we finish our model with a simple strategy to choose
+\begin{equation}\label{eq:maxchoose}
+\mathop{\arg\max}_{i}\{[H(f)]_i~:~ i = 1:\kappa\},
+\end{equation}
+as the label for a test data $f$, which ideally is close to
+\eqref{eq:idealouput}.  The remaining key issue is the construction of
+the classification mapping $H$.
+
+
+%\subsection{Model construction}
+%In many CNN type models for image classification, there are usually
+%three major steps to construct $H$.
+The main step in the construction of $H$ is to 
+construct a nonlinear mapping
+\begin{equation}
+\label{linearize}
+H_0: {\mathcal D} \mapsto V_J,
+\end{equation}
+with 
+\begin{equation}
+\label{VJ}
+V_J = \mathbb R^{c_J \times m_J\times n_J}. 
+\end{equation}
+To be consistent with the notation for CNN which will be described below,
+here the subscript $J$ refers to the number of 
+coarsening girds in CNN. 
+Roughly speaking, the map $H_0$ plays two roles.  The first role
+is to conduct a dimensionality reduction, namely
+$$
+c_Jm_Jn_J\ll  mnc.
+$$
+The second role is to map a complicated set of data into a set of data
+that are linearly separable. As a result, the simple logistic regression 
+procedure can be applied.
+
+The first step in a logistic regression is to introduce a linear mapping:
+\begin{equation*}
+\Theta: {\mathcal D} \to\mathbb{R}^{\kappa} ,
+\end{equation*}as 
+\begin{equation}\label{thetamap}
+\Theta(x)=Wx+b,
+\end{equation}
+where $W=(w_{ij})\in\mathbb{R}^{(c_J\times m_J \times n_J)\times \kappa}$, 
+$b\in\mathbb{R}^{\kappa}$.
+
+
+We then use the soft-max function.
+\begin{equation}
+\label{softmax}
+[S(z)]_i=[{\rm Solftmax}(z)]_i= \frac{e^{z_i}}{\sum_{j} e^{z_j}},
+\end{equation}
+to obtain a logistic regression model 
+\begin{equation}
+\label{eq:log_reg}
+S \circ \Theta: \mathbb R^{c_J \times m_J\times n_J}\mapsto \mathbb R^\kappa.
+\end{equation}
+
+
+By combining the nonlinear mapping $H$ in \eqref{linearize}
+and the logistic regression \eqref{eq:log_reg}, we obtain the following classifier:
+\begin{equation}
+\label{classifier}
+H=  S\circ \Theta\circ H_0.
+\end{equation}
+
+%\subsection{Loss function and training}  
+Given the model \eqref{classifier},
+we finish the training phase with solving the next optimization 
+problem:
+\begin{equation}
+\label{eq:3}
+\min \sum_{j=1}^Nl(y_j, H(f_j)),
+\end{equation}
+where
+Here $l(y_j, H(f_j))$ is a  loss function that measures the
+predicted result $H(f_j)$ and the real label $y_j$. 
+In logistic regression, 
+the following cross-entropy loss function is often used
+$$
+l(y_j, H(f)) = \sum_{i=1}^\kappa -[y]_i \log [H(f)]_i.
+$$

@@ -1,0 +1,95 @@
+In this chapter, we give a general introduction to image classification, which is one of the basic machine learning problems and we also discuss some popular datasets: MNIST, CIFAR and ImageNet.
+
+%{A basic AI problem: classification}
+\section{Introduction to machine learning}
+Machine learning, a subset of the field of artificial intelligence (AI), is a field that uses the algorithms to explore the underlying patterns in the data. It is an interdisciplinary field involving many majors such as mathematics, statistics and computer science.
+
+Mitchell \cite{mitchell1997machine} gives a formal definition of learning "A computer program is said to learn from experience $E$ with respect to some class of tasks $T$ and performance measure $P$, if its performance at tasks in $T$, as measured by $P$, improves with experience $E$." Here the experience $E$, task $T$ and performance measure $P$ can be chosen from a broad range.
+
+\begin{itemize}
+\item \textbf{The Task, $T$.}
+Many kinds of tasks can be solved with machine learning. Classification is basic machine learning tasks.
+In this type of task, the computer program is asked to specify which of $k$ categories some input belongs to. To solve this task, the learning algorithm is usually asked to produce a function $f: \mathbb{R}^{n} \rightarrow\{1, \ldots, k\}$. When $y=f(\boldsymbol{x})$, the model assigns an input described by vector $\boldsymbol{x}$ to a category identified by numeric code $y$.
+\item \textbf{The Performance Measure, $P$.}
+To evaluate the abilities of a machine learning algorithm, we must design a quantitative measure of its performance. Usually this performance measure $P$ is specific to the task $T$ being carried out by the system. For tasks such as classification, we often measure the accuracy of the model.  Classification Accuracy is the ratio of number of correct predictions to the total number of input samples.
+\begin{equation}
+Accuracy = \frac{Number~of~Correct~predictions}{Total~number~of~predicitons}
+\end{equation}
+Traing accuracy is accuracy in training set, and test accuracy is accuracy in test set.
+
+\item \textbf{The Experience, $E$.}
+\textcolor{red}{Experience they are allowed to have during the learning process, most of the learning algorithms can be understood as being allowed to experience an entire dataset.}
+\end{itemize}
+
+The machine learning algorithms can be broadly categorized into three divisions based on the approach, the data type and the task to be solved: supervised learning algorithms, unsupervised learning algorithms and reinforcement learning algorithms. We will focus on the supervised learning algorithms here.
+
+A typical supervised machine learning task consists of the dataset, the model and the learning algorithm.
+The data can be selected from a wide variety like digits, pictures, words, etc. The dataset includes the training set, validation set and test set. For the clarification problem, we call the dataset involved in training the model the training set, the dataset used for selecting the optimal model the validation set and the dataset to be applied with the optimal model to measure the corresponding generalization ability the test set.
+The data is used to help the algorithm to build a mathematical model to extract the patterns or learn the experience. This process is called training the model. The main task of the model is to extract the features and characteristics from the training set for learning and generalize it to the previously unseen test set for inferring.
+
+\begin{itemize}
+\item Training Dataset: The sample of data used to fit the model.
+\item Validation Dataset: The sample of data used to provide evaluation of a model fit on the training dataset while tuning model hyperparameters.
+\item Test Dataset: The sample of data used to provide evaluation of a final model fit on the training dataset.
+\end{itemize}
+
+
+
+%\subsection{Supervised learning algorithms}
+Supervised learning algorithms try to build a mathematical model of a set of data that contains both the inputs and the desired outputs \cite{russell2010artificial}. The inputs, which are also called the predictors or the independent variables, are used to predict the values of the outputs, which are also called the responses, the labels or the dependent variables \cite{friedman2001elements}. If the the range of the outputs is categorical or has finite numbers, the supervised learning algorithm is used for classification. If there are infinite many numbers in the the range of the outputs, the supervised learning algorithm is used for regression.
+
+The no free lunch theorem \cite{wolpert1996lack} for machine learning states that, averaged over all possible
+data generating distributions, every classification algorithm has the same error
+rate when classifying previously unseen examples. It means
+no machine learning algorithm is universally any better than any other in some sense \cite{goodfellow2016deep}. Therefore we need to select the optimal algorithm based on the specific problem, dataset and task since no model dominates all the time.
+
+There are many classic supervised learning algorithms that are widely used in various fields. For example, linear regression, logistic regression, support vector machine (SVM), K nearest neighbor (KNN) and so on.
+For these supervised learning algorithms, the procedure includes 6 steps to be performed  \cite{praveena2017literature}.
+\begin{enumerate}
+\item The type of data to be used as the training set needs to be determined by the people. For instance, the data can be an image, a word or a vector.
+\item Collect a training set and test set representative of the real-world use of the model.
+\item Resolve the input feature representation of the learned model. For example, the input obtained from measurements can be transformed to a feature vector while an image can be transformed to a matrix.
+\item Choose the structure of the learned model and the corresponding learning algorithm. This is to determine which model to use and how to optimize the model.
+\item Finish the experiment design and execute the learning algorithm on the training set.
+\item Evaluate the accuracy of the learned model on the test set.
+\end{enumerate}
+
+
+The training and test data are generated by a probability distribution over datasets called the data-generating process. We typically make a set of assumptions known collectively as the i.i.d. assumptions. These assumptions are that the examples in each dataset are independent from each other, and that the training set and test set are identically distributed, drawn from the same probability distribution as each other. This assumption enables us to describe the data-generating process with a probability distribution over a single example. The same distribution is then used to generate every train example and every test example. We call that shared underlying distribution the data-generating distribution, denoted $p_{\text {data }}$. This probabilistic framework and the i.i.d. assumptions enables us to mathematically study the relationship between training error and test error.
+
+
+One immediate connection we can observe between training error and test error is that the expected training error of a randomly selected model is equal to the expected test error of that model. Suppose we have a probability distribution $p(\boldsymbol{x}, y)$ and we sample from it repeatedly to generate the training set and the test set. For some fixed value $\boldsymbol{w}$, the expected training set error is exactly the same as the expected test set error, because both expectations are formed using the same dataset sampling process. The only difference between the two conditions is the name we assign to the dataset we sample. Of course, when we use a machine learning algorithm, we do not fix the parameters ahead of time, then sample both datasets. We sample the training set, then use it to choose the parameters to reduce training set error, then sample the test set. Under this process, the expected test error is greater than or equal to the expected value of training error. The factors determining how well a machine learning algorithm will perform are its ability to
+\begin{itemize}
+\item Make the training error small.
+\item Make the gap between training and test error small.
+\end{itemize}
+These two factors correspond to the two central challenges in machine learning:
+underfitting and overfitting. Underfitting occurs when the model is not able to obtain a sufficiently low error value on the training set. Overfitting occurs when the gap between the training error and test error is too large.
+
+We can control whether a model is more likely to overfit or underfit by altering its capacity. Informally, a model's capacity is its ability to fit a wide variety of functions. Models with low capacity may struggle to fit the training set. Models with high capacity can overfit by memorizing properties of the training set that do not serve them well on the test set.
+
+One way to control the capacity of a learning algorithm is by choosing its hypothesis space, the set of functions that the learning algorithm is allowed to select as being the solution. For example, the linear regression algorithm has the set of all linear functions of its input as its hypothesis space. We can generalize linear regression to include polynomials, rather than just linear functions, in its hypothesis space. Doing so increases the model's capacity.
+
+
+In the supervised learning problem, the model $f$ is selected as the decision function in the hypothesis space $F$. Given a input $X$, the corresponding output $f(X)$ is obtained. The predicted values $f(X)$ and $Y$ are not necessarily equal, usually used a loss function to measure the degree of prediction error. The loss function is a non-negative real-valued function of $f(X)$ and $Y$, denoted as $L(Y, f(X))$.
+The smaller the loss function achieved better model performance. Since the input and output $(X, Y)$ of the model are random variables and follow the joint distribution $P(X, Y)$, the expected loss function is
+\begin{equation}
+R_{exp}(f)=E_p[(L(Y,f(x)))]=\int_{\mathbb{X}\times \mathbb{Y}} L(y,f(x))P(x,y)dxdy
+\end{equation}
+This is the loss in the average sense of the theoretical model f(X) respect to the joint distribution $P(X, Y)$, called risk function or expected loss. The goal of learning is to learn the model with the smallest expected risk. Since the joint distribution $P(X, Y)$ is unknown, $R_{exp}(f)$ cannot be directly calculated.
+Given a training data set $$T=\{(x_1,y_1),(x_2,y_2),\cdots,(x_N,y_N)\}$$
+The average loss of the model $f(X)$ with respect to the training data set is called empirical risk or empirical loss, denoted as $R_{emp}$:
+$$R_{emp}(f)=\frac{1}{N}\sum_{i=1}^NL(y_i,f(x_i))$$
+
+Expected risk is the expected loss of the model with respect to the joint distribution, and empirical risk is the average loss of the model with respect to the training sample set. According to the law of large numbers, when the sample size $N$ region tends to infinity, the empirical risk tends to the expected risk, so the natural idea is to use the empirical risk to estimate the expected risk. However, due to the limited or even small training samples, the empirical risk estimation expected risk often has a large deviation, and certain empirical risks must be corrected. This is related to the two basic strategies of supervised learning: empirical risk minimization(ERM) and structuran risk minimization(SRM).
+When the hypothesis space, loss function, and training data set are determined, the empirical risk function can be determined. The strategy of empirical risk minimization considers that the model with the least empirical risk is the optimal model, and seeking the optimal model according to this strategy is to solve the optimization problem:
+$$ \min\limits_{f\in F}\frac{1}{N}\sum_{i=1}^NL(y_i,f(x_i))$$
+When the sample size is large enough, the experience risk minimization can guarantee a good learning effect, but when the sample size is very small, the experience risk minimization learning effect may not be very good, and overfitting will occur. Structural risk minimization is a strategy proposed to prevent overfitting. Structural risk minimization is equivalent to regularization. The structural risk adds a regular term that expresses the complexity of the model to the empirical risk. In the case where the hypothesis space, loss function and training data set are determined, the definition of structural risk is:
+$$\frac{1}{N}\sum_{i=1}^NL(y_i,f(x_i))+\lambda J(f)$$
+Where $J(f)$ is the complexity of the model. The more complex the model $f$, the greater the complexity $J(f)$; conversely, the simpler the model $f$, the smaller the complexity. $\lambda$ is a coefficient, used to weigh empirical risk and model complexity. Small structural risk requires both experience risk and complexity to be small. Models with low structural risk tend to have better predictions on training data and unknown test data. The strategy of structural risk minimization considers that the model with the least structural risk is the optimal model. So to find the optimal model is to solve the optimization problem:
+$$\min\limits_{f\in F}\frac{1}{N}\sum_{i=1}^NL(y_i,f(x_i))+\lambda J(f)$$
+
+The generalization ability of a learning method refers to the predictive ability of the model learned by this method for unknown data, which is an essential property of the learning method. At present, the most commonly used method is to evaluate the generalization ability of the learning method through test errors. But this evaluation is dependent on the test data set. Because the test data set is limited, it is very likely that the evaluation results obtained from this cannot truly reflect the generalization ability of the model. The following theoretically analyzes the generalization ability of the learning method. Assuming that the learned model is $f$, then the error of using this model to predict the position data is the generalization error.
+$$R_{exp}(\hat{y})=E_P[L(Y,\hat{f}(X))]=\int_{\mathbb{X}\times \mathbb{Y}} L(y,\hat{f}(x))P(x,y)dxdy $$
+The generalization error reflects the generalization ability of the learning method. If the model learned by one method has a smaller generalization error than the model learned by another method, then this method is more effective. In fact, the generalization error is the expected risk of the learned model.
+

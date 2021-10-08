@@ -1,0 +1,85 @@
+\section{Data space, feature space and relevant mappings}\label{sec:spaces}
+Given a data
+\begin{equation}
+	\label{data-f}
+	f \in \mathbb{R}^{m \times n \times c}, 
+	\quad \text{or}\quad [f]_i \in
+	\mathbb{R}^{m\times n}, \quad i = 1:c,
+\end{equation}
+where $m\times n$ is called the spatial dimension and $c$ is the 
+channel dimension.
+
+For the given data $f$ in \eqref{data-f}, we look for some
+feature vector, denoted by $u$,  associated with $f$:
+\begin{equation}
+	\label{u}
+	u \in \mathbb{R}^{m \times n \times h}.
+\end{equation}
+We make an assumption that the data $f$ and feature $u$ are related by a mapping 
+(which can be either linear or nonlinear)
+\begin{equation}
+	\label{u}
+	A:  \mathbb{R}^{m \times n \times h}\mapsto \mathbb{R}^{m \times n \times c}, 
+\end{equation}
+so that
+\begin{equation}
+	\label{Auf}
+	A(u)=f. 
+\end{equation}
+A mapping 
+\begin{equation*}
+	B : \mathbb{R}^{m\times n\times c} \mapsto \mathbb{R}^{m \times n\times h},
+\end{equation*}
+is called a feature extractor if $B \approx A^{-1}$ and 
+\begin{equation}\label{vBf}
+	v = B(f),
+\end{equation}
+is such that $v \approx u$.
+
+The data-feature relationship \eqref{Auf} or \eqref{vBf} is not
+unique.   Different relationships give rise to different features. 
+We can view the data-feature relationship given in \eqref{Auf}
+as a model that we propose.  Here the mapping $A$, which can be either
+linear or nonlinear, is unknown and needs to be trained.  
+
+
+\subsection{Some linear and nonlinear mappings and extractors}
+A data-feature map $A$ and feacture extractor $B$ can be either
+linear or nonlinear.   The nonlinearity can be obtained from
+appropriate application of an activation function
+\begin{equation}
+	\label{act}
+	\sigma: \mathbb{R} \to \mathbb{R} .
+\end{equation}
+In this paper, we mainly consider a special activation function, known 
+as the {\it rectified linear unit} (ReLU), which is defined by
+\begin{equation}
+	\label{relu}
+	\sigma(x)= {\rm ReLu}(x) :=\max(0,x), \quad x\in\mathbb{R}. 
+\end{equation}
+By applying the function to each component, we can extend this
+\begin{equation}
+	\label{vector-act}
+	\sigma:\mathbb R^{m\times n\times c}\mapsto \mathbb R^{m\times n\times c}.  
+\end{equation}
+
+
+A linear data-feature mapping can simply given by a convolution as in \eqref{con1}:
+\begin{equation}
+	\label{linearA}
+	A(f)=A\ast f
+\end{equation}
+A nonlinear mapping can be given by compositions of convolution and
+activation functions:
+\begin{equation}
+	\label{nonlinearA}
+	A=\xi\circ\sigma\circ\eta ,
+\end{equation}
+
+and 
+\begin{equation}
+	\label{extractor}
+	B=\sigma\circ \gamma \circ\sigma  .
+\end{equation}
+Here $\xi$, $\eta$ and $\gamma$ are all 
+appropriate convolution mappings.

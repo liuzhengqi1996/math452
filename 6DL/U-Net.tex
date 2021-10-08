@@ -1,0 +1,128 @@
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%   U-Net   %%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{U-Net}
+\subsection{Architecture}
+\begin{enumerate}
+	\item Initialization of inputs
+	$$u \in \mathbb{R}^{1\times 512\times 512},\quad c:num~class~of~pixels$$
+	\begin{itemize}
+		\item downsampling
+	\end{itemize}
+	%%%%%%%%%%%%%   32*32 mesh size %%%%%%%%%%%%%%%
+	\item $512\times 512$ mesh size\\
+	input\quad $u^{1,0}=u\in \mathbb{R}^{1\times 512\times 512}$,\quad $\theta^{1,1} \in \mathbb{R}^{1\times 64\times 3\times 3}$,\quad $\theta^{1,2} \in \mathbb{R}^{64\times 64\times 3\times 3}$
+	$$u^{1,1}=\sigma (\theta^{1,1} \ast (u^{1,0}))\in \mathbb{R}^{64\times 512\times 512}$$
+	$$u^{1,2}=\sigma (\theta^{1,2} \ast (u^{1,1}))\in \mathbb{R}^{64\times 512\times 512}$$
+	output\quad $u^{1,2} \in \mathbb{R}^{64\times 512\times 512}$
+	
+	\item $256\times 256$ mesh size\\
+	input\quad $u^{1,2}\in \mathbb{R}^{64\times 512\times 512}$,\quad $\theta^{2,1} \in \mathbb{R}^{64\times 128\times 3\times 3}$,\quad $\theta^{2,2} \in \mathbb{R}^{128\times 128\times 3\times 3}$
+	$$u^{2,0}=R_{max}*_{2}u^{1,2} \in \mathbb{R}^{64\times 256\times 256} $$
+	$$u^{2,1}=\sigma (\theta^{2,1} \ast (u^{2,0}))\in \mathbb{R}^{128\times 256\times 256}$$
+	$$u^{2,2}=\sigma (\theta^{2,2} \ast (u^{2,1}))\in \mathbb{R}^{128\times 256\times 256}$$
+	output\quad $u^{2,2} \in \mathbb{R}^{128\times 256\times 256}$
+	
+	\item $128\times 128$ mesh size\\
+	input\quad $u^{2,2}\in \mathbb{R}^{128\times 256\times 256}$,\quad $\theta^{3,1} \in \mathbb{R}^{128\times 256\times 3\times 3}$,\quad $\theta^{3,2} \in \mathbb{R}^{256\times 256\times 3\times 3}$
+	$$u^{3,0}=R_{max}*_{2}u^{2,2} \in \mathbb{R}^{128\times 128\times 128} $$
+	$$u^{3,1}=\sigma (\theta^{3,1} \ast (u^{3,0}))\in \mathbb{R}^{256\times 128\times 128}$$
+	$$u^{3,2}=\sigma (\theta^{3,2} \ast (u^{3,1}))\in \mathbb{R}^{256\times 128\times 128}$$
+	output\quad $u^{3,2} \in \mathbb{R}^{256\times 128\times 128}$
+	
+	\item $64\times 64$ mesh size\\
+	input\quad $u^{3,2}\in \mathbb{R}^{256\times 128\times 128}$,\quad $\theta^{4,1} \in \mathbb{R}^{256\times 512\times 3\times 3}$,\quad $\theta^{4,2} \in \mathbb{R}^{512\times 512\times 3\times 3}$
+	$$u^{4,0}=R_{max}*_{2}u^{3,2} \in \mathbb{R}^{256\times 64\times 64} $$
+	$$u^{4,1}=\sigma (\theta^{4,1} \ast (u^{4,0}))\in \mathbb{R}^{512\times 64\times 64}$$
+	$$u^{4,2}=\sigma (\theta^{4,2} \ast (u^{4,1}))\in \mathbb{R}^{512\times 64\times 64}$$
+	output\quad $u^{4,2} \in \mathbb{R}^{512\times 64\times 64}$
+	
+	\item $32\times 32$ mesh size\\
+	input\quad $u^{4,2}\in \mathbb{R}^{512\times 64\times 64}$,\quad $\theta^{5,1} \in \mathbb{R}^{512\times 1024\times 3\times 3}$,\quad $\theta^{5,2} \in \mathbb{R}^{1024\times 1024\times 3\times 3}$
+	$$u^{5,0}=R_{max}*_{2}u^{4,2} \in \mathbb{R}^{512\times 32\times 32} $$
+	$$u^{5,1}=\sigma (\theta^{5,1} \ast (u^{5,0}))\in \mathbb{R}^{1024\times 32\times 32}$$
+	$$u^{5,2}=\sigma (\theta^{5,2} \ast (u^{5,1}))\in \mathbb{R}^{1024\times 32\times 32}$$
+	output\quad $u^{5,2} \in \mathbb{R}^{1024\times 32\times 32}$
+	
+	\begin{itemize}
+		\item upsampling
+	\end{itemize}
+	\item $64\times 64$ mesh size\\
+	input\quad $u^{5,2} \in \mathbb{R}^{1024\times 32\times 32}$,\quad$u^{4,2}\in \mathbb{R}^{512\times 64\times 64}$,\\
+	$\hat{\theta}^{4,0} \in \mathbb{R}^{1024\times 512\times 3\times 3}$,\quad
+	$\hat{\theta}^{4,1} \in \mathbb{R}^{1024\times 512\times 3\times 3}$\quad
+	$\hat{\theta}^{4,2} \in \mathbb{R}^{512\times 512\times 3\times 3}$
+	$$v^{4}= \sigma(\hat{\theta}^{4,0} \ast^{\top}_2 (u^{5,2}))\in \mathbb{R}^{512\times 64\times 64}$$
+	$$v^{4,0}=[u^{4,2},v^{4}]\in \mathbb{R}^{1024\times 64\times 64}$$
+	$$v^{4,1}= \sigma(\hat{\theta}^{4,1} \ast (v^{4,0}))\in \mathbb{R}^{512\times 64\times 64}$$
+	$$v^{4,2}= \sigma(\hat{\theta}^{4,2} \ast (v^{4,1}))\in \mathbb{R}^{512\times 64\times 64}$$
+	output\quad $v^{4,2} \in \mathbb{R}^{512\times 64\times 64}$
+	
+	\item $128\times 128$ mesh size\\
+	input\quad $v^{4,2} \in \mathbb{R}^{512\times 64\times 64}$,\quad$u^{3,2}\in \mathbb{R}^{256\times 128\times 128}$,\\
+	$\hat{\theta}^{3,0} \in \mathbb{R}^{512\times 256\times 3\times 3}$,\quad
+	$\hat{\theta}^{3,1} \in \mathbb{R}^{512\times 256\times 3\times 3}$\quad
+	$\hat{\theta}^{3,2} \in \mathbb{R}^{256\times 256\times 3\times 3}$
+	$$v^{3}= \sigma(\hat{\theta}^{3,0} \ast^{\top}_2 (v^{4,2}))\in \mathbb{R}^{256\times 128\times 128}$$
+	$$v^{3,0}=[u^{3,2},v^{3}]\in \mathbb{R}^{512\times 128\times 128}$$
+	$$v^{3,1}= \sigma(\hat{\theta}^{3,1} \ast (v^{3,0}))\in \mathbb{R}^{256\times 128\times 128}$$
+	$$v^{3,2}= \sigma(\hat{\theta}^{3,2} \ast (v^{3,1}))\in \mathbb{R}^{256\times 128\times 128}$$
+	output\quad $v^{3,2} \in \mathbb{R}^{256\times 128\times 128}$
+	
+	\item $256\times 256$ mesh size\\
+	input\quad $v^{3,2} \in \mathbb{R}^{256\times 128\times 128}$,\quad$u^{2,2}\in \mathbb{R}^{128\times 256\times 256}$,\\
+	$\hat{\theta}^{2,0} \in \mathbb{R}^{256\times 128\times 3\times 3}$,\quad
+	$\hat{\theta}^{2,1} \in \mathbb{R}^{256\times 128\times 3\times 3}$\quad
+	$\hat{\theta}^{2,2} \in \mathbb{R}^{128\times 128\times 3\times 3}$
+	$$v^{2}= \sigma(\hat{\theta}^{2,0} \ast^{\top}_2 (v^{3,2}))\in \mathbb{R}^{128\times 256\times 256}$$
+	$$v^{2,0}=[u^{2,2},v^{2}]\in \mathbb{R}^{256\times 256\times 256}$$
+	$$v^{2,1}= \sigma(\hat{\theta}^{2,1} \ast (v^{2,0}))\in \mathbb{R}^{128\times 256\times 256}$$
+	$$v^{2,2}= \sigma(\hat{\theta}^{2,2} \ast (v^{2,1}))\in \mathbb{R}^{128\times 256\times 256}$$
+	output\quad $v^{2,2} \in \mathbb{R}^{128\times 256\times 256}$
+	
+	\item $512\times 512$ mesh size\\
+	input\quad $v^{2,2} \in \mathbb{R}^{128\times 256\times 256}$,\quad$u^{1,2}\in \mathbb{R}^{64\times 512\times 512}$,\\
+	$\hat{\theta}^{1,0} \in \mathbb{R}^{128\times 64\times 3\times 3}$,\quad
+	$\hat{\theta}^{1,1} \in \mathbb{R}^{128\times 64\times 3\times 3}$\quad
+	$\hat{\theta}^{1,2} \in \mathbb{R}^{64\times 64\times 3\times 3}$\quad
+	
+	$$v^{1}= \sigma(\hat{\theta}^{1,0} \ast^{\top}_2 (v^{2,2}))\in \mathbb{R}^{64\times 512\times 512}$$
+	$$v^{1,0}=[u^{1,2},v^{1}]\in \mathbb{R}^{128\times 512\times 512}$$
+	$$v^{1,1}= \sigma(\hat{\theta}^{1,1} \ast (v^{1,0}))\in \mathbb{R}^{64\times 512\times 512}$$
+	$$v^{1,2}= \sigma(\hat{\theta}^{1,2} \ast (v^{1,1}))\in \mathbb{R}^{64\times 512\times 512}$$
+	output\quad $v^{1,2} \in \mathbb{R}^{64\times 512\times 512}$     
+	\item output layer\\
+	input\quad $v^{1,2} \in \mathbb{R}^{64\times 512\times 512}$,\quad $\hat{\theta} \in \mathbb{R}^{64\times c \times 3\times 3}$
+	$$v= softmax(\hat{\theta} \ast (v^{1,2}))\in \mathbb{R}^{c\times 512\times 512}$$
+	output\quad $v \in \mathbb{R}^{c\times 512\times 512}$
+\end{enumerate}
+
+The U-Net can be written as:%\cite{huang2017densely}
+\begin{equation}\label{eq:unet}
+\begin{cases}
+u^{1,0}=u\\
+\text{\bf For} &\ell = 1:5 \\
+&\text{\bf If} \quad \ell > 1 \\
+&\quad \quad u^{\ell,0}=R_{max}*_2(u^{\ell-1,\nu_l})\\
+&\text{\bf For} \quad i = 1:\nu_\ell \\
+&\quad \quad u^{\ell,i} = \sigma(\theta^{\ell,i}\ast (u^{\ell,i-1}))\\
+%&\tilde f^{\ell,i} = [f^{\ell,0,}, \cdots, f^{\ell,i}] \quad i = 1:\nu_\ell  , \\
+&\text{\bf EndFor} \\
+\text{\bf EndFor}\\
+
+v^{5,\nu_l}=u^{5,\nu_l}\\
+
+\text{\bf For} &\ell = 4:1 \\
+&v^{\ell} = \sigma(\hat{\theta}^{\ell,0}\ast^{\top}_2(v^{\ell+1,\nu_l}))\\
+&v^{\ell,0} = [u^{\ell,\nu_l},v^{\ell}]\\
+&v^{\ell,1} = \sigma(\hat{\theta}^{\ell,1}\ast(v^{\ell,0}))\\
+\quad &\text{\bf For} \quad i = 2:\nu_\ell \\
+&\quad \quad v^{\ell,i} = \sigma(\hat{\theta}^{\ell,i}\ast (v^{\ell,i-1}))\\
+%&\tilde f^{\ell,i} = [f^{\ell,0,}, \cdots, f^{\ell,i}] \quad i = 1:\nu_\ell  , \\
+\quad &\text{\bf EndFor} \\
+\text{\bf EndFor}\\
+v = softmax(\theta \ast (v^{1,\nu_l}))\\
+
+\end{cases}
+\end{equation}

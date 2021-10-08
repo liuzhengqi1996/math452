@@ -1,0 +1,138 @@
+\BOOKMARK [0][-]{chapter.1}{Machine Learning and Image Classification}{}% 1
+\BOOKMARK [1][-]{section.1.1}{Introduction to machine learning}{chapter.1}% 2
+\BOOKMARK [1][-]{section.1.2}{A basic machine learning problem: image classification}{chapter.1}% 3
+\BOOKMARK [1][-]{section.1.3}{Some popular data sets in image classification}{chapter.1}% 4
+\BOOKMARK [2][-]{subsection.1.3.1}{MNIST \(Modified National Institute of Standards and Technology Database\)}{section.1.3}% 5
+\BOOKMARK [2][-]{subsection.1.3.2}{CIFAR}{section.1.3}% 6
+\BOOKMARK [2][-]{subsection.1.3.3}{ImageNet}{section.1.3}% 7
+\BOOKMARK [0][-]{chapter.2}{Linear Machine Learning Models}{}% 8
+\BOOKMARK [1][-]{section.2.1}{Definition of linearly separable sets}{chapter.2}% 9
+\BOOKMARK [1][-]{section.2.2}{Introduction to logistic regression}{chapter.2}% 10
+\BOOKMARK [2][-]{subsection.2.2.1}{Logistic regression}{section.2.2}% 11
+\BOOKMARK [2][-]{subsection.2.2.2}{Regularized logistic regression}{section.2.2}% 12
+\BOOKMARK [1][-]{section.2.3}{KL divergence and cross-entropy}{chapter.2}% 13
+\BOOKMARK [1][-]{section.2.4}{Support vector machine}{chapter.2}% 14
+\BOOKMARK [2][-]{subsection.2.4.1}{Binary SVM}{section.2.4}% 15
+\BOOKMARK [2][-]{subsection.2.4.2}{Soft margin maximization and kernel methods}{section.2.4}% 16
+\BOOKMARK [2][-]{subsection.2.4.3}{Binary logistic regression}{section.2.4}% 17
+\BOOKMARK [0][-]{chapter.3}{Probability}{}% 18
+\BOOKMARK [1][-]{section.3.1}{Introduction to probability}{chapter.3}% 19
+\BOOKMARK [1][-]{section.3.2}{Basic probability}{chapter.3}% 20
+\BOOKMARK [1][-]{section.3.3}{Basic Probability Theory}{chapter.3}% 21
+\BOOKMARK [2][-]{subsection.3.3.1}{Discrete Examples}{section.3.3}% 22
+\BOOKMARK [2][-]{subsection.3.3.2}{Independent Copies}{section.3.3}% 23
+\BOOKMARK [2][-]{subsection.3.3.3}{Continuous Distributions}{section.3.3}% 24
+\BOOKMARK [2][-]{subsection.3.3.4}{Gaussian/ Normal Distribution}{section.3.3}% 25
+\BOOKMARK [1][-]{section.3.4}{Random, Variable, Mean, Variance}{chapter.3}% 26
+\BOOKMARK [2][-]{subsection.3.4.1}{Random Variable}{section.3.4}% 27
+\BOOKMARK [2][-]{subsection.3.4.2}{Mean of random variable}{section.3.4}% 28
+\BOOKMARK [2][-]{subsection.3.4.3}{Variance of Random Variables}{section.3.4}% 29
+\BOOKMARK [2][-]{subsection.3.4.4}{Independenve of Random variables}{section.3.4}% 30
+\BOOKMARK [2][-]{subsection.3.4.5}{Properties of E, V, Independence}{section.3.4}% 31
+\BOOKMARK [1][-]{section.3.5}{Probability interpretation of logistic regression}{chapter.3}% 32
+\BOOKMARK [2][-]{subsection.3.5.1}{Logistic Regression Model}{section.3.5}% 33
+\BOOKMARK [2][-]{subsection.3.5.2}{Learning the parameters a a a a, b from data }{section.3.5}% 34
+\BOOKMARK [1][-]{section.3.6}{Maximamum Likelihood}{chapter.3}% 35
+\BOOKMARK [1][-]{section.3.7}{Basic Statistical Learning Theory}{chapter.3}% 36
+\BOOKMARK [2][-]{subsection.3.7.1}{Maximum Likelihood Estimate\(MLE\)}{section.3.7}% 37
+\BOOKMARK [1][-]{section.3.8}{Classfication/ Logistic Regression}{chapter.3}% 38
+\BOOKMARK [1][-]{section.3.9}{Bayesian Approach to Machine Learning}{chapter.3}% 39
+\BOOKMARK [2][-]{subsection.3.9.1}{Goal}{section.3.9}% 40
+\BOOKMARK [2][-]{subsection.3.9.2}{Example: Image Classification/ Logistic Regression}{section.3.9}% 41
+\BOOKMARK [1][-]{section.3.10}{General Covariance}{chapter.3}% 42
+\BOOKMARK [2][-]{subsection.3.10.1}{Whitening}{section.3.10}% 43
+\BOOKMARK [2][-]{subsection.3.10.2}{Batch Normalization}{section.3.10}% 44
+\BOOKMARK [2][-]{subsection.3.10.3}{Central Limiting Theorem}{section.3.10}% 45
+\BOOKMARK [0][-]{chapter.4}{Training Algorithms}{}% 46
+\BOOKMARK [1][-]{section.4.1}{Line search and gradient descent method}{chapter.4}% 47
+\BOOKMARK [2][-]{subsection.4.1.1}{Gradient descent method}{section.4.1}% 48
+\BOOKMARK [2][-]{subsection.4.1.2}{Convergence of Gradient Descent method}{section.4.1}% 49
+\BOOKMARK [1][-]{section.4.2}{Stochastic gradient descent method and convergence theory}{chapter.4}% 50
+\BOOKMARK [2][-]{subsection.4.2.1}{Convergence of SGD}{section.4.2}% 51
+\BOOKMARK [2][-]{subsection.4.2.2}{SGD with mini-batch}{section.4.2}% 52
+\BOOKMARK [0][-]{chapter.5}{Polynomials and Weierstrass theorem}{}% 53
+\BOOKMARK [1][-]{section.5.1}{Weierstrass Theorem}{chapter.5}% 54
+\BOOKMARK [2][-]{subsection.5.1.1}{Curse of dimensionality}{section.5.1}% 55
+\BOOKMARK [2][-]{subsection.5.1.2}{Runge's phenomenon}{section.5.1}% 56
+\BOOKMARK [1][-]{section.5.2}{Fourier transform and Fourier series}{chapter.5}% 57
+\BOOKMARK [2][-]{subsection.5.2.1}{Fourier transform}{section.5.2}% 58
+\BOOKMARK [2][-]{subsection.5.2.2}{Poisson summation formula}{section.5.2}% 59
+\BOOKMARK [2][-]{subsection.5.2.3}{A special cut-off function}{section.5.2}% 60
+\BOOKMARK [2][-]{subsection.5.2.4}{Fourier transform of polynomials}{section.5.2}% 61
+\BOOKMARK [0][-]{chapter.6}{Finite Element Method}{}% 62
+\BOOKMARK [1][-]{section.6.1}{Linear finite element spaces}{chapter.6}% 63
+\BOOKMARK [2][-]{subsection.6.1.1}{Triangulations}{section.6.1}% 64
+\BOOKMARK [2][-]{subsection.6.1.2}{Continuous linear finite element spaces}{section.6.1}% 65
+\BOOKMARK [0][-]{chapter.7}{Deep Neural Network Functions}{}% 66
+\BOOKMARK [1][-]{section.7.1}{Motivation: from finite element to neural network}{chapter.7}% 67
+\BOOKMARK [1][-]{section.7.2}{Why we need deep neural networks via composition}{chapter.7}% 68
+\BOOKMARK [2][-]{subsection.7.2.1}{FEM ans DNN1 in 1D}{section.7.2}% 69
+\BOOKMARK [2][-]{subsection.7.2.2}{Linear finite element cannot be recovered by DNN1 for d2}{section.7.2}% 70
+\BOOKMARK [1][-]{section.7.3}{Definition of deep neural networks \(DNN\)}{chapter.7}% 71
+\BOOKMARK [2][-]{subsection.7.3.1}{Definition of neurons}{section.7.3}% 72
+\BOOKMARK [2][-]{subsection.7.3.2}{Definition of deep neural network functions}{section.7.3}% 73
+\BOOKMARK [2][-]{subsection.7.3.3}{ReLU DNN}{section.7.3}% 74
+\BOOKMARK [2][-]{subsection.7.3.4}{Fourier transform of polynomials}{section.7.3}% 75
+\BOOKMARK [0][-]{chapter.8}{Convolutional Multigrid Method}{}% 76
+\BOOKMARK [1][-]{section.8.1}{Two-point boundary problems and finite element discretization}{chapter.8}% 77
+\BOOKMARK [2][-]{subsection.8.1.1}{Gradient descent method}{section.8.1}% 78
+\BOOKMARK [2][-]{subsection.8.1.2}{Coarse grid correction and two grid method}{section.8.1}% 79
+\BOOKMARK [2][-]{subsection.8.1.3}{Multilevel coarse grid corrections and a multigrid method}{section.8.1}% 80
+\BOOKMARK [2][-]{subsection.8.1.4}{Comparison between 1D and 2D finite element discretization}{section.8.1}% 81
+\BOOKMARK [1][-]{section.8.2}{Finite element method and convolution}{chapter.8}% 82
+\BOOKMARK [1][-]{section.8.3}{Piecewise linear functions on multilevel grids in 2D}{chapter.8}% 83
+\BOOKMARK [1][-]{section.8.4}{Deconvolution}{chapter.8}% 84
+\BOOKMARK [1][-]{section.8.5}{Linear feature mappings}{chapter.8}% 85
+\BOOKMARK [1][-]{section.8.6}{Restriction and prolongation under the convolution notation}{chapter.8}% 86
+\BOOKMARK [1][-]{section.8.7}{Multigrid for finite element methods}{chapter.8}% 87
+\BOOKMARK [1][-]{section.8.8}{Numerical examples}{chapter.8}% 88
+\BOOKMARK [1][-]{section.8.9}{ReLU multigrid method for nonnegative solution}{chapter.8}% 89
+\BOOKMARK [2][-]{subsection.8.9.1}{ is interpolation}{section.8.9}% 90
+\BOOKMARK [1][-]{section.8.10}{Multigrid methods for nonlinear problem}{chapter.8}% 91
+\BOOKMARK [1][-]{section.8.11}{A nonlinear BVP example}{chapter.8}% 92
+\BOOKMARK [0][-]{chapter.9}{Convolutional Neural Networks}{}% 93
+\BOOKMARK [1][-]{section.9.1}{Nonlinear classifiable sets}{chapter.9}% 94
+\BOOKMARK [1][-]{section.9.2}{Convolutional operations}{chapter.9}% 95
+\BOOKMARK [2][-]{subsection.9.2.1}{Images as matrix}{section.9.2}% 96
+\BOOKMARK [2][-]{subsection.9.2.2}{Convolution operation with one channel}{section.9.2}% 97
+\BOOKMARK [2][-]{subsection.9.2.3}{Convolution with stride \(one channel\)}{section.9.2}% 98
+\BOOKMARK [2][-]{subsection.9.2.4}{Convolutional operations with multi-channel}{section.9.2}% 99
+\BOOKMARK [2][-]{subsection.9.2.5}{Pooling operation in CNNs}{section.9.2}% 100
+\BOOKMARK [1][-]{section.9.3}{Examples of convolution filters and performance}{chapter.9}% 101
+\BOOKMARK [2][-]{subsection.9.3.1}{Calculation with convolutions}{section.9.3}% 102
+\BOOKMARK [2][-]{subsection.9.3.2}{Image convolution examples}{section.9.3}% 103
+\BOOKMARK [2][-]{subsection.9.3.3}{Line detection by 1D Laplacian}{section.9.3}% 104
+\BOOKMARK [2][-]{subsection.9.3.4}{Edge detection by 2D Laplacian operator}{section.9.3}% 105
+\BOOKMARK [2][-]{subsection.9.3.5}{The Laplacian of Gaussian}{section.9.3}% 106
+\BOOKMARK [2][-]{subsection.9.3.6}{Other examples with ReLU activation}{section.9.3}% 107
+\BOOKMARK [2][-]{subsection.9.3.7}{Summary}{section.9.3}% 108
+\BOOKMARK [1][-]{section.9.4}{Some popular CNN models}{chapter.9}% 109
+\BOOKMARK [2][-]{subsection.9.4.1}{LeNet-5, AlexNet and VGG}{section.9.4}% 110
+\BOOKMARK [2][-]{subsection.9.4.2}{ResNet}{section.9.4}% 111
+\BOOKMARK [2][-]{subsection.9.4.3}{pre-act ResNet}{section.9.4}% 112
+\BOOKMARK [0][-]{chapter.10}{MgNet: a Unified Framework for CNN and MG}{}% 113
+\BOOKMARK [1][-]{section.10.1}{MgNet: a new network structure}{chapter.10}% 114
+\BOOKMARK [2][-]{subsection.10.1.1}{Initialization: feature space channels}{section.10.1}% 115
+\BOOKMARK [2][-]{subsection.10.1.2}{Extracted units: u and channels}{section.10.1}% 116
+\BOOKMARK [2][-]{subsection.10.1.3}{Poolings: +1 and R+1}{section.10.1}% 117
+\BOOKMARK [2][-]{subsection.10.1.4}{Data-feature mapping: A}{section.10.1}% 118
+\BOOKMARK [2][-]{subsection.10.1.5}{Feature extractors: B,i }{section.10.1}% 119
+\BOOKMARK [1][-]{section.10.2}{MgNet, pre-act ResNet, variants and generalizations}{chapter.10}% 120
+\BOOKMARK [1][-]{section.10.3}{Constrained linear data-feature mapping from MgNet to interpret ResNet}{chapter.10}% 121
+\BOOKMARK [0][-]{chapter.11}{Initializations and Normalizations}{}% 122
+\BOOKMARK [1][-]{section.11.1}{Data normalization in DNNs and CNNs}{chapter.11}% 123
+\BOOKMARK [2][-]{subsection.11.1.1}{Data normalization in DNNs}{section.11.1}% 124
+\BOOKMARK [2][-]{subsection.11.1.2}{Data normalization for images in CNNs}{section.11.1}% 125
+\BOOKMARK [1][-]{section.11.2}{Initialization for deep neural networks}{chapter.11}% 126
+\BOOKMARK [2][-]{subsection.11.2.1}{Xavier's Initialization with = id}{section.11.2}% 127
+\BOOKMARK [2][-]{subsection.11.2.2}{Variance analysis in backward propagation phase}{section.11.2}% 128
+\BOOKMARK [2][-]{subsection.11.2.3}{Kaiming's initialization}{section.11.2}% 129
+\BOOKMARK [1][-]{section.11.3}{Data normalization in CNNs}{chapter.11}% 130
+\BOOKMARK [1][-]{section.11.4}{Batch Normalization in DNN and CNN}{chapter.11}% 131
+\BOOKMARK [2][-]{subsection.11.4.1}{Ideas Behind the BN for DNN: Internal Covariate Shift in Training}{section.11.4}% 132
+\BOOKMARK [2][-]{subsection.11.4.2}{Practical batch normalization: assume i.i.d and add scale and shift }{section.11.4}% 133
+\BOOKMARK [2][-]{subsection.11.4.3}{Batch normalization for DNN}{section.11.4}% 134
+\BOOKMARK [2][-]{subsection.11.4.4}{Batch normalization: some ``modified" SGD training algorithm}{section.11.4}% 135
+\BOOKMARK [2][-]{subsection.11.4.5}{Final model with BN in DNN after training}{section.11.4}% 136
+\BOOKMARK [2][-]{subsection.11.4.6}{Batch Normalization for CNN}{section.11.4}% 137
+\BOOKMARK [2][-]{subsection.11.4.7}{Batch normalization for MgNet}{section.11.4}% 138

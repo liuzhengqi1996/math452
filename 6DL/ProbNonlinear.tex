@@ -1,0 +1,65 @@
+\section{Machine Learning Theory (Nonlinear Separators)}
+Here we being by considering what the notion of a `God-given' distribution that we are trying to learn really is in the context of classification. So let $X = \mathbb{R}^d$ denote the space of features (i.e. the image space) and $Y = \{1,...,k\}$ denote the set of labels. The fundamental object whose existence we must assume is a probability distribution over the space $X\times Y$. Below we give a few equivalent ways of describing such a probability distribution.
+
+\begin{lemma}
+ The three objects following are equivalent (note that we always consider the Borel $\sigma$-algebra when defining our notion of measure):
+ \begin{itemize}
+  \item A probability measure $\pi$ on $X\times Y$
+  \item A probability measure on $Y$, defined by probabilities $p_1,...,p_k$ with $0\leq p_i\leq 1$ and $\sum_{i=1}^k p_i = 1$, combined with $k$ \textit{conditional} probability measures $\pi_i$ on $X$, representing the conditional distribution given the $i$-th label
+  \item A probability measure on $\pi_X$ on $X$, combined with a family of conditional distributions on the labels, defined by $p_i(x)$ for each $i = 1,...,k$ and $x\in X$, which must satify $0\leq p_i(x)\leq 1$ and $\sum_{i=1}^k p_i(x) = 1$.
+ \end{itemize}
+
+\end{lemma}
+
+\begin{proof}
+ We will show how to get a probability measure on $X\times Y$ from each of the other two objects, the reverse is more technical. Let $A\subset X\times Y$. We define
+ \begin{equation}
+  \pi(A) = \sum_{i=1}^k p_i\pi_i(A\cap (X\times \{i\}))
+ \end{equation}
+ and
+ \begin{equation}
+  \pi(A) = \int_X \sum_{i:(x,i)\in A} p_i(x)d\pi_X
+ \end{equation}
+
+\end{proof}
+
+We call a distribution non-linearly separable if the label is uniquely determined by image.
+\begin{definition}
+ A distribution is called non-linearly separable if the following two equivalent conditions hold
+ \begin{itemize}
+  \item $\pi_i$ and $\pi_j$ have disjoint support for $i\neq j$
+  \item $p_i(x)$ is either equal to $0$ or $1$ for every $x\in X$
+ \end{itemize}
+
+\end{definition}
+
+We have the following lemma
+\begin{lemma}
+ If $\pi$ is non-linearly separable, then there exists a classification function $f_c:X\rightarrow Y$ such that
+ \begin{equation}
+  \mathbb{P}_{(x,y)\sim \pi}(f_c(x) = y) = 1.
+ \end{equation}
+ Equivalently, the true risk
+ \begin{equation}
+  R(f_c) = \mathbb{E}_{(x,y)\sim\pi}(\chi_{f_c(x) \neq y})
+ \end{equation}
+ is equal to $0$.
+
+\end{lemma}
+
+More generally, the labels may not be uniquely determined by the features. In this more general situation the true risk above may not be $0$. Consequently, we consider a situation where no label can be ruled out for any $x\in X$, which probably corresponds more closely to a realistic situation.
+
+\begin{definition}
+ A distribution $\pi$ is completely label-ambiguous if
+ $p_i(x) > 0$ for every $i$ and every $x\in X$.
+\end{definition}
+
+\begin{lemma}
+ If $\pi$ is label-ambiguous, the probability distributions $p_i(x)$ can be written as
+ \begin{equation}
+  \{p_i(x)\} = \text{softmax}(\Psi(x))
+ \end{equation}
+ for some function $\Psi:X\rightarrow \mathbb{R}^k$.
+\end{lemma}
+
+Note that the function $\Psi$ completely contains exactly the conditional probabilities over the labels given the images and it is this function which we are usually interested in learning (i.e. we don't care about the image distribution $\pi_X$).

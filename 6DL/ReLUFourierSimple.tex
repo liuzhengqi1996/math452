@@ -1,0 +1,223 @@
+\subsection{ReLU Fourier representation }%-- Simple version}
+
+We introduce the Taylor expansion of $e^{iz}$ with integral remainder as follows.
+\begin{lemma}
+For $|z|\leq c$, 
+\begin{equation}  
+e^{iz} -  iz -1
+= 
+- \int_{0}^c\left[(z - u)_+e^{iu} + (-z - u)_+e^{-iu} \right]du.
+\end{equation}  
+\end{lemma}
+\begin{proof}  
+By the Taylor expansion with integral remainder,
+\begin{equation} 
+e^{iz} = 1 + iz  - \int_0^z e^{iu}(z-u)du.
+\end{equation}
+Let $u_+=\max (u, 0)$ and $u_-=\min(u,0)$. Then, $u_-=-(-u)_+$ and 
+$$
+z-u=(z-u)_+ + (z-u)_-=(z-u)_+ - (u-z)_+.
+$$
+It follows that
+\begin{equation}
+\begin{split}
+\int_{0}^z (z-u)e^{iu} du=&\int_{0}^z (z-u)_+e^{iu} du + \int_{0}^z -(u-z)_+e^{iu} du
+\\
+=&\int_{0}^z (z-u)_+e^{iu} du + \int_{0}^{-z}  (-u-z)_+e^{-iu} du
+\\
+=&\int_{0}^c (z-u)_+e^{iu} du + (-u-z)_+e^{-iu} du.
+\end{split}
+\end{equation}
+Thus,
+\begin{equation}  
+e^{iz} - 1 - iz 
+= 
+-\int_{0}^c\left[(z - u)_+e^{iu} + (-z - u)_+e^{-iu} \right]du,
+\end{equation}  
+which completes the proof.
+\end{proof}
+
+Let $z=\omega\cdot x$, $u=\|\omega\|_{\ell_1}t$ and $\bar \omega={\omega\over \|\omega\|_{\ell_1}}$. If $\Omega$ is bounded, say $|x|\le T$, $|\bar \omega \cdot x|\le T$. There exists the following expansion for $e^{i\omega\cdot x}$.
+\begin{lemma}\label{lm:talorcomplex}
+If $|x|\le T$,
+\begin{equation}  
+e^{i\omega\cdot x} - 1 -  i\omega\cdot x 
+= 
+- \|\omega\|_{\ell_1}^2\int_{0}^T\left[(\bar \omega\cdot x - t)_+e^{i\|\omega\|_{\ell_1}t}
++ (-\bar \omega\cdot x - t)_+e^{-i\|\omega\|_{\ell_1}t} \right]dt.
+\end{equation} 
+Denote 
+$$
+D^\alpha = \partial_1^{\alpha_1}\partial_2^{\alpha_2}\cdots \partial_d^{\alpha_d},\quad \omega^\alpha = \omega_1^{\alpha_1}\omega_2^{\alpha_2}\cdots \omega_d^{\alpha_d},\quad \alpha!=\alpha_1!\alpha_2!\cdots \alpha_d!.
+$$
+\end{lemma}
+It follows  the following Taylor expansion with an integral remainder.
+\begin{lemma}\label{lm:probabilityexpan}
+Suppose $|x|\le T$. There exists
+\begin{equation}
+f(x) = f(0) + \nabla f(0)\cdot x
++  \int_{\{-1,1\}\times [0,T]\times \mathbb{R}^{d}}  g(x, \theta)\lambda(\theta)d\theta  
+\end{equation}  
+with  $g(x,\theta)$ and $\lambda(\theta)$ defined in \eqref{eq:straglam}.
+\end{lemma}
+\begin{proof}
+Since $
+ f(x) = \int_{\mathbb{R}^d} e^{i\omega\cdot x}\hat{f}(\omega)d\omega
+$
+and 
+$
+\nabla f(x)=\int_{\mathbb{R}^d} i^{|\alpha|}\omega  e^{i\omega\cdot x}\hat{f}(\omega)d\omega,
+$
+\begin{eqnarray}
+\nabla  f(0)\cdot x=\int_{\mathbb{R}^d} i\omega\cdot  x\hat{f}(\omega)d\omega.
+\end{eqnarray} 
+ It follows that
+\begin{equation}
+\nabla  f(0) \cdot x=i \int_{\mathbb{R}^d} \omega\cdot x\hat{f}(\omega)d\omega
+=  \int_{\mathbb{R}^d} i\omega\cdot x\hat{f}(\omega)d\omega.
+\end{equation} 
+Let $\hat{f}(\omega)=|\hat{f}(\omega)|e^{ib(\omega)}$. Then, $e^{i\|\omega\|_{\ell_1}t}\hat{f}(\omega) = |\hat{f}(\omega)|e^{i(\|\omega\|_{\ell_1}t + b(\omega))}$.
+By Lemma \ref{lm:talorcomplex},
+\begin{equation}\label{eq:fftaylor}
+\begin{split}
+&f(x) - f(0) - \nabla  f(0) \cdot x
+\\
+= &\int_{\mathbb{R}^d} \big (e^{i\omega\cdot x} - 1 - i\omega\cdot x \big )\hat{f}(\omega)d\omega.
+\\
+=&{\rm Re} \bigg (-\int_{\mathbb{R}^d} \int_{0}^T\left[(\bar \omega\cdot x - t)_+e^{i\|\omega\|_{\ell_1}t}
++ (-\bar \omega\cdot x - t)_+e^{-i\|\omega\|_{\ell_1}t} \right]\hat{f}(\omega)\|\omega\|_{\ell_1}^{2}dt d\omega\bigg )
+\\
+=& \int_{\{-1,1\}}\int_{\mathbb{R}^d} \int_{0}^T (z\bar \omega\cdot x - t)_+ s(zt,\omega)  |\hat{f}(\omega)|\|\omega\|_{\ell_1}^{2}dtd\omega dz
+\end{split}
+\end{equation}
+with $\int_{\{-1, 1\}} r(z) dz = r(-1) + r(1)$ and
+\begin{equation} 
+s(zt,\omega)= -\cos(z\|\omega\|_{\ell_1}t + b(\omega)) 
+\end{equation} 
+Define $G=\{-1,1\}\times [0,T]\times \mathbb{R}^{d}$, $\theta=(z, t, \omega)\in G$,
+\begin{equation}\label{eq:straglam}
+g(x,\theta)= (z\bar \omega\cdot x - t)_+ {\rm sgn} s(zt,\omega),\qquad \lambda(\theta)={\rho(\theta)\over 
+\int_{\{-1,1\}\times [0,T]\times \mathbb{R}^{d}} \rho(\theta)d\theta}.
+\end{equation}
+with $\rho(\theta) = |s(zt,\omega)||\hat{f}(\omega)|\|\omega\|_{\ell_1}^{2}$. 
+
+Then \eqref{eq:fftaylor} can be written as 
+\begin{equation}\label{eq:reluintegral}
+f(x) = f(0) +  \nabla  f(0) \cdot x
++  \int_{\{-1,1\}\times [0,T]\times \mathbb{R}^{d}}  g(x, \theta)\lambda(\theta)d\theta,  
+\end{equation}   
+which completes the proof.
+\end{proof}
+
+An application of the Monte Carlo method in Lemma \ref{MC} to the integral \eqref{eq:reluintegral} gives the following estimate.
+\begin{theorem} 
+Suppose $|x|\le T$ and 
+$$
+ \int_{\mathbb{R}^{d}} |\hat{f}(\omega)|\|\omega\|_{\ell_1}^{2} d\omega<\infty.
+$$
+There exist  $\|\bar \omega_j\|_{\ell_1}=1$, $t\in [0,T]$ such that 
+$$
+f_n(x)= f(0) + \nabla  f(0) \cdot x  + {1\over n}\sum_{j=1}^{n} (\bar \omega_j\cdot x - t_j)_+
+$$ 
+satisfies the following estimate 
+\begin{equation}
+\|f - f_n \|_{L^2(\Omega)} \leq C n^{-{1\over 2}}.
+\end{equation} 
+%\begin{equation}
+%\|D^\beta (f(x)- f_n(x))\|_{L^2(\Omega)}\le \sqrt{2^{m-k-2}(2m-k)\over k!(m-k)!}|\Omega|^{1/2} n^{-{1\over 2}-{1\over d}},\quad |\beta|=k\le m.
+%\end{equation}
+\end{theorem}
+
+\iffalse
+\noindent\textbf{A modified analysis using stratified sampling}
+
+According to \eqref{eq:straglam}, the main ingredient $(z\bar \omega\cdot x - t)_+$ of $g(x,\theta)$  only includes the direction $\bar\omega$ of $\omega$ which belongs to a bounded domain  $\mathbb{S}^{d-1}$. Thanks to the continuity of $(z\bar \omega\cdot x - t)_+$ with respect to $(z, \bar\omega, t)$ and the boundedness of $\mathbb{S}^{d-1}$,
+the application of the stratified sampling to the residual term of the Taylor expansion leads to the following approximation property.
+\begin{theorem}\label{est:stratify}
+Suppose $|x|\le T$ and 
+$$
+ \int_{\mathbb{R}^{d}} |\hat{f}(\omega)|\|\omega\|_{\ell_1}^{2} d\omega<\infty.
+$$
+There exist $\beta_j\in [-2^d,2^d]$, $\|\bar \omega_j\|_{\ell_1}=1$, $t\in [0,T]$ such that 
+$$
+f_n(x)= f(0) + \nabla  f(0) \cdot x  + {1\over n}\sum_{j=1}^{n}\beta_j (\bar \omega_j\cdot x - t_j)_+
+$$ 
+satisfies the following estimate 
+\begin{equation}
+\|f - f_n \|_{L^2(\Omega)} \leq C n^{-{1\over 2}-{1\over d}}.
+\end{equation} 
+%\begin{equation}
+%\|D^\beta (f(x)- f_n(x))\|_{L^2(\Omega)}\le \sqrt{2^{m-k-2}(2m-k)\over k!(m-k)!}|\Omega|^{1/2} n^{-{1\over 2}-{1\over d}},\quad |\beta|=k\le m.
+%\end{equation}
+\end{theorem}
+\begin{proof}
+By Lemma \ref{lem:stratifiedapprox}, for any decomposition $G=\cup_{i=1}^M G_i$, there exist $\{\theta_i\}_{i=1}^n$ and $\{\beta_i\}_{i=1}^n\in [0,1]$ such that 
+\begin{equation}
+\|  f - f_n\|_{L^2(\Omega)} = \|  r - r_{n}\|_{L^2(\Omega)} \leq {1\over n^{1/2}}\max_{1\le j\le M}\sup_{\theta_{j},\theta_{j}'\in G_j} \|   g(x,\theta_j) - g(x,\theta_j') \|_{L^2(\Omega)} 
+\end{equation}
+with 
+$$
+f_n(x)= f(0) +  \nabla  f(0) \cdot x + r_{n}(x), \qquad r_{n}(x)={1\over n}\sum_{j=1}^{n}\beta_j (\bar \omega_j\cdot x - t_j)_+, 
+$$
+$$
+r(x)=\int_{\{-1,1\}\times [0,T]\times \mathbb{R}^{d}}  g(x, \theta)\lambda(\theta)d\theta.
+$$
+Consider a particular decomposition $G=\cup_{i=1}^M G_i$ as follows. 
+The variable $z$ is in the set $\{-1,1\}$, which can be divided into two subsets $\{-1\}$ and $\{1\}$. 
+Given a positive integer $n$, for the random variable $t$, the interval  $ [0,T]$ can be divided into $n_t$ subintervals $\{G_i^t\}_{i=1}^{n_t}$ such that 
+$$
+|t-t'|<{1\over 2}n^{-{1\over d}}\quad t,t'\in G_i^t,\quad 1\leq i\leq n_t
+$$ 
+for $n_t>2\lceil T  n^{1\over d}\rceil$. 
+For variable $\bar \omega=\omega/\|\omega\|_{\ell_1}\in \mathbb{S}^{d-1}$ where $\mathbb{S}^{d-1}=\{\bar \omega\in \mathbb{R}^d: \|\bar \omega\|_{\ell_1}=1\}$. Note that $\mathbb{S}^{d-1}$ can be divided into $n_\alpha$ subdomains $\{G_i^s \}_{i=1}^{n_s}$ such that
+$$
+\|\bar \omega- \bar \omega'\|_{\ell_1}\leq {1\over 2}n^{-{1\over d}}\qquad \bar \omega, \bar \omega' \in G_i^s,\quad 1\leq i\leq n_s
+$$
+for $(2n^{1\over d})^{d-1}\leq n_s\leq \lceil (5n^{1\over d})^{d-1}\rceil$ \cite{klusowski2016uniform}.
+Then 
+$$
+G=\displaystyle \cup \{G_{ijk\ell}: 1\leq i\leq 2,\ 1\leq j\leq n_t,\ 1\leq k\leq n_s,\ 1\le \ell\le 2\}
+$$
+with 
+\begin{equation}
+G_{ijk\ell} = \{(z, t, \omega): z=(-1)^i,\ t\in G_j^t, \bar \omega \in G_k^s,\ {\rm sgn} s(zt,\omega)=(-1)^\ell\}.
+\end{equation}
+Denote this decomposition of $G$ by $G=\cup_{i=1}^{M} G_i$ with $M=4n_sn_t\le 2^{d}n$. For each $G_i$,
+\begin{equation}
+z=z',\ |t-t'|<{1\over 2}n^{-{1\over d}},\ \|\bar \omega  - \bar \omega'\|_{\ell^1}<{1\over 2}n^{-{1\over d}}\qquad \forall \theta=(z, t, \omega),\ \theta'=(z', t', \omega')\in G_i.
+\end{equation}
+For any $\theta_i, \theta'_i\in G_i$ and $|\alpha |=1$,  
+$$
+| g(x,\theta_i) - g(x,\theta_i') | =  | \bar\omega  -   \bar\omega' |\le n^{-{1\over d}}.
+$$  
+Thus, there exist $\theta_{i,j}$ such that
+\begin{equation}
+\| f - f_n\|_{L^2(\Omega)} \le C  n^{-{1\over 2}-{1\over d}}.
+\end{equation}
+with
+$$
+f_n(x)=  f(0) + \nabla f(0) \cdot x + {1\over  n}\sum_{j=1}^{n}\beta_j (\bar \omega_j\cdot x - t_j)_+
+$$ 
+with $\beta_j\in [-2^d,2^d]$,
+which completes the proof.
+\end{proof}
+
+
+\fi
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,337 @@
+\section{Approximation Rates for ReLU$^k$ Networks}\label{relu-result-section}
+In this section, we consider approximation by neural networks with activation function $$\sigma_k(x) = [\max(0,x)]^k$$ for $k=\mathbb{Z}_{\geq 0}$ (here we set $0^0 = 0$, i.e. $\sigma_0(x)$ is the Heaviside function). Specifically, we consider approximating a function $f$ by elements of the set
+\begin{equation}
+ \Sigma^k_{n} = \left\{\sum_{i=1}^n a_i\sigma_k(\omega_i\cdot x + b_i):~\omega_i\in S^{d-1},~b_i\in \mathbb{R},~a_i\in\mathbb{C}\right\},
+\end{equation}
+where we allow the coefficients $a_i$ to have arbitrarily large $\ell^1$-norm.
+
+We will use Lemma \ref{fourier-representation-lemma} to obtain an improved approximation rate for such networks on the spectral Barron space $\mathcal{B}^m(\Omega)$. To do this, we introduce a multiscale approximation of the complex exponentials $e^{2\pi {\mathrm{i}\mkern1mu} x}$ using splines. We begin by recalling some facts about spline interpolation which will be important in the following analysis. We will refer to \cite{devore1993constructive} for most of this material.
+
+Instead of working directly with $\sigma_k$ it is much more convenient to introduce the cardinal B-splines
+\begin{equation}\label{card-b-splines-def}
+ N_k(x) = \frac{1}{k!}\sum_{i=0}^{k+1}(-1)^i\binom{k+1}{i}\sigma_k(x-i) \in \Sigma_{k+1}^k,
+\end{equation}
+which are compactly supported on $[0,k+1]$. 
+
+Let $\mathcal{S}^k_\lambda$ denote the Schoenberg space of piecewise degree $k$ splines on $\mathbb{R}$ with knots at $\lambda \mathbb{Z}$. It is well known that every spline $S\in\mathcal{S}^k_1$ can be written as
+\begin{equation}\label{eq_963}
+ S(x) = \sum_{j=-\infty}^\infty c_j(S)N_k(x-j),
+\end{equation}
+where $c_j$ are the de Boor-Fix functionals (see \cite{devore1993constructive}, section 5.3). Since the knots of the spline are all evenly spaced, the functionals $c_j(S)$ are all translations of the functional $c_0$, i.e.
+\begin{equation}\label{eq_967}
+ c_j(S) = c_0(S(\cdot-j)).
+\end{equation}
+Moreover, consider change the spacing between the knots, i.e. consider $\mathcal{S}^k_\lambda$. Then, if $S\in \mathcal{S}^k_\lambda$, $S(\lambda x)\in \mathcal{S}^k_1$ and equations \eqref{eq_963} and \eqref{eq_967} imply that
+\begin{equation}
+ S(\lambda x) = \sum_{j=-\infty}^\infty c_j(S(\lambda\cdot))N_k(x-j),
+\end{equation}
+so that
+\begin{equation}
+ S(x) = \sum_{j=-\infty}^\infty c_{j,\lambda}(S)N_k(\lambda^{-1}x-j),
+\end{equation}
+where the functionals $c_{j,\lambda}$ are given by $c_{j,\lambda}(S) = c_0(S(\lambda(\cdot - j)))$.
+
+Now, we see from \cite{devore1993constructive}, Lemma 4.1 of Chapter 5, that
+\begin{equation}\label{eq_983}
+ |c_{j,\lambda}(S)| \leq C\|S\|_{L^\infty([\lambda j, \lambda (j+k+1)])},
+\end{equation}
+for a fixed constant $C$. Thus, by the Hahn-Banach theorem, we can extend the de Boor-Fix functionals $c_{j,\lambda}$ to functionals $\gamma_{j,\lambda}$ on $L^\infty([\lambda j, \lambda (j+k+1)])$ which satisfy the same bound. This allows us to define the quasi-interpolation operators
+\begin{equation}\label{quasi-interpolation}
+ Q_\lambda(f) = \sum_{j=-\infty}^\infty \gamma_{j,\lambda}(f)N_k(\lambda^{-1}x-j),
+\end{equation}
+which are bounded in $L^\infty$ (uniformly in $\lambda$) and satisfy $Q(S) = S$ for all splines $S\in \mathcal{S}^k_\lambda$ (see \cite{devore1993constructive}, section 5.4). Note that here and in what follows, we suppress the dependence on $k$ of the operators $Q_\lambda$ and the de Boor-Fix functions $\gamma_{j,\lambda}$ to simplify notation.
+
+We are now in the position to introduce the following multiscale piecewise degree $k$ approximation to $e^{2\pi {\mathrm{i}\mkern1mu}   x}$. We write
+\begin{equation}\label{multiscale-approx}
+ e^{2\pi {\mathrm{i}\mkern1mu}  x} = Q_{2^{-1}}(e^{2\pi {\mathrm{i}\mkern1mu}   x}) + \sum_{l=2}^\infty [Q_{2^{-l}}(e^{2\pi {\mathrm{i}\mkern1mu}   x}) - Q_{2^{-(l-1)}}(e^{2\pi {\mathrm{i}\mkern1mu}   x})] = \sum_{l=1}^\infty h_l(x),
+\end{equation}
+where
+\begin{equation}
+ h_l(x) = Q_{2^{-l}}(e^{2\pi {\mathrm{i}\mkern1mu}   x}) - Q_{2^{-(l-1)}}(e^{2\pi {\mathrm{i}\mkern1mu}   x}),
+\end{equation}
+for $l > 1$ and $h_1(x) = Q_{2^{-1}}(e^{2\pi {\mathrm{i}\mkern1mu}   x})$. Since we clearly have $\mathcal{S}^k_{2^{-(l-1)}} \subset \mathcal{S}^k_{2^{-l}}$, we see that
+$$Q_{2^{-l}}(Q_{2^{-(l-1)}}(e^{2\pi {\mathrm{i}\mkern1mu}   x})) = Q_{2^{-(l-1)}}(e^{2\pi {\mathrm{i}\mkern1mu}   x}),$$ 
+so that we can rewrite $h_l$ as
+
+\begin{equation}\label{eq_995}
+h_l(x) = Q_{2^{-l}}\left(e^{2\pi {\mathrm{i}\mkern1mu}   x} - Q_{2^{-(l-1)}}(e^{2\pi {\mathrm{i}\mkern1mu}   x})\right) = Q_{2^{-l}}(e_{l-1}(x)) = \sum_{j=-\infty}^\infty \alpha_{j,l}N_k(2^{l}x-j),
+\end{equation}
+where the error $e_{l-1}$ is given by $e_{l-1}(x) = e^{2\pi {\mathrm{i}\mkern1mu}   x} - Q_{2^{-(l-1)}}(e^{2\pi {\mathrm{i}\mkern1mu}   x})$ and the coefficients $\alpha_{j,l}$ are given by $\alpha_{j,l} = \gamma_{j,2^{-l}}(e_{l-1})$.
+
+We have the following lemma concerning this this piecewise degree $k$ approximation of $e^{2\pi {\mathrm{i}\mkern1mu}   x}$.
+\begin{lemma}\label{multilevel-spline}
+ The above expansion of $e^{2\pi {\mathrm{i}\mkern1mu} x}$ has the following properties.
+ \begin{itemize}
+  \item $\|e_l\|_{\infty} \lesssim 2^{-(k+1)l}$.
+  \item The coefficients $\alpha_{j,l}$ in equation \eqref{eq_995} satisfy $|\alpha_{j,l}| \lesssim 2^{-(k+1)l}$.
+  \item The series in \eqref{multiscale-approx} converges in $W^{m,\infty}(\mathbb{R})$ for $0 \leq m \leq k$.
+ \end{itemize}
+\end{lemma}
+Note that the implied constants in the above lemma and the following proof only depend upon $k$ and not upon $l$ or $j$.
+\begin{proof}
+ The first statement follows immediately from Theorem 4.5 in \cite{devore1993constructive}, since $e_l(x) = e^{2\pi {\mathrm{i}\mkern1mu}   x} - Q_{2^{-l}}(e^{2\pi {\mathrm{i}\mkern1mu}   x})$ and $e^{2\pi {\mathrm{i}\mkern1mu} x}\in W^{k+1,\infty}(\mathbb{R})$.
+ 
+%  Let $z\in \mathbb{R}$. We will show that $|e_{l-1}(z)| \lesssim 2^{-(k+1)l}$. Choose an index $j$ so that $z\in I^k_{l,j}:=[2^{-l}j, 2^{-l}(j+k+1)]$. 
+%  
+%  We first note that
+%  \begin{equation}\label{eq_1018}
+%   e_l(x) = e^{2\pi {\mathrm{i}\mkern1mu}   x} - \sum_{s=1}^{l}h_s(x) = e_{l-1}(x) - Q_{2^{-l}}(e_{l-1}(x)).
+%  \end{equation}
+%  Since $\|e^{2\pi {\mathrm{i}\mkern1mu} x}\|_{W^{k+1,\infty}(\mathbb{R})}\lesssim 1$ (here the constant only depends upon $k$), we get
+%  \begin{equation}
+%   \|e^{2\pi {\mathrm{i}\mkern1mu}   x} - T_{l,j}^k(x)\|_{L^\infty(I^k_{l,j})} \lesssim |I^k_{l,j}|^{k+1}\lesssim 2^{-(k+1)l},
+%  \end{equation}
+%  where $T_{l,j}^k(x)$ is the degree $k$ Taylor polynomial of $e^{2\pi {\mathrm{i}\mkern1mu} x}$ centered at the left endpoint $2^{-l}j$. We thus obtain
+%  \begin{equation}
+%   \left\|e_{l-1}(x) - S_{l,j}^k(x)\right\|_{L^\infty(I^k_{l,j})} \lesssim 2^{-(k+1)l},
+%  \end{equation}
+%  where
+%  \begin{equation}
+%   S_{l,j}^k(x) = T_{l,j}^k(x) - \sum_{s=1}^{l-1}h_s(x) \in \mathcal{S}^k_{2^{-l}},
+%  \end{equation}
+%  since $T_{l,j}^k(x)$ is a polynomial and $h_s(x) \in \mathcal{S}^k_{2^{-s}}\subset \mathcal{S}^k_{2^{-l}}$ (since $s < l$).
+%  
+%  As $Q_{2^{-l}}$ leaves the space $\mathcal{S}^k_{2^{-l}}$ invariant, i.e. $S_{l,j}^k(x) = Q_{2^{-l}}(S_{l,j}^k(x))$, we obtain
+%  \begin{equation}
+%  \begin{split}
+%   \|e_{l-1}(x) - Q_{2^{-l}}(e_{l-1}(x))\|_{L^\infty(I^k_{l,j})} &\leq \|e_{l-1}(x) - S_{l,j}^k(x)\|_{L^\infty(I^k_{l,j})} + \|Q_{2^{-l}}(S_{l,j}^k(x) - e_{l-1}(x))\|_{L^\infty(I^k_{l,j})} \\
+%   & \leq (1 + \|Q_{2^{-l}}\|_{L^\infty\rightarrow L^\infty})\|e_{l-1}(x) - S_{l,j}^k(x)\|_{L^\infty(I^k_{l,j})} \lesssim 2^{-(k+1)l}.
+%   \end{split}
+%  \end{equation}
+%  Here it is important to note that the operator norm $\|Q_{2^{-l}}\|_{L^\infty\rightarrow L^\infty}$ is bounded independently of $l$ since the quasi-interpolation operators $Q_\lambda$ are bounded uniformly in $\lambda$.
+%  
+%  By equation \eqref{eq_1018} we then obtain
+%  \begin{equation}
+%   \|e_l(x)\|_{L^\infty(I^k_{l,j})} = \|e_{l-1}(x) - Q_{2^{-l}}(e_{l-1}(x))\|_{L^\infty(I^k_{l,j})} \lesssim 2^{-(k+1)l}.
+%  \end{equation}
+%  Since $z\in I^k_{l,j}$, we thus have $|e_{l}(z)| \lesssim 2^{-(k+1)l}$ and the first statement follows.
+ 
+ For the second statement, we note that
+ \begin{equation}
+  |\alpha_{j,l}| = |\gamma_{j,2^{-l}}(e_{l-1})| \leq C\|e_{l-1}\|_{L^\infty(\mathbb{R})} \lesssim 2^{-(k+1)(l-1)} \lesssim 2^{-(k+1)l},
+ \end{equation}
+ where the first inequality is due to the fact that $\gamma_{j,2^{-j}}$ is a Hahn-Banach extension of the de Boor-Fix functional $c_{j,2^{-j}}$ which satisfies \eqref{eq_983}.
+ 
+ Finally, note that since $\|e_l\|_{L^\infty(\mathbb{R})} \lesssim 2^{-(k+1)l}\rightarrow 0$, we have that the series in \eqref{multiscale-approx} converges in $L^\infty(\mathbb{R})$ to $e^{2\pi {\mathrm{i}\mkern1mu} x}$. We now claim that
+ \begin{equation}
+  \|h_l\|_{W^{m,\infty}(\mathbb{R})} \lesssim 2^{-(k+1-m)l}.
+ \end{equation}
+ First, we note that simply by taking derivatives, we get
+ \begin{equation}
+  \|N_p(2^lx-j)\|_{W^{m,\infty}(\mathbb{R}, dx)} \lesssim 2^{ml}.
+ \end{equation}
+ Second, the B-splines $N_k(2^lx-j)$ are compactly supported and each point $x$ is covered by at most $p+1$ of them. Hence
+ \begin{equation}
+  \|h_l\|_{W^{m,\infty}} = \left\|\sum_{j=-\infty}^\infty \alpha_{j,l}N_k(2^{l}x-j)\right\|_{W^{m,\infty}} \leq (k+1)\sup_{j}|\alpha_{j,l}|\|N_k(2^lx-j)\|_{W^{m,\infty}(\mathbb{R}, dx)} \lesssim 2^{-(k+1-m)l},
+ \end{equation}
+ since $\alpha_{j,l}\lesssim 2^{-(k+1)l}$.
+ 
+ This means that if $m\leq k$, then $\sum_{l=1}^\infty \|h_l\|_{W^{m,\infty}}$ is summable and hence the sum in \eqref{multiscale-approx} converges in $W^{m,\infty}(\mathbb{R})$. Clearly, its limit must be the same as the limit in $L^\infty$ and thus it converges to $e^{2\pi {\mathrm{i}\mkern1mu} x}$.
+\end{proof}
+
+Combining the multiscale expansion \eqref{multiscale-approx} with Lemma \ref{fourier-representation-lemma} and some ideas from \cite{makovoz1996random}, we obtain the following theorem.
+
+\begin{theorem}\label{piecewise-poly-approx-theorem}
+ Let $\Omega = [0,1]^d$ and $f\in \mathcal{B}^s(\Omega)$ for $s \geq \frac{1}{2}$. Let $k \in \mathbb{Z}_{\geq 0}$ and $m\geq 0$, with $m\leq s-\frac{1}{2}$ and $m < k + \frac{1}{2}$. Then for $n\geq 2$,
+ \begin{equation}\label{bound-equation}
+  \inf_{f_n\in \Sigma^k_{n}}\|f - f_n\|_{H^m(\Omega)} \lesssim \|f\|_{\mathcal{B}^s}n^{-t}\log(n)^q,
+ \end{equation}
+ where the exponent $t$ is given by
+ $$t = \min\left(\frac{1}{2}+\frac{2(s-m)-1}{2(d+1)}, k-m+1\right) = \begin{cases}
+            \frac{1}{2}+\frac{2(s-m)-1}{2(d+1)} & \text{if}~s < (d+1)\left(k-m+\frac{1}{2}\right) + m + \frac{1}{2} \\
+            k-m+1 & \text{if}~s \geq (d+1)\left(k-m+\frac{1}{2}\right) + m + \frac{1}{2}
+                                        \end{cases}
+$$
+ and $q$ is given by $$q = \begin{cases}
+            0 & \text{if}~s < (d+1)\left(k-m+\frac{1}{2}\right) + m + \frac{1}{2} \\
+            1 & \text{if}~s > (d+1)\left(k-m+\frac{1}{2}\right) + m + \frac{1}{2}\\
+            1 + (k-m+\frac{1}{2}) & \text{if}~s = (d+1)\left(k-m+\frac{1}{2}\right) + m + \frac{1}{2}
+           \end{cases}.$$
+\end{theorem}
+Before beginning the proof, we remark that all of the implied constants in the $\eqsim$, $\gtrsim$, and $\lesssim$ can be seen to depend only on $s,k,m,d,L$ and $\delta$ ($L$ and $\delta$ chosen during the course of the proof), but not on $f$ or $n$. Further, we remark that the suppressed constant may depend exponentially on the dimension, i.e. as $A^d$ for some $A$. Finally, note that the maximal possible rate of $s-m+1$, which is achieved for sufficiently large $s$, is exactly the best achievable rate in one dimension. In Theorem \ref{relu-lower-bound} we use this fact the show that the rate of $s-m+1$ cannot be improved upon no matter how large $s$ is. It is an open problem whether such a rate can be obtained with less smoothness.
+
+Comparing with other results in the literature, we see for instance that the results in \cite{klusowski2018approximation} apply to the cases $k=1,m=0$ (ReLU) and $k=2,m=0$ (ReLU$^2$). Furthermore, in \cite{CiCP-28-1707}, the general case $0\leq m\leq k$ is considered. In all of these cases the rate previously obtained was $O(n^{-\frac{1}{2}-\frac{1}{d}})$, while the rates in Theorem \ref{piecewise-poly-approx-theorem} are $O(n^{-\frac{1}{2}-\frac{2k+1}{2(d+1)}})$, which are significantly better for large $k$ and large $d$. However, the rates in Theorem \ref{piecewise-poly-approx-theorem} were obtained without the $\ell^1$-norm bound on the coefficients as in \cite{klusowski2018approximation} and \cite{CiCP-28-1707}. It is open whether the same rates can also be obtained with $\ell^1$-bounded  coefficients.
+
+\begin{proof}
+   Choose $L > 1$. Using Corollary \ref{fourier-representation-lemma}, we see that there exists an $a\in L^{-1}[0,1]^d$ and coefficients $a_\xi$ such that
+ \begin{equation}\label{eq_675}
+  f(x) = \sum_{\xi\in L^{-1}\mathbb{Z}^d} a_\xi (1+|a+\xi|)^{-s}e^{2\pi {\mathrm{i}\mkern1mu}  (a + \xi)\cdot x}
+ \end{equation}
+ and $\sum |a_\xi|\lesssim \|f\|_{\mathcal{B}^s}$. Here the suppressed constant depends potentially exponentially on the dimension, by the remarks in the previous section.
+ 
+ We expand $e^{2\pi {\mathrm{i}\mkern1mu}   (a+\xi)\cdot x}$ using \eqref{multiscale-approx} to get
+ \begin{equation}
+  e^{2\pi {\mathrm{i}\mkern1mu}  (a + \xi)\cdot x} = \sum_{l=1}^\infty h_l((a + \xi)\cdot x),
+ \end{equation}
+ which holds in $W^{m,\infty}(\mathbb{R}^d)$ and thus in $H^m(\Omega)$ since $\Omega$ is bounded. 
+ 
+ Expanding $h_l$ using equation \eqref{eq_995} and plugging this into equation \eqref{eq_675}, we obtain (in $H^m(\Omega)$)
+ \begin{equation}
+  f(x) = \sum_{\xi\in L^{-1}\mathbb{Z}^d}\sum_{l=1}^\infty \sum_{j=-\infty}^\infty a_\xi \alpha_{j,l} (1+|a+\xi|)^{-s}N_k(2^l(a+\xi)\cdot x - j).
+ \end{equation}
+ 
+ Now, since $x\in \Omega$, $\Omega$ is a bounded set, and $N_k$ is compactly supported, the number of non-zero terms in the inner-most sum above is finite. Indexing the values of $j$ for which $N_k(2^l(a+\xi)\cdot x - j)$ is non-zero for $x\in \Omega$ as $j_1,...,j_{n_{\xi, l}}$, we get
+ \begin{equation}
+  f(x) = \sum_{\xi\in L^{-1}\mathbb{Z}^d}\sum_{l=1}^\infty \sum_{p=1}^{n_{\xi,l}} a_\xi \alpha_{j_p,l} (1+|a+\xi|)^{-s} \psi_{\xi,l,p}(x),
+ \end{equation}
+ where
+ \begin{equation}\label{psi-definition}
+  \psi_{\xi,l,p}(x) = N_k(2^l(a+\xi)\cdot x - j_p).
+ \end{equation}
+ A straightforward calculation utilizing the compact support of $N_k$ implies that
+ \begin{equation}\label{eq_454}
+  \|\psi_{\xi,l,p}\|_{H^m(\Omega)} \lesssim 2^{l\left(m-\frac{1}{2}\right)}(1 + |\xi|)^{\left(m-\frac{1}{2}\right)}.
+ \end{equation}
+ Further, note that the number of terms $n_{\xi,l}$ satisfies
+ \begin{equation}\label{eq_452}
+  n_{\xi,l} \lesssim 2^l(1 + |\xi|).
+ \end{equation}
+This follows since for $x\in \Omega$, $y = 2^l(a + \xi)\cdot x$ takes on values in an interval of length at most $2^l|a + \xi|\text{diam}(\Omega)$ and $N_k$ has compact support of size $k+1$.
+
+Let $\delta > 0$ to be specified later. We proceed to write
+\begin{equation}\label{eq_458}
+  f(x) = \sum_{\xi\in L^{-1}\mathbb{Z}^d}\sum_{l=1}^\infty \sum_{p=1}^{n_{\xi,l}} a_\xi 2^{-l(1+\delta)}(1+|\xi|)^{-1} \phi_{\xi,l,p}(x),
+ \end{equation}
+ where 
+ \begin{equation}\label{eq_463}
+  \phi_{\xi,l,p}(x) = 2^{l(1+\delta)}(1+|\xi|)\alpha_{j_p,l} (1+|a+\xi|)^{-s} \psi_{\xi,l,p}(x).
+ \end{equation}
+ Using \eqref{eq_463} and \eqref{eq_454} combined with the bound on $|\alpha_{j,l}|$ from Lemma \ref{multilevel-spline}, we calculate
+ \begin{equation}\label{eq_470}
+  \|\phi_{\xi,l,p}\|_{H^m(\Omega)} \lesssim 2^{-l(k-m+\frac{1}{2}-\delta)}(1+|\xi|)^{m-s+\frac{1}{2}}.
+ \end{equation}
+ 
+ We now observe that  by \eqref{eq_452} the $\ell^1$ norm of the coefficients of the $\phi_{\xi,l,p}$ in \eqref{eq_458} is bounded, namely
+ \begin{equation}
+ \begin{split}
+  \sum_{\xi\in L^{-1}\mathbb{Z}^d}\sum_{l=1}^\infty \sum_{p=1}^{n_{\xi,l}} |a_\xi 2^{-l(1+\delta)}(1+|\xi|)^{-1}| =
+  \sum_{\xi\in L^{-1}\mathbb{Z}^d}|a_\xi|\sum_{l=1}^\infty n_{\xi,l}2^{-l(1+\delta)}(1+|\xi|)^{-1} &\lesssim \sum_{\xi\in L^{-1}\mathbb{Z}^d}|a_\xi|\sum_{l=1}^\infty 2^{-l\delta} \\
+  & \lesssim \delta^{-1}\|f\|_{\mathcal{B}^m(\Omega)}.
+  \end{split}
+ \end{equation}
+ We can now apply Theorem 1 in \cite{makovoz1996random} (note that this theorem still applies even though the coefficients in \eqref{eq_458} are potentially complex) to $f$ to conclude that there exists an
+ \begin{equation}
+  f_n = \sum_{i=1}^n a_i\phi_{\xi_i,l_i,p_i}(x)
+ \end{equation}
+ with $\sum_{i=1}^n|a_i| \lesssim \|f\|_{\mathcal{B}^s(\Omega)}$ such that
+ \begin{equation}\label{bound_equation}
+  \|f - f_n\|_{H^m(\Omega)} \lesssim \delta^{-1}\|f\|_{\mathcal{B}^s(\Omega)}\epsilon_n(\Phi)n^{-\frac{1}{2}},
+ \end{equation}
+ where $\Phi = \{\phi_{\xi,l,p}\}$ and $\epsilon_n(\Phi) = \inf\{\epsilon > 0:\Phi~\text{is covered by $n$ balls of diameter $\epsilon$}\}$ is the $n$-covering width of $\Phi$. 
+ 
+ By choosing $\delta = k-m+\frac{1}{2} > 0$ we obtain the result at the endpoint $s = m+\frac{1}{2}$ (where the desired rate is $O(n^{-\frac{1}{2}})$) since by \eqref{eq_470} $$\epsilon_n(\Phi)\leq \epsilon_1(\Phi)\leq \sup \|\phi_{\xi,l,p}\|_{H^m(\Omega)}\lesssim 1.$$
+ 
+ For larger $s$ we need to obtain a sharper bound on $\epsilon_n(\Phi)$. We do this by considering the covering number 
+ \begin{equation}
+  N_\Phi(\epsilon) = \min\{n:~\text{there is a covering of $\Phi$ by $n$ balls of diameter $\epsilon$}\},
+ \end{equation}
+ and noting that by definition $\epsilon_n(\Phi) = \inf\{\epsilon > 0: N_\Phi(\epsilon) \leq n\}$. 
+ 
+ Given $\epsilon > 0$, we cover the set $\Phi$ by a single ball of radius $\frac{\epsilon}{2}$ centered at the origin, and cover each of the remaining elements with additional balls. This implies that
+ \begin{equation}
+  N_\Phi(\epsilon) \leq 1 + \left|\left\{\phi_{\xi,l,p}: \|\phi_{\xi,l,p}\|_{H^m(\Omega)} > \frac{\epsilon}{2}\right\}\right|.
+ \end{equation}
+ We proceed to count the number of $\phi_{\xi,l,p}$ with large norm. This process is messy but relatively straightforward.
+ 
+ By \eqref{eq_470} we must count the indices $\xi\in L^{-1}\mathbb{Z}^d,l\in \mathbb{Z}_{>0}$ and $s=1,...,n_{\xi,l}$ for which
+ \begin{equation}
+  \epsilon \lesssim 2^{-l(k-m+\frac{1}{2}-\delta)}(1+|\xi|)^{m-s+\frac{1}{2}}.
+ \end{equation}
+ We observe that this condition implies that we must choose $\xi$ so that $(1+|\xi|)^{m-s+\frac{1}{2}} \gtrsim \epsilon$ and $l$ so that
+ \begin{equation}\label{eq_506}
+  2^{l(k-m+\frac{1}{2}-\delta)} \lesssim \epsilon^{-1}(1+|\xi|)^{m-s+\frac{1}{2}}.
+ \end{equation}
+ In addition, for each of these values of $\xi$ and $l$, we get $n_{\xi,l}\lesssim 2^l(1+|\xi|)$ differt values of $p$. Combining these observations, we see that
+ \begin{equation}
+  \left|\left\{\phi_{\xi,l,p}: \|\phi_{\xi,l,p}\|_{H^m(\Omega)} > \frac{\epsilon}{2}\right\}\right| \lesssim \sum_{\substack{\xi\in L^{-1}\mathbb{Z}^d\\|\xi|\leq R}} (1+|\xi|) \sum_{l\in L(\epsilon,\xi)} 2^l,
+ \end{equation}
+ where $R \lesssim \epsilon^{\frac{1}{m-s+\frac{1}{2}}}$ (note that here we require $m-s+\frac{1}{2} < 0$) and $L(\epsilon,\xi)$ consists of indices $l$ which satisfy \eqref{eq_506}. Taking a logarithm, the set $L(\epsilon,\xi)$ can be characterized by
+ \begin{equation}
+  l\leq \left(k-m+\frac{1}{2}-\delta\right)^{-1}\left(-\log(\epsilon) + \left(m-s+\frac{1}{2}\right)\log(1+|\xi|)\right) + C
+ \end{equation}
+ for some constant $C$. Using this bound on $l$, combined with the fact that $\sum_{l=1}^k 2^l \lesssim 2^k$, we get
+ \begin{equation}
+  \sum_{l\in L(\epsilon,\xi)} 2^l \lesssim \epsilon^{\frac{-1}{k-m+\frac{1}{2}-\delta}}(1+|\xi|)^{\frac{m-s+\frac{1}{2}}{k-m+\frac{1}{2}-\delta}}.
+ \end{equation}
+ So we get
+ \begin{equation}\label{eq_524}
+  \left|\left\{\phi_{\xi,l,p}: \|\phi_{\xi,l,p}\|_{H^m(\Omega)} > \frac{\epsilon}{2}\right\}\right| \lesssim \epsilon^{\frac{-1}{k-m+\frac{1}{2}-\delta}} \sum_{\substack{\xi\in L^{-1}\mathbb{Z}^d\\|\xi|\leq R}} (1+|\xi|)^{1 + \frac{m-s+\frac{1}{2}}{k-m+\frac{1}{2}-\delta}}.
+ \end{equation}
+ For the final sum, we distinguish between two cases. 
+ 
+ First, if $m-s+\frac{1}{2} > -(d+1)\left(k-m+\frac{1}{2}\right)$, then we can choose a fixed $\delta = \delta(s,m,k,d) > 0$ small enough so that 
+ \begin{equation}
+  1 + \frac{m-s+\frac{1}{2}}{k-m+\frac{1}{2}-\delta} > -d.
+ \end{equation}
+ In this case, by comparing the sum over the lattice $L^{-1}\mathbb{Z}^d$ to an integral, the sum in \eqref{eq_524} satisfies
+ \begin{equation}
+  \sum_{\substack{\xi\in L^{-1}\mathbb{Z}^d\\|\xi|\leq R}} (1+|\xi|)^{1 + \frac{m-s+\frac{1}{2}}{k-m+\frac{1}{2}-\delta}} \lesssim R^{d+1+\frac{m-s+\frac{1}{2}}{k-m+\frac{1}{2}-\delta}} \lesssim \epsilon^{\frac{d+1}{m-s+\frac{1}{2}} + \frac{1}{k-m+\frac{1}{2}-\delta}},
+ \end{equation}
+ since $R\lesssim \epsilon^{\frac{1}{m-s+\frac{1}{2}}}$. Combining this with \eqref{eq_524} we get
+ \begin{equation}
+  \left|\left\{\phi_{\xi,l,p}: \|\phi_{\xi,l,p}\|_{H^m(\Omega)} > \frac{\epsilon}{2}\right\}\right| \lesssim\epsilon^{\frac{d+1}{m-s+\frac{1}{2}}}.
+ \end{equation}
+ This implies that for small $\epsilon$, $N_\Phi(\epsilon)\lesssim \epsilon^{\frac{d+1}{m-s+\frac{1}{2}}}$ and so
+ \begin{equation}
+  \epsilon_n(\Phi) \lesssim n^{\frac{m-s+\frac{1}{2}}{d+1}}.
+ \end{equation}
+ Plugging this into \eqref{bound_equation}, we get
+ \begin{equation}\label{eq_549}
+  \|f - f_n\|_{H^m(\Omega)} \lesssim \delta(s,m,k,d)^{-1}\|f\|_{\mathcal{B}^s(\Omega)}n^{\frac{m-s+\frac{1}{2}}{d+1}}n^{-\frac{1}{2}}\lesssim \|f\|_{\mathcal{B}^s(\Omega)}n^{-\frac{1}{2}-\frac{s-m-\frac{1}{2}}{d+1}}.
+ \end{equation}
+
+ 
+ Next, if $m-s+\frac{1}{2} \leq -(d+1)\left(k-m+\frac{1}{2}\right)$, then for any $\delta > 0$ we get
+ \begin{equation}
+  1 + \frac{m-s+\frac{1}{2}}{k-m+\frac{1}{2}-\delta} < -d.
+ \end{equation}
+ In this case, the sum in \eqref{eq_524} is summable and we get
+ \begin{equation}
+  \sum_{\substack{\xi\in L^{-1}\mathbb{Z}^d\\|\xi|\leq R}} (1+|\xi|)^{1 + \frac{m-s+\frac{1}{2}}{k-m+\frac{1}{2}-\delta}} \lesssim 1
+ \end{equation}
+ if $m-s+\frac{1}{2} < -(d+1)\left(k-m+\frac{1}{2}\right)$, and in the special case where $m-s+\frac{1}{2} = -(d+1)\left(k-m+\frac{1}{2}\right)$, we get
+\begin{equation}
+  \sum_{\substack{\xi\in L^{-1}\mathbb{Z}^d\\|\xi|\leq R}} (1+|\xi|)^{1 + \frac{m-s+\frac{1}{2}}{k-m+\frac{1}{2}-\delta}} \lesssim \delta^{-1}.
+ \end{equation}
+ Combining this with \eqref{eq_524} we get
+ \begin{equation}
+  \left|\left\{\phi_{\xi,l,p}: \|\phi_{\xi,l,p}\|_{H^m(\Omega)} > \frac{\epsilon}{2}\right\}\right| \lesssim \epsilon^{\frac{-1}{k-m+\frac{1}{2}-\delta}},
+ \end{equation}
+ where we need an extra factor of $\delta^{-1}$ in the special case where $m-s+\frac{1}{2} = -(d+1)\left(k-m+\frac{1}{2}\right)$.
+ This implies that up to a factor of $\delta^{-(k-m+\frac{1}{2}-\delta)}$ in this special case, we have
+ \begin{equation}
+  \epsilon_n(\Phi) \lesssim n^{-(k-m+\frac{1}{2}-\delta)}.
+ \end{equation}
+ Using \eqref{bound_equation}, we get
+ \begin{equation}
+  \|f - f_n\|_{H^m(\Omega)} \lesssim \delta^{-1}\|f\|_{\mathcal{B}^s(\Omega)}n^{-(k-m+\frac{1}{2}-\delta)}n^{-\frac{1}{2}},
+ \end{equation}
+ where the power of $\delta$ is replaced by $-1-(k-m+\frac{1}{2}-\delta)$ in the endpoint case. Finally, optimizing over $\delta$, we get
+ \begin{equation}\label{eq_580}
+  \|f - f_n\|_{H^m(\Omega)} \lesssim \|f\|_{\mathcal{B}^s(\Omega)}n^{-(k-m+1)}\log(n),
+ \end{equation}
+ where in the endpoint case the logarithm is taken to the power $1 + (k-m+\frac{1}{2})$.
+ 
+ Combining the results of \eqref{eq_580} and \eqref{eq_549} with the previously discussed result at $s = m + \frac{1}{2}$, we get
+ \begin{equation}
+  \|f - f_n\|_{H^m(\Omega)} \lesssim \|f\|_{\mathcal{B}^s(\Omega)}n^{-t}\log(n)^q,
+ \end{equation}
+ where $t = \min\left(\frac{1}{2}+\frac{s-m-\frac{1}{2}}{d+1}, k-m+1\right)$ and $q$ is given by
+ \begin{equation}
+ q = \begin{cases}
+            0 & \text{if}~t < k-m+1 \\
+            1 & \text{if}~t < \frac{1}{2}+\frac{2(s-m)-1}{2(d+1)}\\
+            1 + (k-m+\frac{1}{2}) & \text{otherwise}
+           \end{cases}.
+ \end{equation}
+ This completes the proof since \eqref{psi-definition}, \eqref{eq_463}, and \eqref{card-b-splines-def} imply that $\phi_{\xi,l,p}\in \Sigma_{k+1}^k$.
+
+\end{proof}
+
+In the case where $f$ is highly smooth, i.e. $f\in \mathcal{B}^s(\Omega)$ with $s > (d+1)(k-m-\frac{1}{2})+m+\frac{1}{2}$, we obtain, up to a logarithmic factor, an approximation rate of $O(n^{-k-1+m})$ in $H^m(\Omega)$. We state this as a separate theorem.
+\begin{theorem}\label{high-smoothness-approximation}
+ Let $\Omega = [0,1]^d$, $k \in \mathbb{Z}_{\geq 0}$ and $m\geq 0$, with $m < k + \frac{1}{2}$. Suppose that $f\in \mathcal{B}^s(\Omega)$ for $s$ sufficiently large, specifically $$s > (d+1)\left(k-m+\frac{1}{2}\right) + m + \frac{1}{2}.$$ Then for $n\geq 2$,
+ \begin{equation}\label{bound-equation}
+  \inf_{f_n\in \Sigma^k_{n}}\|f - f_n\|_{H^m(\Omega)} \lesssim \|f\|_{\mathcal{B}^s}n^{m-(k+1)}\log(n).
+ \end{equation}
+\end{theorem}

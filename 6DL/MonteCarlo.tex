@@ -1,0 +1,125 @@
+\subsection{Stratified sampling and analysis}
+Stratified sampling  \cite{bickel1984asymptotic} gives a more refined version of the Monte Carlo method. 
+
+\begin{lemma} \label{lem:stratified}
+ For any
+  nonoverlaping decomposition $G=G_1\cup G_2\cup \cdots \cup G_M$ and
+  positive integer $n$, let $n_i=\lceil \lambda(G_i)n\rceil$ be the smallest integer larger than $\lambda(G_i)n$ and $\displaystyle N=\sum_{i=1}^M n_i$.  Let $\theta_{i,j}\in G_i (1\le j\le n_i)$ and 
+\begin{equation}
+g_n=\sum_{i=1}^M \lambda(G_i)g_{n_i}^i \quad \mbox{with}\quad g_{n_i}^i={1 \over n_i}\sum_{j=1}^{n_i} g(\theta_{i,j}).
+\end{equation} 
+It holds that  
+\begin{equation}
+\mathbb{E}_N(\mathbb{E}_G g -g_N)^2=\sum_{i=1}^M {\lambda^2(G_i) \over n_i} \mathbb{E}_{G_i}\big (g -\mathbb{E}_{G_i}g\big )^2
+\le {1 \over n} \max_{1\le i\le M}\sup_{\theta, \theta'\in G_i}\big |g(\theta) - g(\theta')\big |^2.
+\end{equation}
+\end{lemma} 
+
+\begin{proof}%[Proof of Lemma \ref{lem:stratified}]
+It follows from definition that
+\begin{equation}
+g(x, \theta) = \sum_{i=1}^M \lambda(G_i) g(x, \theta),\qquad \mathbb{E}_G g =\sum_{i=1}^M\lambda(G_i) \int_{G_i} g\lambda_i(\theta)d\theta = \sum_{i=1}^M \lambda(G_i) \mathbb{E}_{G_i}g.
+\end{equation}
+Thus, the difference $g - \mathbb{E}_G g$ is a linear combination of $g -\mathbb{E}_{G_i}g$ on each $G_i$ as follows
+\begin{equation}
+g - \mathbb{E}_G g = \sum_{i=1}^M \lambda(G_i) \big (g -\mathbb{E}_{G_i}g\big ).
+\end{equation}
+It follows from 
+\begin{equation}
+\mathbb{E}_G g-g_n=\sum_{i=1}^M \lambda(G_i) (\mathbb{E}_{G_i}g -  g^i_{ n_i})
+\end{equation}
+and \eqref{En} that
+\begin{equation} 
+\mathbb{E}_n(\mathbb{E}_G g -g_n)^2 =\sum_{i,j=1}^M \lambda(G_i) \lambda(G_j) \mathbb{E}_n \big ((\mathbb{E}_{G_i}g -  g^i_{ n_i})(\mathbb{E}_{G_j}g -  g^j_{ n_j})\big )
+=\sum_{i,j=1}^M \lambda(G_i) \lambda(G_j) I_{ij}  
+\end{equation}
+with 
+$$
+I_{ij} = \mathbb{E}_n \big ((\mathbb{E}_{G_i}g -  g^i_{ n_i})(\mathbb{E}_{G_j}g -  g^j_{ n_j})\big ).
+$$
+\iffalse
+If $i\neq j$,
+\begin{equation}\label{eq:Iij}
+\begin{split}
+I_{ij}=&\int_{G\times \cdots\times G} (\mathbb{E}_{G_i}g -  g^i_{ n_i})(\mathbb{E}_{G_j}g -  g^j_{ n_j})\lambda(\theta_{i,n_1})\cdots\lambda(\theta_{i,n_i})\lambda(\theta_{j,1})\cdots \lambda(\theta_{j,n_j})d\theta_{i,1}\cdots d\theta_{i,n_i}d\theta_{j,1}\cdots d\theta_{j,n_j}
+\\
+=&\int_{G\times \cdots\times G} (\mathbb{E}_{G_i}g -  g^i_{ n_i})\lambda(\theta_{i,n_1})\cdots\lambda(\theta_{i,n_i})d\theta_{i,1}\cdots d\theta_{i,n_i}
+\\
+&+
+\int_{G\times \cdots\times G} (\mathbb{E}_{G_i}g -  g^j_{ n_j})\lambda(\theta_{j,1})\cdots \lambda(\theta_{j,n_j})d\theta_{j,1}\cdots d\theta_{j,n_j}
+\\
+=&\lambda^{n_i}(G_i)\int_{G_i\times \cdots\times G_i} (\mathbb{E}_{G_i}g -  g^i_{ n_i})\lambda_i(\theta_{i,n_1})\cdots\lambda_i(\theta_{i,n_i})d\theta_{i,1}\cdots d\theta_{i,n_i}
+\\
+&+
+\lambda^{n_j}(G_j)\int_{G\times \cdots\times G} (\mathbb{E}_{G_i}g -  g^j_{ n_j})\lambda_j(\theta_{j,1})\cdots \lambda_j(\theta_{j,n_j})d\theta_{j,1}\cdots d\theta_{j,n_j}
+\\
+=&0.
+\end{split}
+\end{equation}
+\fi
+By Lemma \ref{MC},
+\begin{equation}
+I_{ij} =  \mathbb{E}_n \big ((\mathbb{E}_{G_i}g -  g^i_{ n_i})^2\big )\delta_{ij}= {1\over n_i} \mathbb{E} \big ((\mathbb{E}_{G_i}g -  g)^2\big )\delta_{ij}.
+\end{equation}
+Thus,
+\begin{equation} 
+\mathbb{E}_n(\mathbb{E}_G g -g_n)^2 =\sum_{i=1}^M {\lambda^2(G_i) \over n_i} \mathbb{E}_{G_i}\big (g -\mathbb{E}_{G_i}g\big )^2, 
+\end{equation}
+which completes the proof.
+\end{proof} 
+
+Lemma \ref{MC} and Lemma \ref{lem:stratified} represent two simple identities and subsequent inequalities that can be verified by a direct calculation. Actually Lemma \ref{MC} is a special case of Lemma  \ref{lem:stratified} with $M=1$. Lemma \ref{MC} and Lemma \ref{lem:stratified} are the basis of Monte-Carlo sampling and  stratified sampling in statistics. 
+
+\begin{lemma}\label{lem:stratifiedapprox}
+\textup{[Stratified Sampling]}
+	For $u(x)$ in \eqref{uint}
+	with positive $\rho(\theta)\in L^1(G)$, given any positive integers $n$ and $M\le n$, for  any nonoverlaping decomposition $G=G_1\cup G_2\cup \cdots \cup G_M$, there exists$\{\theta_i^\ast\}_{i=1}^N$ with $n\le N \le 2n$ such that
+	\begin{equation} 
+	\|u - u_N\|_{L^2(\Omega)} \leq N^{-1/2}\|\rho\|_{L^1(G)}\max_{1\le j\le M}\sup_{\theta_{j},\theta_{j}'\in G_j} \| g(x,\theta_j) - g(x,\theta_j')\|_{L^2(\Omega)} 
+	\end{equation}
+	where 
+	$$
+	u_N(x)= {2\|\rho\|_{L^1(G)}\over N}\sum_{i=1}^N\beta_i g(x,\theta_i^\ast)
+	$$ 
+	and $\beta_i\in [0,1]$.
+	\end{lemma}
+
+\begin{proof}
+Let $n_j=\lceil \lambda(G_j)n\rceil$ and $\theta_{i,j} \in G_j(1\leq i\leq n_j)$. Define $\displaystyle N=\sum_{j=1}^M n_j$ and
+$$
+u_N(x)=\|\rho\|_{L^1(G)}\sum_{i=1}^M \lambda(G_i)g_{n_i}^i \quad \mbox{with}\quad g_{n_i}^i={1 \over n_i}\sum_{j=1}^{n_i} g(\theta_{i,j}).
+$$
+Since
+$
+\displaystyle u(x)=\|\rho\|_{L^1(G)}\sum_{i=1}^M \lambda(G_i)\mathbb{E}_{G_i} g,
+$
+by Lemma \ref{MC},
+\begin{equation}
+\begin{split}
+\mathbb{E}_N\|u- u_N \|_{L^2(\Omega)}^2=& \|\rho\|_{L^1(G)}^2
+ \sum_{j=1}^{M}{\lambda^2(G_j) \over n_j}\mathbb{E}_{G_j}\|\mathbb{E}_{G_j} g -  g\|^2_{L^2(\Omega)}
+\\
+\le &\|\rho\|_{L^1(G)}^2 \sum_{j=1}^{M} {\lambda^2(G_j)\over n_j}\sup_{\theta_{j},\theta_{j}'\in G_j} \| g(x,\theta_j) - g(x,\theta_j')\|^2_{L^2(\Omega)}.
+\end{split}
+\end{equation} 
+Since ${\lambda(G_j)\over n_j}\le {1\over n}$ and $\displaystyle \sum_{j=1}^M \lambda(G_j)=1$,
+\begin{equation}
+\mathbb{E}_N\|u - u_N \|_{L^2(\Omega)}^2\leq n^{-1}\|\rho\|_{L^1(G)}^2\max_{1\le j\le M}\sup_{\theta_{j},\theta_{j}'\in G_j} \| g(x,\theta_j) - g(x,\theta_j')\|^2_{L^2(\Omega)}.
+\end{equation}
+There exist $\{\theta_{i,j}^\ast\}$ such that $\theta_{i,j}^\ast\in G_i$ and 
+\begin{equation}
+\| u-u_N \|_{L^2(\Omega)}^2\leq n^{-1} \|\rho\|_{L^1(G)}^2\max_{1\le j\le M}\sup_{\theta_{j},\theta_{j}'\in G_j} \| g(x,\theta_j) - g(x,\theta_j')\|^2_{L^2(\Omega)}.
+\end{equation}
+Note that $n\le N\le n+M\le 2n$,
+$$
+u_N(x) =  {2\|\rho\|_{L^1(G)}\over N}\sum_{j=1}^{M}\frac{N\lambda(G_j)}{2n_j}\sum_{i=1}^{n_j} g(x,\theta_{i,j}^\ast)
+ =  {2\|\rho\|_{L^1(G)}\over N}\sum_{j=1}^{M}\beta_{i,j}\sum_{i=1}^{n_j} g(x,\theta_{i,j}^\ast)
+$$ 
+with
+\begin{equation}
+\beta_{i,j}= \frac{N\lambda(G_j)}{2n_j}\le \frac{2\lambda(G_j)n}{2\lambda(G_j)n}\le 1,
+\end{equation}
+which completes the proof. 
+\end{proof} 
+
+

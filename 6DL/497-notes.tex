@@ -1,0 +1,172 @@
+\documentclass[leqno,labelfig,psfigt,colorlinks]{svmono}
+
+%\usepackage[a4paper,left=1cm,right=10cm,bindingoffset=5pt, asymmetric, reversemarginpar]{geometry}
+
+\makeatletter
+\providecommand*{\input@path}{}
+\edef\input@path{{./}{../}\input@path}% prepend
+\makeatother
+
+\input{Xmacros}
+\renewcommand{\blankpage}{}\renewcommand{\break}{}
+\usepackage{wrapfig}
+\usepackage{bbm}
+\usepackage{listings}
+\usepackage{natbib}
+\usepackage{color}
+\usepackage{cases}
+\usepackage{pythonhighlight}
+
+\usepackage{setspace}
+
+\usepackage{pdfpages}
+
+\usepackage{adjustbox}
+
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\brown}[1]{\textcolor{blue}{#1}}
+\newcommand{\green}[1]{\textcolor{green}{#1}}
+
+\makeatletter
+\newenvironment{breakablealgorithm}
+{
+	\begin{center}
+		\refstepcounter{algorithm}% New algorithm
+		\hrule height.8pt depth0pt \kern2pt			{\raggedright\textbf{\ALG@name~\thealgorithm} ##2\par}%
+			\ifx\relax##1\relax % #1 is \relax
+			\addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##2}%
+			\else % #1 is not \relax
+			\addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##1}%
+			\fi
+			\kern2pt\hrule\kern2pt
+		}
+	}{
+		\kern2pt\hrule\relax	\end{center}
+}
+\makeatother
+
+\usepackage{multirow}
+\usepackage{mathtools}
+
+
+\newtheorem{properties}[theorem]{Properties}
+
+\graphicspath{{../figures/}{figures/}{../}}
+
+
+\rhead{\hfill Jinchao Xu}
+\title{Deep Learning Algorithms and Analysis}
+\author{Jinchao Xu}
+\date{Summer 2020}
+
+\begin{document}
+	\maketitle
+
+\section*{Contributors:}
+This set of notes are based on contributions from many of graduate
+students, postdoctoral fellows and other collaborators.   Here is a
+partial list:
+\begin{quote}
+Juncai He, Qingguo Hong, Li Jiang, Jonathan Siegel, Limin Ma, Lian Zhang, Shenglan Zhao.....
+\end{quote}
+
+\newpage
+
+
+\tableofcontents
+
+%\chapter{Course Information}
+%\input{497/Intro_497}
+%\input{497/syllabus}
+%%\input{497/ToDo}
+
+\chapter{Machine Learning and Image Classification} 
+\input{BasicML}
+\input{ClassificationProblem}
+
+\chapter{Linear Machine Learning Models}
+%%%%%%%%%%%%%%%%%%%%%
+%%%LR and SVM%%%%%%
+\input{LinearModels}
+\input{IntroLR}
+\input{KL-CR-LR}
+\input{binaryLRSVM}
+%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Probability}
+%%%%%%%%%%%%%%%%%%%%%
+%%%Probability related topics%%%%%%
+\input{probability_intro}
+\input{BasicProb}
+\input{DL-LR-Prob}
+\input{MultidimensionalVariance}
+\chapter{Training Algorithms}
+\input{DL-GD}
+\input{DL-GD-Convergence}
+\input{ChSGD}
+
+\chapter{Polynomials and Weierstrass theorem}
+\input{PolyWeierstrass}
+
+\chapter{Finite Element Method}
+\input{FEspaces}
+\input{Nodal-Interpolation}
+
+\chapter{Deep Neural Network Functions}
+\input{FEM2DNN}
+\input{WhyDeep}
+\input{DefineDNN}
+\input{DNN_Qualitative}
+
+\chapter{Convolutional Multigrid Method}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{1Dvariational}
+\input{smootherproperty}
+\input{1Dtwogrid}
+\input{1DMG}
+\input{6DL/1D2DFE_MgNet}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{multigrid}
+\input{bilinear}
+\input{2DFEM}
+\input{bilinear_grids}
+\input{2d_basis}
+\input{XuNet}
+\input{FEM-MG-CONV}
+\input{ReLU-multigrid}
+\input{NonlinearMG}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\chapter{Convolutional Neural Networks}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{NonlinearClassifiable}
+\input{ConvolutionalOperator}
+\input{convolution-filter}
+\input{ClassicCNNs}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{MgNet: a Unified Framework for CNN and MG}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{6DL/mgnet}
+\input{6DL/mgnet_relation}
+\input{ConstrainedLinearModel}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\chapter{Initializations and Normalizations}
+\input{ImageNormalization}
+\input{initialization}
+\input{BN}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\bibliographystyle{abbrv}\bibliography{ref,ref_mgcnn,../3FEM/3FEM}
+
+\end{document}
+
+
+
+

@@ -1,0 +1,75 @@
+\section{Multigrid methods for numerical PDEs}\label{sec:mg}
+
+
+With the restriction $R_{\ell}^{\ell+1}$ and prolongation $P_{\ell+1}^\ell$
+obtained in Lemma \ref{ris:plon},
+%as defined in \eqref{mg-prolong} and restriction $R_{\ell}^{\ell+1} = (P_{\ell+1}^{\ell})^T$. 
+we have the following relationship to define coarse operation
+\begin{equation}\label{eq:def_coarse}
+A^{\ell+1}=R_{\ell}^{\ell+1} A^{\ell}P_{\ell+1}^{\ell} \quad (\ell = 1:J-1),
+\end{equation}
+with $A^1 = A$. 
+Similarly, with the smoother obtained by \eqref{eq:convS}, we can define 
+$S^{\ell}: \mathbb{R}^{m_\ell \times n_\ell} \mapsto \mathbb{R}^{m_\ell \times n_\ell}$.
+
+Now using the smoother $S^\ell$, prolongation $P^{\ell}_{\ell+1}$, restriction $R_{\ell}^{\ell+1}$ and mapping
+$A^\ell$ as given in \eqref{eq:def_coarse}, we can formulate the following algorithm
+ as a major component of a multigrid algorithm.
+\begin{breakablealgorithm}%[!htb]
+	\caption{$(u^{\ell,\nu_\ell}: ~\ell = 1:J) = {\text{MG0}}(f; J,\nu_1, \cdots, \nu_J)$}
+	\label{alg:L-Slash0}
+	\begin{algorithmic}
+		\State Set up
+		$$
+		f^1 = f, \quad u^{1,0}=0.
+		$$
+		\State Smoothing and restriction from fine to coarse level (nested)
+		\For{$\ell = 1:J$}
+		\State Pre-smoothing:
+		\For{$i = 1:\nu_\ell$}
+		\State
+		\begin{equation}\label{eq:smoothing}
+		u^{\ell,i} = u^{\ell,i-1} + K_S \ast (f^\ell - K_A \ast u^{\ell,i-1}).
+		\end{equation}
+		\EndFor
+		\State Form restricted residual and set initial guess:
+		$$
+		u^{\ell+1,0} = 0, \quad f^{\ell+1} = K_R \ast_2 (f^\ell -  K_A \ast u^{\ell,\nu_\ell}).
+		$$
+		\EndFor
+	\end{algorithmic}
+\end{breakablealgorithm}
+Here $K_S$ can be chosen as $K_{S_0}$ or $K_{S_1}$ as definition in \eqref{eq:kernel-S} and \eqref{eq:kernel-S2}.
+
+Using the above algorithm, there are different multigrid algorithms such as: $\backslash$-cycle, V-cycle and W-cycle.
+Let us now only give one special form of multigrid algorithm for solving \eqref{laplace} or \eqref{laplace-h} as follows.
+\begin{breakablealgorithm}%[!htb]
+	\caption{$u = {\backslash\text{-MG}}(f; J,\nu_1, \cdots, \nu_J)$}
+	\label{alg:L-Slash1}
+	\begin{algorithmic}
+		\State Call Algorithm \ref{alg:L-Slash0},
+		$$
+		(u^{\ell,\nu_\ell}: ~\ell = 1:J) = {\text{MG0}}(f; J,\nu_1, \cdots, \nu_J).
+		$$
+		\State Prolongation and restriction from coarse to fine level
+		\For{$\ell = J-1:1$}
+		\State
+		$$
+		u^{\ell,\nu_\ell} \leftarrow u^{\ell,\nu_\ell} + K_R  \ast_2^{\top} u^{\ell+1, \nu_{\ell+1}}.
+		$$
+%		%		\IF{V-cycle}
+%		\For{$i = 1:\nu_\ell$}
+%		\State
+%		$$
+%		u^{\ell,i} \leftarrow u^{\ell,i-1} + [B^{\ell,i}]^T (f^\ell - A^{\ell} u^{\ell,i-1})
+%		$$
+%		\EndFor
+%		%		\ENDIF
+		\EndFor
+		\State Output
+		$$
+		u = u^{1,\nu_\ell}.
+		$$
+	\end{algorithmic}
+\end{breakablealgorithm}
+

@@ -1,0 +1,44 @@
+\subsection{General activation functions}
+Assume that $\sigma$ is a locally Riemann integrable nonzero function 
+and $\sigma\in L^1(\mathbb{R})$ and thus the Fourier transform of
+ $\sigma$ is well-defined and continuous. 
+ Since $\sigma$ is non-zero and 
+ \begin{equation}\label{key}
+ \hat \sigma(\omega) = \int_{\mathbb{R}} \sigma(t)e^{-2\pi i\omega t}dt,
+ \end{equation}
+ this implies that $\hat{\sigma}(a)\neq 0$ for
+ some $a\neq 0$. Via a change of variables $t = \omega\cdot x + b$ and $dt = db$,
+  this means that for all $x$ and $\omega$, we have
+ \begin{equation}
+ \begin{aligned}
+  0\neq \hat{\sigma}(a)&= \int_{\mathbb{R}}\sigma(\omega\cdot x+b)e^{-2\pi ia(\omega\cdot x+b)}db \\
+ & = e^{-2\pi ia\omega \cdot x} \int_{\mathbb{R}}\sigma(\omega\cdot x+b)e^{-2\pi iab}db ,
+ \end{aligned}
+ \end{equation}
+ and so
+ \begin{equation}
+  e^{2\pi ia\omega \cdot x} = \frac{1}{\hat{\sigma}(a)}\int_{\mathbb{R}}\sigma(\omega\cdot x+b)e^{-2\pi iab}db.
+ \end{equation}
+ Likewise, since the growth condition also implies that $\sigma^{(k)}\in L^1$, we can differentiate the above expression  under the integral with respect to $x$.
+
+ This allows us to write the Fourier mode $e^{2\pi ia\omega \cdot x}$ as an integral of neuron output functions. We substitute this
+ into the Fourier representation of $u$
+ (note that the assumption we make implies that $\hat{u}\in L^1$ so this
+ is rigorously justified for a.e. $x$) to get
+ \begin{equation}\label{integral_representation}
+ \begin{split}
+  u(x) &= \int_{\mathbb{R}^d} e^{2\pi i\omega\cdot x}\hat{u}(\omega)d\omega = 
+  \int_{\mathbb{R}^d}\int_\mathbb{R}\frac{1}{ \hat{\sigma}(a)}
+  \sigma\left(a^{-1}{\omega}\cdot
+    x+b\right)\hat{u}(\omega)e^{-2\pi iab}dbd\omega
+\\
+&=  \int_{\mathbb{R}^d}\int_\mathbb{R} k(x,\theta) dbd\omega 
+\end{split}
+ \end{equation}
+where $\theta=(\omega, b)$ 
+and   
+$$
+k(x,\theta)= \frac{1}{ \hat{\sigma}(a)}
+  \sigma\left(a^{-1}{\omega}\cdot
+    x+b\right)\hat{u}(\omega)e^{-2\pi iab}.
+$$

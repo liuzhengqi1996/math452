@@ -1,0 +1,1183 @@
+The goal of this chapter is to provide a comprehensive treatment of the most relevant
+gradient and subgradient methods for convex optimization. 
+We intend to cover
+the most robust methods with the fewest assumptions first, and then later move to
+methods which require more assumptions but have much better convergence rates.
+%Since we will be most interested in stochastic methods for machine learning, it
+%is the robust methods with few assumptions (but poor convergence rates) which will
+%be most relevant.
+
+\section{Convex Lipschitz Functions}
+In this section, we consider methods for optimizing convex, lipschitz functions. This is a very large function
+class, since we make no assumptions on the objective other than assuming bounded subgradients (which is
+equivalent to the lipschitz property). In particular, we assume no smoothness, i.e. the objective need not
+be differentiable, and no strong convexity.
+
+Consequently, the convergence results we obtain are rather weak. They require averaging the iterates of our method
+(or choosing the best one), i.e. we cannot simply take the last iterate, and the convergence rates obtained are
+quite slow. However, these methods are robust. In particular, they obtain the same convergence rate
+in the stochastic setting, as we will see.
+
+In later sections we will detail precisely
+how stronger assumptions on the objective yield better convergence results. We find it useful to
+begin with the weakest assumptions and weakest convergence results first, and then to explain how everything relates to
+these.
+
+\subsection{Subgradient Descent}
+The simplest version of subgradient descent (with a fixed step size) is the following iteration
+\begin{equation}\label{subgradient_descent}
+ x_{n+1} = x_n - sg_n
+\end{equation}
+where $g_n\in \partial f(x_n)$ (the subdifferential of a convex function $f$ to be optimized) and $s$ is the 
+step size.
+
+With a fixed step size, this method will not converge for an arbitrary choice of subgradient $g_n$. 
+However, if we are given a tolerance beforehand, we can choose
+a small enough step size to obtain an appropriate objective error, as the following well-known result shows.
+
+\begin{theorem}\label{original_subgradient}
+ Assume that $f$ is convex with bounded subgradient, meaning that $\|g\|_2 \leq M$ for all $g\in \partial f(x)$ (for any point $x$).
+ 
+ Additionally, let $x^*\in \arg\min_x f(x)$ and assume that $\|x_1 - x^*\|_2 \leq R$ (note: here we are implicitly assuming that
+ $f$ is bounded below and achieves its minimum). 
+ 
+ Then, setting the step size $s = \frac{R}{M\sqrt{n}}$,
+ the iterates of (\ref{subgradient_descent}) satisfy
+ \begin{equation}
+  f(\bar{x}_n) - f(x^*) \leq \frac{RM}{2\sqrt{n}}
+ \end{equation}
+ where $\bar{x}_n = \frac{1}{n}\sum_{i = 1}^n x_i$ is the average of the first $n$ iterates, and
+ \begin{equation}
+  \min_{i=1,...,n} f(x_i) - f(x^*) \leq \frac{RM}{2\sqrt{n}}
+ \end{equation}
+
+
+\end{theorem}
+\begin{proof}
+ Consider first $\bar{x}_n = \frac{1}{n}\sum_{i = 1}^n x_i$, the average of the iterates encountered so
+ far. By convexity and the definition of the subgradient, we have
+ \begin{equation}\label{eqn11}
+  f(\bar{x}_n) - f(x^*) \leq \frac{1}{n}\displaystyle\sum_{i = 1}^n (f(x_i) - f(x^*))\leq \frac{1}{n}\displaystyle\sum_{i = 1}^n 
+  \langle g_i, x_i - x^*\rangle
+ \end{equation}
+ From iteration (\ref{subgradient_descent}), we see that $g_i = \frac{1}{s}(x_i - x_{i+1})$. Plugging this into equation
+ (\ref{eqn11}), we obtain
+ \begin{equation}
+  f(\bar{x}_n) - f(x^*) \leq \frac{1}{ns} \displaystyle\sum_{i = 1}^n \langle x_i - x_{i+1}, x_i - x^*\rangle
+ \end{equation}
+ Setting $y_i = x_i - x^*$, this sum becomes
+ \begin{equation}
+  \displaystyle\sum_{i = 1}^n \langle y_i - y_{i+1}, y_i\rangle = \frac{1}{2}\displaystyle\sum_{i = 1}^n
+  \left(\|y_i\|_2^2 - \|y_{i+1}\|_2^2 + \|y_i - y_{i+1}\|_2^2\right)
+ \end{equation}
+ This sum telescopes, and we get (noting that $y_i - y_{i+1} = x_i - x_{i+1}$)
+ \begin{equation}
+  f(\bar{x}_n) - f(x^*) \leq \frac{1}{2ns}\left(\|y_1\|_2^2 - \|y_{n+1}\|_2^2 + \displaystyle\sum_{i = 1}^n \|x_i - x_{i+1}\|_2^2\right)
+ \end{equation}
+ Using the iteration (\ref{subgradient_descent}), we see (reversing our previous substitution) that
+ $x_i - x_{i + 1} = sg_i$. Our assumption that the subgradient of $f$ is bounded implies that $\|g_i\|_2^2 \leq M^2$,
+ so that
+ $$\displaystyle\sum_{i = 1}^n \|x_i - x_{i+1}\|_2^2 = \displaystyle\sum_{i = 1}^n \|sg_i\|_2^2 \leq ns^2M^2
+ $$
+ and we obtain (dropping the negative $-\|y_{n+1}\|_2^2$)
+ \begin{equation}
+  f(\bar{x}_n) - f(x^*) \leq \frac{1}{2}\left(\frac{\|x_1 - x^*\|_2^2}{ns} + M^2s\right) \leq \frac{1}{2}\left(\frac{R^2}{ns} + M^2s\right)
+ \end{equation}
+ This bound is optimized when $s = \frac{R}{M\sqrt{n}}$ and we get
+ \begin{equation}
+  f(\bar{x}_n) - f(x^*) \leq \frac{RM}{2\sqrt{n}}
+ \end{equation}
+ For the second part of the theorem, we simply note that the minimum is smaller than the average, i.e. that
+ \begin{equation}
+  \min_{i = 1,...,n} f(x_i) - f(x^*) \leq \frac{1}{n}\displaystyle\sum_{i = 1}^n (f(x_i) - f(x^*))
+ \end{equation}
+ and repeat the same argument.
+
+\end{proof}
+
+It is a bit of a nuisance to choose the step size based on the total number of iterations, since it means that
+we need to specify the total number of iterations in advance. For various reasons, it may be desirable to have a 
+method which we can run for
+an a priori unspecified number of steps.
+
+This is possible if we allow ourselves a varying step size, i.e. an iteration
+of the form
+\begin{equation}\label{subgradient_descent_variable}
+ x_{n+1} = x_n - s_ng_n
+\end{equation}
+As we show below, we can obtain the same convergence rate (up to logarithmic factors) without specifying the
+number of iterations in advance.
+
+\begin{theorem}\label{variable_subgradient_descent_thm}
+ Assume that $f$ is convex with bounded subgradient, meaning that $\|g\|_2 \leq M$ for all $g\in \partial f(x)$ (for any point $x$).
+ 
+ Additionally, let $x^*\in \arg\min_x f(x)$ and assume that $\|x_1 - x^*\|_2 \leq R$. 
+ 
+ Then, setting the variable step size $s_i = \frac{R}{M\sqrt{i}}$,
+ the iterates of (\ref{subgradient_descent_variable}) satisfy
+ \begin{equation}
+  f(\bar{x}_n) - f(x^*) \leq \frac{DM(\log(n) + 1)}{2\sqrt{n}}
+ \end{equation}
+ where $\bar{x}_n$ is the step size weighted average of the iterates, i.e.
+ \begin{equation}
+  \bar{x}_n = \left(\displaystyle\sum_{i = 1}^n s_i\right)^{-1} \displaystyle\sum_{i=1}^n s_ix_i
+ \end{equation}
+ Additionally, we get
+ \begin{equation}
+  \min_{i=1,...,n} f(x_i) - f(x^*) \leq \frac{DM(\log(n) + 1)}{2\sqrt{n}}
+ \end{equation}
+
+\end{theorem}
+\begin{proof}
+ We first consider the step size weighted average
+ $$\bar{x}_n = \left(\displaystyle\sum_{i = 1}^n s_i\right)^{-1} \displaystyle\sum_{i=1}^n s_ix_i
+ $$
+ and note that by the convexity of $f$ (Jensen's inequality)
+ \begin{equation}
+  f(\bar{x}_n) - f(x^*) \leq D_n^{-1} \displaystyle\sum_{i=1}^n s_i(f(x_i) - f(x^*))
+ \end{equation}
+ where we have written $D_n = \sum_{i = 1}^n s_i$.
+ 
+ The fact that $g_i\in \partial f(x_i)$ means that $f(x_i) - f(x^*) \leq \langle g_i, x_i - x^*\rangle$ so that
+ \begin{equation}\label{eq22}
+  f(\bar{x}_n) - f(x^*) \leq D_n^{-1} \displaystyle\sum_{i=1}^n s_i\langle g_i, x_i - x^*\rangle
+ \end{equation}
+ From the iteration (\ref{subgradient_descent_variable}) we have $s_ig_i = x_i - x_{i+1}$. Plugging this into
+ (\ref{eq22}) we get
+ \begin{equation}
+  f(\bar{x}_n) - f(x^*) \leq D_n^{-1} \displaystyle\sum_{i=1}^n \langle x_i - x_{i+1}, x_i - x^*\rangle
+ \end{equation}
+ The sum on the right hand side of this inequality can now be rewritten in the same way as in the proof of Theorem
+ \ref{original_subgradient}. The right hand side of the inequality becomes
+ \begin{equation}
+  \frac{1}{2D_n}\left(\|x_1 - x^*\|_2^2 - \|x_{n+1} - x^*\|_2^2 + \displaystyle\sum_{i=1}^n\|x_i - x_{i+1}\|_2^2\right)
+ \end{equation}
+ Dropping the negative term $-\|x_{n+1} - x^*\|_2^2$ we thus see that
+ \begin{equation}
+  f(\bar{x}_n) - f(x^*) \leq \frac{1}{2D_n}\left(\|x_1 - x^*\|_2^2 + \displaystyle\sum_{i=1}^n\|x_i - x_{i+1}\|_2^2\right)
+ \end{equation}
+ Using the iteration (\ref{subgradient_descent_variable}), we undo our previous substitution to obtain
+ $x_i - x_{i+1} = s_ig_i$. This, combined with the bound on the subgradients of $f$, i.e. $\|g_i\|_2 \leq M$, implies
+ \begin{equation}
+  f(\bar{x}_n) - f(x^*) \leq \frac{1}{2D_n}\left(\|x_1 - x^*\|_2^2 + M^2\displaystyle\sum_{i=1}^n s_i^2\right)
+ \end{equation}
+ The assumption that $\|x_1 - x^*\|_2 \leq D$ gives us
+ \begin{equation}
+  f(\bar{x}_n) - f(x^*) \leq \frac{D^2 + M^2\displaystyle\sum_{i=1}^n s_i^2}{2\displaystyle\sum_{i=1}^n s_i}
+ \end{equation}
+ This bound is optimized when $s_i = \frac{D}{M\sqrt{i}}$ and we obtain
+ \begin{equation}
+  f(\bar{x}_n) - f(x^*) \leq \frac{DM\displaystyle\sum_{i=1}^n \frac{1}{i}}{2\displaystyle\sum_{i=1}^n \frac{1}{\sqrt{i}}}
+ \end{equation}
+ we now use the fact that $\displaystyle\sum_{i=1}^n \frac{1}{i} \leq \log(n) + 1$ and $\displaystyle\sum_{i=1}^n \frac{1}{\sqrt{i}} \geq \sqrt{n}$
+ to get
+ \begin{equation}
+  f(\bar{x}_n) - f(x^*) \leq \frac{DM(\log(n) + 1)}{2\sqrt{n}}
+ \end{equation}
+ This proves the first result. As in the proof of Theorem \ref{original_subgradient}, we can use the fact that the minimum
+ is bounded by the average to get
+ \begin{equation}
+  \min_{i=1,...,n} f(x_i) - f(x^*) \leq D_n^{-1} \displaystyle\sum_{i=1}^n s_i(f(x_i) - f(x^*))
+ \end{equation}
+ and so (by the exact same logic)
+ \begin{equation}
+   \min_{i=1,...,n} f(x_i) - f(x^*) \leq \frac{DM(\log(n) + 1)}{2\sqrt{n}}
+ \end{equation}
+ which is the second inequality. This completes the proof.
+
+\end{proof}
+
+We note again that these results are fairly weak. Notably, the convergence rates are very slow and we must take an average of
+our iterates (or the minimum over the iterates) to obtain them. We will see later how stronger assumptions
+on the function $f$ to be optimized result in better convergence results. 
+
+\subsection{Stochastic Subgradient Descent}
+
+A beneficial consequence of the weak assumptions we have made is that these results are very robust. 
+Most notably, they remain true
+if we replace the subgradient elements $g_n$ in iterations (\ref{subgradient_descent}) and (\ref{subgradient_descent_variable})
+by unbiased samples of an element of the subgradient, i.e. we consider
+\begin{equation}\label{random_subgradient_descent}
+ x_{n+1} = x_n - sg(x_n,\xi_n)
+\end{equation}
+and
+\begin{equation}\label{random_subgradient_descent_variable}
+ x_{n+1} = x_n - s_ng(x_n,\xi_n)
+\end{equation}
+where the $\xi_n$ are independent random variables underlying the sampling process and the samples 
+$g(x_n,\xi_n)$ satisfy $\mathbb{E}_{\xi_n}(g(x_n,\xi_n))\in \partial f(x_n)$. We must now assume that
+the subgradient samples $g(x_n,\xi_n)$ are bounded. In particular, we have the
+following results.
+\begin{theorem}\label{random_subgradient_descent_thm}
+ Assume that $f$ is convex and its subgradient samples are bounded, 
+ meaning that $\|g(x,\xi)\|_2 \leq M$ for all $x$ and $\xi$.
+ 
+ Additionally, let $x^*\in \arg\min_x f(x)$ and assume that $\|x_1 - x^*\|_2 \leq R$. 
+ 
+ Then, setting the step size $s = \frac{R}{M\sqrt{n}}$,
+ the iterates of (\ref{random_subgradient_descent}) satisfy
+ \begin{equation}
+  \mathbb{E}(f(\bar{x}_n) - f(x^*)) \leq \frac{RM}{2\sqrt{n}}
+ \end{equation}
+ where $\bar{x}_n = \frac{1}{n}\sum_{i = 1}^n x_i$ is the average of the first $n$ iterates, and
+ \begin{equation}
+  \mathbb{E}\left(\min_{i=1,...,n} f(x_i) - f(x^*)\right) \leq \frac{RM}{2\sqrt{n}}
+ \end{equation}
+ 
+\end{theorem}
+\begin{proof}
+ We consider first the average of the iterates. We have
+ \begin{equation}
+  \mathbb{E}(f(\bar{x}_n) - f(x^*)) \leq \mathbb{E}\left(\frac{1}{n}\displaystyle\sum_{i = 1}^n (f(x_i) - f(x^*))\right)
+ \end{equation}
+ by Jensen's inequality. By the linearity of the expectation and the fact that $x_i$ only depends on $\xi_1,...,\xi_{i-1}$
+ we have
+ \begin{align}
+  \mathbb{E}\left(\frac{1}{n}\displaystyle\sum_{i = 1}^n (f(x_i) - f(x^*))\right)& = \frac{1}{n}\displaystyle\sum_{i = 1}^n \mathbb{E}(f(x_i) - f(x^*)) \\
+   & = \frac{1}{n}\displaystyle\sum_{i = 1}^n \mathbb{E}_{\xi_1,...,\xi_{i-1}}(f(x_i) - f(x^*))
+   \end{align}
+ Now we use the assumption that $\mathbb{E}_{\xi_n}(h(x_n,\xi_n))\in \partial f(x_n)$ to get
+ $$
+  \frac{1}{n}\displaystyle\sum_{i = 1}^n \mathbb{E}_{\xi_1,...,\xi_{i-1}}(f(x_i) - f(x^*)) \leq \frac{1}{n}\displaystyle\sum_{i = 1}^n \mathbb{E}_{\xi_1,...,\xi_{i-1}}(\langle \mathbb{E}_{\xi_i}g(x_i,\xi_i),x_i - x^*\rangle)
+ $$
+ Since $x_i$ is independent of $\xi_i,\xi_{i+1},...,\xi_n$, we can pull the inner expectation out of the inner product and
+ rewrite this as
+ \begin{equation}
+  \frac{1}{n}\displaystyle\sum_{i = 1}^n \mathbb{E}_{\xi_1,...,\xi_{i-1},\xi_i}(\langle g(x_i,\xi_i),x_i - x^*\rangle) = 
+  \mathbb{E}\left(\frac{1}{n}\displaystyle\sum_{i = 1}^n \langle g(x_i,\xi_i),x_i - x^*\rangle\right)
+ \end{equation}
+ The iteration \ref{random_subgradient_descent} means that $g(x_i,\xi_i) = \frac{1}{s}(x_i - x_{i+1})$ and we obtain
+ \begin{equation}
+  \mathbb{E}(f(\bar{x}_n) - f(x^*)) \leq \mathbb{E}\left(\frac{1}{ns}\displaystyle\sum_{i = 1}^n \langle x_i - x_{i+1},x_i - x^*\rangle\right)
+ \end{equation}
+ We can now repeat the argument used in Theorem \ref{original_subgradient} to rewrite the right hand side as
+ \begin{equation}
+  \frac{1}{2ns}\mathbb{E}\left(\|x_1 - x^*\|^2_2 - \|x_{n+1} - x^*\|^2_2 + \displaystyle\sum_{i = 1}^n \|x_i - x_{i+1}\|_2^2\right)
+ \end{equation}
+ Now $\|x_i - x_{i+1}\|_2^2 = \|sg(x_i,\xi_i)\|_2^2 \leq s^2M^2$ and $\|x_1 - x^*\|_2^2 \leq R^2$ so we get
+ \begin{equation}
+  \mathbb{E}(f(\bar{x}_n) - f(x^*)) \leq \frac{1}{2}\left(\frac{R^2}{ns} + M^2s\right)
+ \end{equation}
+ Optimizing over $s$ now yields the same result as in Theorem \ref{original_subgradient}.
+
+ For the second part, we again use the fact that the minimum is bounded by the average
+ \begin{equation}
+  \mathbb{E}\left(\min_{i=1,...,n} f(x_i) - f(x^*)\right) \leq \mathbb{E}\left(\frac{1}{n}\displaystyle\sum_{i = 1}^n (f(x_i) - f(x^*))\right)
+ \end{equation}
+ and the rest of the proof is the same as before.
+ 
+\end{proof}
+
+\begin{theorem}
+ Assume that $f$ is convex and its subgradient samples are bounded, 
+ meaning that $\|h(x,\xi)\|_2 \leq M$ for all $x$ and $\xi$.
+ 
+ Additionally, let $x^*\in \arg\min_x f(x)$ and assume that $\|x_1 - x^*\|_2 \leq R$. 
+ 
+ Then, setting the step size $s_i = \frac{R}{M\sqrt{i}}$,
+ the iterates of (\ref{random_subgradient_descent_variable}) satisfy
+ \begin{equation}
+  \mathbb{E}(f(\bar{x}_n) - f(x^*)) \leq \frac{DM(\log(n) + 1)}{2\sqrt{n}}
+ \end{equation}
+ where $\bar{x}_n$ is the step size weighted average of the iterates, i.e.
+ \begin{equation}
+  \bar{x}_n = \left(\displaystyle\sum_{i = 1}^n s_i\right)^{-1} \displaystyle\sum_{i=1}^n s_ix_i
+ \end{equation}
+ Additionally, we get
+ \begin{equation}
+  \mathbb{E}\left(\min_{i=1,...,n} f(x_i) - f(x^*)\right) \leq \frac{DM(\log(n) + 1)}{2\sqrt{n}}
+ \end{equation}
+ 
+\end{theorem}
+\begin{proof}
+ The proof is a straightforward combination of the arguments in Theorems \ref{random_subgradient_descent_thm} and
+ \ref{variable_subgradient_descent_thm}.
+\end{proof}
+
+\subsection{Forward-Backward Subgradient Descent}
+Finally, we cover a very useful and interesting variation on subgradient descent, which we call
+forward-backward subgradient descent. 
+
+The relevant setting is an optimization problem whose objective can be
+split as a sum of two objectives
+\begin{equation}\label{split_problem}
+ f(x) = f_1(x) + f_2(x)
+\end{equation}
+where $f_1$ is a function for which we can easily find elements in the subgradient and $f_2$ is a function for
+which we can efficiently solve the `backward' or `proximal' problem
+\begin{equation}
+ p_{\lambda f_2}(x) = \arg\min_{y} \frac{1}{2}\|y - x\|_2^2 + \lambda f_2(y)
+\end{equation}
+Notice that optimality condition that the solution $y$ satisfies is
+$$0\in \partial_y\left(\frac{1}{2}\|y - x\|_2^2 + \lambda f_2(y)\right) = y - x + \lambda\partial f_2(y)
+$$
+In other words, $y = x - \lambda g$ for some $g\in \partial f_2(y)$. Thus solving the proximal problem
+essentially corresponds to a step of backward Euler for the equation $\dot{x} \in \partial f_2(x)$ in the
+same sense that a (forward) subgradient step corresponds to a step of forward Euler for the same equation.
+
+Two very common choices for $f_2$ are the indicator function of a convex set $A$
+\begin{equation}
+ f_2(x) = i_A(x) = 
+ \begin{cases}
+                    0 &~ \text{if $x\in A$} \\
+		    +\infty &~ \text{if $x\notin A$}
+ \end{cases}
+\end{equation}
+and the l$1$-norm $f_2(x) = \|x\|_1$. In the former case, the proximal map is just a projection onto the set $A$ and
+the forward-backward method simply recovers projected subgradient descent. In the latter case, the
+proximal map is known as soft-thresholding and can be given in closed form.
+
+The method we will analyze for optimizing (\ref{split_problem}) is the `forward-backward' splitting method
+\begin{equation}\label{subgradient_forward_backward}
+ x_{n+\frac{1}{2}} = x_n - sg_n,~x_{n+1} = p_{sf_2}(x_{n+\frac{1}{2}})
+\end{equation}
+where $g_n\in \partial f_1(x_n)$. This is just a forward step for $f_1$ followed by a backward step for
+$f_2$.
+
+To aid in our analysis of this algorithm we introduce the Bregman distance, defined as follows
+\begin{definition}
+ Let $f$ be a l.s.c convex function, $x, y\in \mathbb{R}^n$, and $g\in \partial f(x)$ (which implies that
+ $f(x) < \infty$). The $f$-Bregman distance from $x$ to $y$ with respect to $g$ is
+ \begin{equation}
+  B_f(y,x;g) = f(y) - f(x) - \langle g, y - x\rangle
+ \end{equation}
+
+\end{definition}\label{bregman_distance}
+The Bregman distance is simply the difference between $f(y)$ and the linear approximation
+$f(x) + \langle g, y - x\rangle$. The convexity of $f$ means that this quantity is always positive.
+
+One can check that if $f = \frac{1}{2}\|x\|_2^2$, then the Bregman distance corresponds to $\frac{1}{2}\|x - y\|_2^2$,
+for instance. In general, symmetry is not guaranteed though.
+
+We will need the following lemma regarding the Bregman distance
+\begin{lemma}\label{bregman_equation_1}
+ Let $x,y,z\in \mathbb{R}^n$, $g_x\in \partial f(x)$, $g_y\in \partial f(y)$. Then
+ \begin{equation}
+  \langle g_x - g_y, x - z\rangle = B_f(z,x;g_x) - B_f(z,y;g_y) + B_f(x,y;g_y)
+ \end{equation}
+ 
+\end{lemma}
+
+\begin{proof}
+ From the definition \ref{bregman_distance}, we see that
+  \begin{align}
+   &B_f(z,x;g_x) = f(z) - f(x) - \langle g_x, z - x\rangle \\
+   &-B_f(z,y;g_y) = -f(z) + f(y) + \langle g_y, z - y\rangle \\
+   & B_f(x,y;g_y) = f(x) - f(y) - \langle g_y, x - y\rangle
+  \end{align}
+
+  Adding these quantities, we obtain
+  \begin{equation}
+   \langle g_y, z - y\rangle - \langle g_y, x - y\rangle - \langle g_x, z - x\rangle = \langle g_x - g_y, x - z\rangle
+  \end{equation}
+  as desired.
+\end{proof}
+
+We will now prove the following convergence result for the forward-backward iteration (\ref{subgradient_forward_backward}). 
+%has similar convergence
+%properties as subgradient descent (\ref{subgradient_descent}).
+
+\begin{theorem}\label{forward_backward_subgradient_thm}
+ Assume that $f_1$ is convex with bounded subgradient, meaning that $\|g\|_2 \leq M$ for all $g\in \partial f_1(x)$ (for any point $x$).
+ 
+ Set $x_1 \in \arg\min_xf_2(x)$, let $x^*\in \arg\min_x f(x)$, and assume that $\|x_1 - x^*\|_2 \leq R$. 
+ 
+ Then, setting the step size $s = \frac{R}{M\sqrt{n}}$,
+ the iterates of (\ref{subgradient_forward_backward}) satisfy
+ \begin{equation}
+  f(\bar{x}_n) - f(x^*) \leq \frac{RM}{2\sqrt{n}} + \frac{f_2(x^*) - \min_x f_2(x)}{n}
+ \end{equation}
+ where $\bar{x}_n = \frac{1}{n}\sum_{i = 1}^n x_i$ is the average of the first $n$ iterates, and
+ \begin{equation}
+  \min_{i=1,...,n} f(x_i) - f(x^*) \leq \frac{RM}{2\sqrt{n}} + \frac{f_2(x^*) - \min_x f_2(x)}{n}
+ \end{equation}
+
+\end{theorem}
+The whole point of this theorem is that the convergence rate only depends on the Lipschitz constant
+of $f_1$ and not on the Lipschitz constant of $f_2$ (in fact, we don't need $f_2$ to be Lipschitz at all).
+%In practice this method is very useful if $f_1$ has a small Lipschitz constant and $f_2$ isn't Lipschitz
+%of has a very large Lipshchitz constant.
+
+\begin{proof}
+ We consider first the average $\bar{x}_n = \frac{1}{n}\sum_{i = 1}^n x_i$ of the first $n$ iterates.
+ We have by Jensen's inequality that
+ \begin{equation}
+  f(\bar{x}_n) - f(x^*) \leq \frac{1}{n}\displaystyle\sum_{i = 1}^n (f(x_i) - f(x^*))
+ \end{equation}
+ The forward iteration gives us 
+ $$\frac{1}{s}(x_i - x_{i + \frac{1}{2}}) \in \partial f_1(x_i)$$ 
+ and the backward iteration means that 
+ $$\frac{1}{s}(x_{i - \frac{1}{2}} - x_i)\in\partial f_2(x_i)$$ 
+ (for $i = 1$ we set $x_{\frac{1}{2}} = x_1$ and
+ use that $x_1\in \arg\min f_2$ so that $0\in \partial f_2(x_1)$).
+ 
+ This implies that
+ \begin{equation}\label{eq373}
+  \frac{1}{n}\displaystyle\sum_{i = 1}^n (f(x_i) - f(x^*)) \leq \frac{1}{ns}\displaystyle\sum_{i = 1}^n \langle x_{i - \frac{1}{2}} - x_{i + \frac{1}{2}}, x_i - x^*\rangle
+ \end{equation}
+ We rewrite the right-hand side as
+ \begin{equation}\label{eq377}
+  \frac{1}{ns}\displaystyle\sum_{i = 1}^n \langle x_i - x_{i + 1}, x_i - x^*\rangle + \frac{1}{n} \displaystyle\sum_{i = 1}^n\langle h_i - h_{i+1}, x_i - x^*\rangle
+ \end{equation}
+ where $h_i = \frac{1}{s}(x_{i - \frac{1}{2}} - x_i)\in\partial f_2(x_i)$.
+ 
+ The first sum in equation (\ref{eq377}) can be rewritten in exactly the same way as in the proof of Theorem \ref{original_subgradient}
+ to obtain
+ \begin{equation}\label{eq384}
+  \frac{1}{2ns}\left(\|x_1 - x^*\|_2^2 - \|x_{n+1} - x^*\|_2^2 + \displaystyle\sum_{i = 1}^n \|x_i - x_{i+1}\|_2^2\right)
+ \end{equation}
+
+ We now consider the second sum in equation (\ref{eq377}). For this we use Lemma \ref{bregman_equation_1} to rewrite
+ $\langle h_i - h_{i+1}, x_i - x^*\rangle$ as
+ \begin{equation}
+  D_{f_2}(x^*,x_i;h_i) - D_{f_2}(x^*,x_{i+1};h_{i+1}) + D_{f_2}(x_i,x_{i+1};h_{i+1})
+ \end{equation}
+ and note that the relevant sum now telescopes to yield
+ \begin{equation}\label{eq394}
+  \frac{1}{n}\left(D_{f_2}(x^*,x_1;h_1) - D_{f_2}(x^*,x_{n+1};h_{n+1}) + 
+  \displaystyle\sum_{i = 1}^n D_{f_2}(x_i,x_{i+1};h_{i+1})\right)
+ \end{equation}
+ We continue by considering the sums in equations (\ref{eq384}) and (\ref{eq394}) together
+ \begin{equation}\label{eq402}
+  \frac{1}{ns}\left(\displaystyle\sum_{i = 1}^n \frac{1}{2}\|x_i - x_{i+1}\|_2^2 + sD_{f_2}(x_i,x_{i+1};h_{i+1})\right)
+ \end{equation}
+ and consider the term
+ $$\frac{1}{2}\|x_i - x_{i+1}\|_2^2 + sD_{f_2}(x_i,x_{i+1};h_{i+1})
+ $$
+ Recalling the definition of the Bregman distance and the fact that $x_i - x_{i+1} = sg_i + sh_{i+1}$ (recall that
+ $g_i\in\partial f_1(x_i)$ is the subgradient in the forward step), this term becomes
+ $$\frac{1}{2}\|sg_i + sh_{i+1}\|_2^2 - \langle sh_{i+1}, sg_i + sh_{i+1}\rangle + s(f_2(x_i) - f_2(x_{i+1})) 
+ $$
+ which is equal to
+ \begin{equation}
+  \frac{1}{2}(\|sg_i\|_2^2 - \|sh_{i + 1}\|_2^2) + s(f_2(x_i) - f_2(x_{i+1})) 
+ \end{equation}
+ Plugging this into equation (\ref{eq402}) we get
+ \begin{equation}
+  \frac{1}{n}(f_2(x_1) - f_2(x_{n+1})) + \frac{1}{2ns}\left(\displaystyle\sum_{i = 1}^n\|sg_i\|_2^2 - \|sh_{i + 1}\|_2^2\right)
+ \end{equation}
+ Plugging all of this into equation (\ref{eq373}), noting that $f_2(x_1) - f_2(x_{n+1}) \leq 0$ (since $x_1\in \arg\min f_2$),
+ dropping all of the negative norm squared terms, and recalling that $D_{f_2}(x^*,x_{n+1};h_{n+1}) \geq 0$, we obtain
+ \begin{equation}
+  \frac{1}{n}\displaystyle\sum_{i = 1}^n (f(x_i) - f(x^*)) \leq \frac{1}{2ns}\left(\|x_1 - x^*\|_2^2 + \displaystyle\sum_{i = 1}^n\|sg_i\|_2^2\right)
+  + \frac{1}{n}D_{f_2}(x^*,x_1;h_1)
+ \end{equation}
+ The first term in this sum is the same as the bound in the proof of Theorem \ref{original_subgradient}, and by choosing $s = \frac{R}{M\sqrt{n}}$
+ we obtain as before
+ \begin{equation}
+  \frac{1}{2ns}\left(\|x_1 - x^*\|_2^2 + \displaystyle\sum_{i = 1}^n\|sg_i\|_2^2\right) \leq \frac{RM}{2\sqrt{n}}
+ \end{equation}
+ Finally, we note that since we set $x_{\frac{1}{2}} = x_1$, we have $h_1 = 0$ and so
+ $$D_{f_2}(x^*,x_1;h_1) = f_2(x^*) - f_2(x_1) = f_2(x^*) - \min_x f_2(x)
+ $$
+ This then gives
+ \begin{equation}
+  f(\bar{x}_n) - f(x^*) \leq \frac{RM}{2\sqrt{n}} + \frac{f_2(x^*) - \min_x f_2(x)}{n}
+ \end{equation}
+ as desired.
+
+ As usual, we deal with the minimum by noting that the minimum is bounded by the average.
+\end{proof}
+
+We can also obtain a version of this method with a variable step size, for which the number of iterations
+need not be specified in advance, we leave this as an exercise.
+
+In addition, we obtain the same result in the stochastic setting, where the subgradient elements $g_n$ are replaced by an unbiased 
+sample, i.e. where we consider the iteration
+\begin{equation}\label{forward_backward_stochastic_subgradient}
+ x_{n+\frac{1}{2}} = x_n - sg(x_n,\xi_n),~x_{n+1} = p_{sf_2}(x_{n+\frac{1}{2}})
+\end{equation}
+where $\mathbb{E}_{\xi_n}(g(x_n,\xi_n))\in \partial f_1(x_n)$.
+\begin{theorem}
+ Assume that $f_1$ is convex with bounded subgradient samples, meaning that $\|g(x,\xi)\|_2 \leq M$ for all $x$ and $\xi$.
+ 
+ Set $x_1 \in \arg\min_xf_2(x)$, let $x^*\in \arg\min_x f(x)$, and assume that $\|x_1 - x^*\|_2 \leq R$. 
+ 
+ Then, setting the step size $s = \frac{R}{M\sqrt{n}}$,
+ the iterates of (\ref{forward_backward_stochastic_subgradient}) satisfy
+ \begin{equation}
+  \mathbb{E}(f(\bar{x}_n) - f(x^*)) \leq \frac{RM}{2\sqrt{n}} + \frac{f_2(x^*) - \min_x f_2(x)}{n}
+ \end{equation}
+ where $\bar{x}_n = \frac{1}{n}\sum_{i = 1}^n x_i$ is the average of the first $n$ iterates, and
+ \begin{equation}
+  \mathbb{E}(\min_{i=1,...,n} f(x_i) - f(x^*)) \leq \frac{RM}{2\sqrt{n}} + \frac{f_2(x^*) - \min_x f_2(x)}{n}
+ \end{equation}
+\end{theorem}
+\begin{proof}
+  The proof is a straightforward combination of the arguments in Theorems \ref{random_subgradient_descent_thm} and
+ \ref{forward_backward_subgradient_thm}.
+\end{proof}
+
+\subsection{Dual Averaging}
+In this section, we introduce Nesterov's method of dual averaging. In order to best explain where this method comes from,
+we first start with a different perspective on subgradient descent. Notice that the subgradient descent iteration
+(\ref{subgradient_descent}) can also be written as
+\begin{equation}\label{subgradient_descent_argmin}
+ x_{n+1} = \arg\min_x \left(f(x_n) + \langle g_n, x - x_n\rangle + \frac{1}{2s}\|x - x_n\|_2^2\right)
+\end{equation}
+Notice that $f(x_n) + \langle g_n, x - x_n\rangle$ is a lower bound on the objective $f(x)$, and 
+$\frac{1}{2s}\|x - x_n\|_2^2$ can be thought of as a regularization term which prevents $x_{n+1}$
+from moving too far away from $x_n$.
+
+So for subgradient descent, the next iterate can be obtained by minimizing a regularized lower bound on the objective.
+In fact, many optimization methods can be thought of as minimizing regularized approximations to the objective in 
+every step.
+
+In equation (\ref{subgradient_descent_argmin}), the lower bound $f(x_n) + \langle g_n, x - x_n\rangle$ only depends on
+the previous point $x_n$ and the previous gradient $g_n$. The idea behind dual averaging is to replace this
+lower bound by its average over all previous iterates
+\begin{equation}
+ \frac{1}{n}\displaystyle\sum_{i = 1}^n (f(x_i) + \langle g_i, x - x_i\rangle)
+\end{equation}
+Since each of these terms is a lower bound on $f$, so is their average. We now need to add a regularization term
+to obtain the next iterate $x_{n+1}$. For the purposes of this exposition, we choose $\frac{1}{2}\|x\|^2_2$ as a regularizer,
+although any strongly convex function can be used. This leads to the following subproblem for $x_{n+1}$
+\begin{equation}
+ x_{n+1} = \arg\min_x\left(\frac{1}{n}\displaystyle\sum_{i = 1}^n (f(x_i) + \langle g_i, x - x_i\rangle) + \frac{\gamma_n}{2}\|x\|_2^2\right)
+\end{equation}
+where $g_i\in \partial f(x_i)$ and the sequence $\gamma_n > 0$ must be chosen appropriately to make the method converge. 
+
+In order to simplify notation, we drop terms not depending on $x$, multiply by $n$, and define $\alpha_{n+1} = n\gamma_n$,
+to rewrite the above problem as
+\begin{equation}\label{SDA_iteration}
+ x_{n+1} = \arg\min_x\left(\displaystyle\sum_{i = 1}^n \langle g_i, x\rangle + \frac{\alpha_{n+1}}{2}\|x\|_2^2\right)
+\end{equation}
+(again $g_i\in \partial f(x_i)$) whose solution is given by
+\begin{equation}
+ x_{n+1} = -\frac{1}{\alpha_{n+1}}\displaystyle\sum_{i = 1}^n g_i
+\end{equation}
+Additionally, we set $x_1 = 0$ and $\alpha_1 > 0$ so that
+\begin{equation}
+ x_1 = \arg\min_x \frac{\alpha_1}{2}\|x\|_2^2
+\end{equation}
+
+
+We begin by using the definition of $x_{n+1}$ as the minimizer in (\ref{SDA_iteration}) to obtain two simple lemmas which will
+be crucial in our convergence analysis.
+\begin{lemma}\label{lemma558}
+ For any $z$ and any $n \geq 1$, we have
+ \begin{equation}
+  \displaystyle\sum_{i = 1}^{n-1} \langle g_i, x_n - z\rangle \leq \frac{\alpha_n}{2}(\|z\|_2^2 - \|x_n\|_2^2)
+ \end{equation}
+
+\end{lemma}
+\begin{proof}
+ Since $x_{n+1}$ is the minimizer in (\ref{SDA_iteration}), we have
+ \begin{equation}
+  \displaystyle\sum_{i = 1}^n \langle g_i, x_{n+1}\rangle + \frac{\alpha_{n+1}}{2}\|x_{n+1}\|_2^2 \leq \displaystyle\sum_{i = 1}^n \langle g_i, z\rangle + \frac{\alpha_{n+1}}{2}\|z\|_2^2
+ \end{equation}
+ Rearranging this and shifting the index yields the desired inequality (we can also easily verify the conclusion for $n = 1$).
+\end{proof}
+
+\begin{lemma}\label{lemma573}
+ Let $x_n$ be defined by (\ref{SDA_iteration}). Then we have
+ \begin{equation}
+  \displaystyle\sum_{i = 1}^n \langle g_i, x_n - x_{n+1}\rangle \leq \frac{\alpha_{n}}{2}(\|x_{n+1}\|_2^2 - \|x_n\|_2^2) + \frac{1}{2\alpha_{n}} \|g_n\|_2^2
+ \end{equation}
+
+\end{lemma}
+\begin{proof}
+ Define $f_n(x) = \sum_{i = 1}^{n-1} \langle g_i, x\rangle + \frac{\alpha_{n}}{2}\|x\|_2^2$, so that
+ $$x_n = \arg\min_x f_n(x)
+ $$
+ and $f_n(x)$ is strongly convex with convexity parameter $\alpha_{n}$.
+ 
+ This means that $f^\prime_n(x) = f_n(x) + \langle g_n, x\rangle$ is also strongly convex with the same convexity parameter $\alpha_{n}$.
+ 
+ Note that since $x_n = \arg\min_x f_n(x)$, we have $0\in \partial f_n(x_n)$ and so $g_n\in \partial f^\prime_n(x_n)$. Using the strong
+ convexity, we thus obtain
+ \begin{equation}
+  f_n^\prime(x_{n+1}) \geq f_n^\prime(x_n) + \langle g_n, x_{n+1} - x_n\rangle + \frac{\alpha_{n}}{2}\|x_{n+1} - x_n\|_2^2
+ \end{equation}
+ so that (rearranging and using Cauchy-Schwartz)
+ \begin{align}
+  f_n^\prime(x_n) - f_n^\prime(x_{n+1}) &\leq \|g_n\|_2\|x_{n+1} - x_n\|_2 - \frac{\alpha_{n}}{2}\|x_{n+1} - x_n\|_2^2 \\
+  &\leq \frac{1}{2\alpha_{n}} \|g_n\|_2^2
+ \end{align}
+ This means that
+ \begin{equation}
+  f_n^\prime(x_n) \leq f_n^\prime(x_{n+1}) + \frac{1}{2\alpha_{n}} \|g_n\|_2^2
+ \end{equation}
+ We now recall the definition of $f^\prime_n(x)$ to see that
+ \begin{equation}
+  \displaystyle\sum_{i = 1}^{n} \langle g_i, x_n\rangle + \frac{\alpha_{n}}{2}\|x_n\|_2^2 \leq 
+  \displaystyle\sum_{i = 1}^{n} \langle g_i, x_{n+1}\rangle + \frac{\alpha_{n}}{2}\|x_{n+1}\|_2^2 + \frac{1}{2\alpha_{n}} \|g_n\|_2^2
+ \end{equation}
+ Rearranging this, we get
+ \begin{equation}
+  \displaystyle\sum_{i = 1}^{n} \langle g_i, x_n - x_{n+1}\rangle \leq \frac{\alpha_{n}}{2}(\|x_{n+1}\|_2^2 - \|x_n\|_2^2) + \frac{1}{2\alpha_{n}} \|g_n\|_2^2
+ \end{equation}
+ as desired.
+
+\end{proof}
+
+We now prove convergence of the dual averaging method.
+\begin{theorem}\label{SDA_convergence_thm}
+ Assume that $f$ is convex with bounded subgradient (i.e. Lipschitz), meaning that $\|g\|_2 \leq M$ for all $g\in \partial f(x)$ (for any point $x$).
+ 
+ Additionally, let $x^*\in \arg\min_x f(x)$.
+ 
+ Then if $x_n$ is given by the iteration (\ref{SDA_iteration}) with $\alpha_n = c\sqrt{n}$, we have
+ \begin{equation}
+  f(\bar{x}_n) - f(x^*) \leq \frac{1}{\sqrt{n}}\left(\frac{c}{2}\|x^*\|_2^2 + \frac{M^2}{c}\right)
+ \end{equation}
+ where $\bar{x}_n$ is the average of the first $n$ iterates. Additionally, we have
+ \begin{equation}
+  \min_{i = 1,...,n} (f(x_i) - f(x^*)) \leq \frac{1}{\sqrt{n}}\left(\frac{c}{2}\|x^*\|_2^2 + \frac{M^2}{c}\right)
+ \end{equation}
+\end{theorem}
+
+\begin{proof}
+ As before, we begin by noting that (by convexity)
+ \begin{equation}
+  f(\bar{x}_n) - f(x^*) \leq \frac{1}{n}\displaystyle\sum_{i = 1}^n (f(x_i) - f(x^*))
+ \end{equation}
+ and
+ \begin{equation}
+  \min_{i = 1,...,n} (f(x_i) - f(x^*)) \leq \frac{1}{n}\displaystyle\sum_{i = 1}^n (f(x_i) - f(x^*))
+ \end{equation}
+ Thus it suffices to bound the `average regret.' We begin by using the subdifferential property to get
+ \begin{equation}
+  \frac{1}{n}\displaystyle\sum_{i = 1}^n (f(x_i) - f(x^*)) \leq 
+  \frac{1}{n}\displaystyle\sum_{i = 1}^n \langle g_i, x_i - x^*\rangle
+ \end{equation}
+ The trick is now to rewrite this sum as
+ \begin{equation}\label{eq646}
+  \displaystyle\sum_{i = 1}^n \langle g_i, x_i - x^*\rangle = 
+  \displaystyle\sum_{i = 1}^n \langle g_i, x_{n+1} - x^*\rangle + \displaystyle\sum_{i = 1}^n \displaystyle\sum_{j = 1}^i\langle g_j, x_i - x_{i+1}\rangle
+ \end{equation}
+ and to use Lemmas \ref{lemma573} and \ref{lemma558} to bound
+ \begin{equation}
+  \displaystyle\sum_{i = 1}^n \langle g_i, x_{n+1} - x^*\rangle \leq \frac{\alpha_{n+1}}{2}(\|x^*\|_2^2 - \|x_{n+1}\|_2^2)
+ \end{equation}
+ and
+ \begin{equation}
+  \displaystyle\sum_{j = 1}^i\langle g_j, x_i - x_{i+1}\rangle \leq \frac{\alpha_{i}}{2}(\|x_{i+1}\|_2^2 - \|x_i\|_2^2) + \frac{1}{2\alpha_{i}} \|g_i\|_2^2
+ \end{equation}
+ Utilizing our bound on the subgradients $\|g_i\|_2\leq M$, plugging this into equation (\ref{eq646}), and rearranging
+ the (almost) telescoping sum, we get
+ \begin{align}
+  \displaystyle\sum_{i = 1}^n \langle g_i, x_i - x^*\rangle &\leq \frac{\alpha_{n+1}}{2}\|x^*\|_2^2 - \frac{\alpha_1}{2}\|x_1\|_2^2 \\
+  &+ \frac{1}{2}\displaystyle\sum_{i = 2}^{n+1}(\alpha_{i - 1} - \alpha_{i}) \|x_i\|_2^2 + \frac{M^2}{2}\displaystyle\sum_{i = 1}^n\frac{1}{\alpha_{i}} 
+ \end{align}
+ The above inequality is true for any choice of $\alpha_1,...,\alpha_{n+1}$ as long as the $x_i$ are given by the iteration
+ (\ref{SDA_iteration}). Since the left hand side of the inequality only depends upon $x_1,...,x_n$, we are free to choose
+ $\alpha_{n+1} = \alpha_n$ (without changing the left hand size), and we get
+ \begin{align}
+  \displaystyle\sum_{i = 1}^n \langle g_i, x_i - x^*\rangle &\leq \frac{\alpha_{n}}{2}\|x^*\|_2^2 - \frac{\alpha_1}{2}\|x_1\|_2^2 \\
+  &+ \frac{1}{2}\displaystyle\sum_{i = 2}^{n}(\alpha_{i - 1} - \alpha_{i}) \|x_i\|_2^2 + \frac{M^2}{2}\displaystyle\sum_{i = 1}^n\frac{1}{\alpha_{i}} 
+ \end{align}
+ Now we note that if $\alpha_n$ is an increasing sequence (which it is for our particular choice $\alpha_n = c\sqrt{n}$), we can use 
+ $\alpha_{i-1} - \alpha_i \leq 0$ to get
+ \begin{equation}
+  \displaystyle\sum_{i = 1}^n \langle g_i, x_i - x^*\rangle \leq\frac{\alpha_{n}}{2}\|x^*\|_2^2 + \frac{M^2}{2}\displaystyle\sum_{i = 1}^n\frac{1}{\alpha_{i}} 
+ \end{equation}
+ Plugging in our choice of $\alpha_n = c\sqrt{n}$ and noting that $\sum_{i = 1}^n \frac{1}{\sqrt{i}} \leq 2\sqrt{n}$ gives
+ \begin{equation}
+  \displaystyle\sum_{i = 1}^n \langle g_i, x_i - x^*\rangle \leq\left(\frac{c}{2}\|x^*\|_2^2 + \frac{M^2}{c}\right)\sqrt{n}
+ \end{equation}
+ Dividing this by $n$ completes the proof.
+
+\end{proof}
+
+So the dual averaging method achieves the same asymptotic convergence rate as subgradient descent. A straightforward modification
+of the above argument can be used to obtain the convergence of a stochastic version of the dual average algorithm. As before,
+we need to replace the Lipschitz assumption on $f$ by the assumption that our subgradient samples are bounded. We state the
+relevant result without proof.
+
+\begin{theorem}
+ Assume that $f$ is convex and assume that $x_n$ are given by the iteration (\ref{SDA_iteration}) where $g_i$ is replaced by
+ an unbiased sample $g(x_i,\xi_i)$ of an element in the subgradient 
+ (i.e. $\xi_i$ is a random variable and $\mathbb{E}_{\xi_i}g(x_i,\xi_i) \in \partial f(x_i)$). Assume additionally that the 
+ subgradient samples are bounded, i.e. that $\|g(x,\xi)\|_2 \leq M$.
+ 
+ Let $x^*\in \arg\min_x f(x)$.
+ 
+ Then with $\alpha_n = c\sqrt{n}$, we have
+ \begin{equation}
+  \mathbb{E}(f(\bar{x}_n) - f(x^*)) \leq \frac{1}{\sqrt{n}}\left(\frac{c}{2}\|x^*\|_2^2 + \frac{M^2}{c}\right)
+ \end{equation}
+ where $\bar{x}_n$ is the average of the first $n$ iterates. Additionally, we have
+ \begin{equation}
+  \mathbb{E}\left(\min_{i = 1,...,n} (f(x_i) - f(x^*))\right) \leq \frac{1}{\sqrt{n}}\left(\frac{c}{2}\|x^*\|_2^2 + \frac{M^2}{c}\right)
+ \end{equation}
+\end{theorem}
+
+\subsection{Regularized Dual Averaging}
+
+In this subsection, we introduce a version of the dual averaging method which is designed for solving composite
+optimization problems of the form
+\begin{equation}
+ f(x) = f_1(x) + f_2(x)
+\end{equation}
+where $f_1(x)$ is a convex function whose subgradient can be readily calculated and $f_2(x)$ is a convex function
+for which a proximal (or backward) step
+\begin{equation}
+ p_{\lambda f_2}(x) = \arg\min_y \frac{1}{2}\|y - x\|_2^2 + \lambda f_2(y)
+\end{equation}
+can efficiently be calculated. The proximal step and functions $f_2$ for which it can efficiently be evaluated were
+discussed in more detail in the section on forward backward subgradient descent.
+
+We begin the discussion by noting that forward-backward subgradient descent (\ref{subgradient_forward_backward}) can be written
+as
+\begin{equation}
+ x_{n+1} = \arg\min_x \left(f_1(x_n) + \langle g_n, x - x_n\rangle + f_2(x) + \frac{1}{2s}\|x - x_n\|_2^2\right)
+\end{equation}
+where $g_n\in \partial f(x_n)$. We note that $f_1(x_n) + \langle g_n, x - x_n\rangle + f_2(x)$ is a lower bound on
+$f(x)$ and thus this method can be thought of as minimizing a regularized lower bound on the objective.
+
+The regularized dual average method replaces the above lower bound by an average over all of the previous iterates
+\begin{equation}
+ \frac{1}{n}\displaystyle\sum_{i = 1}^n (f_1(x_n) + \langle g_n, x - x_n\rangle + f_2(x))
+\end{equation}
+and as for the dual averaging method, we add $\frac{1}{2}\|x\|_2^2$ as a regularizer (although any strongly convex
+function will do) to obtain the following method
+\begin{equation}
+ x_{n+1} = \arg\min_x\left(\frac{1}{n}\displaystyle\sum_{i = 1}^n (f_1(x_n) + \langle g_n, x - x_n\rangle + f_2(x)) + \frac{\gamma_n}{2}\|x\|_2^2\right)
+\end{equation}
+In order to simplify notation, we rewrite this in the same way we rewrote the dual averaging method to get
+\begin{equation}\label{RDA_iteration}
+ x_{n+1} = \arg\min_x \left(\displaystyle\sum_{i = 1}^n \langle g_n, x\rangle\right) + nf_2(x) + \frac{\alpha_{n+1}}{2}\|x\|_2^2
+\end{equation}
+where $\alpha_{n+1} = n\gamma_n$. More explicitly, we can split this subproblem into two steps to get
+\begin{equation}
+ x_{n+\frac{1}{2}} = -\frac{1}{\alpha_{n+1}}\displaystyle\sum_{i = 1}^n g_n,~x_{n+1} = p_{\lambda_nf_2}(x_{n+\frac{1}{2}})
+\end{equation}
+where $\lambda_n = \frac{n}{\alpha_{n+1}}$. Also, we set $x_1 = 0$ and $\alpha_1 > 0$ so that
+\begin{equation}
+ x_1 = \arg\min_x \frac{\alpha_1}{2}\|x\|_2^2
+\end{equation}
+
+The convergence analysis of this method is very similar to that of the dual averaging method. We begin by using the
+definition of $x_{n+1}$ as the minimizer in (\ref{RDA_iteration}) to obtain the following two lemmas.
+
+\begin{lemma}\label{lemma751}
+ For any $z$ and any $n \geq 1$, we have
+ \begin{equation}
+  \displaystyle\sum_{i = 1}^{n-1} \langle g_i, x_n - z\rangle \leq \frac{\alpha_n}{2}(\|z\|_2^2 - \|x_n\|_2^2) + (n-1)(f_2(z) - f_2(x_n))
+ \end{equation}
+
+\end{lemma}
+\begin{proof}
+ Since $x_{n+1}$ is the minimizer in (\ref{RDA_iteration}), we have
+ \begin{align}
+  &\displaystyle\sum_{i = 1}^n \langle g_i, x_{n+1}\rangle + \frac{\alpha_{n+1}}{2}\|x_{n+1}\|_2^2 + nf_2(x_{n+1}) \\
+  &\leq \displaystyle\sum_{i = 1}^n \langle g_i, z\rangle + \frac{\alpha_{n+1}}{2}\|z\|_2^2+ nf_2(z)
+ \end{align}
+ Rearranging this and shifting the index yields the desired inequality (we can also easily verify the conclusion for $n = 1$).
+\end{proof}
+
+\begin{lemma}\label{lemma767}
+ Let $x_n$ be defined by (\ref{SDA_iteration}). Then we have
+ \begin{align}
+  \displaystyle\sum_{i = 1}^n \langle g_i, x_n - x_{n+1}\rangle &\leq \frac{\alpha_{n}}{2}(\|x_{n+1}\|_2^2 - \|x_n\|_2^2) \\
+  &+ (n-1)(f_2(x_{n+1}) - f_2(x_n)) + \frac{1}{2\alpha_{n}} \|g_n\|_2^2
+ \end{align}
+
+\end{lemma}
+\begin{proof}
+ The proof is exactly the same as the proof of Lemma \ref{lemma573}, except that we set
+ \begin{equation}
+  f_n(x) = \left(\displaystyle\sum_{i = 1}^{n-1} \langle g_n, x\rangle\right) + (n-1)f_2(x) + \frac{\alpha_{n}}{2}\|x\|_2^2
+ \end{equation}
+
+\end{proof}
+
+We now prove the convergence of the regularized dual averaging method (\ref{RDA_iteration}).
+\begin{theorem}
+ Assume that $f_1$ is convex with bounded subgradient (i.e. Lipschitz), meaning that $\|g\|_2 \leq M$ for all $g\in \partial f_1(x)$ (for any point $x$).
+ 
+ Let $x^*\in \arg\min_x f(x)$.
+ 
+ Then if $x_n$ is given by the iteration (\ref{RDA_iteration}) with $\alpha_n = c\sqrt{n}$, we have
+ \begin{equation}
+  f(\bar{x}_n) - f(x^*) \leq \frac{1}{\sqrt{n}}\left(\frac{c}{2}\|x^*\|_2^2 + \frac{M^2}{c}\right) + \frac{f_2(x_1) - \inf_x f_2(x)}{n}
+ \end{equation}
+ where $\bar{x}_n$ is the average of the first $n$ iterates. Additionally, we have
+ \begin{equation}
+  \min_{i = 1,...,n} (f(x_i) - f(x^*)) \leq \frac{1}{\sqrt{n}}\left(\frac{c}{2}\|x^*\|_2^2 + \frac{M^2}{c}\right) + \frac{f_2(x_1) - \inf_x f_2(x)}{n}
+ \end{equation}
+\end{theorem}
+\begin{proof}
+ The proof is very similar to the proof of Theorem \ref{SDA_convergence_thm}. We begin by noting that (by convexity)
+ \begin{equation}
+  f(\bar{x}_n) - f(x^*) \leq \frac{1}{n}\displaystyle\sum_{i = 1}^n (f(x_i) - f(x^*))
+ \end{equation}
+ and
+ \begin{equation}
+  \min_{i = 1,...,n} (f(x_i) - f(x^*)) \leq \frac{1}{n}\displaystyle\sum_{i = 1}^n (f(x_i) - f(x^*))
+ \end{equation}
+ Thus it suffices to bound the `average regret.' We begin by decomposing $f = f_1 + f_2$ and using the subdifferential property to get
+ \begin{equation}\label{eq808}
+  \frac{1}{n}\displaystyle\sum_{i = 1}^n (f(x_i) - f(x^*)) \leq 
+  \frac{1}{n}\displaystyle\sum_{i = 1}^n \langle g_i, x_i - x^*\rangle + \frac{1}{n}\displaystyle\sum_{i = 1}^n (f_2(x_i) - f_2(x^*))
+ \end{equation}
+We now proceed to rewrite and bound the first sum above as in the proof of Theorem \ref{SDA_convergence_thm}. We get
+\begin{equation}
+ \displaystyle\sum_{i = 1}^n \langle g_i, x_i - x^*\rangle = 
+  \displaystyle\sum_{i = 1}^n \langle g_i, x_{n+1} - x^*\rangle + \displaystyle\sum_{i = 1}^n \displaystyle\sum_{j = 1}^i\langle g_j, x_i - x_{i+1}\rangle
+\end{equation}
+and use Lemmas \ref{lemma751} and \ref{lemma767} to bound
+\begin{equation}
+ \displaystyle\sum_{i = 1}^n \langle g_i, x_{n+1} - x^*\rangle \leq \frac{\alpha_{n+1}}{2}(\|x^*\|_2^2 - \|x_{n+1}\|_2^2) + n(f_2(x^*) - f_2(x_{n+1}))
+\end{equation}
+and
+ \begin{align}
+  \displaystyle\sum_{j = 1}^i\langle g_j, x_i - x_{i+1}\rangle &\leq \frac{\alpha_{i}}{2}(\|x_{i+1}\|_2^2 - \|x_i\|_2^2) \\
+  &+ (n-1)(f_2(x_{i+1}) - f_2(x_i)) + \frac{1}{2\alpha_{i}} \|g_i\|_2^2
+ \end{align}
+ Utilizing our bound on the subgradients $\|g_i\|_2\leq M$, plugging this into equation (\ref{eq646}), and rearranging
+ the (almost) telescoping sums, we get
+ \begin{align}
+  \displaystyle\sum_{i = 1}^n \langle g_i, x_i - x^*\rangle &\leq \frac{\alpha_{n+1}}{2}\|x^*\|_2^2 - \frac{\alpha_1}{2}\|x_1\|_2^2 + nf_2(x^*) - \displaystyle\sum_{i = 2}^{n+1} f_2(x_i) \\
+  &+ \frac{1}{2}\displaystyle\sum_{i = 2}^{n+1}(\alpha_{i - 1} - \alpha_{i}) \|x_i\|_2^2 + \frac{M^2}{2}\displaystyle\sum_{i = 1}^n\frac{1}{\alpha_{i}} 
+ \end{align}
+ Plugging this into equation (\ref{eq808}) we obtain
+ \begin{align}
+  \displaystyle\sum_{i = 1}^n (f(x_i) - f(x^*)) &\leq \frac{\alpha_{n+1}}{2}\|x^*\|_2^2 - \frac{\alpha_1}{2}\|x_1\|_2^2 + (f_2(x_1) - f_2(x_{n+1})) \\
+  &+ \frac{1}{2}\displaystyle\sum_{i = 2}^{n+1}(\alpha_{i - 1} - \alpha_{i}) \|x_i\|_2^2 + \frac{M^2}{2}\displaystyle\sum_{i = 1}^n\frac{1}{\alpha_{i}} 
+ \end{align}
+ which gives the bound
+ \begin{align}
+  \displaystyle\sum_{i = 1}^n (f(x_i) - f(x^*)) &\leq \frac{\alpha_{n+1}}{2}\|x^*\|_2^2 - \frac{\alpha_1}{2}\|x_1\|_2^2 + (f_2(x_1) - \inf_x f_2(x)) \\
+  &+ \frac{1}{2}\displaystyle\sum_{i = 2}^{n+1}(\alpha_{i - 1} - \alpha_{i}) \|x_i\|_2^2 + \frac{M^2}{2}\displaystyle\sum_{i = 1}^n\frac{1}{\alpha_{i}} 
+ \end{align}
+ As before, the above inequality is true for any choice of $\alpha_1,...,\alpha_{n+1}$ as long as the $x_i$ are given by the iteration
+ (\ref{RDA_iteration}). Since the left hand side of the inequality only depends upon $x_1,...,x_n$, we are free to choose
+ $\alpha_{n+1} = \alpha_n$ (without changing the left hand size), and we get
+ \begin{align}
+  \displaystyle\sum_{i = 1}^n (f(x_i) - f(x^*)) &\leq \frac{\alpha_{n}}{2}\|x^*\|_2^2 - \frac{\alpha_1}{2}\|x_1\|_2^2 + (f_2(x_1) - \inf_x f_2(x)) \\
+  &+ \frac{1}{2}\displaystyle\sum_{i = 2}^{n}(\alpha_{i - 1} - \alpha_{i}) \|x_i\|_2^2 + \frac{M^2}{2}\displaystyle\sum_{i = 1}^n\frac{1}{\alpha_{i}} 
+ \end{align}
+ Now we note that if $\alpha_n$ is an increasing sequence (which it is for our particular choice $\alpha_n = c\sqrt{n}$), we can use 
+ $\alpha_{i-1} - \alpha_i \leq 0$ to get
+ \begin{equation}
+  \displaystyle\sum_{i = 1}^n \langle g_i, x_i - x^*\rangle \leq\frac{\alpha_{n}}{2}\|x^*\|_2^2 + \frac{M^2}{2}\displaystyle\sum_{i = 1}^n\frac{1}{\alpha_{i}} + (f_2(x_1) - \inf_x f_2(x)) 
+ \end{equation}
+ Plugging in our choice of $\alpha_n = c\sqrt{n}$ and noting that $\sum_{i = 1}^n \frac{1}{\sqrt{i}} \leq 2\sqrt{n}$ gives
+ \begin{equation}
+  \displaystyle\sum_{i = 1}^n \langle g_i, x_i - x^*\rangle \leq\left(\frac{c}{2}\|x^*\|_2^2 + \frac{M^2}{c}\right)\sqrt{n} + (f_2(x_1) - \inf_x f_2(x))
+ \end{equation}
+ Dividing this by $n$ completes the proof.
+ \end{proof}
+ 
+ A straightforward modification of the above argument provides a proof that the stochastic version of the above algorithm
+ converges. We state the relevant theorem but omit the proof.
+ \begin{theorem}
+ Assume that $f$ is convex and assume that $x_n$ are given by the iteration (\ref{RDA_iteration}) where $g_i$ is replaced by
+ an unbiased sample $g(x_i,\xi_i)$ of an element in the subgradient 
+ (i.e. $\xi_i$ is a random variable and $\mathbb{E}_{\xi_i}g(x_i,\xi_i) \in \partial f(x_i)$). Assume additionally that the 
+ subgradient samples are bounded, i.e. that $\|g(x,\xi)\|_2 \leq M$.
+ 
+ Let $x^*\in \arg\min_x f(x)$.
+ 
+ Then with $\alpha_n = c\sqrt{n}$, we have
+ \begin{equation}
+  \mathbb{E}(f(\bar{x}_n) - f(x^*)) \leq \frac{1}{\sqrt{n}}\left(\frac{c}{2}\|x^*\|_2^2 + \frac{M^2}{c}\right) + \frac{f_2(x_1) - \inf_x f_2(x)}{n}
+ \end{equation}
+ where $\bar{x}_n$ is the average of the first $n$ iterates. Additionally, we have
+ \begin{equation}
+  \mathbb{E}\left(\min_{i = 1,...,n} (f(x_i) - f(x^*))\right) \leq \frac{1}{\sqrt{n}}\left(\frac{c}{2}\|x^*\|_2^2 + \frac{M^2}{c}\right) + \frac{f_2(x_1) - \inf_x f_2(x)}{n}
+ \end{equation}
+ \end{theorem}
+
+ 
+%-------------------------------------------------------------------------------------------------------------------
+
+\section{Smooth Convex Functions}
+In this section, we consider methods for optimizing $L$-smooth convex functions, i.e. differentiable convex functions
+whose gradients are Lipschitz with constant $L$
+\begin{equation}
+ \|\nabla f(x) - \nabla f(y)\|_2 \leq L\|x - y\|_2
+\end{equation}
+It is a simple exercise to show that such a function satisfies a quadratic upper bound
+\begin{equation}
+ f(x)\leq f(y) + \langle\nabla f(x), y - x\rangle + \frac{L}{2}\|y - x\|_2^2
+\end{equation}
+
+We will see that with this stronger assumption on the objective, we remove the need to average the iterates in 
+addition to obtaining a significantly better convergence rate in the deterministic setting.
+\subsection{Gradient Descent}
+In this subsection, we analyze the well-known gradient descent method for smooth convex functions
+\begin{equation}\label{gradient_descent_smooth}
+ x_{n+1} = x_n - s\nabla f(x_n)
+\end{equation}
+We also find it instructive to consider the behavior of the continuous gradient descent dynamics
+\begin{equation}\label{gradient_descent_dynamics_smooth}
+ \dot{x}(t) = -\nabla f(x(t))
+\end{equation}
+
+Using a Lyapunov argument, we can show that the continuous dynamics (\ref{gradient_descent_dynamics_smooth}) obtains
+an (objective) convergence rate of $O(\frac{1}{t})$, as the following theorem shows.
+
+\begin{theorem}\label{smooth_gradient_dynamics_thm} 
+ Assume that $f$ is convex and smooth and let $x^*\in \arg\min_x f(x)$. 
+ Then the dynamics (\ref{gradient_descent_dynamics_smooth}) satisfies
+ \begin{equation}
+  f(x(t)) - f(x^*) \leq \frac{1}{2t}\|x(0) - x^*\|_2^2
+ \end{equation}
+
+\end{theorem}
+\begin{proof}
+ Consider the following Lyapunov function
+ \begin{equation}
+  L(t) = t(f(x(t)) - f(x^*)) + \frac{1}{2}\|x(t) - x^*\|_2^2
+ \end{equation}
+ We calculate the derivative of $L$
+ \begin{equation}
+  L^\prime(t) = (f(x(t)) - f(x^*)) + t\langle\nabla f(x(t)), \dot{x}(t)\rangle + \langle\dot{x}(t), (x(t) - x^*)\rangle
+ \end{equation}
+ substituting $\dot{x}(t) = -\nabla f(x(t))$ in the above equation, we see
+ \begin{equation}
+  L^\prime(t) = (f(x(t)) - f(x^*)) - \langle\nabla f(x(t)), x(t) - x^*\rangle - t\|\nabla f(x(t))\|_2^2
+ \end{equation}
+ The convexity of $f$ implies that $(f(x(t)) - f(x^*)) - \langle\nabla f(x(t)), x(t) - x^*\rangle \leq 0$ so we get
+ \begin{equation}
+  L^\prime(t) \leq 0
+ \end{equation}
+ This means that $L(t) \leq L(0)$, so we get
+ \begin{equation}
+  t(f(x(t)) - f(x^*)) \leq L(t) \leq L(0) = \frac{1}{2}\|x(0) - x^*\|_2^2
+ \end{equation}
+ as desired.
+
+\end{proof}
+
+Interestingly, we can adapt the above Lyapunov argument to the discrete case as long as our step size is small enough.
+This provides an intuitive and simple derivation of the following convergence result.
+\begin{theorem}\label{gradient_descent_convergence_smooth}
+ Let $f$ be an $L$-smooth, convex function and let $x^*\in\arg\min_x f(x)$. 
+ Then the gradient descent iteration (\ref{gradient_descent_smooth}) with
+ step size $s = \frac{1}{L}$ satisfies
+ \begin{equation}
+  f(x_n) - f(x^*) \leq \frac{L}{2n}\|x_0 - x^*\|_2^2
+ \end{equation}
+
+\end{theorem}
+ Note that the convergence rate is significantly improved over subgradient descent and we also
+ don't need to average the iterates, we can simply take the last one. This is the improvement that
+ smoothness buys us.
+ \begin{proof}
+  Consider the discrete Lyapunov function
+  \begin{equation}
+   L(n) = n(f(x_n) - f(x^*)) + \frac{L}{2}\|x_n - x^*\|_2^2
+  \end{equation}
+  We calculate the change in $L$ as follows
+  \begin{align}
+   L(n+1) - L(n) &= f(x_n) - f(x^*) + (n+1)(f(x_{n+1}) - f(x_n))\\
+   & + L\langle(x_{n+1} - x_n), x_n - x^*\rangle + \frac{L}{2}\|x_{n+1} - x_n\|_2^2
+  \end{align}
+ Substituting $x_{n+1} - x_n = -s\nabla f(x_n) = \frac{-1}{L}\nabla f(x_n)$ into the above equation
+ we obtain
+  \begin{align}
+   L(n+1) - L(n) &= f(x_n) - f(x^*) + (n+1)(f(x_{n+1}) - f(x_n))\\
+   & - \langle\nabla f(x_n), x_n - x^*\rangle + \frac{1}{2L}\|\nabla f(x_n)\|_2^2
+  \end{align}
+  The smoothness allows us to bound $f(x_{n+1}) - f(x_n)$, i.e. show that we attain a sufficient decrease as follows.
+  By substituting $x_{n+1} - x_n = \frac{-1}{L}\nabla f(x_n)$ into
+  \begin{equation}
+   f(x_{n+1}) - f(x_n) \leq \langle\nabla f(x_n), x_{n+1} - x_n\rangle + \frac{L}{2}\|x_{n+1} - x_n\|_2^2
+  \end{equation}
+  we get
+  \begin{equation}
+   f(x_{n+1}) - f(x_n) \leq \frac{-1}{2L}\|\nabla f(x_n)\|_2^2
+  \end{equation}
+  Combining this with the convexity of $f$, which implies that
+  \begin{equation}
+   f(x_n) - f(x^*) \leq \langle\nabla f(x_n), x_n - x^*\rangle
+  \end{equation}
+  we get
+  \begin{equation}
+   L(n+1) - L(n) \leq \frac{-n}{2L}\|\nabla f(x_n)\|_2^2 \leq 0
+  \end{equation}
+  This means that $L(n+1)\leq L(n)$ and thus $L(n) \leq L(0)$. So we have
+  \begin{equation}
+   n(f(x_n) - f(x^*)) \leq L(n) \leq L(0) = \frac{L}{2}\|x_0 - x^*\|_2^2
+  \end{equation}
+  as desired.
+
+ \end{proof}
+ 
+ To conclude this subsection, we address the practical issue that the smoothness parameter $L$ may not be known a priori.
+ It turns out that we can achieve the same convergence rate by using a variable step size, which potentially decreases 
+ in each iteration, to ensure that the Armijo condition
+ \begin{equation}\label{armijo_condition}
+  f(x_n - s_n\nabla f(x_n)) \leq f(x_n) - \frac{s_n^2}{2}\|\nabla f(x_n)\|_2^2
+ \end{equation}
+ is satisfied. In a practical algorithm, we would start with an initial step size $s_0$ and decrease it appropriately whenever
+ (\ref{armijo_condition}) isn't satified. If $f$ is $L$-smooth, we never need to take $s_n$ smaller than $\frac{1}{L}$.
+ 
+ We have the following convergence result in this case.
+ \begin{theorem}
+  Suppose that $f(x)$ is convex and differentiable. Let the iterates $x_n$ be given by
+  \begin{equation}
+   x_{n+1} = x_n - s_n\nabla f(x_n)
+  \end{equation}
+  where $s_n \leq s_{n-1}$ is chosen so that (\ref{armijo_condition}) holds. Then
+  \begin{equation}
+   f(x_n) - f(x^*) \leq \frac{1}{2ns_n}\|x_0 - x^*\|_2^2
+  \end{equation}
+ \end{theorem}
+ The proof is very similar to the proof of Theorem \ref{gradient_descent_convergence_smooth} and we omit it. The relevant
+ (discrete) Lyapunov function is
+ \begin{equation}
+  L(n) = ns_n(f(x_n) - f(x^*)) + \frac{1}{2}\|x_n - x^*\|_2^2
+ \end{equation}
+
+ 
+\subsection{Adding Momentum}
+In this subsection, we introduce the idea of `adding momentum' to the gradient descent method (\ref{gradient_descent_smooth}).
+We will explain what adding momentum means and which effect it has by consider the corresponding 
+continuous dynamics.
+
+The physical intuition behind `adding momentum' is to consider a particle (of unit mass) trapped in a potential given
+by the objective $f(x)$. Such a particle would follow the Newtonian dynamics with acceleration given by $-\nabla f$
+\begin{equation}
+ \dot{x} = v,~\dot{v} = - \nabla f(x)
+\end{equation}
+This motion preserves the total energy, or Hamiltonian, given by
+\begin{equation}\label{hamiltonian}
+ H(x,v) = \frac{1}{2}\|v\|_2^2 + (f(x) - f(x^*))
+\end{equation}
+where $x^*\in \arg\min_x f(x)$.
+
+Consequently, unless the particle starts at $x^*$ with $v = 0$, the dynamics will continually oscillate around the
+minimizer $x^*$. Of course, we want out particle to settle at the minimizer $x^*$. To affect this, we add `friction'
+to the dynamics to get the following damped Hamiltonion dynamics
+\begin{equation}\label{momentum_descent_dynamics_smooth}
+ \dot{x} = v,~\dot{v} = -\alpha v - \nabla f(x)
+\end{equation}
+which can also be written as
+\begin{equation}
+ \ddot{x}(t) + \alpha \dot{x}(t) + \nabla f(x(t)) = 0
+\end{equation}
+where $\alpha$ is the damping rate, which determines how much friction there is.
+
+Under this damped Hamiltonian dynamics, the Hamiltonian (\ref{hamiltonian}) decays, as the following lemma shows.
+\begin{lemma}\label{hamiltonian_decay}
+ Suppose that $x$ and $v$ satisfy the dynamics (\ref{momentum_descent_dynamics_smooth}). Then
+ \begin{equation}
+  \frac{d}{dt}H(x(t),v(t)) = -\alpha\|v(t)\|_2^2
+ \end{equation}
+ where $H(x,v)$ is the Hamiltonian in (\ref{hamiltonian}).
+
+\end{lemma}
+\begin{proof}
+ We calculate
+ \begin{align}
+  \frac{d}{dt}H(x(t),v(t)) &= \left\langle\frac{d}{dx}H(x(t),v(t)), \dot{x}(t)\right\rangle + 
+  \left\langle\frac{d}{dv}H(x(t),v(t)), \dot{v}(t)\right\rangle \\
+   &= \langle \nabla f(x(t)), v(t)\rangle + \langle v(t), -\alpha v(t) - \nabla f(x(t))\rangle \\
+   &= -\alpha\|v(t)\|_2^2
+ \end{align}
+  as desired.
+\end{proof}
+
+It is not a priori clear why following the dynamics (\ref{momentum_descent_dynamics_smooth}) is better than following the
+gradient flow dynamics (\ref{gradient_descent_dynamics_smooth}). We will see in later sections on accelerated gradient
+descent for convex and strongly convex functions why the dynamics (\ref{momentum_descent_dynamics_smooth}) leads to
+very useful methods. 
+
+For now, we begin by considering the behavior of the damped Hamiltonian dynamics for smooth, convex
+objectives. Using a Lyapunov argument, we obtain the following convergence result.
+\begin{theorem}\label{continuous_hamiltonian_convergence_smooth}
+ Suppose that $x(t)$ and $y(t)$ satisfy the damped Hamiltonian dynamics (\ref{momentum_descent_dynamics_smooth}) with $\alpha > 0$ and
+ let $H(x,v)$ be the Hamiltonian in (\ref{hamiltonian}). Suppose also that $v(0) = 0$. Then if $f$ is convex and smooth, we have
+ \begin{equation}\label{hamiltonian_decay_bound_smooth}
+  H(x(t),v(t)) \leq \left(t + \frac{1}{2\alpha}\right)^{-1}\left[\frac{3}{2\alpha}(f(x(0)) - f(x^*)) + \frac{\alpha}{2}\left\|x(0) - x^*\right\|_2^2\right]
+ \end{equation}
+
+\end{theorem}
+The proof of this theorem will also provide a result for $v(0) \neq 0$, but it is messier and we don't write it out explicitly.
+\begin{proof}
+ Consider the Lyapunov function
+ $$
+  L(t) = \left(t + \frac{1}{2\alpha}\right)H(x(t),v(t)) + \frac{1}{\alpha}(f(x(t)) - f(x^*)) + \frac{\alpha}{2}\|(x - x^*) + \frac{1}{\alpha}v\|_2^2
+ $$
+ We calculate the derivative of $L(t)$ as follows. First we note that
+ $$
+  \frac{d}{dt}\left[\left(t + \frac{1}{2\alpha}\right)H(x(t),v(t))\right] = H(x(t),v(t)) + \left(t + \frac{1}{2\alpha}\right)\frac{d}{dt}H(x(t),v(t))
+ $$
+ Using Lemma \ref{hamiltonian_decay} we get
+ \begin{equation}\label{eq700}
+  \frac{d}{dt}\left[\left(t + \frac{1}{2\alpha}\right)H(x(t),v(t))\right] = H(x(t),v(t)) - \alpha\left(t + \frac{1}{2\alpha}\right)\|v(t)\|_2^2
+ \end{equation}
+ We also have
+ \begin{equation}\label{eq704}
+  \frac{d}{dt}\left(\frac{1}{\alpha}(f(x(t)) - f(x^*))\right) = \frac{1}{\alpha}\langle\nabla f(x(t)), \dot{x}(t)\rangle = \frac{1}{\alpha}\langle\nabla f(x(t)), v(t)\rangle
+ \end{equation}
+ and
+ $$
+  \frac{d}{dt}\left(\frac{\alpha}{2}\|(x - x^*) + \frac{1}{\alpha}v\|_2^2\right) = \alpha\left\langle \dot{x}(t) + \frac{1}{\alpha}\dot{v}(t), (x - x^*) + \frac{1}{\alpha}v(t)\right\rangle
+ $$
+ Pluggin the dynamics (\ref{momentum_descent_dynamics_smooth}) into this, we see that $\dot{x}(t) + \frac{1}{\alpha}\dot{v}(t) = -\frac{1}{\alpha}\nabla f(x(t))$, and so
+ \begin{equation}\label{eq712}
+  \frac{d}{dt}\left(\frac{\alpha}{2}\|(x - x^*) + \frac{1}{\alpha}v\|_2^2\right) = -\left\langle\nabla f(x(t)), x(t) - x^* + \frac{1}{\alpha}v(t)\right\rangle
+ \end{equation}
+ Adding equations (\ref{eq700}), (\ref{eq704}), and (\ref{eq712}), and noting that the convexity of $f$ implies
+ \begin{align}
+ H(x(t),v(t)) &= \frac{1}{2}\|v(t)\|_2^2 + (f(x(t)) - f(x^*)) \\
+ &\leq \frac{1}{2}\|v(t)\|_2^2 + \langle\nabla f(x(t)), x(t) - x^*\rangle
+ \end{align}
+ we get
+ \begin{equation}
+  L^\prime(t) \leq -\alpha t\|v(t)\|_2^2 \leq 0
+ \end{equation}
+ This means that $L(t) \leq L(0)$ and so (using the assumption that $v(0) = 0$) we get
+ \begin{align}
+  &\left(t + \frac{1}{2\alpha}\right)H(x(t),v(t)) \leq L(t)\leq L(0) \\
+   &= \frac{3}{2\alpha}(f(x(0)) - f(x^*)) + \frac{\alpha}{2}\left\|x(0) - x^*\right\|_2^2
+ \end{align}
+ as desired.
+
+\end{proof}
+
+So the damped Hamiltonian dynamics (\ref{momentum_descent_dynamics_smooth}) obtains an $O(\frac{1}{t})$ convergence rate
+similar to the gradient flow dynamics (\ref{gradient_descent_dynamics_smooth}). We can actually relate these two dynamics more 
+precisely as follows. We consider the following form of equation (\ref{momentum_descent_dynamics_smooth})
+$$ \ddot{x}(t) + \alpha \dot{x}(t) + \nabla f(x(t)) = 0
+$$
+We first rescale time, setting $t^\prime = t / \alpha$ this becomes
+$$ \frac{1}{\alpha^2}\ddot{x}(t^\prime) + \dot{x}(t^\prime) + \nabla f(x(t^\prime)) = 0
+$$
+Now sending $\alpha\rightarrow \infty$ recovers the gradient flow dynamics
+$$\dot{x}(t^\prime) + \nabla f(x(t^\prime)) = 0
+$$
+So one way of thinking about the relationship between the gradient flow and damped Hamiltonian dynamics is that the
+gradient flow arises as the overdamped and time rescaled limit of the Hamiltonian dynamics. 
+
+We can use this perspective to
+relate Theorems \ref{continuous_hamiltonian_convergence_smooth} and \ref{smooth_gradient_dynamics_thm}. In particular,
+if we substitute $t = \alpha t^\prime$ into the bound
+$$H(x(t),v(t)) \leq \left(t + \frac{1}{2\alpha}\right)^{-1}\left[\frac{3}{2\alpha}(f(x(0)) - f(x^*)) + \frac{\alpha}{2}\left\|x(0) - x^*\right\|_2^2\right]
+$$
+and take a limit as $\alpha\rightarrow \infty$, we recover the bound from Theorem \ref{smooth_gradient_dynamics_thm}
+$$f(x(t^\prime)) - f(x^*) \leq H(x(t^\prime),v(t^\prime)) \leq \frac{1}{2t^\prime}\|x(0) - x^*\|_2^2
+$$
+
+To conclude this subsection, we consider the problem of discretizing the dynamics (\ref{momentum_descent_dynamics_smooth}).
+We saw that the simple gradient descent discretization (\ref{gradient_descent_smooth}) of the gradient flow achieved
+the same convergence rate
+(as long as the step size was sufficiently small, see Theorem \ref{gradient_descent_convergence_smooth}). 
+We wish to find an analogous discretization
+of (\ref{momentum_descent_dynamics_smooth}).
+
+There are many discrete schemes that correspond to the Hamiltonian dynamics (\ref{momentum_descent_dynamics_smooth}). However,
+one of the most robust schemes for the purpose of convex optimization is
+\begin{equation}\label{momentum_gradient_descent_smooth}
+ x_{n+1} = y_n - s\nabla f(y_n),~y_{n+1} = x_{n+1} + s\alpha (x_{n+1} - x_n),~x_0 = y_0
+\end{equation}
+
+\section{Strongly Convex Functions}
+In this section we strengthen our assumptions on the objective function $f$ and examine how this impacts the convergence rate we
+can obtain. 
+
+In particular, we assume that the function $f$ is $\alpha$-strongly convex. This means that 
+$f - \frac{\alpha}{2}\|x\|_2^2$ is convex and is equivalent to the bound
+\begin{equation}
+ f(y) \geq f(x) + \langle g, y - x\rangle + \frac{\alpha}{2}\|y-x\|_2^2
+\end{equation}
+
+
+\input{6DL/DualAveraging}
+\input{6DL/RegularizedDualAveraging}

@@ -1,0 +1,247 @@
+%!TEX root = ../06DL.tex
+
+% Stochastic and Incremental Gradient Methods by Junchi Li 
+\section{Problem Set-Up} 
+The problem set up is more the less the same as in \cite{Hazan2011} as are the derivations. We want to minimize a function 
+\begin{equation}\label{eq:origpro}
+\min_x \mathbb{E}_\xi [F(x,\xi)]+P(x)
+\end{equation}
+but we only get access to subgradients $g(x,\xi)$ of $F(x,\xi)$ with $\xi$ sampled at random. Examples of this set-up include
+\begin{enumerate}
+\item {\bf Noisy gradients.} We want to minimize a smooth function $f(x)$. At every iteration, we compute or gain access to a noisy gradient $g_k=\nabla f(x_k)+\omega_k$ where $\omega_k$ is some zero-mean noise process which is independent of $x_k$.
+\item {\bf Incremental gradients.} We want to minimize a function of the form
+$$ 
+f(x)=\sum_{i=1}^{m}f_i(x)
+$$
+At every iteration, we choose a random index $i_k$ uniformly at random from $\{1,\ldots,m\}$, and we take a step along the gradient of $f_{i_k}$ rather than of the full function $f$. This is obviously faster to compute when $m$ is large. When does this approach find a minimum of $f$?
+\end{enumerate}
+
+Throughout we assume
+\begin{enumerate}
+\item $f(x):=\mathbb{E}[F(x,\xi)]$ is differentiable and strongly convex. So there exists a constant $l>0$ such that 
+\begin{equation}
+f(z)\geq f(x)+\nabla f(x)^\top (z-x)+\frac{l}{2}\|z-x\|^2
+\end{equation}
+\item $\nabla f$ is Lipschitz so that $\|\nabla f(x) - \nabla f(y)\|\leq L \|x-y\|$.
+\item $P(x)$ is a convex extended real valued function.
+\end{enumerate}
+Note that the results apply to the case where there is only one value of $\xi$. That is, the non-stochastic setting. In this case we would have a differentiable convex function plus an arbitrary convex function. Also note that we can enforce the constraint $x \in X$ for some convex set $X$ by letting $P(x)=0$ for $x\in X$ and $P(x)=\infty$ for $x\notin X$.
+
+Let us define a stochastic projected gradient scheme to solve this problem. Let
+\begin{equation}\label{eq:stoprojgra}
+{\rm prox}_{\nu P}(z)={\rm argmin}_x \|x-z\|^2+\nu P(x)
+\end{equation}
+Let $\gamma_0,\ldots,\gamma_T,\ldots$ be a sequence of positive numbers. Choose $x_0 \in X$, and iterate
+\begin{equation}\label{eq:stoprojgraiter}
+x_{k+1} ={\rm prox}_{\gamma_k P}(x_k-\gamma_k G(x_k,\xi_k))
+\end{equation}
+
+\section{Analysis of Unconstrained Stochastic Gradient Descent.}
+First, let's examine the case with $P = 0$ and let's make no assumptions about strong convexity. Assume $\|G(x, \xi)\| \leq M$ for all $x$ and $\xi$. Let $x_*$ denote any optimal solution of \eqref{eq:origpro}. Then we have
+\begin{eqnarray}
+\mathbb{E}[\|x_{k+1}-x_*\|^2]&=&\mathbb{E}[\|x_{k}-\gamma_k G(x_k,\xi_k)-x_*\|^2]  \nonumber \\
+&=&\mathbb{E}[\|x_{k}-x_*\|^2]- 2\gamma_k\mathbb{E}[\langle G(x_k,\xi_k), x_k-x_*\rangle ]+ \gamma_k^2 \mathbb{E}[\|\gamma_k G(x_k,\xi_k)\|^2]  \\
+&\leq&\mathbb{E}[\|x_{k}-x_*\|^2]- 2\gamma_k\mathbb{E}[\langle G(x_k,\xi_k), x_k-x_*\rangle ]+ \gamma_k^2 M^2  \\
+&=&\mathbb{E}[\|x_{k}-x_*\|^2]- 2\gamma_k\mathbb{E}[\langle \nabla f(x_k), x_k-x_*\rangle ]+ \gamma_k^2 M^2 \label{eq:eqnproof5} \\
+&\leq& \mathbb{E}[\|x_{k}-x_*\|^2]- 2\gamma_k\mathbb{E}[f(x_k)-f(x_*)]+ \gamma_k^2 M^2 \label{eq:eqnproof6}
+\end{eqnarray}
+\eqref{eq:eqnproof5} follows because
+\begin{eqnarray}
+\mathbb{E}[\langle G(x_k,\xi_k), x_k-x_*\rangle ]&=&\mathbb{E}_{\xi_0,\ldots,\xi_{k-1}}[\mathbb{E}_{\xi_k}[\langle G(x_k,\xi_k), x_k-x_*\rangle\ |\ \xi_0,\ldots,\xi_{k-1} ]] \nonumber\\
+&=&\mathbb{E}_{\xi_0,\ldots,\xi_{k-1}}[\langle \nabla f(x_k), x_k-x_*\rangle\ |\ \xi_0,\ldots,\xi_{k-1} ] \\
+&=&\mathbb{E}[\langle \nabla f(x_k), x_k-x_*\rangle]
+\end{eqnarray}
+by the law of iterated expectation. \eqref{eq:eqnproof6} is a consequence of the inequality
+\begin{equation}
+\langle \nabla f(x_k), x_k-x_*\rangle \geq f(x_k)-f(x_*)
+\end{equation}
+which holds because $f$ is convex.
+
+Arranging the bound: by telescoping $k$ from $0$ to $n$,
+\begin{equation}
+2\gamma_k\mathbb{E}[f(x_k)-f(x_*)] \leq -\mathbb{E}[\|x_{k+1}-x_*\|^2-\|x_{k}-x_*\|^2] + \gamma_k^2 M^2,
+\end{equation}
+we have since $\|x_{n+1}-x_*\|^2\geq 0$
+\begin{equation}
+2\sum_{k=0}^n \gamma_k\mathbb{E}[f(x_k)-f(x_*)] \leq -\mathbb{E}[\|x_{n+1}-x_*\|^2-\|x_{0}-x_*\|^2] + M^2 \sum_{k=0}^{n} \gamma_k^2\leq D^2+M^2  \sum_{k=0}^{n} \gamma_k^2.
+\end{equation}
+Dividing by the sum of the $\gamma_k$, we have for any $n$
+\begin{equation}
+\frac{1}{\sum_{k=0}^n \gamma_k}\sum_{k=0}^n \gamma_k\mathbb{E}[f(x_k)-f(x_*)] \leq \frac{D^2+M^2  \sum_{k=0}^{n} \gamma_k^2}{2\sum_{k=0}^n \gamma_k}.
+\end{equation}
+where $D=\|x_0-x_*\|$. Let $\bar{x}:=(\sum_{k=0}^n \gamma_k)^{-1}\sum_{k=0}^n \gamma_k x_k$. Then, by convexity (Jensen's inequality), we have
+\begin{equation}
+\mathbb{E}[f(\bar{x})-f(x_*)] \leq \frac{D^2+M^2  \sum_{k=0}^{n} \gamma_k^2}{2\sum_{k=0}^n \gamma_k}.
+\end{equation}
+This is precisely the bound rate of convergence for deterministic subgradient descent.
+
+\section{Analysis of Projected Stochastic Gradient.}
+In the case of constrained optimization problem, recall from \eqref{eq:stoprojgra} and \eqref{eq:stoprojgraiter} that $\Pi_X (z) ={\rm argmin}_{x\in X} \|x - z\|^2$ and the iteration updates
+\begin{equation}
+x_{k+1}=\Pi_X (x_k-\gamma_k G(x_k, \xi_k)).
+\end{equation}
+Let $x_*$ denote the optimal solution of \eqref{eq:origpro}. $x_*$ is unique because of strong convexity. Observe that
+\begin{eqnarray}
+\mathbb{E}[\|x_{k+1}-x_*\|^2]&=&\mathbb{E}\left[\|\Pi_{\gamma_k} (x_{k}-\gamma_k G(x_k,\xi_k))-\mathbb{E}[\|\Pi_{\gamma_k}(x_*-\gamma_k \nabla f(x_*))\|^2\right]  \nonumber \\
+&\leq&\mathbb{E}[\|x_{k}-\gamma_k G(x_k,\xi_k)-x_*+\gamma_k \nabla f(x_*)\|^2]  \label{eq:eqproof13} \\
+&=&\mathbb{E}[\|x_{k}-\gamma_k \nabla f(x_k)+\gamma_k (\nabla f(x_k)-G(x_k,\xi_k))-x_*+\gamma_k \nabla f(x_*)\|^2]  \label{eq:eqproof14} \\
+&=& \mathbb{E}\left[ \| x_k -\gamma_k \nabla f(x_k) - x_* +\gamma_k \nabla f(x_*)\|^2\right]  \\
+&& +2\gamma_k\mathbb{E}[\langle x_k- \gamma_k \nabla f(x_k) - x_* + \gamma_k \nabla f(x_*), \nabla f(x_k)-G(x_k,\xi_k)\rangle ] \nonumber \\
+&&+\gamma_k^2 \mathbb{E}[\|\nabla f(x_k) - G(x_k,\xi_k)\|^2] \nonumber \\
+&=&\mathbb{E}[\|x_{k}-\gamma_k \nabla f(x_k)-x_*+\gamma_k \nabla f(x_*)\|^2]+ \gamma_k^2 \mathbb{E}[\|\nabla f(x_k)-G(x_k,\xi_k)\|^2] \label{eq:eqnproof15} 
+\end{eqnarray}
+Here, the first equality follows by the definition of $x_{k+1}$ and because $x_*$ is optimal. \eqref{eq:eqproof13} follows because the proximity operator is non-expansive. \eqref{eq:eqproof14} follows because $\mathbb{E}[G(z,\xi_k)] = \nabla f(z)$ for all $z$ and $G(z,\xi_k)$ is independent of $\xi_k$. Thus we have
+\begin{eqnarray}
+&&\mathbb{E}[\langle \nabla f(x_k)-G(x_k,\xi_k), x_k-\gamma_k\nabla f(x_k)-x_*+\gamma_k \nabla f(x_*) \rangle] \\
+&=& \mathbb{E}_{\xi_0,\ldots,\xi_{k-1}}[\mathbb{E}_{\xi_k}[\langle \nabla f(x_k)-G(x_k,\xi_k), x_k-\gamma_k\nabla f(x_k)-x_*+\gamma_k \nabla f(x_*) \rangle \\
+ && |\ \xi_0,\ldots,\xi_{k-1}] \nonumber\\
+&=& 0.
+\end{eqnarray}
+
+Note that the first term in \eqref{eq:eqnproof15}  is completely independent of $\xi_k$ while the second term is a variance term concerning the second moments of the subgradients at the current iterate and at the optimum. We can bound each of these terms separately. First, since $f$ is strongly convex and has a Lipschitz continuous gradient, it follows that
+\begin{equation} \label{eq:eqproof16}
+\mathbb{E}[\| x_k-\gamma_k\nabla f(x_k)-x_*+\gamma_k \nabla f(x_*)\|^2] \leq \max\{ |1-\gamma_k L|, |1-\gamma_k l |\}^2 \mathbb{E}[\|x_k-x_*\|^2] 
+\end{equation}
+For the second term, we must make some assumption about the statistics of the random function
+\begin{equation} \label{eq:eqproof17}
+\varphi(z;\xi_k):=G(z,\xi_k)-\nabla f(z)
+\end{equation}
+
+Let's explore some possibilities.
+\subsection{$\varphi\equiv 0$}
+In the case when there is no randomness at all and we are just following the gradient,
+we only need upper bound \eqref{eq:eqproof16}. In this case, setting $\gamma_k = \frac{2}{L+l}$ for all $k$, we find that
+\begin{equation} \label{eq:eqproof18}
+\|x_{k+1}-x_*\|\leq \left(\frac{L-l}{L+l}\right) \|x_k-x_*\|
+\end{equation}
+or, letting $\kappa=\frac{L}{l}$ and $D_0=\| x_0-x_* \|$,
+\begin{equation} \label{eq:eqproof19}
+\|x_{k}-x_*\|\leq \left(\frac{\kappa-1}{\kappa+1}\right)^k D_0
+\end{equation}
+
+\subsection{$\varphi$ bounded.}
+The simplest non-trivial assumption is that the deviations are bounded:
+\begin{equation} \label{eq:eqproof20}
+\|\varphi(z;\xi_k)\|\leq M
+\end{equation}
+for some universal constant $M$. In this case, we have the upper bound
+\begin{eqnarray} 
+\mathbb{E}[\|x_{k+1}-x_*\|^2] &\leq& \max \{ |1-\gamma_k L|, |1-\gamma_k l| \}^2 \mathbb{E}[\|x_k-x_*\|^2] +\gamma_k^2 M^2 \label{eq:eqproof21}\\
+&\leq& (1-2\gamma_k l+\gamma_k^2 L^2) \mathbb{E}[\|x_k-x_*\|^2]+\gamma_k^2 M^2 \label{eq:eqproof22}
+\end{eqnarray}
+
+With such a bound, we can achieve the so-called ``optima'' $O(1/k)$ rate by choosing
+\begin{equation} \label{eq:eqproof23}
+\gamma_k = \frac{1}{kl}
+\end{equation}
+Indeed, in this case, it follows by induction that
+\begin{equation} \label{eq:eqproof24}
+\mathbb{E}[\|x_k-x_*\|^2] = \frac{M^2+D_0^2 L^2}{kl^2}
+\end{equation}
+where $D_0$ again equals $\|x_0 - x_*\|$. To verify this inequality, note that for $k = 0$, the right hand is greater than $D_0^2$. Assuming that the inequality holds for $k \leq K$, observe
+\begin{eqnarray}
+\mathbb{E}[\|x_{K+1}-x_*\|^2] &\leq& \left( 1-\frac{2}{K} + \frac{L^2}{K^2 l^2} \right) \mathbb{E}[\|x_K-x_*\|^2] + \frac{M^2}{K^2 l^2} \\
+&\leq& \left( 1-\frac{2}{K} \right) \mathbb{E}[\|x_K-x_*\|^2]+\frac{M^2+L^2 \mathbb{E} [\|x_K-x_*\|^2]}{K^2 l^2} \\
+&\leq& \left( 1-\frac{2}{K} \right) \frac{M^2+D_0^2 L^2}{K l^2}+\frac{M^2+D_0
+^2 L^2}{K^2 l^2} \\
+&=& \frac{K^2-1}{K^2}\cdot \frac{M^2 +D_0^2 L^2}{(K+1) l^2} \leq \frac{M^2 +D_0^2 L^2}{(K+1)l^2}
+\end{eqnarray}
+
+NB: This matches the lower bound by {\color{red} agarwal2012information: Alekh Agarwal, Peter L. Bartlett, Member, IEEE, Pradeep Ravikumar, and Martin J. Wainwright, Senior Member, IEEE.}
+
+\section{Introduction}
+We want to minimize the function $f: \mathcal{C} \to \mathbb{R}$. Assume $f$ is convex and possibly strongly convex on $\mathcal{C}$. Assume that the minimum function value $f_*$ is attained in $\mathcal{C}$ and let $x_*$ denote any optimal solution. Let $D_0$ denote the distance from the initial iterate to this optimal solution: $D_0 = \|x_0 - x_*\|^2$.
+
+Assume that the gradient of $f$ is Lipschitz with constant $L$ (i.e., $\|\nabla f(x)- \nabla f(y)\|^2 \leq L\|x-y\|^2$).
+We may sometimes additionally assume that $f$ is strongly convex with parameter $l > 0$, so that
+$f(y)\geq f(x)+\nabla f(x)^\top (y-x)+ \frac{l}{2}\|x-y\|^2_2$.
+
+In stochastic gradient methods, we are allowed to query an oracle that takes a point in $\mathcal{C}$ and returns an unbiased estimate of the gradient $g(x)$. That is $\mathbb{E}[g(x)] = \nabla f(x)$. We assume the randomness is independent of the prior queries of the oracle. As is standard, assume that we know that $\|g(x)\|_2 \leq M$ almost surely for all $x \in \mathcal{C}$.
+
+Let $\alpha_0,\ldots,\alpha_k,\ldots$, be a sequence of positive numbers. Choose $x_0 \in X$, and iterate
+\begin{equation}
+x_{k+1}=x_k-\alpha_k g(x_k).
+\end{equation}
+
+\section{Preliminaries}
+Let us use this section to collect some standard results from prior art. Most of this material appeared in Nemirovski and Yudin \cite{Nemirovski1978, Nemirovski1983}. More contemporary treatments are provided by Nemirovski et al \cite{Nemirovski2009}, Nesterov \cite{Nesterov2009}, and Hazan and Kale \cite{Hazan2011}.
+
+Suppose we run the incremental gradient method with stepsize $\alpha$ for $S$ iterations. Then note that
+\begin{eqnarray}
+\|x_{k+1}-x_*\|^2 &=& \| \Pi_{\mathcal{C}} (x_k-\alpha g_k (x_k)) - \Pi_{\mathcal{C}} (x_*) \|^2 \\
+&\leq& \|x_k -\alpha g_k(x_k)-x_*\|^2 \\
+&=& \|x_k -x_*\|^2 -2\alpha \langle g_k(x_k), x_k-x_* \rangle +\alpha^2 \|g_k (x_k)\|^2 \\
+&\leq& \|x_k-x_*\|^2 -2\alpha \langle g_k(x_k), x_k-x_* \rangle +\alpha^2 M^2
+\end{eqnarray}
+Note that if we iterate the expectation
+\begin{eqnarray}
+\mathbb{E}[\langle g_k(x_k), x_k-x_* \rangle] &=& \mathbb{E}[\mathbb{E}[\langle g_k(x_k), x_k-x_* \rangle\ |\ g_0,\ldots,g_{k-1}]] \\
+&=&\mathbb{E}[\mathbb{E}[\langle g_k(x_k) \ |\ g_0,\ldots,g_{k-1}], x_k-x_* \rangle] \\
+&=& \mathbb{E}[\langle \nabla f(x_k), x_k-x_* \rangle].
+\end{eqnarray}
+Letting $a_k = \mathbb{E}[\| x_{k+1} - x_*\|^2]$, this gives
+\begin{equation}\label{eq:eqproof30}
+a_{k+1}\leq a_k -2 \alpha \mathbb{E}[\langle \nabla f(x_k), x_k-x_* \rangle ]+\alpha^2 M^2.
+\end{equation}
+We can now bound
+\begin{eqnarray}
+\mathbb{E}\left[ f \left( \frac{1}{S} \sum_{t=1}^S x_t \right) -f(x_*)\right] &\leq& \mathbb{E}\left[ \frac{1}{S} \sum_{t=1}^S f{x_t}  -f(x_*)\right] \label{eq:eqproof31}\\
+&\leq& \frac{1}{S} \sum_{t=1}^S \mathbb{E}[\langle \nabla f(x_t), x_*-x_t \rangle] \label{eq:eqproof32}\\
+&\leq& \frac{1}{S}\sum_{t=1}^S \frac{a_t-a_{t+1}}{2\alpha} +\frac{1}{2} \alpha M^2 \label{eq:eqproof33} \\
+&=& \frac{a_0-a_S}{2S\alpha} +\frac{1}{2} \alpha M^2 \label{eq:eqproof34}\\
+&\leq& \frac{D_0^2}{2S\alpha} +\frac{1}{2} \alpha M^2 \label{eq:eqproof35}\\
+&\leq& \frac{f(x_0)-f_*}{lS\alpha}+\frac{1}{2} \alpha M^2 \label{eq:eqproof36}
+\end{eqnarray}
+Here, \eqref{eq:eqproof31} follows because f is convex, \eqref{eq:eqproof32} is the first order condition for convexity, \eqref{eq:eqproof33} uses \eqref{eq:eqproof30}, and \eqref{eq:eqproof36} uses the definition of strong convexity.
+
+\section{Weakly convex case}
+Suppose we run $E$ epochs of stochastic gradient, with epoch $k$ of length $2^{k-1}S$ and with stepsize $\alpha_k$. Let $\bar{x}_k$ denote the average of all of the iterates from epoch $k$. Let $T$ denote the total number of SGD steps. Nemirovski et al proved the following proposition for general convex $f$.
+
+\begin{proposition} (Nemirovski et al \cite{Nemirovski2009}) Suppose we run $1$ epoch of stochastic gradient of length $S$ and with stepsize $\alpha$. Define
+\begin{equation}
+\theta_k:=\frac{M\sqrt{S}}{D_0} \alpha.
+\end{equation}
+Then we have the bound 
+\begin{equation}
+\mathbb{E}[f(\bar{x}_1)-f_*] \leq \left( \frac{1}{2}\theta +\frac{1}{2}\theta^{-1} \right) \frac{MD_0}{\sqrt{T}}.
+\end{equation}
+That is, we pay linearly for errors in selecting the optimal constant stepsize. In the context of best ball, we refine our estimate of the optimal stepsize at each epoch. By doubling epochs, and always allowing $1/2$ the previous stepsize, best ball is able to tune this stepsize.
+\end{proposition}
+\begin{proof}
+We can prove this just by minimizing \eqref{eq:eqproof35}. Plugging in our stepsize, we see that
+\begin{equation}
+\mathbb{E}[f(\frac{1}{S} \sum_{t=1}^S x_t)-f(x_*)] \leq \frac{D_0^2}{2S\alpha}+\frac{1}{2}\alpha M^2=\left( \frac{1}{2}\theta +\frac{1}{2}\theta_{-1} \right) \frac{MD_0}{\sqrt{T}}.
+\end{equation}
+\end{proof}
+
+
+
+\begin{thebibliography}{999}
+\bibitem{Hazan2011}
+{E. Hazan and S. Kale}. {Beyond the regret minimization barrier: an optimal algorithm for stochastic strongly-convex optimization}. {Journal of Machine Learning Research}, 19: 421-436,  2011.
+
+\bibitem{Nemirovski2009}
+{A. Nemirovski, A. Juditsky, G. Lan, and A. Shapiro}. {Robust stochastic approximation approach to stochastic programming}. {SIAM Journal on Optimization}, 19(4):1574-1609, 2009.
+
+\bibitem{Nemirovski1978}
+{A. Nemirovski and D. Yudin}. {On cezari's convergence of the steepest descent method for approximating saddle point of convex-concave functions}. {Soviet Math Dkl.}, 19, 1978. 
+
+\bibitem{Nemirovski1983}
+{A. Nemirovski and D. Yudin}. {Problem complexity and method efficiency in optimization.}. {Wiley, New York}, 1983
+
+\bibitem{Nesterov2009}
+{Y. Nesterov}. {Primal-dual subgradient methods for convex problems.}. {Mathematical Programming}, 120(1):221-259, 2009.
+
+\bibitem{Niu2011}
+{F. Niu, B. Recht, C. R$\acute{\rm e}$, and S. J. Wright}. {HOGWILD!: A lock-free approach to parallelizing stochastic gradient descent}. {In Advances in Neural Information Processing}, 2011.
+
+\bibitem{Ben2010}
+ {Ben Recht's note ``Stochastic and Incremental Gradient Methods''}.
+{dated November 22, 2010.}
+
+\bibitem{Ben2014}
+ {Ben Recht's note ``Notes on SGD''},
+{dated March 18, 2014.}
+
+\end{thebibliography}
+

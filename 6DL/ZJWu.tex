@@ -1,0 +1,368 @@
+\newtheorem{ques}{Question}
+\newtheorem{answ}{Answer}
+\newtheorem{note}{Note}
+
+\chapter{ Cross-Entropy Optimization can solve many hard problems on combinatorial optimization.
+}
+\section{Motivation}
+
+      \subsection{Rare-event simulation}
+           
+      Suppose that there is a system with 
+      \Terms{state space} $\D \subseteq \R^n$ for some $n\in \N_+,$ 
+      and \Terms{performance function} $f:\D \mapsto \R.$ The state
+      $\X$ is assumed to be a random variable distributed in accordance
+       with a probability density function (pdf)
+      $p(\x).$ We want to compute the probability of the random event
+      that $\EE=\{\x\in \D:\ f(\x)\le \gamma\}$ for a \Stress{small} constant
+      $\gamma\in \R.$ Mathematically, we need to compute
+      \begin{equation}\label{eq:Objective_RES}
+            \PP(\EE)=\int_{\x\in \D} \1_{\{y: f(y) \le \gamma\}}(\x)p(\x) d\x=\ \E_{p(\cdot)} \Big[ \1_{\{y: f(y) \le \gamma\}}(\X) \Big].
+      \end{equation}
+
+
+\begin{note}
+      The motivation is how to calculate $ P\left(I_{\left\{f(x) > \gamma\right\}}\right) $ efficiently when
+      the $\gamma$ is large and the respective event $\varepsilon$ is rare.
+\end{note}
+
+      \subsection{Change of measure}
+
+      For any other pdf $g(\cdot)$ with $g(\x)=0\implies p(\x)=0\ \forall \x \in \D,$ we have
+      \begin{equation}\label{eq:CoM_RES}
+            \PP[\EE]\!=\!\E_{p(\cdot)}\big[\1_{\{y:\ f(y)\le \gamma\}}(\X)\big] \!=\!\E_{g(\cdot)}\Big[\1_{\{y:\ f(y)\le \gamma\}}(\X)\frac{p(\X)}{g(\X)}\Big].
+      \end{equation}
+      The CMC estimator of \eqref{eq:Objective_RES} with CoM $g(\cdot)$ is
+      \begin{equation}\label{eq:CoM_CMC}
+            \frac{1}{N} \sum_{k=1}^{N} \1_{\{y:\ f(y)\le \gamma\}}(\X^{(k)})\frac{p(\X^{(k)})}{g(\X^{(k)})},
+      \end{equation}
+      where $\X^{(1)}, \ldots, \X^{(N)}$ are $i.i.d.$ from $g(\cdot),$ 
+      and $N\in \N_+$ is the \Terms{sample size}.\\ 
+      The optimal CoM is 
+      \begin{equation}\label{eq:OptCoM_RES}
+                  g^*(\x)=\1_{\{y:\ f(y)\le \gamma\}}(\x) \frac{p(\x)}{\PP[\EE]}, \quad \forall \x \in \D
+      \end{equation}
+      with zero variance, but infeasible!
+
+\begin{note}
+      If we change the measure to one described by the density funtion
+      $$ g^*(x) = I_{\left\{f(x) > \gamma\right\}}\left(x\right) \frac{p\left(x\right)}{P\left(\varepsilon\right)}, $$
+      the new probability of $\varepsilon$ satisfies $\tilde P (\varepsilon) = 1$.
+      And if we can generate some samples from the new probability measure, the finite average may equal exactly the expectation
+      for any size of samples. (But how can we calculate the original probability of $\varepsilon$ ?)
+\end{note}
+
+      \subsection{Stochastic program}
+
+		A smart idea is to find a pdf from a given family, which well mimics 
+		\eqref{eq:OptCoM_RES}. This forms the following optimization
+		problem
+		\begin{equation}\label{eq:SP_RES}
+		\min_{\theta\in \Theta}\quad  \DD\Big[g^*\ \Big|\Big|\ g_{\theta}\Big],
+		\end{equation}
+		where 
+		\begin{itemize}
+			\item $\DD[h\ ||\ r]\ge 0$ for any two pdfs $h,r,$ and  $\DD[h \ || \ r]=0$ if and only if $h=r$ almost surely,
+			typically $\DD[\cdot ||\cdot]$ is chosen to be the \Terms{Kullback-Leibler divergence}, i.e.,
+			\begin{itemize}\label{eq:KL-distance}
+				\item $\DD\big[g^*\big|\big|\ g_{\theta}\big]=\E_{g^*}\big[\ln \frac{g^*(\X)}{g_{\theta}(\X)}\big]$
+			\end{itemize}
+			\item $\F=\{g_{\theta}:\ \theta\in \Theta\}$ is a family of pdfs 
+			defined on $\D$ and $\Theta\subseteq \R^m$ is a \Stress{convex} 
+			parametric set for some $m\in \N_+.$ 
+		\end{itemize}
+		With Kullback-Leibler divergence, \eqref{eq:SP_RES} is equivalent to, for \Stress{any} $\theta'\in \Theta,$
+		\begin{equation}\label{eq:SP_RES_KL}
+			\max_{\theta \in \Theta}\ \E_{g^*} \Big[ \ln g_{\theta}(\X)\Big]
+			\!\iff\! \max_{\theta \in \Theta}\ \E_{g_{\theta'}} \Big[\1_{\{y:\ f(y)\le \gamma\}}(\X)\frac{p(\X)}{g_{\theta'}(\X)} \ln g_{\theta}(\X)\Big]
+		\end{equation}
+
+		\subsection{Stochastic iterative search}
+
+		The difficulty of solving \eqref{eq:SP_RES_KL} by traditional 
+		techniques is that $\1_{\{y:\ f(y)\le \gamma\}}(\x)=0$ for most
+		$\x\in\D \subseteq  \R^n$.  To overcome this difficulty,
+		\Terms{Rubinstein (1997)} proposed a stochastic 
+		iterative search, called \Terms{Cross Entropy method}.
+		The method works like peeling onions. Starting from an arbitrarily
+		fixed $\theta_0\in \Theta,$ the method then iterates over the following
+		three steps, for every $t=0,1, 2, \ldots, $ until $\gamma_t \ge \gamma,$
+		\begin{itemize}
+			\item generate $\X_t^{(1)}, \ldots, \X_t^{(N)}$ from pdf 
+			$g_{\theta_t}(\cdot),$ and non-decreasingly sort them as $\X_t^{[1]}, \ldots, \X_t^{[N]},$ i.e., 
+			$f\big(\X_t^{[1]}\big)\le \cdots \le f\big(\X_t^{[N]}\big),$
+			\item put $\gamma_t=f\big(\X_t^{[\lceil\alpha \cdot N\rceil]}\big),$ and
+			\begin{equation}\label{eq:CE_Estimate}
+				\theta_{t\!+\!1} = \arg\max_{\theta\in \Theta}\frac{1}{N}\sum_{k=1}^{N} \1_{\{y:\ f(y)\le \gamma_t\}}(\X_t^{[k]})\frac{p(\X_t^{[k]})}{g_{\theta_t}(\X_t^{[k]})} \ln g_{\theta}(\X_t^{[k]}),
+			\end{equation} 
+			%\item put $\theta_{t\!+\! %1}=\theta_t+\rho(\hat{\theta}_{t\!+\!1}-\theta_t),$
+		\end{itemize}
+		where $\alpha\in (0,1), N \in \N_+$ are parameters that need to be finely tunned. 
+
+                  By the Cross-Entropy method, one can eventually find a $\theta^*\in \Theta$
+                  such that $g_{\theta^*}$ well approximates the optimal CoM $g^*$ in \eqref{eq:OptCoM_RES}. Then, the probability $\PP[\EE]$ can be well estimated by CMC with CoM $g_{\theta^*}.$\\[1ex]
+			\Note{How does it work?}\\[1ex]
+			\begin{itemize}
+				\item $\theta_{t\!+\!1}$ in \eqref{eq:CE_Estimate} is a stochastic (optimal) solution to	
+				\begin{equation}\label{eq:CE_Iter_Obj}
+				\max_{\theta\in \Theta}\ \int_{\x\in \D} \1_{\{y:\ f(y)\le \gamma_t\}}(\x)p(\x) \ln g_{\theta}(\x)d\x,
+				\end{equation} 
+				therefore, $g_{\theta_{t\!+\!1}}$ may well approximate
+				the truncate density 
+				\begin{equation}\label{eq:CE_Iter_Obj_Truncate}
+					\frac{\1_{\{y:\ f(y)\le \gamma_t\}}(\x)p(\x)}{
+						\int_{\mathbf{z}\in \D} \1_{\{w:\ f(w)\le \gamma_t\}}(\mathbf{z})p(\mathbf{z}) d \mathbf{z}
+						}\quad \forall \x\in \D,
+				\end{equation}
+				\item $\gamma_t=f\big( \X_t^{[\lceil \alpha \cdot N \rceil]} \big)$
+				estimates the $\lceil (1-\alpha) \cdot N \rceil$-th order statistic of
+				$f(\X)$ with $\X \sim g_{\theta_t},$ which are expected to decrease
+				with $t.$ 
+			\end{itemize}
+
+\section{For continuous discrete optimization}
+\subsection{General idea}
+
+	\Terms{Rubinstein (1999)} extends the idea for rare event simulation into optimization. Given an abstract optimization problem
+	\begin{equation*}
+		\min_{\x \in \D}\ F(\x),
+	\end{equation*}
+	for a cost function $F(\x),$ and feasible region $\D\subseteq \R^n,$ we can
+	\Stress{solve the program through constructing a probabilistic distribution concentrating on optimal solutions}. Mathematically, we can then solve the following program
+	\begin{equation}\label{eq:Optimization_Obj}
+		\max_{\theta \in \Theta}\ \E_{g_{\theta}} \big[\1_{\{y:\ F(y)\le \gamma\}}(\X)\big],
+	\end{equation}
+	where we only need to specify a family $\F=\{g_{\theta}:\ \theta\in \Theta\}$ of pdfs.
+	The $\gamma$ can be the minimum cost value. In the whole optimization procedure, we do not need knowledge about $\gamma.$
+
+      \subsection[Alg]{Algorithm}
+
+		\Note{Input (Precondition):} a pdf family $\F=\{g_{\theta}:\ \theta\in \Theta\},$ an initial pdf index $\theta_0\in \Theta,$ 
+		a smooth parameter $\rho\in (0,1),$ an elite rate $\alpha\in (0,1),$
+		an initial solution $\x\in \D,$ and a sample size $N\in \N_+$\\[1ex]
+		\Note{Output (Postcondition):} $\x$\\[1ex]
+		\Note{Pseudo code (iterates over the following steps):}
+		\begin{itemize}
+			\item independently generate $\X_t^{(1)}, \ldots, \X_t^{(N)}$ from pdf 
+			$g_{\theta_t}(\cdot),$ and non-decreasingly sort them as $\X_t^{[1]}, \ldots, \X_t^{[N]},$ i.e., 
+			$F\big(\X_t^{[1]}\big)\le \cdots \le F\big(\X_t^{[N]}\big),$
+			\item if $F\big(\x\big)> F\big(\X_t^{[1]}\big), \x=\X_t^{[1]},$
+			\item $\gamma_t=F\big(\X_t^{[\lceil\alpha \cdot N\rceil]}\big),$ and
+			\begin{equation}\label{eq:CE_Estimate_Optimization}
+			\hat{\theta}_{t\!+\!1} = \arg\max_{\theta\in \Theta}\frac{1}{N}\sum_{k=1}^{N} \1_{\{y:\ F(y)\le \gamma_t\}}(\X_t^{[k]}) \ln g_{\theta}(\X_t^{[k]}),
+			\end{equation} 
+			\item $\theta_{t\!+\!1}=\theta_t+\rho\cdot (\hat{\theta}_{t\!+\!1}-\theta_t).$
+		\end{itemize}
+
+\begin{ques}
+      Why we use a convex combination between two iterative steps?
+\end{ques}
+\begin{answ}
+      The objective is to prevent a too fast convergence.
+\end{answ}
+
+\begin{ques}
+      Does this algorithm work for a continuous objective function with millions' of arguments?
+\end{ques}
+\begin{answ}
+      Yes, but we must consider a more specified parameter space to approximate the final distribution.
+      For instance, if Gauss-type distributions require so many parameters to exceed the memory, 
+      we can try uniform distributions.
+\end{answ}
+
+    \subsection[continuous]{Continuous optimization}
+
+    		Applying the Cross-Entropy algorithm to continuous problem, we
+    		need to select a suitable family of pdfs.\\[1ex]
+    		\Note{Optimization with Gaussian pdfs (Normal distribution)}
+    		\begin{itemize}
+    			\item $\Theta=\{(\mu, \Sigma): \mu\in \R^n, \Sigma\in \R^{n\times n} \text{ is semipositive definite}\}, g_{(\mu,\Sigma)}=\mathcal{N}(\mu, \Sigma)$ is Normal distribution with mean $\mu$ and co-variance matrix $\Sigma,$
+    			\item $\hat{\theta}_{t\!+\!1}=(\hat{\mu}_{t\!+\!1}, \hat{\Sigma}_{t\!+\!1}),$ 
+    			the mean and co-variance matrix of \Terms{elite} samples $\X_t^{[1]}, \ldots, \X_t^{[\lceil \alpha \cdot N \rceil]}$ in iteration $t,$
+    			\item $\mu_{t+1}=\mu_t + \rho (\hat{\mu}_{t\!+\!1}-\mu_t), \Sigma_{t\!+\!1}=\Sigma_t+\rho(\hat{\Sigma}_{t\!+\!1}-\Sigma_t),$
+    			\item we can employ a small constant $\delta>0$ to calibrate $\Sigma$ so as to avoid
+    			overflow in practice, i.e., if any element in $\Sigma_{t\!+\!1}$ is smaller than 
+    			$\delta,$ then set it to be $\delta.$
+    			
+    		\end{itemize}
+
+\begin{ques}
+      What is the performance of this algorithm by comparison with the simulated annealing method?
+\end{ques}
+\begin{answ}
+      This algorithm performance better in general.
+\end{answ}
+
+\begin{ques}
+      Can a known local minimum assist this algorithm?
+\end{ques}
+\begin{answ}
+      I don't think so.
+\end{answ}
+
+    \subsection[Discrete]{Dicrete optimization}
+
+    	We generally consider combinatorial optimization, 
+    	\[\D\subseteq \underbrace{\A\times\A\times \cdots \times \A}_{n}\] for some $\A$ with $|\A|<\infty$ and $n\in \N.$ \\[1ex]
+    	\Note{Optimization with univariate marginal distributions}
+    	\begin{itemize}
+    		\item $\Theta=\big\{\theta = (p_{i,j})_{n\times |\A|}:\ p_{i,j}\ge 0, \sum_{j=1}^{|\A|} p_{i,j}=1, \forall i=1,\ldots,n, j=1,\ldots, |\A|\big\}, g_{\theta}$ is now a probability mass function 
+    		\item $\hat{\theta}_{t\!+\!1}=(\hat{p}_{i,j}^{t\!+\!1})_{n\times |\A|},$ 
+    		$\hat{p}_{i,j}^{t\!+\!1}$ is the empirical frequency of the $j$-th element of $\A$ in the $i$-th position of the \Terms{elite} samples $\X_t^{[1]}, \ldots, \X_t^{[\lceil \alpha \cdot N \rceil]}$ in iteration $t,$
+    		\item $p_{i,j}^{t\!+\!1}=p_{i,j}^{t} + \rho (\hat{p}_{i,j}^{t\!+\!1}-p_{i,j}^{t}),$
+    	\end{itemize}
+
+    \section[Theory]{Theory for discrete optimization}
+    \subsection[Process]{Underlying stochastic process}
+
+    	We call $\big(Y_t\big)_{t=0,1,2,\ldots,}$ a \Note{Markov Chain} (MC)
+    	with \Note{state space} $\mathcal{Y}$ if every random variable 
+	(or vector) $Y_t$ is defined on probabilistic space 
+    	$\big(\Y, \A, \mu\big),$ and 
+    	\[
+    	\PP\big[Y_{t+1}\in B_{t+1}\big|\ Y_{t}\in B_{t}, \ldots, Y_0\in B_{0}\big]=\PP \big[Y_{t+1}\in B_{t+1}\big|\ Y_{t}\in B_{t}\big],
+    	\]
+	where $B_0,\ldots, B_{t+1}\in \A$ are $\mu$-measurable sets.\\[1ex]
+	
+	\hspace{0.5cm}If 
+	\[
+    	\PP \big[Y_{t+k}\in B\big|\ Y_{t}\in B'\big]=\PP \big[Y_{k}\in B\big|\ Y_{0}\in B'\big],
+    	\] 
+	for any $t,k\in \N,$ any $B,B'\in \A,$ we call the Markov chain
+	\Note{time-homogeneous}, otherwise \Note{time-inhomogeneous}. \\[1ex]
+	
+    	In the discrete-state case, one can enumerate all the sates as
+	$0,1,\ldots,K$ ($K\in \N\cup \{\infty\}$). Then, for each step 
+	$t\in \N,$ we can use a matrix $Q_t\in [0,1]^{K\times K}$ to 
+	describe the transition of states. For time-homogeneous MC, 
+	$Q_t\equiv Q,$ where $Q=\big(q_{i,j}\big)_{K\times K}$ is a 
+	constant matrix with $q_{i,j}$ describing the probability of 
+	moving to state $j$ from state $i.$\\[1ex]
+	
+	\hspace{0.5cm}For discrete-state time-homogeneous MC, one
+	can easily show that 
+	\[
+	q^{(n)}_{i,j}:=\PP[Y_{n}=j\mid Y_{0}=i]=\sum_{k=1}^{K}
+	q_{ik}\PP[Y_{n}=j\mid Y_{1}=k]=\sum_{k=1}^{K}
+	q_{ik}q^{(n-1)}_{k,j},	
+	\]
+	\[
+	q^{(n)}_{i,j}=\sum_{k=1}^{K}
+	q^{(m)}_{ik}q^{(n-m)}_{k,j},		
+	\]
+	where $1\le m<n.$ Therefore, the $n$-step transition matrix
+	$Q^{(n)}=(q_{i,j}^{(n)})=Q^n.$\\[1ex]
+	
+	\hspace{0.5cm}A probability mass function $\pi=(\pi_j)_K$ on $\Y$ is a 
+	\Note{limiting distribution (or stationary distribution)} if 
+	$
+	\pi_j=\lim_{n\to \infty} q_{i,j}^{(n)}
+	$
+	for any $i,j=1,\ldots, K.$
+\hspace{0.5cm}In the case that the state space $\Y$ is countable, the 
+process is called a \Note{discrete-state} Markov chain. 
+
+    	A Markov chain is said to be \Note{irreducible} if for any 
+	two states $i,j\in \Y,$ it exists $n_1, n_2\in \N$ such that
+	$q_{i,j}^{(n_1)}>0$ and $q_{j,i}^{(n_2)}>0.$ A Markov chain
+	is said to be \Note{aperiodic} if for every $i\in \Y,$ it exists a $n\in \N$ such that $q_{i,i}^{(n')}>0$	for any $n'\ge n$ (i.e. ``period" is 1). \\[1ex]
+	\hspace{0.5cm}A state $i$ is \Note{transient} if $\PP[\min\{m\ge 1:\  Y_{m}=i\mid Y_0=i\}<\infty]<1,$
+	otherwise it is called a \Note{recurrent}. For a recurrent state
+	$i,$ if the mean recurrence time $\Stress{M_i=\sum_{n=1}^{\infty} n\PP[\min \{m\ge 1:\  Y_{m}=i\mid Y_0=i\}=n]}<\infty,$ $i$ is said to be \Note{positive recurrent}, otherwise \Note{null recurrent}.\\[1ex]
+	\Note{Theorem (Steady analysis for discrete-state time-homogeneous MC)}\\
+	An irreducible MC has a limiting distribution $\pi=(\pi_j)_K$ if and only if
+	it is aperiodic and all of its states are positive recurrent. Moreover, $\pi_j=C/M_j,$ for every state $j=1,\ldots, K,$ and $C$ is
+	a normalizing constant.\\[1ex]
+	\hspace{0.5cm}When the limiting distribution $\pi$ exists, 
+	\[
+	\lim_{n\to\infty}Q^{(n)}=\left(
+	\begin{array}{c}
+	\pi\\
+	\ldots\\
+	\pi
+	\end{array}
+	\right),
+	\quad \pi=\pi\cdot Q.
+	\] 
+
+	The above steady analysis applies to time-homogeneous MC. Actually, for time-inhomogeneous MC, the limiting distribution may also hold. However, this requires the so-called \Note{detailed balance}. \\[1ex]
+	\Note{Theorem (Steady analysis under detailed balance)}\\
+	Assume that there is a distribution $\pi=(\pi_k)_K,$ such that
+	for any $n\in \N, i,j=1,\ldots,K,$ 
+	\[
+	\pi_j=\sum_{i=1}^{K} \pi_i\cdot \PP[Y_{n+1}=j\mid Y_{n}=i],
+	\]
+	then $\pi$ is a limiting distribution of the MC.\\[1ex]
+	\Note{Remark:} The famous Markov Chain Monte-Carlo algorithm is
+	designed based on this theorem.
+
+\begin{note}
+      For a time-homogeneous discrete-state Markov chain, we can use the limiting distribution 
+      with respect to the transition matrix to determine the recurrent state of the M.C..
+\end{note}
+
+\begin{ques}
+      For a Markov chain, if we don't know the transition matrix beforehand, can we decide the recurrent state?
+\end{ques}
+\begin{answ}
+      Other information about the transition must be available.
+\end{answ}
+
+    \subsection[Results]{Available results for discrete optimization}
+
+    	So far, theory is available only for discrete case. For continuous case, the
+    	theory is still almost blank. The following theory is for discrete optimization.
+    	They do not impose any restrictions on the problems. Therefore, they apply to
+    	all discrete problems.\\[1ex]
+    	\Note{Theorem (Finite reachability, [Wu \& Kolonko, 2014, TEVC])}\\[1ex]
+    	$\PP [\exists T:\ \X_T \cap \mathcal{S}^*\neq \emptyset]\to 1$ as $\rho \to 0$ or $N\to \infty.$\\[2ex]
+    	\Note{Theorem (Convergence of solutions, [Wu \& Kolonko, 2014, TEVC])}\\[1ex]
+    	$\PP [\exists \x \in \D\ \exists T\in \N_+\ \forall t\ge T:\ \X_t=(\x, \x,\ldots, \x)\in \D^{N}]=1$ (Genetic drift).\\[2ex]
+    	\Note{Theorem (Convergence of distributions, [Wu \& Kolonko, 2014, TEVC])}\\[1ex]
+    	$\PP [\exists \theta\in \Theta:\ \lim_{t\to \infty} \theta_t =\theta]=1.$
+
+\begin{note}
+      This algorithm can be applied to both continuous and discrete optimization problems. 
+      For discrete problem, some convergent results can be obtained.
+      There are still many open issues for continuous problems.
+\end{note}
+
+    		The following lists more theory for particular problems.\\[1ex]
+    		\Note{Theorem (Runtime for simple problems, [Wu, Kolonko \& M{\"ohring}, 2017, TEVC])}\\[1ex]
+    		\begin{itemize}
+    			\item \Terms{OneMax:} $\forall \epsilon>0,\ \PP[\tau \in O(n^{1.5+\epsilon})]\ge 1-e^{-\Omega(n^\epsilon)}.$
+    			\item \Terms{LeadingOnes:} $\forall \epsilon>0,\ \PP[\tau \in O(n^{2+\epsilon})]\ge 1-e^{-\Omega(n^\epsilon)}.$
+    		\end{itemize}
+    		\Note{Theorem (Runtime for TSP, [Wu, M{\"ohring} \& Lai, 2017, ArXiv])}\\[1ex]
+    		\begin{itemize}
+    			\item Simple TSP: $\forall \epsilon>0,\ \PP[\tau \in O(n^{3+\epsilon}\ln n)]\ge 1-e^{-\Omega(n^{\epsilon})}$
+    			\item Convex TSP: $\forall \epsilon>0,\ \PP [\tau \in O(n^2m^{5+\epsilon})] \ge 1-e^{-\Omega(m^\epsilon)}$
+    			\item General TSP: $\forall \epsilon>0,\ \PP [\tau \in O(n^3m^{5+\epsilon}+n^{3k}m^{\epsilon})]\ge 1-e^{-\Omega(m^\epsilon)}$
+    		\end{itemize}
+    		where the TSP instance is positioned with $m\times m$-grid. 
+
+    	\section[Extension]{Extension}
+    		The idea can be made more general. One can use more selection
+    		methods and estimation approaches. This results in the more general
+    		idea \Terms{Model-based search}, see, e.g., \Def{[Wu, 2016, Thesis], [Zloch et al 2006].}\\[1ex]
+    		\Note{Solution $v.s.$ Model}
+    		\begin{itemize}
+    			\item \Stress{Solution-based:} genetic algorithm, simulated annealing, gradient decent, particle swarm optimization, etc
+    			\item \Stress{Model-based:} cross-entropy algorithm, ant colony optimization, estimation of distribution algorithms (MIMIC, BOA, compact GA, etc).
+    			\item Solution-based is efficient, easy to implement
+    			\item Model-based is more stable, higher quality
+    		\end{itemize}
+\begin{note}
+      This algorithm is one kind of more general model-based algorithms,
+      which is quite different from the classical algorithms based on local information.
+      The solution is more stable and with higher quality by comparison with the classical ones,
+      but may cost longer time.
+\end{note}
+
+\begin{ques}
+      Are the derivatives of the objective function helpful to this algorithm? How can this algorithm 
+      combine with the gradient-descent-type algorithm?
+\end{ques}
+\begin{answ}
+      We are considering that.
+\end{answ}

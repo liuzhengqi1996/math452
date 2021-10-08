@@ -1,0 +1,119 @@
+
+\section{Lower bound  of finite element error estimates}
+%{Notation and basic results}
+In this section, we will indicate that the convergence rate is optimal by showing the lower bound of finite element error estimates. 
+%\subsection{Lower bound of finite element approximation in any dimension}
+%In this subsection, 
+We will provide lower bound for finite element error estimates that are obtained by Lin, Xie and Xu~\cite{lin2014lower}.
+\begin{theorem}\label{Lower_Bound_linear}
+Assume $u\in H^{3}(\Omega)$ and $u$ is not linear %$u\notin V_h$ 
+and for all $v_h\in V_h$ being the linear finite element function.
+The following lower bound of the approximation error holds when the family of mesh $\mathcal{T}_h$
+is quasi-uniform %the mesh size is $h$ is sufficiently small:
+\begin{equation}\label{lower_convergence_0_1}
+\inf_{v_h\in V_h}\|u-v_h\|_{r}\geq Ch^{2-r}\approxeq N^{-\frac{2-r}{d}}\quad r=0, 1,
+\end{equation}
+where $C$ is dependent on $u$.
+\end{theorem}
+\begin{proof}
+Let $\Pi_2$ is the nodal interpolation to quadratic finite element,  and denote $\displaystyle |\cdot|_{2,h}=
+\left(\sum_{\tau \in \mathcal T_h} |\cdot|^2_{2,\tau}\right)^{\frac12}$. For any $v_h\in V_h$, since $v_h$ is
+linear, by the approximation property of $\Pi_2$ and inverse inequality, we have 
+\begin{equation}
+\begin{aligned}
+|u|_{2,\Omega}&=|u-v_h|_{2,h}\le |u-\Pi_2 u|_{2,h}+|\Pi_2u-v_h|_{2,h}\\
+& \le C_1h |u|_{3,\Omega}+C_2h^{r-2}\|\Pi_2u-v_h\|_{r,\Omega}\\
+& \le C_1h |u|_{3,\Omega}+C_2h^{r-2}\|\Pi_2u-u\|_{r,\Omega} +C_2h^{r-2}\|u-v_h\|_{r,\Omega}\\
+& \le C_1h |u|_{3,\Omega}+C_3h^{r-2}h^{3-r}|u|_{3,\Omega} +C_2h^{r-2}\|u-v_h\|_{r,\Omega}\\
+\end{aligned}
+\end{equation}
+namely 
+\begin{equation}
+\begin{aligned}
+|u|_{2,\Omega}-(C_1+C_3)h|u|_{3,\Omega}\le C_2h^{r-2}\|u-v_h\|_{r,\Omega}.
+\end{aligned}
+\end{equation}
+Let $h_0(u)=\frac{|u|_{2,\Omega}}{2 (C_1+C_3)|u|_{3,\Omega}}$ and we have
+$$
+|u|_{2,\Omega}-(C_1+C_3)h_0|u|_{3,\Omega}=\frac12|u|_{2,\Omega}.
+$$
+Noting that $v_h\in V_h$ is arbitrary, then if $h\le h_0$, we have  
+\begin{equation}
+\inf_{v_h\in V_h}\|u-v_h\|_{r,\Omega}\geq Ch^{2-r}.
+\end{equation}
+If $\mathcal{T}_h$ is a triangulation with mesh size $h> h_0$, then by the newest vertex bisection strategy shown in \cite{stevenson2008completion}, we 
+can refine $\mathcal{T}_h$ such that the new triangulation 
+$\mathcal{T}_{h_0}$ with mesh 
+size decreasing to the order of $h_0$  and we have $V_h\subset V_{h_0}$, which implies 
+\begin{equation}
+\inf_{v_h\in V_h}\|u-v_h\|_{r,\Omega}\geq \inf_{v_{h_0}\in V_{h_0}}\|u-v_{h_0}\|_{r,\Omega} \geq Ch_0^{2-r}.
+\end{equation}
+Therefore \eqref{lower_convergence_0_1} is desired. 
+\end{proof}
+
+%\begin{conjecture}
+%	Let $V_N$ be  linear finite element spaces associated with 
+%	shape-regular simplicial grids $\mathcal T_N$ of $N$-elements (or
+%	$N$-grid points) in a polyhedral domain $\Omega\subset \mathbb R^d$,
+%	say $\Omega=(0,1)^d$.  Then,  for any reasonable function (which is,  say,
+%	not locally linear, $|u|_{2}\neq 0$), then the following lower bound holds:
+%	\begin{equation}
+%	\label{optimalFEMerror}
+%	\inf_{\# \mathcal T_N=\mathcal O(N)} \inf_{v_N\in
+%		V_N}\|u-v_N\|_{0,\Omega}\ge c(u) N^{-2/d} 
+%	%\le C(u) N^{-2/d}
+%	\end{equation}
+%\end{conjecture}
+%
+%Questions:
+%\begin{enumerate}
+%	\item Is the above conjecture correct in some way?  If yes, what are
+%	the more rigorous statements for such results?
+%	\item What are the most relevant references that contain such results?
+%	\item If the conjecture is incorrect, is there a counter example?
+%\end{enumerate}
+
+
+\begin{conjecture}\label{conjecture1}
+For any function $u\in L^2(\Omega)$ % is not smooth (for example $u\in H^{1+\epsilon}$ for any $\epsilon>0$)
+ that is not locally linear (namely $u$ is not
+linear in any open subset), we  have 
+\begin{equation}\label{lower_convergence_0_2}
+\inf_{v_h\in V_N}\|u-v_h\| \gtrsim  N^{-\frac{2}{d}}
+\end{equation}
+for any finite element space $V_N$ of dimension $N$ on a shape-regular grid.
+\end{conjecture}
+%Questions:
+%\begin{enumerate}
+%	\item Is the above conjecture correct in some way?  If yes, what are
+%	the more rigorous statements for such results?
+%	\item What are the most relevant references that contain such results?
+%	\item If the conjecture is incorrect, is there a counter example?
+%\end{enumerate}
+%\begin{conjecture}\label{con2}
+%Let $\mathcal  T_N$ be a grid of $\Omega\subset \mathbb R^d$ with $N$ elements and $V_h$ be the finite element space on $\mathcal  T_N$. 
+%If $u$ is a smooth function (for example $u\in H^3(\Omega)$) and the optimal partition $\mathcal  T^*_N$ such that 
+%\begin{equation}\label{lower_convergence_0_3}
+%\inf_{\# \mathcal T_N=N}\inf_{v_h\in V_h}\|u-v_h\|_{r}=\inf_{v_h\in V^*_h}\|u-v_h\|_{r}\geq  CN^{-\frac{2-r}{d}}\quad r=0, 1
+%\end{equation}
+%where $V_h^*$ is the finite element space on $\mathcal  T^*_N$, then the partition $\mathcal  T^*_N$ can be a quasi-uniform partition.
+%\end{conjecture}
+
+\begin{conjecture}\label{con2}
+Let %with $N$ elements 
+ $V_N$ be the linear finite element space on a grid $\mathcal  T_N$ of $\Omega\subset \mathbb R^d$. 
+If $u$ is a smooth function (for example $u\in H^2(\Omega)$) and $u$ is not a linear function,
+\begin{equation}\label{lower_convergence_0_3}
+\mathop{\inf_{\# \mathcal T_N=N}}_{\mathcal T_N~\hbox{is shape regular}} \inf_{v_h\in V_N}\|u-v_h\|\gtrsim \mathop{\inf_{\# \mathcal T_N=N}}_{\mathcal T_N~\hbox{is quasi-uniform}} \inf_{v_h\in V_N}\|u-v_h\|\gtrsim N^{-\frac{2}{d}}.
+\end{equation}
+%where $V_N^*$ is the finite element space on $\mathcal  T^*_N$, then the partition $\mathcal  T^*_N$ can be a quasi-uniform partition.
+\end{conjecture}
+Questions:
+\begin{enumerate}
+	\item Is the above Conjecture \ref{conjecture1} or Conjecture \ref{con2} correct in some way?  If yes, what are
+	the more rigorous statements for such results?
+	\item What are the most relevant references that contain such results?
+	\item If the Conjecture \ref{conjecture1} or Conjecture \ref{con2} is incorrect, is there a counter example?
+\end{enumerate}
+
+

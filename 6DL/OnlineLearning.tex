@@ -1,0 +1,154 @@
+% Author: Jonathan Siegel
+% This chapter aims to provide an introduction to the online learning framework.
+% We consider only the convex problems and first-order (i.e. gradient-based) methods.
+
+\section{Online Optimization}
+In this chapter we introduce the concept of online learning.
+
+In the online setting, we observe a sequence of objective functions $f_i$. We generate iterates $x_i$ based on the
+observed functions $f_i$ with the goal of minimizing the regret $R(x,z^*)$ where
+\begin{equation}
+ R(x_1,...,x_n,z) = \displaystyle\sum_{i = 1}^n (f_i(x_i) - f_i(z))
+\end{equation}
+and $z^*\in\arg\min_{z} \displaystyle\sum_{i = 1}^n f_i(z)$. Notice the point $z$ is fixed in hindsight while the $x_i$ vary.
+
+We begin by deriving regret bounds for the dual averaging method in the convex, Lipschitz case. The dual averaging method
+is given by
+\begin{equation} \label{online_DA}
+ x_{n + 1} = \arg\min_x \left(\displaystyle\sum_{i = 1}^n \langle sg_i, x\rangle + \frac{\alpha_{n+1}}{2}\|x - x_1\|_2^2\right)
+\end{equation}
+where $g_i\in \partial f_i(x_i)$. Note that if $\alpha_i = 1$, then we simply have subgradient descent with
+stepsize $s$. We have the following theorem.
+\begin{theorem}
+ Assume that each $f_i$ is convex and Lipschitz with constant $M$. Let $x_i$ be given by iteration (\ref{online_DA})
+ with $\alpha_i \leq \alpha_{i+1}$.
+ Then for any $z$, we have
+ \begin{equation}
+  R(x_1,...,x_n,z) \leq \frac{\alpha_n}{2s} \|z - x_1\|_2^2 + \frac{sM^2}{2}\displaystyle\sum_{i = 1}^n \frac{1}{\alpha_i}
+ \end{equation}
+ \end{theorem}
+ \begin{proof}
+  We note that by convexity, we have
+  \begin{equation}\label{convexity_bound}
+   R(x_1,...,x_n,z) = \displaystyle\sum_{i = 1}^n (f_i(x_i) - f_i(z)) \leq \displaystyle\sum_{i = 1}^n\langle g_i, x_i - z\rangle
+   = \frac{1}{s}\displaystyle\sum_{i = 1}^n\langle sg_i, x_i - z\rangle
+  \end{equation}
+  We proceed by rewriting the sum as follows
+  \begin{equation}\label{sum_rewriting}
+   \displaystyle\sum_{i = 1}^n\langle sg_i, x_i - z\rangle = \displaystyle\sum_{i = 1}^n\langle sg_i, x_n - z\rangle + 
+   \displaystyle\sum_{i = 1}^{n-1} \displaystyle\sum_{j = 1}^i \langle sg_j, x_i - x_{i+1}\rangle
+  \end{equation}
+  We now bound the quantity
+  \begin{equation}
+   \displaystyle\sum_{j = 1}^i \langle sg_j, x_i - y\rangle
+  \end{equation}
+  for arbitrary $y$ as follows. We note that by (\ref{online_DA}), we have
+  \begin{equation}
+   x_i = \arg\min_x \displaystyle\sum_{j = 1}^{i-1} \langle sg_j, x\rangle + \frac{\alpha_i}{2}\|x - x_1\|_2^2 = \arg\min_x f_i(x)
+  \end{equation}
+  This means that $0\in \partial f_i(x_i)$ and so $sg_i\in \partial f_i^\prime(x_i)$ where 
+  $f_i^\prime(x) = f_i(x) + \langle sg_i, x\rangle$. Note additionally that $f_i$ and thus $f_i^\prime$ are strongly
+  convex with convexity parameter $\alpha_i$. This implies that for any $y$,
+  \begin{equation}
+   f_i^\prime(x_i) - f_i^\prime(y) \leq \frac{1}{2\alpha_i}\|sg_i\|_2^2 \leq \frac{s^2M^2}{2\alpha_i}
+  \end{equation}
+  since $\|g_i\|_2\leq M$ by the Lipschitz assumption on $f_i$. Plugging in $y = x_{i+1}$ and $y = z$, and
+  expanding $f_i^\prime$, we see that
+  \begin{equation}
+   (\ref{sum_rewriting})\leq \frac{\alpha_n}{2} \|z - x_1\|_2^2 
+   + \frac{1}{2}\displaystyle\sum_{i = 2}^n (\alpha_{i-1} - \alpha_i)\|x_i - x_1\|_2^2 + \frac{s^2M^2}{2}\displaystyle\sum_{i = 1}^n \frac{1}{\alpha_i}
+  \end{equation}
+  Now the assumption that $\alpha_{i-1} - \alpha_i\leq 0$ implies that
+  \begin{equation}
+   (\ref{sum_rewriting})\leq \frac{\alpha_n}{2} \|z - x_1\|_2^2 + \frac{s^2M^2}{2}\displaystyle\sum_{i = 1}^n \frac{1}{\alpha_i}
+  \end{equation}
+  Plugging this into equation (\ref{convexity_bound}), we get
+  \begin{equation}
+   R(x_1,...,x_n,z) \leq \frac{\alpha_n}{2s} \|z - x_1\|_2^2 + \frac{sM^2}{2}\displaystyle\sum_{i = 1}^n \frac{1}{\alpha_i}
+  \end{equation}
+
+
+ \end{proof}
+
+ Note that setting $\alpha_i = 1$ and $s_i = \frac{1}{\sqrt{n}}$ produces a regret which is $O(\sqrt{n})$. It can be
+ shown that this is optimal for convex Lipschitz functions in the black-box setting.
+\section{Cycle SGD}
+We now use the results on online optimization to derive convergence results for the cycle SGD algorithm.
+To this end, we let $f_1,...,f_n$, be a collection of convex, Lipschitz functions and suppose we want
+to minimize
+\begin{equation}
+ f(x) = \frac{1}{n}\displaystyle\sum_{i = 1}^n f_i(x)
+\end{equation}
+The cycle SGD for $k$ epochs is the same as running the online algorithm (\ref{online_DA}) with $\alpha_i = 1$ on the sequence of
+functions $f_1,...,f_{nk}$ where $f_i = f_{i\mod n}$, i.e. we repeat the same sequence over and over again. 
+Given any such order, we obtain the regret bound from the previous section
+\begin{equation}
+ \displaystyle\sum_{i = 1}^{nk} (f_i(x_i) - f_i(x^*)) \leq \frac{1}{2s} \|x^* - x_1\|_2^2 + \frac{knsM^2}{2}
+\end{equation}
+
+Now let $\bar{x} = \frac{1}{nk}\displaystyle\sum_{i = 1}^{nk} x_i$ be the average of the iterates $x_i$ and note that
+\begin{equation}
+ f(\bar{x}) - f(x^*) = \frac{1}{n}\displaystyle\sum_{i = 1}^{n} (f_i(\bar{x}) - f_i(x^*)) 
+ \leq \frac{1}{kn^2}\displaystyle\sum_{i = 1}^{n} \displaystyle\sum_{j = 1}^{nk} (f_i(x_j) - f_i(x^*))
+\end{equation}
+Rewriting this, we get
+\begin{equation}
+ f(\bar{x}) - f(x^*) \leq \frac{1}{kn^2}\displaystyle\sum_{i = 1}^{n} \displaystyle\sum_{j = 1}^{nk} (f_i(x_{k(i,j)}) - f_i(x^*)) + (f_i(x_j) - f_i(x_{k(i,j}))
+\end{equation}
+where $k(i,j)$ is the index in the same block as $j$ which is congruent to $i$ mod $n$.
+
+The regret bound implies that
+\begin{align}
+ \frac{1}{kn^2}\displaystyle\sum_{i = 1}^{n} \displaystyle\sum_{j = 1}^{nk} (f_i(x_{k(i,j)}) - f_i(x^*)) 
+ &= \frac{1}{nk}\displaystyle\sum_{i = 1}^{nk} (f_i(x_i) - f_i(x^*)) \\
+ &\leq \frac{1}{2nks} \|x^* - x_1\|_2^2 + \frac{sM^2}{2}
+\end{align}
+
+It remains to bound 
+$$\frac{1}{kn^2}\displaystyle\sum_{i = 1}^{n} \displaystyle\sum_{j = 1}^{nk} (f_i(x_j) - f_i(x_{k(i,j}))
+$$
+
+Note that for each $i$, $f_i$ is $M$-Lipschitz and since $x_{i+1} = x_{i} + sg_i$, we have $|x_j - x_{k(i,j)}|\leq sM|j - k(i,j)|$.
+This means that
+\begin{equation}
+ \frac{1}{kn^2}\displaystyle\sum_{i = 1}^{n} \displaystyle\sum_{j = 1}^{nk} (f_i(x_j) - f_i(x_{k(i,j})) \leq \frac{sM^2}{kn^2}\displaystyle\sum_{i = 1}^{n} \displaystyle\sum_{j = 1}^{nk} |j - k(i,j)|
+\end{equation}
+It is a simple matter to check that for each $j$, we have
+\begin{equation}
+ \displaystyle\sum_{i = 1}^{n}|j - k(i,j)| \leq \frac{n(n-1)}{2}
+\end{equation}
+which means that
+\begin{equation}
+ \frac{1}{kn^2}\displaystyle\sum_{i = 1}^{n} \displaystyle\sum_{j = 1}^{nk} (f_i(x_j) - f_i(x_{k(i,j})) \leq \frac{sM^2(n-1)}{2}
+\end{equation}
+Putting all of this together, this means that
+\begin{equation}
+ f(\bar{x}) - f(x^*) \leq \frac{1}{2}\left(\frac{1}{nks} \|x^* - x_1\|_2^2 + sM^2n\right)
+\end{equation}
+If we let $R = \|x^* - x_1\|_2$, then setting $s = \frac{R}{Mn\sqrt{k}}$ gives a bound
+\begin{equation}
+ f(\bar{x}) - f(x^*) \leq \frac{1}{2\sqrt{k}}\left(R^2 + M^2\right)
+\end{equation}
+
+\section{Shuffle SGD}
+Finally, we conside the shuffle SGD algorithm. Let $f_1,...,f_n$, be a collection of convex, Lipschitz functions and suppose we want
+to minimize
+\begin{equation}
+ f(x) = \frac{1}{n}\displaystyle\sum_{i = 1}^n f_i(x)
+\end{equation}
+The shuffle SGD algorithm chooses the order $f_1,...,f_n$ randomly in each epoch. The convergence rate of cycle SGD 
+applies for the shuffle SGD as well. However, it should be possible to obtain an improved convergence
+rate if the order is randomly shuffled each time. However, I believe the convergence rate of the shuffle SGD
+algorithm is still an open problem, all of the literature I'm aware of make additional assumptions beyond
+the Lipschitz and convex assumptions. See \cite{shamir2016without} for instance.
+
+\iffalse
+\section{Introduction}
+\subsection{Basic Concepts}
+\subsection{Example: Learning from Expert Advice}
+\section{Gradient Descent}
+\subsection{Convex Case}
+\subsection{Strongly Convex Case}
+\section{Mirror Descent}
+\subsection{Example: Learning from Expert Advice as Mirror Descent}
+\fi

@@ -1,0 +1,33 @@
+\subsection{An iterative feacture extraction scheme}
+One key idea in this paper is that we consider different iterative
+	processes to approximately solve \eqref{Auf} and relate them to
+	many existing popular CNN models. Here, let us assume that 
+	the feature-data mapping \eqref{Auf}  is given as a linear form \eqref{linearA}.
+	We next propose some iterative schemes to solve \eqref{Auf}
+	for an appropriately chosen $u^0$.
+	\begin{itemize}
+		\item Residual correction method, 
+		\begin{equation}\label{eq:smoothB}
+		u^{i} = u^{i-1} + B^{i}(f- A(u^{i-1})), \quad i=1:\nu.
+		\end{equation}
+		Here $B^i$ can be chosen as linear like $B^{i}(f) = \eta^i \ast f$ or nonlinear
+		like \eqref{extractor}. The reason why $B^{i}$ is taken
+		the nonlinear form as in \eqref{extractor} will be discussed later based on our
+		main discovery about the relationship
+		between MgNet and iResNet as discussed in \S~\ref{sec:CNNs} and \S~\ref{sec:relation}. 
+		We refer to \cite{xu1992iterative}
+		for more discussion on iterative schemes in the form of \eqref{eq:smoothB}.
+		\item Chebyshev semi-iterative method, 
+		\begin{equation}\label{eq:chebysev-semi}
+		u^{i} = \omega^i\left(u^{i-1} + B^{i}\left(f- A(u^{i-1})\right)\right)+ (1- \omega^i) u^{i-2},\quad i=1:\nu.
+		\end{equation}
+		The above scheme can be obtained from the above semi-iterative form
+		by applying the Chebyshev polynomial theory \cite{hackbusch1994iterative, golub2012matrix}. 
+		Similar to the previous case, considering the iterative form of the residual $r^j = f - A(u^{j})$,
+		\eqref{eq:chebysev-semi} implies that
+		\begin{equation}
+		r^{i} = \omega^i r^{i-1} + (1-\omega^i)r^{i-2} - AB^i r^{i-1}.
+		\end{equation}
+		This scheme corresponds to the LM-ResNet in \cite{lu2018beyond} 
+		which was obtained as a linear multi-step scheme for some underlying ODEs.
+	\end{itemize}

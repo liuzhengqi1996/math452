@@ -1,0 +1,206 @@
+\subsection{Double Fourier representation}
+Suppose $\Omega$ is bounded and $R$ is the maximum norm of an element of $\Omega$. Then
+\begin{equation}
+\left|\frac{\omega}{a} \cdot x+b\right| \geq \max \left(0,|b|-\frac{R|\omega|}{|a|}\right).
+\end{equation}
+Suppose $\boldsymbol{\sigma} \in W^{m, \infty}(\mathbb{R})$ is non-zero and it satisfies the polynomial decay condition
+\begin{equation}\label{eq:assdecay}
+\left|\sigma^{(k)}(s)\right| \leq C_{p}(1+|s|)^{-p}
+\end{equation}
+for $0\le k\le m+1$ and some $p> 1$. 
+Define
+\begin{equation}
+h(b,\omega)=\bigg (1+ \max \bigg(0, |b|-{R|\omega|\over |a|}\bigg )\bigg )^{-p}.
+\end{equation}
+It follows that
+\begin{equation}\label{eq:decaypro}
+\left|\sigma^{(k)}\left(\frac{\omega}{a} \cdot x+b\right)\right| \leq C_{p}\left(1+\left|\frac{\omega}{a} \cdot x+b\right|\right)^{-p} \leq C_{p}h(b,\omega)
+\end{equation}
+Moreover,
+\begin{equation}
+\begin{aligned}
+\int_{\mathbb{R}} h(b, \omega) d b &=\int_{|b| \leq \frac{R|\omega|}{|a|}} d b+2 \int_{b>\frac{R|\omega|}{|a|}}\left(1+b-\frac{R|\omega|}{|a|}\right)^{-p} d b \\
+&=2 R|a|^{-1}|\omega|+2\left[(1-p)^{-1}\left(1+b-\frac{R|\omega|}{|a|}\right)^{1-p}\right]^{\infty} \\
+&=2 R|a|^{-1}|\omega|+\frac{2}{p-1} \leq C_{1}(p, \operatorname{diam}(\Omega), \sigma)(1+|\omega|)
+\end{aligned}
+\end{equation} 
+
+\begin{theorem}
+Let $\Omega\subset \mathbb{R}^d$ be a bounded domain. If the activation function  $\boldsymbol{\sigma} \in W^{m, \infty}(\mathbb{R})$ is non-zero and it satisfies the polynomial decay condition
+\begin{equation}\label{eq:assdecay}
+\left|\sigma^{(k)}(s)\right| \leq C_{p}(1+|s|)^{-p}
+\end{equation}
+for $0\le k\le m+1$ and some $p> 1$, we have
+\begin{equation}
+\inf _{f_{n} \in \Sigma_{d}^{n}(\sigma)}\left\|f-f_{n}\right\|_{H^{m}(\Omega)} \leq|\Omega|^{\frac{1}{2}} C(p, m, \operatorname{diam}(\Omega), \sigma) n^{-\frac{1}{2}-\frac{t}{(2+t)(d+1)}}\|f\|_{\mathscr{B}^{m+1+\varepsilon}}
+\end{equation}
+where $t=\min (p-1, \varepsilon),$ for any $f \in \mathscr{B}^{m+1+\varepsilon}$
+\end{theorem}
+\begin{proof}
+Let $\theta=(\omega, b)$, $\hat f(\omega)=|\hat f(\omega)| e^{ib(\theta)}$,
+\begin{equation}
+\lambda(\theta) = {\rho(\theta)\over \|\rho(\theta)\|_{L^1(G)}} \qquad \text{with}\qquad \rho(\theta) = (1+|\omega|)^mh(b,\omega)|\cos b(\theta)| |\hat f(\omega)|.
+\end{equation}
+The polynomial decay condition \eqref{eq:assdecay} implies that
+\begin{equation}\label{eq:rhostratify}
+\|\rho(\theta)\|_{L^1(G)}\le  C_1(p, {\rm diam}(\Omega), \sigma)\|f\|_{\mathcal{B}^{m+1}}.
+\end{equation}
+Define
+\begin{equation}
+g(x,\theta) = {\|\rho(\theta)\|_{L^1(\Theta)}\over 2\pi |\hat \sigma (a)|(1+|\omega|)^{m}h(b,\omega)} {\rm sgn} (\cos b(\theta))\sigma ({\omega\over a}\cdot x+b).
+\end{equation}
+Thus
+\begin{equation}
+f(x)=\int_G g(x,\theta)\lambda(\theta)d\theta
+\end{equation}
+with $G=\mathbb{R}^d\times \mathbb{R}$. 
+
+Let $G = G_A\cup G_A^c$ with
+$$
+G_A=\big \{(\omega, b): |b|\le A,\ |\omega|\le {A|a|\over 2R}\big \}.
+$$
+The interval $[-A,A]$ can be divided into $n_b$ subintervals  $\{G_i^b\}_{i=1}^{n_b}$ such that 
+$$
+|b - b'|<An^{-{1\over d+1}}\quad b, b'\in G_i^b,\quad 1\leq i\leq n_b
+$$ 
+for $n_b\ge 2\lceil  n^{1\over d+1}\rceil$. 
+The interval $[-{A|a|\over 2R}, {A|a|\over 2R}]$ can be divided into $n_\omega$ subintervals $\{G_i^\omega \}_{i=1}^{n_\omega}$ such that
+$$
+|\omega_j - \omega'_j| \leq {A|a|\over R}n^{-{1\over d+1}}\qquad  \omega,   \omega' \in G_i^\omega,\quad 1\leq i\leq n_\omega
+$$
+for $n_\omega\ge \lceil n^{1\over d+1}\rceil$.
+The product of these intervals gives the following decomposition 
+$$
+G_A=\tilde G_1\cup \tilde G_2\cup \cdots \cup \tilde G_M
+$$
+such that for any $\theta=(\omega, b)$ and $\theta'=(\omega',b')$ in $\tilde G_i$,
+\begin{equation}
+|b - b'|<An^{-{1\over d+1}}, \quad \|\omega - \omega'\|_{\ell^\infty} \leq {A|a|\over R}n^{-{1\over d+1}}.
+\end{equation}
+Each $\tilde G_i$ can be divided into two subsets:
+\begin{equation}
+\tilde G_i^1 = \{\theta\in \tilde G_i: \cos (b(\theta))\ge 0\}\quad \tilde G_i^2 = \{\theta\in \tilde G_i: \cos (b(\theta))\le 0\}.
+\end{equation}
+This leads to a decomposition of $G_A$ by $G_A=\cup_{i=1}^{2M} G_i$. For any $ \theta, \theta'\in G_i$, 
+\begin{equation}
+|b - b'|<An^{-{1\over d+1}}, \quad \|\omega - \omega'\|_{\ell^\infty} \leq {A|a|\over R}n^{-{1\over d+1}}, {\rm sgn} (\cos b(\theta))={\rm sgn} (\cos b(\theta')).
+\end{equation} 
+Denote $G_A^c = G_{2M+1}$. Let $n_i=\lceil \lambda(G_i)n\rceil$ and 
+\begin{equation}
+f_{n}(x)=\sum_{i=1}^{2 M+1} \frac{\lambda(G_{i})}{n_{i}} \sum_{j=1}^{n_{i}}g(x,\theta_{i,j}).
+\end{equation}
+According to Theorem \ref{lem:stratifiedapprox},  
+\begin{equation} 
+\mathbb{E}\left(\left\|f - f_{n}\right\|_{H^{m}(\Omega)}^{2}\right)\le
+ \sum_{i=1}^{2M+1}  \frac{\lambda^2(G_i)}{n_{i}}  \sup_{\theta_{i},\theta_{i}'\in G_i} \| g(x,\theta_i) - g(x,\theta_i')\|^2_{H^m(\Omega)}  
+\end{equation}
+
+Notice that
+\begin{equation}
+D_x^\alpha g(x,\theta) = {\|\rho(\theta)\|_{L^1(G)}\over 2\pi |\hat \sigma (a)|(1+|\omega|)^{m}h(b,\omega)|a|^{|\alpha|} }{\rm sgn} (\cos b(\theta))  \omega^\alpha \sigma^{(|\alpha|)} ({\omega\over a}\cdot x+b).
+\end{equation}
+We first consider $\sup_{\theta,\theta'\in G_i} \| g(x,\theta_i) - g(x,\theta_i')\|^2_{H^m(\Omega)} $ ($1\le i\le 2M$). 
+\begin{equation}
+| D_x^\alpha \big (g(x,\theta_i) - g(x,\theta_i')\big )|\le |a|^{-|\alpha|}| q(x, \theta_i) - q(x, \theta_i')|
+\end{equation}
+with 
+\begin{equation}
+q(x, \theta)=(2 \pi|\hat{\sigma}(a)|)^{-1} \|\rho(\theta)\|_{L^1(G)} \omega^{\alpha}(1+|\omega|)^{-m} h(b, \omega)^{-1} \sigma^{(|\alpha|)}\left(\frac{\omega}{a} \cdot x+b\right).
+\end{equation}
+We now differentiate $D_x^\alpha g(x,\theta)$ with respect to $\omega$ and $b$, noting that for $|\alpha|\le m$,
+\begin{equation}
+| (1 + |\omega|)^{-m}\omega^\alpha|,\ |D_\omega \big((1 + |\omega|)^{-m}\omega^\alpha\big ) | \lesssim 1
+\end{equation}
+\begin{equation}
+| h(\omega, b)^{-1}|\le \bigg (1+ \max \bigg(0, |b|-{R|\omega|\over |a|}\bigg )\bigg )^{p}
+\end{equation}
+\begin{equation}
+|D_\omega h(\omega, b)^{-1}|,\ |D_b h(\omega, b)^{-1}|\le \bigg (1+ \max \bigg(0, |b|-{R|\omega|\over |a|}\bigg )\bigg )^{p-1}\le \bigg (1+ \max \bigg(0, |b|-{R|\omega|\over |a|}\bigg )\bigg )^{p}.
+\end{equation}
+It follows from \eqref{eq:assdecay} that
+\begin{equation}
+\left|D_{b} q(x, \omega, b)\right| \lesssim C_{p}\left(1+\left|\frac{\omega}{a} \cdot x+b\right|\right)^{-p}\left(1+\max \left(0,|b|-\frac{R|\omega|}{|a|}\right)\right)^{p}\|f\|_{\mathscr{B}^{m+1}}
+\lesssim C_{p}\|f\|_{\mathscr{B}^{m+1}}
+\end{equation} 
+Similarly, we obtain, since $|x| \leq R$
+\[
+\left|D_{\omega} q(\omega, b, x)\right| \lesssim \frac{R}{|a|}\|f\|_{\mathscr{B}^{m+1}}  
+\]
+Thus,
+\begin{equation}
+| D_x^\alpha \big (g(x,\theta_i) - g(x,\theta_i')\big )|\lesssim   A n^{-1 /(d+1)}\|f\|_{\mathscr{B}^{m+1}},
+\end{equation}
+and
+\begin{equation}
+\sup_{\theta,\theta'\in G_i} \| g(x,\theta_i) - g(x,\theta_i')\|^2_{H^m(\Omega)} \lesssim   A^2 n^{-2 /(d+1)}|\Omega|^{\frac{1}{2}}\|f\|_{\mathscr{B}^{m+1}},
+\end{equation}
+ 
+Consider $\sup_{\theta,\theta'\in G_{2M+1}} \| g(x,\theta_i) - g(x,\theta_i')\|^2_{H^m(\Omega)} $. By \eqref{eq:decaypro},
+\begin{equation}
+\| D_x^\alpha g(x,\theta)\|_{L^\infty(\Omega)} \le  {\|\rho(\theta)\|_{L^1(G)}\over 2\pi |\hat \sigma (a)||a|^{|\alpha|} } \|{1\over (1+|\omega|)^{m}h(b,\omega)} \omega^\alpha \sigma^{(|\alpha|)} ({\omega\over a}\cdot x+b)\|_{L^\infty(\Omega)}
+\le  C_p{\|\rho(\theta)\|_{L^1(G)}\over 2\pi |\hat \sigma (a)||a|^{|\alpha|} }.
+\end{equation}
+Thus,
+\begin{equation}
+\sup_{\theta,\theta'\in G_{2M+1}} \| g(x,\theta_i) - g(x,\theta_i')\|^2_{H^m(\Omega)}  
+\le 
+2\sup_{\theta,\in G_{2M+1}} \| g(x,\theta) \|^2_{H^m(\Omega)}
+\le  
+2C_p{\|\rho(\theta)\|_{L^1(G)}\over 2\pi |\hat \sigma (a)| }\sum_{|\alpha|\le m}|a|^{-|\alpha|}.
+\end{equation}
+By \eqref{eq:rhostratify},
+\begin{equation}
+\sup_{\theta,\theta'\in G_{2M+1}} \| g(x,\theta_i) - g(x,\theta_i')\|^2_{H^m(\Omega)} 
+\le |\Omega|  C(p, m, \operatorname{diam}(\Omega), \sigma)\|f\|_{\mathscr{B}^{m+1}}^2.
+\end{equation}
+
+
+The final ingradient we need is a bound on the probability measure of $G_{2M+1}.$ To do this, we break the set $G_{A}^{c}$ into two pieces, $A_{1},$ where $|\omega|>\frac{A|a|}{2 R},$ and $A_{2},$ where $|\omega| \leq \frac{A|a|}{2 R}$ and $|b|>A .$ We get
+\[
+\lambda(G_{2M+1} ) \leq \frac{1}{I(p, \Omega, \sigma, f)}\left[\int_{A_{1}}(1+|\omega|)^{m} h(b, \omega)|\hat{f}(\omega)| d b d \omega+\int_{A_{2}}(1+|\omega|)^{m} h(b, \omega)|\hat{f}(\omega)| d b d \omega \right]
+\]
+By integrating out $b,$ we immediately obtain
+\[
+\int_{A_{1}}(1+|\omega|)^{m} h(b, \omega)|\hat{f}(\omega)| d b d \omega \leq \int_{|\omega|>\frac{A|a|}{2 R}} C_{p}(1+|\omega|)^{m+1}|\hat{f}(\omega)| d \omega \lesssim\|f\|_{\mathscr{B}^{m+1+\varepsilon} }A^{-\varepsilon}
+\]
+On the other hand, on $A_{2}$ we have $|\omega| \leq \frac{A|a|}{2 R}$ and $|b|>A .$ This implies that
+\[
+|b|-\frac{R|\omega|}{|a|} \geq \frac{A}{2}
+\]
+so that for $|\omega| \leq \frac{A|a|}{2 R},$ we have
+\[
+\int_{|b|>A} h(\omega, b)=\int_{|b|>A}\left(1+\max \left(0,|b|-\frac{R|\omega|}{|a|}\right)\right)^{-p} \leq \int_{|x|>\frac{A}{2}}(1+x)^{-p} \lesssim\left(1+\frac{A}{2}\right)^{1-p}
+\]
+Integrating in $b \text { and then } \omega, \text { we obtain (recall } A \geq 1)$
+\[
+\int_{A_{2}}(1+|\omega|)^{m} h(b, \omega)|\hat{f}(\omega)| d b d \omega \lesssim\left(1+\frac{A}{2}\right)^{1-p} \int_{|\omega| \leq \frac{A|a|}{2 R} |}(1+|\omega|)^{m}|\hat{f}(\omega)| d \omega \lesssim\|f\|_{\mathscr{B}^{m+1+\varepsilon}} A^{1-p}
+\]
+Thus,
+\[
+\lambda(G_{2M+1} )  \lesssim A^{-\min (p-1, \varepsilon)}
+\]
+All these estimates lead to
+\[
+\mathbb{E}(\|f_{n}-f\|_{H^{m}(\Omega)}^{2}) \lesssim
+|\Omega| \frac{\|f\|_{\mathscr{B}^{m+1+\varepsilon}}^{2}}{n}\left[A^{-\min (p-1, \varepsilon)}+A^{2} n^{-2 /(d+1)}\right]
+\]
+Optimizing over $A,$ we obtain, for $A=n^{2 /[(d+1)(2+\min (p-1, \varepsilon))]}$
+\[
+\mathbb{E} (\|f_{n}-f\|_{H^{m}(\Omega)}^{2} ) \lesssim 
+| \Omega\|\| f \|_{\mathscr{S}^{m+1+\varepsilon}}^{2} n^{-1-} \frac{2 \sin (p-1, \varepsilon)}{(d+1)(2+\min (p-1, \varepsilon))}
+\]
+This bound on the expectation means that there must exist samples $\left(\omega_{i j}, b_{i j}, \eta_{i j}\right)$ such that $\tilde{f}_{n}$ defined by
+\[
+\|f_{n}-f \|_{H^{m}(\Omega)}^{2} \lesssim
+|\Omega|\|f\|_{\mathscr{S}^{m+1+\varepsilon}}^{2} n^{-1-\frac{2 \min (p-1, \varepsilon)}{(d+1)(2+\min (p-1, \varepsilon))}}
+\]
+Thus we finally get
+\[
+\inf _{f_{n} \in \Sigma_{d}^{3+1}(\sigma)}\left\|f_{n}-f\right\|_{H^{m}(\Omega)} \leq|\Omega|^{\frac{1}{2}} C(p, m, \operatorname{diam}(\Omega), \sigma)\|f\|_{\mathscr{B}^{m+1+\varepsilon} }n^{{-\frac{1}{2}}-\frac{\min (p-1, \varepsilon)}{(d+1)(2+\min (p-1, \varepsilon))}}
+\]
+as desired.
+
+
+\end{proof}
+
+

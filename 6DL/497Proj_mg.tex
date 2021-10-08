@@ -1,0 +1,186 @@
+\section{Multigrid Methods } %Jonathan / b-j8522 / Jul 20
+
+
+\subsection{Dual spaces}
+{\bf Definition:} Given a vector space $V$, the dual space 
+$$V^\prime = \{\varphi: V \to \mathbb{R}: \varphi\textrm{ is a linear map}\}$$
+Here $V^\prime$ itself is  also a vector space. It's easy to verify $(\varphi_1+\varphi_2): V\to \mathbb{R}$. (Because $(\varphi_1+\varphi_2)(v)=\varphi_1(v)+\varphi_2(v)$). 
+
+Let $v_1,\ldots,v_n \in V$ be a basis, define functions $\varphi_i: V\to\mathbb{R}$ by 
+\begin{equation}
+\varphi_i (v_j) = \delta_{ij} := \left\{
+	\begin{array}{cc}
+	1, & i=j \\
+	0, & i\ne j
+	\end{array} \right.
+\end{equation}
+
+Exercise: show that $\varphi_1, \ldots, \varphi_n$ is a basis of $V^\prime$.
+
+Let's give some properties of the dual space here.
+Suppose $f: V \to W$ is a linear map. Let $W^\prime$ be the dual space of $W$, defined by
+\begin{equation}
+W^\prime = \{ \psi: W\to \mathbb{R},\ \textrm{s.t.}\ W\ \textrm{is linear} \}.
+\end{equation}  
+So $\psi \circ f: V\to \mathbb{R}$ is linear, which means $\psi \circ f \in V^\prime$.
+Composition with $f$ gives a map from $W^\prime$ to $V^\prime$. %, called $f^\top$
+
+Furthermore, suppose $W\subset V$ is a subspace, a $\varphi \in V^\prime$ is a function from $V$ to $\mathbb{R}$, and is also a function from $W$ to $\mathbb{R}$.  
+
+
+\subsection{Multigrid methods}
+Consider to solving a linear system as follows
+\begin{equation}\label{eq:linearsys}
+A u = \varphi
+\end{equation}
+where $\varphi\in V^{\prime}$, we are looking for $u\in V$, and  $A: V\to V^{\prime}$ is a linear map. Here $V^{\prime}$ is the dual space of $V$. 
+
+Now, we consider a method to solving the linear system \eqref{eq:linearsys}. Notice that $V$ is a very high dimensional, so the system is very difficult to solve. So we consider if we can approximate this equation by some lower dimensional system.
+
+Consider a subspace $W\subset V$, then we can consider the system 
+\begin{equation}\label{eq:sublinearsys}
+Aw = \psi
+\end{equation}
+where $w\in W$ and $\psi$ equals to $\varphi$ restricted to $W$. Basically, there is a restriction/projection operation $V^\prime \to W^\prime$.%Usually the restriction is natural, so we use same notation here.
+Now, we can choose some subspace $W$, and solve system \eqref{eq:sublinearsys} to get the approximation of the solution.
+
+\subsubsection{Abstract Algorithm}
+Consider a sequence of subspaces $W_1, W_2, \ldots, W_n \subset V$. 
+\begin{itemize}
+\item Pick $v_0\in V$, consider residual equation 
+\begin{equation}
+Av = r_0 = \varphi - A v_0
+\end{equation}
+\item Restrict $Av=r_0 $ to $W_1$. 
+\item Solve it on $W_1$ and add the solution to $v_0$ to get $v_1$.
+\end{itemize}
+
+\subsubsection{Example}
+We give an 1-d example here. Consider a 1-D problem.
+\begin{equation}
+\begin{split}
+ -\frac{\textrm{d}^2}{\textrm{d} x^2} u &= f  \label{eq:1dProb}\\
+ u(0)&=u(1)=0
+\end{split}
+\end{equation}
+Here we try to find a function defined on $[0,1]$. The function values of endpoints are $0$, and the second derivative is given. 
+
+The First thing we need to do is to formulate $A: V\to V^\prime$. 
+Choose a smooth function $g(x)$.
+Integrate both sides of \eqref{eq:1dProb} against $g$ (view both sides in dual space).
+\begin{equation}\label{eq:1dProbInt}
+\begin{split}
+   &\int_0^1 \left( -\frac{\textrm{d}^2}{\textrm{d} x^2} u(x) \right) \cdot g(x) \textrm{d}x = \int_0^1 f(x)  g(x) \textrm{d}x 
+ \end{split}
+\end{equation}
+Using integration by part, the left hand side of \eqref{eq:1dProbInt} equals
+\begin{equation}
+\begin{split}
+ \int_0^1 \left( \frac{\textrm{d}}{\textrm{d} x} u \right) \left( \frac{\textrm{d}}{\textrm{d} x} g \right) \textrm{d}x 
+\end{split}
+\end{equation}
+It gives 
+\begin{equation}
+ \int_0^1 \left( \frac{\textrm{d}}{\textrm{d} x} u \right) \left( \frac{\textrm{d}}{\textrm{d} x} g \right) \textrm{d}x = \int_0^1 f g \textrm{d}x  \quad \forall g
+\end{equation}
+But the above still can not be solve, because it is infinite dimensional. 
+So we apply the restriction mentioned before from it to a finite dimensional subspace. 
+
+\subsubsection{Restrict to a finite dimensional subspace}
+
+Divide $[0,1]$ to $n$ pieces, $0=x_0<x_1<\ldots<x_n=1$.
+Let $$V = \left\{\ \textrm{Piecewise linear functions which are linear on}\ (x_i,x_{i+1}]\ \right\}.$$ And this is the simplest finite element space.
+We need to restrict $u$ and $g$ to space $V$.
+
+Now we need bases of vector spaces $V$ and $V^\prime$ which are dual. Let's talk first about the basis in $V^\prime$. A good choice of the basis for the dual space $V^\prime$, functions from $V$ to real numbers. Consider functions in $V$. We have $n+1$ different grid points, and the function is uniquely determined by its values at all these grid points. Take a particular point $x_i$, and evaluating in $x_i$.
+\begin{equation}
+\begin{split}
+\varphi_{i} (v) = v(x_i)\quad \textrm{and}\quad
+\varphi_{i} \in V^\prime
+\end{split}
+\end{equation}
+So evaluation at one of these grid points is a dual vector. And particular because the function is uniquely determined by values on these grid points, this actually is the dual basis.d
+Now we obtain the dual basis. That $\{ \varphi_1, \varphi_2, \ldots, \varphi_n\}$ is a basis of $V^\prime$.
+Then consider functions in $V$ with the property that $v\in V$ such that 
+\begin{equation}
+\varphi_i (v_j) = \left\{
+	\begin{array}{cc}
+	1, & i=j \\
+	0, & i\ne j
+	\end{array} \right.
+\end{equation}
+So we get the `hat' function $v_i$ that is a piecewise linear function. and $v_i$ equals one on the grid $x_i$ and zero on the others. Then we have $\{ v_1, v_2, \ldots, v_n \}$ is the dual basis of $V$.
+In order to turn \eqref{eq:1dProbInt} into an equation like \eqref{eq:1dProb}. We want to represent $u$ and $g$as a simple linear combination of $\{ v_1, v_2, \ldots, v_n \}$:
+\begin{equation}
+u = \sum_{i=1}^n a_i v_i
+\end{equation}
+And the right hand side of \eqref{eq:1dProbInt} should be a dual vector and equal to 
+\begin{equation}
+\sum_{i=1}^n b_i \varphi_i, 
+\end{equation}
+that is
+\begin{equation}
+b_i = \int_0^1 f v_i {\rm d}x.
+\end{equation}
+And we also need to figure out what $\int_0^1 \left( \frac{\textrm{d}}{\textrm{d} x} v_i \right) \left( \frac{\textrm{d}}{\textrm{d} x} v_j \right) \textrm{d}x$ is. Notice that $v_i$ is the `hat' function. Then, it gives 
+\begin{equation}
+\left(
+	\begin{array}{ccccc}
+	\frac{2}{h} & -\frac{1}{h} & 0 &\cdots &0\\
+	-\frac{1}{h} & \frac{2}{h} & 0 &\cdots &0 \\ 
+	\vdots & \ddots  & \ddots & \ddots &\vdots \\
+	0 & 0 & \cdots &-\frac{1}{h} & \frac{2}{h} 
+	\end{array} \right)
+\left(
+	\begin{array}{c}
+	a_1\\ a_2 \\
+	\vdots \\ a_n
+	\end{array} \right)
+=
+\left(
+	\begin{array}{c}
+	b_1\\ b_2 \\
+	\vdots \\ b_n
+	\end{array} \right)
+\end{equation}
+where $h = \frac{1}{n}$ is the length of each segmentation. 
+So far, we take the integral equation \eqref{eq:1dProbInt} in the infinite dimensional vector space, and restrict it to a finite dimensional vector space. This is what people do to solve differential equations. 
+
+Now consider the multigrid method. We start with the equation in the finite dimensional subspace $V$, then we restrict it to a coarse space (a smaller subspace of $V$). 
+
+In this particular problem, let $W\subset V$ be the subspace of functions which are linear in $[x_{2n}, x_{2n+2}]$. Notice that we get coarse grids $0=w_0 <w_1< \ldots <w_{\frac{n}{2}}$. As before, we can construct two bases, like $\{\varphi_i\}$ and $\{v_i\}$. A basis of $W^\prime$
+\begin{equation}
+\{ \psi_1^\prime, \psi_2^\prime, \ldots, \psi_{\frac{n}{2}}^\prime\}
+\end{equation}
+and and the dual basis of $W$  
+\begin{equation}
+\{ w_1^\prime, w_2^\prime, \ldots, w_{\frac{n}{2}}^\prime\}.
+\end{equation}
+And $w_i$ is also a `hat' function which is piecewise linear and equal to one at grid $x_{2i}$ and zero at the others $x_{2j}$ with $j=0,1,\ldots,i-1,i+1,\ldots, \frac{n}{2}$. 
+Now, we want to do the same restriction, as we done before, from $V$ to $W$.
+Consider the right hand side 
+\begin{equation}
+\sum_{i=1}^{n} b_i \varphi_i \in V^\prime
+\end{equation}
+So 
+\begin{equation} 
+\sum_{i=1}^{n} b_i \varphi_i (w_j) = \frac{1}{2} b_{2j-1} + b_{2j} +\frac{1}{2} b_{2j+1}
+\end{equation}
+Then we get
+\begin{equation}
+\left(
+	\begin{array}{c}
+	b_1\\ b_2 \\ b_3 \\b_4 \\ 
+	\vdots \\ b_{n-1} \\b_n
+	\end{array} \right) 
+\to
+\left(
+	\begin{array}{c}
+	- \\
+	b^\prime_1\\
+	- \\
+	 b_2^\prime \\
+	\vdots \\- \\ b^\prime_n
+	\end{array} \right) 
+\end{equation}
+And the value of $b_i^\prime = \frac{1}{2} b_{2i-1} + b_{2i} + \frac{1}{2} b_{2i+1}$. That how we get the right hand side of a small system from a large system. Notice this can be regard as the convolution with stride two. And the other thing is please to figure out, given a linear combination of the basis $\{w_1,\ldots, w_{\frac{n}{2}}\}$, how to get the coefficients of this linear combination w.r.t. the basis $\{v_1,\ldots, v_{\frac{n}{2}}\}$. That is the map from the small subspace $W$ to the large space $V$.

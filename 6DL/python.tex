@@ -1,0 +1,87 @@
+\subsection{Convergence of SGD}
+\begin{theorem}Let the problem satisfy Assumptions \ref{assum:GDconvergence}, and denote $e_t = \|x_t - x^*\|$,
+then %we can prove by induction that 
+\begin{equation}
+\mathbb{E}e_{t}^2 \le \frac{4M^2}{\lambda^2 t}, \quad\text{for} \quad t \ge 3,
+\end{equation}
+if we take $\eta_t = \frac{2}{\lambda t}$ .
+\end{theorem}
+\begin{proof}
+The $L^2$ error of SDG can be written as
+\begin{equation}
+      \label{equ:L2SGD}
+      \begin{split}
+            \mathbb{E} \|x_{t+1} - x^*\|^2 &\le \mathbb{E}\| x_{t} - \eta_t \nabla f_{i_t}(x_t) - x^* \|^2 \\
+            &\le \mathbb{E} \|x_t - x^*\|^2 
+            - 2 \eta_t \mathbb{E} (\nabla f_{i_t}(x_t) \cdot (x_t - x^*)) 
+            + \eta_t^2 \mathbb{E} \|\nabla f_{i_t}(x_t)\|^2 \\
+            & \le \mathbb{E} \|x_t - x^*\|^2 - 2 \eta_t \mathbb{E} (\nabla f (x_t) \cdot (x_t - x^*))
+            + \eta_t^2 M^2 \\
+            & \le \mathbb{E} \|x_t - x^*\|^2 -  \eta_t \lambda \mathbb{E} \|x_t - x^*\|^2 + \eta_t^2 M^2 \\
+            & = (1 - \eta_t\lambda) \mathbb{E} \|x_t - x^*\|^2 + \eta_t^2 M^2
+      \end{split}
+\end{equation}
+Here we can take the expectation of $i_t$ independently from $\{x_i, i = 1,\ldots,t\}$
+to obtain the second line of (\ref{equ:L2SGD}) since $i_t$ is independent from 
+$\{x_i, i = 1,\ldots,t\}$ which is completely determined by $\{i_j, j = 1,\ldots,t - 1\}$.
+And the third line of (\ref{equ:L2SGD}) is obtained from the boundness of the gradients.
+
+Note when $t=2$, $\eta_2 = \frac{1}{ \lambda }$, we obtain $ \mathbb{E}e_{3}^2 \le\eta_2^2 M^2\le \frac{M^2}{\lambda^2}\le \frac{4M^2}{3\lambda^2}$.
+
+In the case of SDG, by the inductive hypothesis, 
+\begin{equation}
+      \begin{split}
+            \mathbb{E}e_{t+1}^2 & \le  (1 - \frac{2}{t}) \frac{4M^2}{\lambda^2 t} + \frac{4M^2}{\lambda^2 t^2} \\
+            & \le \frac{4M^2}{\lambda^2} \frac{1}{t^2}(t-2+1) \\
+            & \le \frac{4M^2}{\lambda^2} \frac{t-1}{t^2} \\
+            & \le \frac{4M^2}{\lambda^2} \frac{1}{t+1}.
+      \end{split}
+\end{equation}
+\end{proof}
+
+\subsection{About Python}
+I plan to ask the students to bring their computers so we can walk through the whole process.
+
+\subsubsection{Python}
+\begin{enumerate}
+\item Version (2 vs 3)
+\item IDE choice (Original vs PyCharm vs Anaconda)
+\item Download and installation (Python and IDE)
+\item Install necessary libraries (Numpy, scipy, etc.)
+\item Basic grammer 
+\item Basic code illustration (Hello world.py)
+\end{enumerate}
+
+\subsubsection{Pytorch tutorial}
+\begin{enumerate}
+\item Installation (MacOS, Windows)
+\item Tensor 
+\item Operation 
+\item Coverting with Numpy array
+\item Gradient
+\item Define the network
+\item Loss function
+\item Back propagation (?)
+\item Training an image classifier
+\item Data loading and processing 
+\item Examples about torch.nn module
+\item Saving and loading models
+\item Real neural network code illustration
+\end{enumerate}
+
+\subsubsection{TensorFlow tutorial}
+\begin{enumerate}
+\item Installation (MacOS, Windows)
+\item Learning and use machine learning models
+\item Basic classification 
+\item Regression 
+\item Overfitting and underfitting (?)
+\item Save and restore models
+\item Custom training
+\item Custom layers
+\item Loading data with tf.data
+\item Real neural network code illustration
+\end{enumerate}
+
+
+

@@ -1,0 +1,13 @@
+\section{Examples of Linearly Separable Sets}
+In this section, we shall give several examples of linearly separable sets.  We will give a detailed description of these sets and list the web pages that contain these sets. 
+
+\subsection{L-MNIST sets}
+The original MNIST data set contains the pictures of single digits. The size of each digit picture is 28*28 and the label is the digit from 0 to 9. There are 60000 training data and 10000 test data in all. The accuracy of the state-of-art CNN model applied on the MNIST is higher than 99\%. If we apply standard least square to the original MNIST data, we only get 86\% accuracy. If we apply logistic regression to the original MNIST data, we get 92\% accuracy. This means that the original MNIST is linearly separable. 
+
+This collection of linearly separable L-MNIST data set are derived from the MNIST data basis after applying some appropriate DNN model. The fully connected neural network contains an input layer, a hidden layer and an output layer. The corresponding widths are 784, 500 and 10. We use this DNN to train all the data (70000) in MNIST for 50 epochs with cross entropy as the loss function and Adam as the optimization method. Then the training accuracy reaches 100\%. We save this model and define the output of the hidden layer as the linearly separable L-MNIST data set. 
+
+To verify this data set is indeed linearly separable, we can use a fully connected neural network with input layer (500) and output layer (10) only without activation. So this is a straightforward linear combination instead of  logistic regression. Due to the weight initialization, the immediate classification accuracy may be low. But after training with this DNN for only 3 epochs, the classification accuracy for all the data in MNIST is already 100\%.  As a comparison, if we apply standard least square to the linearly separable MNIST data, we get 98.38\% accuracy.
+
+We have also uploaded the linearly separable MNIST data set to \\
+http://multigrid.org/wiki/index.php/deep-neural-network/
+\subsection{CIFAR sets}

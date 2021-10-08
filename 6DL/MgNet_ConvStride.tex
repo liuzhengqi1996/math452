@@ -1,0 +1,142 @@
+\subsection{Convolution with stride by introducing stride operator}
+As discussed above, the restriction mapping is consistent with the 
+co-called convolution with stride $s=2$, which is defined as:
+\begin{equation}\label{stride_2}
+[K \ast_2 f]_{i,j} = \sum_{p,q=-k}^k K_{p,q} f_{2i + p, 2j + q},  
+\quad i = 1: \frac{m+1}{2} , j = 1: \frac{n+1}{2}.
+\end{equation}
+
+
+\begin{remark}
+More generally in CNN, given an integer $s\ge1$, a convolution with stride $s$ for $f \in \mathbb{R}^{(m)\times
+		(2^n+1)}$ can also be defined as:
+	\begin{equation}\label{stride}
+	[K \ast_s f]_{i,j} = \sum_{p,q=-k}^k K_{p,q} f_{si + p, sj + q},  
+	\quad i = 1: \lceil  \frac{m}{s}\rceil , j = 1: \lceil  \frac{n}{s}\rceil.
+	\end{equation}
+	
+	Here $ \lceil  \frac{m}{s}\rceil$ denotes the smallest integer that greater than $\frac{m}{s}$.
+\end{remark}
+
+As general in CNN and multigrid method, convolution with stride $s=2$ is the most important case.
+To make this operator more clear, now we are going to introduce the stride operator $\mathcal S$ as:
+\begin{equation}\label{eq:strideopdim}
+\mathcal S: \mathbb{R}^{m \times n} \mapsto \mathbb{R}^{\frac{m+1}{2} \times \frac{n+1}{2}},
+\end{equation}
+with
+\begin{equation}\label{eq:strideop}
+[\mathcal S(f)]_{i,j} = f_{2i, 2j}, \quad i  = 1:\frac{m+1}{2}, j = 1:\frac{n+1}{2}.
+\end{equation}
+
+Then we have the rewrite form of convolution with stride $2$ as:
+\begin{equation}\label{eq:convstride_2_1}
+K \ast_2 f = \mathcal S( K\ast f).
+\end{equation}
+
+
+Then the deconvolution in defined by the transposed of convolution 
+with stride with respect to the F-inner product defined as:
+$$
+(u, v)_F := \sum_{i,j} u_{i,j}v_{i,j}.
+$$
+Then we have the definition of deconvolution as
+\begin{equation}\label{eq:def_deconv}
+(K \ast_2 u, v)_F = (u, K \ast_2^\top v),
+\end{equation}
+with
+\begin{equation}
+u \in \mathbb{R}^{m \times n} \quad \text{and} \quad v \in \mathbb{R}^{\frac{m+1}{2} \times \frac{m+1}{2}}.
+\end{equation}
+
+For a more comprehensive notation, let us also define 
+$K\ast$ as an operator from $\mathbb{R}^{m\times n} \quad \text{and}$
+to $\mathbb{R}^{m\times n}$ as $\mathcal C_K$.
+Then we have the ``transpose'' of convolution without stride as:
+\begin{equation}\label{eq:def_tran_conv}
+(K \ast u, v)_F = (\mathcal C_K (u), v) =  (u,  \mathcal C_K^\top v).
+\end{equation}
+
+\begin{lemma}\label{lemm:tilde-K}
+For the transposed convolution without stride, we have the next result
+\begin{equation}\label{eq:}
+\mathcal C_K^\top = \mathcal C_{\tilde K},
+\end{equation}
+where $\tilde K$ is defined as
+\begin{equation}\label{eq:def_tildeK}
+\tilde K_{p,q} = K_{-p, -q}, \quad p,q = -k:k.
+\end{equation}
+Intuitively, if we take $K_{0,0}$ as the center for the convolutional kernel $K$, 
+then $\tilde K$ is the central symmetry of $K$. 
+In 2D case, it can also be understood as the rotation of $\pi$ with respect to
+the center $K_{0,0}$.
+\end{lemma}
+
+Then recall the definition of deconvolution in \eqref{eq:def_deconv} we have
+\begin{equation}\label{eq:op_deconv}
+\begin{aligned}
+(u,  K \ast_2^\top v) &= (K \ast_2 u, v)_F = (\mathcal S \mathcal C_K u, v) \\
+&= (u,  \mathcal C^\top_K \mathcal S^\top v),
+\end{aligned}
+\end{equation}
+with definition
+\begin{equation}\label{eq:de_stride_dim}
+\mathcal S^\top:   \mathbb{R}^{\frac{m+1}{2} \times\frac{n+1}{2}} \mapsto \mathbb{R}^{m\times n},
+\end{equation}
+and 
+\begin{equation}\label{eq:de_stride}
+[\mathcal S^\top (f)]_{i,j} = 
+\begin{cases}
+0 \quad &\text{if i or j is even}, \\
+f_{i/2, j/2}, \quad &\text{else}.
+\end{cases}
+\end{equation}
+
+Thus to say, we have the simple version of the deconvolution for $K \ast $ as
+\begin{equation}\label{eq:simple_deconv}
+K \ast_2^\top v = \mathcal C_K\top \circ \mathcal S^\top (v) = \mathcal C_{\tilde K} \circ \mathcal S^\top (v) = \tilde K \ast \mathcal S^\top (v),
+\end{equation}
+thus to say
+\begin{equation}\label{eq:final}
+K \ast_2^\top  = \tilde K \ast \mathcal S^\top.
+\end{equation}
+
+In short, we have the next decomposition
+\begin{itemize}
+	\item convolution with stride = stride $ \circ$ convolution,
+	\item deconvolution with stride  = transposed convolution $\circ$ transposed stride = convolution with the central symmetry of original kernel $\circ$ transposed stride.
+\end{itemize}
+
+\begin{theorem}\label{thm:deconv_op}
+Here let us show a simple example about some details for computing deconvolution. 
+Let us consider 
+\begin{equation}
+K_{p,q} \quad p,q = -1, 0, 1.
+\end{equation}
+Then we have 
+$$
+K \ast_2^\top v = \tilde K \ast \mathcal S^\top (v).
+$$
+As in \eqref{eq:de_stride} and the Lemma \ref{lemm:tilde-K}, we have the 
+final version is 
+\begin{equation}
+\label{eq:7}
+[K \ast_2^\top v ]_{2i,2j}=  K_{0,0}v_{i,j},
+\end{equation}
+with 
+\begin{equation}
+\label{eq:9}
+[K \ast_2^\top v ]_{2i-1, 2j} = K_{0,1}v_{i-1,j} + K_{0,-1}v_{i,j}, \quad 
+[K \ast_2^\top v ]_{2i, 2j-1} = K_{1,0}v_{i,j} + K_{-1,0}v_{i,j-1},
+\end{equation}
+and
+\begin{equation}
+%\begin{tiny}
+%{\scriptsize 
+[K \ast_2^\top v ]_{2i-1, 2j-1}  =  
+K_{1,1}v_{i,j} + K_{-1,1}v_{i-1,j} + K_{1,-1}v_{i,j-1} + K_{-1,-1}v_{i-1,j-1}.
+%\end{tiny}
+%}
+\end{equation}
+
+
+\end{theorem}

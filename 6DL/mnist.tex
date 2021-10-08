@@ -1,0 +1,152 @@
+\documentclass[12pt]{article}
+\bibliographystyle{apsrev4-1}%amsplain}
+%%a4paper compact
+\usepackage[utf8x]{inputenc}
+\usepackage{amsfonts, amssymb, amsmath, amscd, eucal, amsthm}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{subfig}
+\usepackage{fancyhdr}
+\usepackage{color}
+\usepackage{extarrows}
+\usepackage{enumerate}
+\usepackage{multirow}
+\usepackage[numbers]{natbib}
+\usepackage{geometry}
+\usepackage{CJK}
+\geometry{left=3cm,right=3cm,top=2.5cm,bottom=2.5cm}
+
+%\theoremstyle{plain}
+%\newtheorem{thm}{Theorem}[chapter] % reset theorem numbering for each chapter
+%\theoremstyle{definition}
+%\newtheorem{defn}[thm]{Definition} % definition numbers are dependent on theorem numbers
+%\newtheorem{exmp}[thm]{Example} 
+
+
+\pagestyle{fancy}
+%\chea
+\rhead{}
+
+%\setlength{\textwidth}{13.72cm}
+%\setlength{\oddsidemargin}{1cm}
+%\setlength{\evensidemargin}{1cm}
+
+\graphicspath{{pics/}}
+%opening
+\title{MNIST Experiment in Python}
+%\author{Jianhong Chen}
+
+\begin{document}
+\maketitle
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\begin{CJK*}{UTF8}{gbsn}
+
+\section{Least square}
+\subsection{Model}
+For each data $x_i\in \mathbb{R}^{784}, i=1,...,60000$, the corresponding label is $y_i\in \mathbb{R}^{10}$ where $y_i=e_j$ if $x_i \in A_j$ or the label for $x_i$ is j. 
+
+If we denote 
+A=
+$\begin{pmatrix}
+    x_{1}       & 1 \\
+    x_{2}       & 1 \\
+    ... &... \\
+    x_{60000}       & 1\\
+\end{pmatrix} \in \mathbb{R}^{60000\times 785}$ , Y=
+$\begin{pmatrix}
+    y_{1}        \\
+    y_{2}       \\
+    ... \\
+    y_{60000}     \\
+\end{pmatrix}\in \mathbb{R}^{60000\times 10}$.
+
+We want to find $\theta=\left[ {\begin{array}{c}
+   W^T \\
+   b^T \\
+  \end{array} } \right]\in \mathbb{R}^{785\times 10}$ to minimize $\|Y-A\theta\|^2_2$.
+  
+The empirical formulae gives
+\begin{align}
+\hat{\theta}=(A^TA)^{-1}A^TY.
+\end{align}
+
+\subsection{Numerical result}
+For the MNIST dataset, after $\hat{\theta}$ is obtained, we can classify $x_i$ based on 
+\begin{align}
+\hat{y_i}=Wx_i+b.
+\end{align}
+We choose the digit with the maximum value as the predicted label for $x_i$. The training accuracy is 85.77$\%$.
+
+\section{Logistic regression }
+\subsection{Model}
+\begin{itemize}
+\item X: the input image of a handwritten digit
+\item Y: the true value of the digit
+\item W,b: weight and bias
+\item Y$\_$pred=softmax(Wx+b)
+\item Loss=cross$\_$entropy(Y, Y$\_$pred)+ regularization term
+\item Optimization method: Adam
+\end{itemize}
+
+\subsection{Implementation }
+\begin{itemize}
+\item Parameter
+\begin{enumerate}
+\item learning rate = 0.001
+\item training epochs=50
+\item batch size =100
+\item regularization coefficient =0.0001
+\end{enumerate}
+\item Result
+\begin{enumerate}
+\item no regularization: training accuracy=93$\%$; test accuracy =92$\%$
+\item regularization coefficient =0.0001: training accuracy=93$\%$; test accuracy =92$\%$
+\item regularization coefficient =0.001: training accuracy=92$\%$; test accuracy =92$\%$
+\item no regularization+SGD: training accuracy= 88$\%$; test accuracy =89$\%$
+\end{enumerate}
+
+\end{itemize}
+
+\section{One hidden layer }
+\subsection{Model}
+\begin{itemize}
+\item X: the input image of a handwritten digit
+\item Y: the true value of the digit
+\item Hidden layer size=500
+\item Loss=cross$\_$entropy(Y, Y$\_$pred)+ regularization term
+\item Optimization method: Adam
+\end{itemize}
+
+\subsection{Implementation }
+\begin{itemize}
+\item Parameter
+\begin{enumerate}
+\item learning rate = 0.001
+\item training epochs=50
+\item batch size =100
+\item regularization coefficient =0.0001
+\end{enumerate}
+\item Result
+\begin{enumerate}
+\item no regularization: training accuracy=100$\%$; test accuracy =98.36$\%$
+\item regularization coefficient =0.0001: training accuracy=99.00$\%$; test accuracy =98.04$\%$
+\item regularization coefficient =0.001: training accuracy=98.00$\%$; test accuracy =97.67$\%$
+\item no regularization+SGD: training accuracy= 90$\%$; test accuracy =90.54$\%$
+\end{enumerate}
+
+\end{itemize}
+
+
+
+
+
+
+
+
+\end{CJK*}
+\end{document}

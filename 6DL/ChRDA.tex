@@ -1,0 +1,1463 @@
+
+In the last chapter, we reviewed some algorithms for solving unconstrained optimization problems, especially those summation form problem arising from machine learning.
+In this chapter we care about optimization problems with regularization term, which is a special case of the composite optimization problem.
+Regularization term may helps to have special structure of solutions, like sparsity.
+Firstly, we will introduce proximal gradient method, since it is one of the most fundamental method for solving composite problem.
+It also called \emph{Forward-Backward splitting} method from the point of view of operators.
+And then we will introduce simple dual averaging method and regularized dual averaging method, as well as the connections between algorithms.
+Finally, we will introduce results of these algorithms when solves $\ell_1$ regularized problem, and give out some convergence analysis.
+
+
+\section{Proximal Gradient}
+Definition of proximal operator:
+\begin{equation}
+	\begin{split}
+		Prox_{\alpha R} (y)
+		& =\mathop{\arg \min}_x \left\lbrace \frac{1}{2\alpha} \|x-y\|^2_2+R(x) \right \rbrace\\
+		& =\mathop{\arg \min}_x \left\lbrace \frac{1}{2} \|x-y\|^2_2+\alpha R(x) \right \rbrace.
+	\end{split}
+\end{equation}
+
+\subsection{Convex problem}
+The problem
+\begin{equation}
+	\min_w \phi(w),
+\end{equation}
+where $\phi$ is convex (convexity $\mu$) and smooth (Lipschitz $L$ of gradient).
+\begin{enumerate}
+	\item Convexity is local \emph{lower} first ($\mu=0$) or second ($\mu>0$) order bound of function $\phi$.
+	\item Lipschitz continuous of gradient is local \emph{upper} second order bound of $\phi$.
+	\item $\mu \leq L$.
+\end{enumerate}
+
+\subsection{Proximal gradient  (PG) for convex problem}
+Proximal gradient method solves subproblem which the objective function is second order approximation to $\phi$.
+The iteration takes the following form:
+\begin{equation}
+	\begin{split}
+		w_{t+1}&= \mathop{\arg \min}_w \left\lbrace \phi(w_t)+\nabla \phi(w_t)^T (w-w_t)+\frac{1}{2\alpha_t} \|w-w_t\|^2_2 \right \rbrace\\
+		&=\mathop{\arg \min}_w \left\lbrace \nabla \phi(w_t)^T w+\frac{1}{2\alpha_t} \|w-w_t\|^2_2 \right \rbrace\\
+		&=\mathop{\arg \min}_w \left\lbrace \frac{1}{2\alpha_t} \|w-(w_t-\alpha_t \nabla \phi(x_t))\|^2_2 \right \rbrace\\
+		&=Prox_{0} (w_t-\alpha_t \nabla \phi(w_t)).
+	\end{split}
+\end{equation}
+Here $\alpha_t$ is parameter.
+And regularization term can be viewed as $0$.
+It is equivalent to explicit gradient descent
+\begin{equation}
+	w_{t+1}=w_t -\alpha_t \nabla \phi(w_{t}).
+\end{equation}
+
+Here
+$$\alpha_t=\frac{1}{\lambda_{\max} (\nabla^2 \phi(w))}$$
+was suggested.
+
+\subsection{Proximal point algorithm (PPA) for convex problem}
+Proximal point algorithm
+\begin{equation}
+	\begin{split}
+		w_{t+1}&= \mathop{\arg \min}_w \left\lbrace \phi(w)+\frac{1}{2\alpha_t} \|w-w_t\|^2_2 \right \rbrace\\
+		&= Prox_{\alpha \phi} (w_t). 
+	\end{split}
+\end{equation}
+It is equivalent to implicit gradient descent
+\begin{equation}
+	w_{t+1}=w_t -\alpha_t \nabla \phi(w_{t+1}).
+\end{equation}
+
+And these method can combined with stochastic technique for summation problem, then we can easily obtain proximal stochastic gradient and proximal stochastic point algorithm.
+
+\subsection{Convex composite problem}
+The composite problem has the following form
+\begin{equation}\label{composite problem}
+	\min_w \phi(w)=f(w)+\Psi(w),
+\end{equation}
+where $f$ is convex (convexity $\mu$) and smooth (Lipschitz $L$ of gradient) and the regularizer $\Psi$ is convex and nonsmooth.
+Here $\Psi$ can be, for example
+\begin{enumerate}
+	\item $\ell_1$ regularization: $\lambda \|w\|_1$.
+	$\lambda$ is parameter determine the sparsity of solution.
+	We will discuss some results when $\Psi(w)=\lambda \|w\|_1$ in next section.
+	\item $\ell_2$ regularization: $\frac{\lambda}{2} \|w\|_2$. $\ell_2$ regularizer also called weight decay.
+	It helps to avoid overfitting of machine learning models.
+	\item mixed regularization: $\lambda_1 \|w\|_1 + \frac{\lambda_2}{2} \|w\|_2$.
+	\item Indicator function.
+\end{enumerate}
+
+Recall that the first order necessary condition
+\begin{equation}
+	0 \in \nabla f(w_\star) + \partial \Psi(w_\star).
+\end{equation}
+\subsection{Gradient descent (GD) for convex composite problem}
+Explicit gradient descent applied for (\ref{composite problem}) has
+\begin{equation}
+	w_{t+1} = w_t -\alpha_t (\nabla f(x_t) + \partial \Psi(w_{t})).
+\end{equation}
+It is equal to
+\begin{equation}
+	\frac{1}{\alpha_t} (w_{t+1}-w_t) +\nabla \Psi(w_t) + \partial \Psi(w_{t})=0.
+\end{equation}
+The subgradient operator works on $\Psi(w_t)$, so it will not helps to obtain special structure of next point $w_{t+1}$.
+
+\subsection{Proximal gradient for convex composite problem}
+\begin{align}
+	w_{t+1}&= \mathop{\arg \min}_w \left\lbrace f(w_t)+\nabla f(w_t)^T (w-w_t)+\frac{1}{2\alpha_t} \|w-w_t\|^2_2 +\Psi(w) \right \rbrace\\
+	&=\mathop{\arg \min}_w \left\lbrace \nabla f(w_t)^T w+\frac{1}{2\alpha_t} \|w-w_t\|^2_2 +\Psi(w) \right \rbrace\\
+	&=\mathop{\arg \min}_w \left\lbrace \frac{1}{2\alpha_t} \|w-(w_t-\alpha_t \nabla \Psi(w_t))\|^2_2 +\Psi(w) \right \rbrace\\
+	&=Prox_{\alpha_t \Psi} (w_t-\alpha_t \nabla f(w_t)).
+\end{align}
+It is equivalent to solve the equation (KKT condition of subproblem)
+\begin{equation}
+	\nabla f(w_t) + \frac{1}{\alpha_t} (w_{t+1}-w_t) +\partial \Psi(w_{t+1}) = 0.
+\end{equation}
+That is implicit gradient descent.
+\begin{equation}
+	w_{t+1} = w_t -\alpha_t (\nabla \Psi(w_t) + \partial \Psi(w_{t+1})).
+\end{equation}
+We can also write it in the formulation:
+\begin{equation}
+	\frac{1}{\alpha_t} (w_{t+1}-w_t) +\nabla f(w_t) + \partial \Psi(w_{t+1})=0,
+\end{equation}
+and it actually using the approximation
+\begin{equation}
+	\frac{1}{\alpha_t} (w_{t+1}-w_t) +\nabla f(w_t) \approx \nabla f(w_{t+1}).
+\end{equation}
+From the formula we can see, PG can produce better sparsity than GD.
+Because the function $\partial R(\cdot)$ operates on $w_t$ in GD, while operates on $w_{t+1}$ in PG.
+
+
+\section{Simple dual averaging and Regularized dual averaging algorithms}
+
+\subsection{Empirical risk minimization}
+The expected risk minimization arising from machine learning has the following form:
+\begin{equation}\label{expected risk minimization}
+	\min_{w}~~\left\lbrace \phi(w)= \mathbf{E}_z f(w,z)\right\rbrace,
+\end{equation}
+where $z$ is an input-output pair of data, $f(w,z)$ is loss function.
+
+And the regularized expected risk minimization has the following form
+\begin{equation}\label{regularized expected risk minimization}
+	\min_{w}~~\left\lbrace \phi(w)= \mathbf{E}_z f(w,z)+\Psi(w)\right\rbrace,
+\end{equation}
+where $\Psi(w)$ is a regularization term, for example, $\ell_1$ regularization in obtaining sparse solutions.
+
+The empirical risk minimization is approximation of (\ref{expected risk minimization})
+\begin{equation}\label{approximated optmization}
+	\min_{w}~~\left\lbrace \phi(w)=\frac{1}{T}\sum_{t=1}^{T} f(w,z_t)\right\rbrace,
+\end{equation}
+
+And the regularized empirical risk minimization
+\begin{equation}\label{approximated regularized optimization}
+	\min_{w}~~\left\lbrace \phi(w)=\frac{1}{T} \sum_{t=1}^{T} f(w,z_t)+\Psi(w)\right\rbrace,
+\end{equation}
+where $f$ is convex (convexity $\mu$) and smooth (Lipschitz $L$ of gradient) and $\Psi$ is convex but nonsmooth.
+%Here $\Psi$ can be, for example
+%\begin{enumerate}
+%	\item $\lambda \|x\|_1$.
+%	$\lambda$ is parameter determine the sparsity of solution.
+%	We will take $R(x)=\lambda \|x\|_1$ as example.
+%	\item Indicator function.
+%\end{enumerate}
+
+%\begin{equation}
+%\min_w f(w)+\lambda \|w\|_1
+%\end{equation}
+
+\subsection{Simple dual averaging (SDA)}
+Simple dual averaging method takes the form
+\begin{equation}
+	w_{t+1} = \mathop{\arg \min}_w \left\{ \frac{1}{t}\sum_{\tau=1}^{t} \left<g_{\tau}(w_\tau), w \right> + \frac{\beta_t}{t} h(w) \right\}.
+\end{equation}
+
+Since $g_\tau(w_\tau)$ is constant in current iteration, we use $g_\tau$ instead for simplicity in the following.
+If we choose $h(w)=\frac{1}{2} \|w-w_0\|^2_2$, where $w_0=\arg \min\limits_w h(w)$ is also an initial point then we can conclude
+\begin{equation}
+	w_{t+1}=w_0 - \frac{1}{\beta_t} \sum_{\tau=1}^{t} g_\tau=w_0-\frac{t}{\beta_t} \bar g_t.
+\end{equation}
+We assume $\beta_t=t^\alpha$.
+Then, we can write SDA as recursion
+\begin{equation}\label{RDA}
+	\begin{split}
+		w_{t+1} & =w_0- \frac{1}{t^{\alpha}} \sum_{\tau=1}^{t} g_\tau\\
+		& =w_0 -\frac{1}{t^{\alpha}} \left( \frac{(t-1)^{\alpha}}{(t-1)^{\alpha}} \sum_{\tau=1}^{t-1} g_\tau +g_t \right)\\
+		& =\left( 1-\frac{(t-1)^{\alpha}}{t^{\alpha}} \right) w_0+ \frac{(t-1)^{\alpha}}{t^{\alpha}}\left( w_0 - \frac{1}{(t-1)^\alpha}\sum_{\tau=1}^{t} g_\tau \right) - \frac{1}{t^{\alpha}} g_t\\
+		& =\left( 1-\left( 1-\frac{1}{t} \right)^{\alpha} \right) w_0 + \left( 1-\frac{1}{t} \right)^{\alpha} w_t -\frac{1}{t^{\alpha}} g_t .
+	\end{split}
+\end{equation}
+Here $\left( 1-\left( 1-\frac{1}{t} \right)^{\alpha} \right) \rightarrow 0$ and $\left( 1-\frac{1}{t} \right)^{\alpha} \rightarrow 1$ as $t \rightarrow \infty$.
+So SDA can be viewed as perturbation of SGD.
+We proved convergence of SDA in stochastic setting in the appendix.
+
+\subsection{Regularized dual averaging (RDA)}	
+Each iteration of regularized dual averaging method takes 
+\begin{equation}\label{RDA subproblem}
+	w_{t+1}=\mathop{\arg\min}_w \left\{\frac{1}{t} \sum_{\tau=1}^{t} \left<g_{\tau},w\right>+\Psi(w)+\frac{\beta_t}{t}h(w)\right\}.
+\end{equation}
+The first term $\sum_{\tau=1}^{t} \left<g_{\tau},w\right>$ is linear function obtained by averaging all previous subgradients.
+The third term $h(w)$ is strongly convex function, and $\beta_t$ is a nonnegative and nondecreasing sequence which determines the convergence of algorithm.
+The closed form solution of subproblem (\ref{RDA subproblem}) can be found such that the computational effort per iteration is only $O(n)$, the same as the SGD method.
+
+\begin{enumerate}
+	\item Proximal gradient method (PG) can be written in forward backward splitting (FOBOS)
+	\begin{equation}
+		w_{t+1}=\mathop{\arg \min}_w \left\{ \left<g_t, w \right> + \Psi(w)+\frac{1}{2\alpha_t}\|w-w_t\|_2^2  \right\}.
+	\end{equation}
+	\begin{equation*}
+		\Updownarrow
+	\end{equation*}
+	\begin{equation}
+		\begin{split}
+			w_{t+\frac{1}{2}} &=w_t - \alpha_t g_t \\
+			w_{t+1} &=\mathop{\arg \min}_w \left\{ \frac{1}{2}\|w-w_{t+\frac{1}{2}}\|^2_2 +\alpha_t \Psi(w) \right\}.
+		\end{split}
+	\end{equation}
+	Here $\alpha_t=\frac{1}{\sqrt{t}}$ to obtain best convergence rate.
+	
+	\item RDA also can be written in the form of forward-backward splitting (when $h(w)=\frac{1}{2}\|w-w_0\|^2_2$):
+	\begin{align}
+		w_{t+1}&=\mathop{\arg\min}_w \left\{ \left<\bar g_t,w\right>+\frac{\beta_t}{2t}\|w-w_0\|^2_2+\Psi(w)\right\}\\
+		& =\mathop{\arg\min}_w \left\{ \frac{\beta_t}{2t} \frac{2t}{\beta_t}\bar g_t^T w +\frac{\beta_t}{2t}\|w-w_0\|^2_2+\Psi(w)\right\}\\
+		& =\mathop{\arg\min}_w \left\{ \frac{\beta_t}{2t}\|w-(w_0+\frac{t}{\beta_t} \bar g_t)\|^2_2+\Psi(w)\right\}\\
+		&=\mathop{\arg\min}_w \left\{ \frac{1}{2}\|w-(w_0+\frac{t}{\beta_t} \bar g_t)\|^2_2+\frac{t}{\beta_t}\Psi(w)\right\}
+	\end{align}
+	\begin{equation*}
+		\Updownarrow
+	\end{equation*}
+	\begin{align}
+		w_{t+\frac{1}{2}} &=w_0-\frac{t}{\beta_t} \bar g_t \\
+		w_{t+1} &= \mathop{\arg \min}_w \left\{ \frac{1}{2}\|w-w_{t+\frac{1}{2}}\|^2_2 + \frac{t}{\beta_t}\Psi(w) \right\}.
+	\end{align}
+	The forward operator is actually SDA method.
+	Here $\beta_t = \sqrt{t}$ when $\Psi$ is convex, and $\beta_t=\ln t$ when $\Psi$ is strongly convex.
+\end{enumerate}
+
+\section{$\ell_1$ regularization and sparsity}
+In this section, we will consider a kind special regularized problem with $\ell_1$ regularization.
+\begin{equation}
+	\min_w f(w)+\lambda \|w\|_1
+\end{equation}
+Since $\ell_1$ regularization can produce sparse solution.
+
+Here we give out the closed form solution of proximal gradient method and RDA applied for the $\ell_1$ regularization
+
+
+\begin{enumerate}
+	\item Proximal gradient:
+	\begin{equation}
+		w_{t+1}=\mathop{\arg \min}_w \left\lbrace g_t^T w+\frac{1}{2\alpha_t} \|w-w_t\|^2_2 +\lambda \|w\|_1 \right \rbrace
+	\end{equation}
+	The entry-wise closed form solution is
+	\begin{equation}
+		w_{t+1}^{(i)}=
+		\begin{cases}
+			w_t^{(i)}-\alpha_t (g_t^{(i)} +\lambda), & w_t^{(i)}-\alpha_t g_t^{(i)} > \alpha_t \lambda\\
+			0, & |w_t^{(i)}-\alpha_t g_t^{(i)}| \leq \alpha_t \lambda\\
+			w_t^{(i)}-\alpha_t (g_t^{(i)} -\lambda), & w_t^{(i)}-\alpha_t g_t^{(i)} < -\alpha_t \lambda
+		\end{cases}
+	\end{equation}
+	Here $\alpha_t=\frac{1}{\sqrt{t}}$.
+	
+	\item RDA:
+	\begin{equation}
+		w_{t+1}=\mathop{\arg \min}_w \left\lbrace \bar g_t^T w+\frac{\beta_t}{2t} \|w-w_0\|^2_2 +\lambda \|w\|_1 \right \rbrace
+	\end{equation}
+	The entry-wise closed form solution:
+	\begin{equation}
+		w_{t+1}^{(i)}=
+		\begin{cases}
+			w_0^{(i)}-\frac{t}{\beta_t} (\bar g_t^{(i)} +\lambda), & w_0^{(i)}-\frac{t}{\beta_t}\bar g_t^{(i)} > \frac{t}{\beta_t}\lambda\\
+			0, & | w_0^{(i)}-\frac{t}{\beta_t}\bar g_t^{(i)}| \leq  \frac{t}{\beta_t} \lambda\\
+			w_0^{(i)}-\frac{t}{\beta_t} (\bar g_t^{(i)} -\lambda), & w_0^{(i)}-\frac{t}{\beta_t}\bar g_t^{(i)} < - \frac{t}{\beta_t}\lambda
+		\end{cases}
+	\end{equation}
+	Here $\frac{t}{\beta_t}=\sqrt{t}$.
+	
+	\item We can conclude the general case from above. 
+	Assume we have the forward-backward splitting
+	\begin{align}
+		w_{t+\frac{1}{2}} & \\
+		w_{t+1} &= \mathop{\arg \min}_w \left\{ \frac{1}{2}\|w-w_{t+\frac{1}{2}}\|^2_2 +  \theta_t\Psi(w) \right\}.
+	\end{align}
+	Then, the entry-wise closed form solution has the form:
+	\begin{equation}
+		w_{t+1}^{(i)}=
+		\begin{cases}
+			w_{t+1/2}^{(i)}- \theta_t \lambda, & w_{t+1/2}^{(i)} > \theta_t\lambda\\
+			0, & | w_{t+1/2}^{(i)}| \leq  \theta_t \lambda\\
+			w_{t+1/2}^{(i)} +\theta_t\lambda, & w_{t+1/2}^{(i)} < - \theta_t\lambda
+		\end{cases}
+	\end{equation}
+	The coefficient $\theta_t$ of $\Psi$ also determine the sparsity of the solution.
+	There is a trade-off between fast convergence and sparsity of solution.
+	Large $\theta_t$ in the backward operator would produce more sparse solution while it takes $w_{t+1}$ far away from $w_{t+1/2}$.
+	\textcolor{red}{Question: what is the best choice of $\theta_t$ to guarantee both fast convergence and sparsity of solution.}
+	
+	\item 
+	Try
+	\begin{equation}
+		\begin{split}
+			w_{t+\frac{1}{2}} &=w_t -  \frac{1}{\sqrt{t}} g_t \\
+			w_{t+1} &=\mathop{\arg \min}_w \left\{ \frac{1}{2}\|w-w_{t+\frac{1}{2}}\|^2_2 +\sqrt{t} \Psi(w) \right\}.
+		\end{split}
+	\end{equation}
+	The entry-wise closed form solution is
+	\begin{equation}
+		w_{t+1}^{(i)}=
+		\begin{cases}
+			w_t^{(i)}-\alpha_t g_t^{(i)} -\sqrt{t}\lambda, & w_t^{(i)}-\alpha_t g_t^{(i)} > \sqrt{t} \lambda\\
+			0, & |w_t^{(i)}-\alpha_t g_t^{(i)}| \leq \sqrt{t} \lambda\\
+			w_t^{(i)}-\alpha_t g_t^{(i)} +\sqrt{t}\lambda, & w_t^{(i)}-\alpha_t g_t^{(i)} < -\sqrt{t} \lambda
+		\end{cases}
+	\end{equation}
+	It's equivalent to
+	\begin{equation}
+		w_{t+1}=\mathop{\arg \min}_w \left\lbrace g_t^T w+\frac{\sqrt{t}}{2} \|w-w_t\|^2_2 + t\lambda \|w\|_1 \right \rbrace
+	\end{equation}
+	It's approximation of
+	\begin{equation}
+		f(w) + t \lambda \|w\|_1.
+	\end{equation}
+	We can easily conclude that this iteration will not converge.
+	
+	\item Why RDA takes $\sqrt{t}$ threshold and Proximal gradient takes $\frac{1}{\sqrt{t}}$ and they all converges?
+\end{enumerate}
+
+
+Now comparing the threshold $\lambda_{PG}=\alpha_t \lambda$ of PG and the threshold $\lambda_{RDA}=\lambda$ of RDA:
+with $\alpha_t=\frac{1}{\sqrt{t}}$, we have $\lambda_{PG} \rightarrow 0$ as $t \rightarrow 0$.
+It is clear that RDA uses a much more aggressive truncation threshold, thus is able to generate significantly more sparse solutions.
+
+\section{Convergence analysis}
+\subsection{Convergence of SDA}
+Throughout we assume
+\begin{enumerate}
+	\item SDA method applied for empirical risk minimization, so in this section, we discuss
+	\begin{equation*}
+		\phi(w)=\frac{1}{T}\sum_{t=1}^{T} f(w,z_t)
+	\end{equation*}
+	
+	\item
+	$\phi(w)$ is differentiable and strongly convex. So there exists a constant $\mu >0$ such that 
+	\begin{equation}
+		\phi(y) \geq \phi(x) + \nabla \phi(x)^T (y-x)+\frac{\mu}{2} \|y-x\|^2.
+	\end{equation}
+	
+	\item
+	$\nabla \phi$ is Lipschitz so that
+	\begin{equation}
+		\|\nabla \phi(x) - \nabla \phi(y)\| \leq L \|x-y\|.
+	\end{equation}
+	And we can obtain the following relation:
+	\begin{equation}
+		\phi(y) \leq \phi(x)+\nabla \phi(x)^T (y-x) +\frac{L}{2} \|y-x\|.
+	\end{equation}
+	Thus $\mu \leq L$.
+	
+	\item
+	$g_t(w) = \nabla f(w,z_t)$ and $\|g_t\|\leq M$ for all $w$ and $z_t$.
+	
+	\item
+	$\|w_0- w_\star\| \leq D$.
+	
+	\item Let $\partial g(w)$ denote the subgradient set of $f$ at $w$, namely,
+	
+	
+\end{enumerate}
+Other important remarks:
+\begin{enumerate}
+	\item $w_0=0$ will not improve the convergence rate of SDA, because $\|w_0-w_\star\|$ not changed in this case.
+	
+	\item Another important technique in our proof is
+	\begin{equation}
+		2\langle a, b\rangle \leq \epsilon a^2 +\frac{1}{\epsilon} b^2
+	\end{equation}
+	where $\epsilon>0$.
+	
+	\item Cauchy-Shwartz inequality:
+	\begin{equation}
+		\langle a, b\rangle \leq \|a\| \|b\|
+	\end{equation}
+	
+	\item $\|a+b\| \leq \|a\|+\|b\|$
+\end{enumerate}
+For simplicity, denote SDA as following iteration
+\begin{equation}
+	w_{t+1}=(1-\lambda_t)w_0+\lambda_t w_t - \gamma_t g_t,
+\end{equation}
+where $\lambda_t= \left( 1-\frac{1}{t} \right)^\alpha <1$ and $\gamma_t= \frac{1}{t^\alpha}$.
+
+\subsubsection{Convergence of $\mathbb{E}\left[ \phi(\bar{w}) \right] -\phi(w_\star)$}
+Let's make no assumptions about strongly convexity of $\phi(w)$ here, i.e. $\mu=0$.
+
+\begin{lemma}
+	\begin{equation}
+		\begin{split}
+			&\mathbb{E}\left[ \|w_{t+1}-w_\star \|^2 \right]\\
+			&\leq
+			\lambda_t\mathbb{E}\left[ \|w_t-w_\star\|^2 \right]
+			-2\lambda_t\gamma_t\mathbb{E}\left[ \phi(w_t)-\phi(w_\star) \right]
+			+\gamma_t(\gamma_t+\lambda_t-1) M^2 + (1-\lambda_t)(1-\gamma_t) D^2.
+		\end{split}
+	\end{equation}
+\end{lemma}
+\begin{proof}
+	We have
+	\begin{align}
+		&\mathbb{E}\left[ \|w_{t+1}-w_\star \|^2 \right]\\
+		&=\mathbb{E}\left[ \|(1-\lambda_t)w_0+\lambda_t w_t - \gamma_t g_t - w_\star\|^2 \right]\\
+		&=\mathbb{E}\left[ \| \lambda_t(w_t-w_\star) -\gamma_t g_t +(1-\lambda_t)(w_0-w_\star)\|^2 \right]\\
+		\notag
+		&=\mathbb{E}\left[ \|\lambda_t(w_t-w_\star) - \gamma_t g_t\|^2 \right]
+		+2\mathbb{E}\left[ \left<\lambda_t(w_t-w_\star) - \gamma_t g_t, (1-\lambda_t)(w_0-w_\star) \right> \right]\\ \label{ineq}
+		&+\mathbb{E}\left[ \|(1-\lambda_t)(w_0-w_\star)\|^2 \right].
+	\end{align}
+	The first term in (\ref{ineq}) has
+	\begin{align}
+		&\mathbb{E}\left[ \|\lambda_t(w_t-w_\star) - \gamma_t g_t\|^2 \right]\\
+		&=\mathbb{E}\left[ \| \lambda_t(w_t-w_\star) \|^2 \right]-
+		2\mathbb{E}\left[ \left<\lambda_t(w_t-w_\star),\gamma_t g_t \right> \right]+\mathbb{E}\left[ \|\gamma_t g_t\|^2 \right]\\
+		&\leq \lambda_t^2 \mathbb{E}\left[ \|w_t-w_\star\|^2 \right]
+		-2\lambda_t\gamma_t\mathbb{E}\left[ \left<w_t-w_\star,g_t \right> \right]
+		+\gamma_t^2 M^2\\
+		\label{ineq1.1}
+		&=\lambda_t^2 \mathbb{E}\left[ \|w_t-w_\star\|^2 \right]
+		-2\lambda_t\gamma_t\mathbb{E}\left[ \left<\nabla \phi(w_t),w_t-w_\star \right> \right]
+		+\gamma_t^2 M^2\\
+		\label{ineq1.2}
+		&\leq \lambda_t^2 \mathbb{E}\left[ \|w_t-w_\star\|^2 \right]
+		-2\lambda_t\gamma_t\mathbb{E}\left[ \phi(w_t)-\phi(w_\star) \right]+\gamma_t^2 M^2.
+	\end{align}
+	(\ref{ineq1.1}) follows because...
+	(\ref{ineq1.2}) is a consequence of the inequality
+	\begin{equation}
+		\left<\nabla\phi(w_t), w_t-w_\star \right> \geq \phi(w_t)-\phi(w_\star).
+	\end{equation}
+	which holds because $\phi$ is convex.
+	
+	The second term in (\ref{ineq}) has
+	\begin{align}
+		&2\mathbb{E}\left[ \left<\lambda_t(w_t-w_\star) - \gamma_t g_t,(1-\lambda_t)(w_0-w_\star) \right> \right]\\
+		&=2\lambda_t(1-\lambda_t)\mathbb{E}\left[ \left<w_t-w_\star,w_0-w_\star \right> \right]
+		-2\gamma_t(1-\lambda_t) \mathbb{E}\left[ \left<g_t,w_0-w_\star \right> \right]\\
+		&\leq \lambda_t(1-\lambda_t) \mathbb{E}\left[ \|w_t-w_\star\|^2+\|w_0-w_\star\|^2 \right]
+		+\gamma_t(1-\lambda_t) \color{red}{\mathbb{E}\left[ \|g_t\|^2+\|w_0-w_\star\|^2 \right]}\\
+		&= \lambda_t(1-\lambda_t) \mathbb{E}\left[ \|w_t-w_\star\|^2\right]+ \lambda_t(1-\lambda_t)D^2 +\gamma_t(1-\lambda_t)(M^2+D^2).
+	\end{align}
+	
+	The last term in (\ref{ineq}) has
+	\begin{align}
+		\mathbb{E}\left[ \|(1-\lambda_t)(w_0-w_\star)\|^2 \right]\leq (1-\lambda_t)^2 D^2.
+	\end{align}
+	
+	Summary above, we have
+	\begin{align}
+		&\mathbb{E}\left[ \|w_{t+1}-w_\star \|^2 \right]\\
+		\notag
+		&\leq \lambda_t^2 \mathbb{E}\left[ \|w_t-w_\star\|^2 \right]
+		-2\lambda_t\gamma_t\mathbb{E}\left[ \phi(w_t)-\phi(w_\star) \right]+\gamma_t^2 M^2
+		+\lambda_t(1-\lambda_t) \mathbb{E}\left[ \|w_t-w_\star\|^2\right]\\
+		&+ \lambda_t(1-\lambda_t)D^2 + \gamma_t(1-\lambda_t)(M^2+D^2)
+		+ (1-\lambda_t)^2 D^2\\
+		&=\lambda_t\mathbb{E}\left[ \|w_t-w_\star\|^2 \right]
+		-2\lambda_t\gamma_t\mathbb{E}\left[ \phi(w_t)-\phi(w_\star) \right]
+		+\gamma_t(\gamma_t-\lambda_t+1) M^2 + (1-\lambda_t)(1+\gamma_t) D^2.
+	\end{align}
+\end{proof}
+
+\begin{theorem}
+	\begin{equation}
+		\mathbb{E}\left[\phi(\bar{w}) \right]-\phi(w_\star) \leq
+		\frac{D^2+M^2\sum_{t=0}^{n}\frac{\gamma_t^2}{\lambda_t}
+			+(M^2+D^2)\sum_{t=0}^{n}\frac{\gamma_t(1-\lambda_t)}{\lambda_t}
+			+D^2\sum_{t=0}^{n}\frac{1-\lambda_t}{\lambda_t}}{2\sum_{t=0}^{n}\gamma_t}
+	\end{equation}
+	where $\bar{w}:=(\sum_{t=0}^{n}\gamma_t)^{-1} \sum_{t=0}^{n}\gamma_t w_t$.
+\end{theorem}
+\begin{proof}
+	Since $\lambda_t<1$, we have
+	\begin{equation}
+		\begin{split}
+			&\lambda_t \mathbb{E}\left[ \|w_{t+1}-w_\star \|^2 \right]\\
+			&\leq \mathbb{E}\left[ \|w_{t+1}-w_\star \|^2 \right]\\
+			&\leq
+			\lambda_t\mathbb{E}\left[ \|w_t-w_\star\|^2 \right]
+			-2\lambda_t\gamma_t\mathbb{E}\left[ \phi(w_t)-\phi(w_\star) \right]
+			+\gamma_t(\gamma_t - \lambda_t+1) M^2 + (1-\lambda_t)(1+\gamma_t) D^2.
+		\end{split}
+	\end{equation}
+	Arranging the bound: by telescoping $t$ from $0$ to $n$,
+	\begin{equation}\label{ineq2}
+		\begin{split}
+			&2\gamma_t\mathbb{E}\left[ \phi(w_t)-\phi(w_\star) \right]\\
+			&\leq -\mathbb{E}\left[ \|w_{t+1}-w_\star \|^2 \right]
+			+\mathbb{E}\left[ \|w_t-w_\star\|^2 \right]
+			+\frac{
+				\gamma_t(\gamma_t-\lambda_t+1) M^2 + (1-\lambda_t)(1+\gamma_t) D^2
+			}{\lambda_t}\\
+			&=-\mathbb{E}\left[ \|w_{t+1}-w_\star \|^2 \right]
+			+\mathbb{E}\left[ \|w_t-w_\star\|^2 \right]
+			+\frac{M^2\gamma_t^2+\gamma_t(1-\lambda_t)\left( M^2+D^2 \right)+(1-\lambda_t)D^2}{\lambda_t},
+		\end{split}
+	\end{equation}
+	we have
+	\begin{equation}
+		\begin{split}
+			&2\sum_{t=0}^{n} \gamma_t \mathbb{E}\left[ \phi(w_t)-\phi(w_\star) \right]\\
+			&\leq
+			-\mathbb{E}\left[ \|w_{n+1}-w_\star\|^2-\|w_0-w_\star\|^2 \right]\\
+			&+M^2\sum_{t=0}^{n}\frac{\gamma_t^2}{\lambda_t}
+			+(M^2+D^2)\sum_{t=0}^{n}\frac{\gamma_t(1-\lambda_t)}{\lambda_t}
+			+D^2\sum_{t=0}^{n}\frac{1-\lambda_t}{\lambda_t}
+		\end{split}
+	\end{equation}
+	and then dividing by the sum of $\gamma_t$, we have for any $n$
+	\begin{equation}
+		\frac{1}{\sum_{t=0}^{n}\gamma_t} \sum_{t=0}^{n}\gamma_t\mathbb{E}\left[ \phi(w_t)-\phi(w_\star) \right]
+		\leq
+		\frac{D^2+M^2\sum_{t=0}^{n}\frac{\gamma_t^2}{\lambda_t}
+			+(M^2+D^2)\sum_{t=0}^{n}\frac{\gamma_t(1-\lambda_t)}{\lambda_t}
+			+D^2\sum_{t=0}^{n}\frac{1-\lambda_t}{\lambda_t}}{2\sum_{t=0}^{n}\gamma_t}.
+	\end{equation}
+	Then, by convexity (Jensen's inequality), we have
+	\begin{equation}
+		\mathbb{E}\left[\phi(\bar{w}) \right]-\phi(w_\star) \leq
+		\frac{D^2+M^2\sum_{t=0}^{n}\frac{\gamma_t^2}{\lambda_t}
+			+(M^2+D^2)\sum_{t=0}^{n}\frac{\gamma_t(1-\lambda_t)}{\lambda_t}
+			+D^2\sum_{t=0}^{n}\frac{1-\lambda_t}{\lambda_t}}{2\sum_{t=0}^{n}\gamma_t}
+	\end{equation}
+\end{proof}
+
+Since $\lambda_t=\left( 1-\frac{1}{t} \right)^\alpha \sim 1-\frac{\alpha}{t}$ and $\gamma_t=\frac{1}{t^\alpha}$, we have ($\alpha \neq 1$)
+\begin{equation}
+	\sum_{t=1}^{n} \gamma_t = \int_{1}^{n} \frac{1}{\tau^\alpha} d \tau
+	=n^{1-\alpha}.
+\end{equation}
+Similarly, we have $\sum_{t=0}^{n} \frac{\gamma_t^2}{\lambda_t}=n^{1-2\alpha}$,  $\sum_{t=0}^{n}\frac{\gamma_t(1-\lambda_t)}{\lambda_t}= \alpha n^{-\alpha}$, 
+and $\sum_{t=0}^{n}\frac{1-\lambda_t}{\lambda_t}=\alpha\ln n$.
+Then
+\begin{equation}
+	\begin{split}
+		&\frac{D^2+M^2\sum_{t=0}^{n}\frac{\gamma_t^2}{\lambda_t}
+			+(M^2+D^2)\sum_{t=0}^{n}\frac{\gamma_t(1-\lambda_t)}{\lambda_t}
+			+D^2\sum_{t=0}^{n}\frac{1-\lambda_t}{\lambda_t}}{2\sum_{t=0}^{n}\gamma_t}\\
+		&=\frac{D^2+M^2 n^{1-2\alpha}+\alpha(M^2+D^2)n^{-\alpha} +\alpha D^2 \ln n}{2n^{1-\alpha}}\\
+		&=\frac{D^2}{2n^{1-\alpha}} + \frac{M^2}{2} n^{-\alpha}  +\frac{\alpha(M^2+D^2)}{2}n^{-1} + \frac{\alpha D^2}{2} \frac{\ln n}{n^{1-\alpha}}.
+	\end{split}
+\end{equation}
+So, the best choice of $\alpha$ is $\frac{1}{2}$.
+In this case, the simple dual averaging iteration reads
+\begin{equation}
+	w_{t+1} = \mathop{\arg \min}_w \left\{ \frac{1}{t}\sum_{\tau=1}^{t} \left<g_{\tau}(w_\tau), w \right> + \frac{\sqrt{t}}{t} h(w) \right\}
+\end{equation}
+This result is the same with [Nesterov, 2009]'s suggest, the regularization parameter should be $O(\frac{1}{\sqrt{t}})$.
+The convergence rate is $O(\frac{\ln t}{\sqrt{t}})$.
+
+\subsubsection{Convergenc of $\mathbb{E}\left[ \|w_{t+1}-w_\star\| \right]$}
+In this section, we ask for the assumption on the strongly convex of $\phi$.
+
+\begin{lemma}
+	\begin{equation}
+		\begin{split}
+			&\mathbb{E}\left[\|w_{t+1}-w_\star\|^2 \right]\\
+			&\leq \mathbb{E}\left[\|\lambda_t w_t +(1-\lambda_t)w_0 -\gamma_t \nabla\phi(w_t)-w_\star\|^2 \right]
+			+\gamma_t^2\mathbb{E}\left[\|\nabla \phi(w_t)-g_t\|^2 \right]
+		\end{split}
+	\end{equation}
+\end{lemma}
+\begin{proof}
+	\begin{align}
+		&\mathbb{E}\left[\|w_{t+1}-w_\star\|^2 \right]\\
+		&=\mathbb{E}\left[\|\lambda_t w_t +(1-\lambda_t)w_0 -\gamma_t g_t -w_\star\|^2 \right]\\
+		&=\mathbb{E}\left[\|\lambda_t w_t +(1-\lambda_t)w_0 -\gamma_t \nabla\phi(w_t) +\gamma_t(\nabla \phi(w_t)-g_t) -w_\star\|^2 \right]\\
+		\notag
+		&=\mathbb{E}\left[\|\lambda_t w_t +(1-\lambda_t)w_0 -\gamma_t \nabla\phi(w_t)-w_\star\|^2 \right]\\
+		\notag
+		&+2\gamma_t\mathbb{E}\left[\left<\lambda_t w_t +(1-\lambda_t)w_0 -\gamma_t \nabla\phi(w_t)-w_\star , \nabla \phi(w_t)-g_t\right> \right]\\
+		\label{ineq2.2}
+		&\gamma_t^2\mathbb{E}\left[\|\nabla \phi(w_t)-g_t\|^2 \right]\\
+		\label{ineq2.3}
+		&=\mathbb{E}\left[\|\lambda_t w_t +(1-\lambda_t)w_0 -\gamma_t \nabla\phi(w_t)-w_\star\|^2 \right]
+		+\gamma_t^2\mathbb{E}\left[\|\nabla \phi(w_t)-g_t\|^2 \right]
+	\end{align}
+	(\ref{ineq2.2}) follows because $\mathbb{E}\left[g(w,z_t) \right]=\nabla\phi(w)$ for all $w$ and $g(w,z_t)$ is independent of $z_t$.
+	Thus we have
+	\begin{equation}
+		\begin{split}
+			&\mathbb{E}\left[\left<\lambda_t w_t +(1-\lambda_t)w_0 -\gamma_t \nabla\phi(w_t)-w_\star , \nabla \phi(w_t)-g(w_t,z_t)\right> \right]\\
+			&=\mathbb{E}_{z_0,\dots,z_{t-1}}\left[\mathbb{E}_{z_t}\left[\left< \lambda_t w_t +(1-\lambda_t)w_0 -\gamma_t \nabla\phi(w_t)-w_\star , \nabla \phi(w_t)-g(w_t,z_t) \right>| z_0,\dots,z_{t-1} \right] \right]\\
+			&=0
+		\end{split}
+	\end{equation}
+\end{proof}
+Note that the first term in (\ref{ineq2.3}) is completely independent of $z_t$ while the second term is a variance term concerning the second moments of the subgradient at the current iterate and at the optimum.
+We can bound each of these terms separately.
+
+\begin{lemma}
+	For the first term
+	\begin{equation}
+		\begin{split}
+			&\mathbb{E}\left[\|\lambda_t w_t +(1-\lambda_t)w_0 -\gamma_t \nabla\phi(w_t)-w_\star\|^2 \right]\\
+			&\leq
+			(2-\lambda_t)\mathbb{E}\left[ \|\lambda_t (w_t-w_\star)-\gamma_t \nabla\phi(w_t)\|^2\right]
+			+(1-\lambda_t)(2-\lambda_t)\mathbb{E}\left[ \|w_0-w_\star\|^2\right]
+		\end{split}
+	\end{equation}
+\end{lemma}
+\begin{proof}
+	\begin{align}
+		&\mathbb{E}\left[\|\lambda_t w_t +(1-\lambda_t)w_0 -\gamma_t \nabla\phi(w_t)-w_\star\|^2 \right]\\
+		&=\mathbb{E}\left[ \|\lambda_t (w_t-w_\star)-\gamma_t \nabla\phi(w_t)+(1-\lambda_t)(w_0-w_\star)\|^2\right]\\
+		\notag
+		&=\mathbb{E}\left[ \|\lambda_t (w_t-w_\star)-\gamma_t \nabla\phi(w_t)\|^2\right]\\
+		\notag
+		&+2(1-\lambda_t)\mathbb{E}\left[ \left<\lambda_t (w_t-w_\star)-\gamma_t \nabla\phi(w_t)+(1-\lambda_t)(w_0-w_\star), w_0-w_\star\right>\right]\\
+		&+(1-\lambda_t)^2\mathbb{E}\left[ \|w_0-w_\star\|^2\right]\\
+		\notag
+		&\leq \mathbb{E}\left[ \|\lambda_t (w_t-w_\star)-\gamma_t \nabla\phi(w_t)\|^2\right]
+		+(1-\lambda_t)\left( \mathbb{E}\left[ \|\lambda_t (w_t-w_\star)-\gamma_t \nabla\phi(w_t)\|^2\right]+\mathbb{E}\left[ \|w_0-w_\star\|^2\right] \right)\\
+		&+(1-\lambda_t)^2\mathbb{E}\left[ \|w_0-w_\star\|^2\right]\\
+		\label{ineq2.4}
+		&=(2-\lambda_t)\mathbb{E}\left[ \|\lambda_t (w_t-w_\star)-\gamma_t \nabla\phi(w_t)+\gamma_t\nabla\phi(w_\star)\|^2\right]
+		+(2-\lambda_t)(1-\lambda_t)\mathbb{E}\left[ \|w_0-w_\star\|^2\right]
+	\end{align}
+	(\ref{ineq2.4}) follows because $w_\star$ is the optimal solution, so $\nabla\phi(w_\star)=0$.
+\end{proof}
+
+\begin{lemma}
+	Since $\phi$ is strongly convex and has a Lipschitz continuous gradient, it follows that
+	\begin{equation}
+		\mathbb{E}\left[ \|\lambda_t(w_t-w_\star)-\gamma_t(\nabla\phi(w_t)-\nabla\phi(w_\star))\|^2\right]
+		\leq
+		\max\{ |\lambda_t-\gamma_t L|,|\lambda_t-\gamma_t \mu|  \}^2\mathbb{E}\left[\|w_t-w_\star\|^2 \right].
+	\end{equation}
+\end{lemma}
+\begin{proof}
+	\begin{align}
+		&\mathbb{E}\left[ \|\lambda_t(w_t-w_\star)-\gamma_t(\nabla\phi(w_t)-\nabla\phi(w_\star))\|^2\right]\\
+		&=\lambda_t^2\mathbb{E}\left[\|w_t-w_\star\|^2 \right] -2\lambda_t\gamma_t\mathbb{E}\left[ \left<w_t-w_\star, \nabla\phi(w_t)-\nabla\phi(w_\star) \right>\right]
+		+\mathbb{E}\left[\|\nabla\phi(w_t)-\nabla\phi(w_\star)\|^2 \right]\\
+		\label{ineq2.1}
+		&\leq \lambda_t^2 \mathbb{E}\left[\|w_t-w_\star\|^2 \right]
+		-2\lambda_t \gamma_t \mu\mathbb{E}\left[\|w_t-w_\star\|^2 \right]
+		+\gamma_t^2 L^2 \mathbb{E}\left[\|w_t-w_\star\|^2 \right]\\
+		&=(\lambda_t^2-2\lambda_t\gamma_t\mu+\gamma_t^2 L^2)\mathbb{E}\left[\|w_t-w_\star\|^2 \right]\\
+		&\leq \max\{ |\lambda_t-\gamma_t L|,|\lambda_t-\gamma_t \mu|  \}^2
+		\mathbb{E}\left[\|w_t-w_\star\|^2 \right].
+	\end{align}
+	The second term in (\ref{ineq2.1}) due to the strongly convex of $\phi$ and the last term of (\ref{ineq2.1}) due to the Lipschitz continuous of $\nabla\phi$.
+\end{proof}
+
+For the second term, we must make some assumption about the statistics of the random function
+\begin{equation}
+	\psi(w;z_t):=g(w,z_t)-\nabla \phi(w).
+\end{equation}
+\begin{lemma}
+	When $t$ is large enough, we have
+	\begin{equation}
+		\begin{split}
+			&\mathbb{E}\left[\|w_{t+1}-w_\star\|^2 \right]
+			\leq (1-2\gamma_t\ell+\gamma_t^2L^2)\mathbb{E}\left[\|w_t-w_\star\|^2 \right]
+			+\frac{\alpha}{t}D^2
+			+\gamma_t^2 \mathbb{E} \left[ \|\psi(w)\|^2 \right].
+		\end{split}
+	\end{equation}
+\end{lemma}
+\begin{proof}
+	Above all, we can obtain the following result
+	\begin{equation}
+		\begin{split}
+			&\mathbb{E}\left[\|w_{t+1}-w_\star\|^2 \right]\\
+			&\leq(2-\lambda_t)\max\{ |\lambda_t-\gamma_t L|,|\lambda_t-\gamma_t \mu|  \}^2
+			\mathbb{E}\left[\|w_t-w_\star\|^2 \right]+(2-\lambda_t)(1-\lambda_t)D^2\\
+			&+\gamma_t^2 \mathbb{E} \left[ \|\psi(w)\|^2 \right]\\
+			&=(2-\lambda_t)(\lambda_t^2-2\lambda_t\gamma_t \mu +\gamma_t^2 L^2)
+			\mathbb{E}\left[\|w_t-w_\star\|^2 \right]+(2-\lambda_t)(1-\lambda_t)D^2\\
+			&+\gamma_t^2 \mathbb{E} \left[ \|\psi(w)\|^2 \right]\\
+		\end{split}
+	\end{equation}
+	Since $\lambda_t=(1-\frac{1}{t})^\alpha\approx 1-\frac{\alpha}{t}$, we have
+	$$
+	(2-\lambda_t)(1-\lambda_t)
+	=2-3\lambda_t+\lambda_t^2
+	\approx 2-3(1-\frac{\alpha}{t})+(1-\frac{2\alpha}{t})
+	=\frac{\alpha}{t}
+	$$
+	and
+	\begin{align}
+		&(2-\lambda_t)(\lambda_t^2-2\lambda_t\gamma_t \mu +\gamma_t^2 L^2)\\
+		&=2\lambda_t^2-4\lambda_t\gamma_t\mu+2\gamma_t^2 L^2
+		-\lambda_t^3+2\lambda_t^2 \gamma_t\mu-\lambda_t\gamma_t^2 L^2\\
+		&=(2\lambda_t^2-\lambda_t^3)+(-4\lambda_t+2\lambda_t^2)\gamma_t\mu
+		+(2-\lambda_t)\gamma_t^2 L^2\\
+		&\approx (2(1-\frac{2\alpha}{t})-(1-\frac{3\alpha}{t}))
+		+(-4(1-\frac{\alpha}{t})+2(1-\frac{2\alpha}{t}))\gamma_t\mu
+		+(1+\frac{\alpha}{t})\gamma_t^2 L^2\\
+		&=(1-\frac{\alpha}{t}) - 2\gamma_t\mu + (1+\frac{\alpha}{t})\gamma_t^2 L^2
+	\end{align}
+	So we have
+	\begin{align}
+		\notag
+		&\mathbb{E}\left[\|w_{t+1}-w_\star\|^2 \right]\\
+		&=((1-\frac{\alpha}{t}) - 2\gamma_t\mu + (1+\frac{\alpha}{t})\gamma_t^2 L^2)
+		\mathbb{E}\left[\|w_t-w_\star\|^2 \right]+\frac{\alpha}{t}D^2
+		+\gamma_t^2 \mathbb{E} \left[ \|\psi(w)\|^2 \right]\\
+		\notag
+		&=(1-2\gamma_t\mu+\gamma_t^2L^2)\mathbb{E}\left[\|w_t-w_\star\|^2 \right]
+		+\frac{\alpha}{t}D^2
+		+\gamma_t^2 \mathbb{E} \left[ \|\psi(w)\|^2 \right]\\
+		\label{ineq2.5}
+		&+\frac{\alpha}{t}(\gamma_t^2L^2-1)\mathbb{E}\left[\|w_t-w_\star\|^2 \right]\\
+		&\leq (1-2\gamma_t\mu+\gamma_t^2L^2)\mathbb{E}\left[\|w_t-w_\star\|^2 \right]
+		+\frac{\alpha}{t}D^2
+		+\gamma_t^2 \mathbb{E} \left[ \|\psi(w)\|^2 \right].
+	\end{align}
+	The last term in (\ref{ineq2.5}) would be smaller than zero if $t$ is large enough due to the diminishing $\gamma_t$.
+\end{proof}
+
+Let's explore some possibilities on $\psi$.
+
+\begin{enumerate}
+	\item  {$\psi=0$}\\
+	In the case when there is no randomness at all and we are just following the gradient.
+	So we can have the upper bound
+	\begin{equation}
+		\begin{split}
+			\|w_{t+1}-w_\star\|^2
+			&\leq(1-2\gamma_t\mu+\gamma_t^2L^2)\|w_t-w_\star\|^2
+			+\frac{\alpha}{t}D^2\\
+			&\leq \max\{ |1-\gamma_t L|,|1-\gamma_t \mu|  \}^2 \|w_t-w_\star\|^2
+			+\frac{\alpha}{t}D^2.
+		\end{split}
+	\end{equation}
+	Setting $\alpha=0$, and $\gamma_t=\frac{2}{L+\mu}$ for all $t$, we find that
+	\begin{align}
+		\|w_{t+1}-w_\star\| &\leq \left( \frac{L-\mu}{L+\mu} \right)\|w_t-w_\star\|\\
+		&=\left( \frac{L-\mu}{L+\mu} \right)^t D
+	\end{align}
+	That is, a constant step-size policy converges at a linear rate.
+	
+	\item {$\psi$ bounded}\\
+	The simplest non-trivial assumption is that the deviations are bounded:
+	\begin{equation}
+		\|\psi(w;z_t)\| \leq P
+	\end{equation}
+	for some universal constant $P$.
+	In this case, we have the upper bound
+	\begin{align}
+		\notag
+		&\mathbb{E}\left[\|w_{t+1}-w_\star\|^2 \right]\\
+		&\leq(1-2\gamma_t\mu+\gamma_t^2L^2)\mathbb{E}\left[\|w_t-w_\star\|^2 \right]
+		+\frac{\alpha}{t}D^2
+		+\gamma_t^2 P^2
+	\end{align}
+	\begin{theorem}
+		simple dual averaging method can achieve $O(1/\sqrt{t})$ rate by choosing $\alpha=\frac{1}{2}$ and 
+		\begin{equation}
+			\gamma_t=\frac{1}{\sqrt{t}\ell}.
+		\end{equation}
+		And
+		\begin{equation}
+			\mathbb{E}\left[\|w_{t}-w_\star\|^2 \right]\leq
+			\frac{1}{\sqrt{t}}
+			\left(\frac{L^2+\mu^2}{\mu^2} D^2+\frac{P^2}{\mu^2}\right)
+		\end{equation}
+	\end{theorem}
+	\begin{proof}
+		In this case, it follows by induction.
+		
+		To verify this inequality, note that for $t=0$, the right hand side is greater than $\|w_0-w_\star\|^2=D^2$ due to $\mu \leq L$.
+		
+		Assuming that the inequality holds for $t$, observe
+		\begin{align}
+			\notag
+			&\mathbb{E}\left[\|w_{t+1}-w_\star\|^2 \right]\\
+			&\leq (1-\frac{2}{\sqrt{t}}+\frac{L^2}{t\mu^2})\mathbb{E}\left[\|w_t-w_\star\|^2 \right]
+			+\frac{\alpha}{t}D^2+\frac{1}{t\ell^2} P^2\\
+			&=(1-\frac{2}{\sqrt{t}})\mathbb{E}\left[\|w_t-w_\star\|^2 \right]
+			+\frac{1}{t}\left(\frac{L^2}{\mu^2}\mathbb{E}\left[\|w_t-w_\star\|^2 \right]
+			+\alpha D^2+\frac{P^2}{\mu^2}\right)\\
+			&\leq (1-\frac{2}{\sqrt{t}})\mathbb{E}\left[\|w_t-w_\star\|^2 \right]
+			+\frac{1}{t}\left(\frac{L^2}{\mu^2}D^2+\alpha D^2+\frac{P^2}{\mu^2}\right)\\
+			&\leq (1-\frac{2}{\sqrt{t}}) \frac{1}{\sqrt{t}} \left(\frac{L^2}{\mu^2}D^2+\alpha D^2+\frac{P^2}{\mu^2}\right)
+			+\frac{1}{t}\left(\frac{L^2}{\mu^2}D^2+\alpha D^2+\frac{P^2}{\mu^2}\right)\\
+			&=\left( \sqrt{t}-1 \right) \frac{1}{t}\left(\frac{L^2}{\mu^2}D^2+\alpha D^2+\frac{P^2}{\mu^2}\right)\\
+			&=\frac{(\sqrt{t}-1)\sqrt{t+1}}{t} \frac{1}{\sqrt{t+1}}
+			\left(\frac{L^2}{\mu^2}D^2+\alpha D^2+\frac{P^2}{\mu^2}\right)\\
+			&\leq \frac{\sqrt{t-1}\sqrt{t+1}}{t} \frac{1}{\sqrt{t+1}}
+			\left(\frac{L^2}{\mu^2}D^2+\alpha D^2+\frac{P^2}{\mu^2}\right)\\
+			&\leq \frac{1}{\sqrt{t+1}}
+			\left(\frac{L^2}{\mu^2}D^2+\alpha D^2+\frac{P^2}{\mu^2}\right)
+			=\frac{1}{\sqrt{t+1}}
+			\left(\frac{L^2+\mu^2}{\mu^2} D^2+\frac{P^2}{\mu^2}\right).
+		\end{align}
+	\end{proof}
+	
+	\item {$\psi$ Lipschitz}\\
+	
+	
+	If we add additional assumptions about the behavior of $\phi$, we can derive considerably faster convergence.
+	In particular, suppose $\psi$ is Lipschitz in expectation:
+	\begin{equation}
+		\mathbb{E} \left[ \|\psi(w)\|^2 \right] \leq \theta^2 \|w-w_\star\|^2 \quad \forall w.
+	\end{equation}
+	In this case, we have a bound of the form
+	\begin{equation}
+		\begin{split}
+			&\mathbb{E}\left[\|w_{t+1}-w_\star\|^2 \right]\\
+			&\leq \left( \max\{ |1-\gamma_t L|,|1-\gamma_t \mu|  \}^2+\gamma_t^2 \theta^2 \right) \mathbb{E}\left[\|w_t-w_\star\|^2 \right]
+			+\frac{\alpha}{t}D^2.
+		\end{split}
+	\end{equation}
+	Now we can always select a constant $\gamma_t$ (i.e. $\alpha=0$) that provides a linear convergence rate.
+	Indeed, if $\theta \le \sqrt{\mu L}$, then setting $\gamma_t=\frac{2}{\mu+L}$ gives
+	\begin{equation}
+		\mathbb{E}\left[\|w_{t}-w_\star\|^2 \right]
+		\leq \left( 1-\frac{4(L/\mu -\theta^2/\mu^2)}{(1+L/\mu)^2} \right)^t D^2.
+	\end{equation}
+	Otherwise, setting $\gamma_t=\frac{\mu}{\mu^2 + \theta^2}$, we achieve
+	\begin{equation}
+		\mathbb{E}\left[\|w_{t}-w_\star\|^2 \right]
+		\leq \left( 1+\mu^2/\theta^2 \right)^{-t} D^2.
+	\end{equation}
+\end{enumerate}
+
+\subsection{Convergence of RDA}
+For clarity, we have the following general assumptions:
+\begin{itemize}
+	\item The regularization term $\Psi(w)$ is a closed convex function with convexity parameter $\sigma$ and $\text{dom}\Psi$ is closed.
+	\item For each $t\geq 1$, $f_t(w)$ is convex and subdifferentiable on dom$\Psi$.
+	\item $h(w)$ is strongly convex on dom$\Psi$ and subdifferentiable on rint(dom$\Psi$) and also satisfies
+	\begin{equation}\label{assumpation7}
+		w_0=\arg\min_w h(w)\in \text{Arg}\min_w \Psi(w).
+	\end{equation}
+	
+	Without loss of generality, assume $h(w)$ has convexity parameter 1 and $\min_w h(w)=0$.
+	\item There exist a constant $G$ such that 
+	\begin{equation}\label{assumpation12}
+		\|g_t\|_{\ast}\leq G,~\forall t\geq 1.
+	\end{equation}
+	\item Require $\{\beta\}_t$ be a nonnegative and nondecreasing sequence and 
+	\begin{equation}\label{assumpation13}
+		\max\{\sigma,\beta_1\}>0.
+	\end{equation}
+\end{itemize}
+For general convex regularizations $\Psi(w)$, The RDA method ensure the $R_t(w) = O(\sqrt{t})$ regret bound and $O(\frac{1}{\sqrt{t}})$ convergence rate with $\beta_t=O(\sqrt{t})$, which are same to the results of online subgradient method.
+For strongly convex regularizations, setting $\beta_t=O(\ln t)$ yields the improved regret bound $O(\ln t)$ and $O(\frac{\ln t}{t})$ convergence rate. The ideas of the detailed proofs are that we first found the regret bound for RDA method and then prove the convergence of cost function $\phi(\bar{w_t})$ and primal variables $w_{t+1}$ based on the regret bound. 
+\subsubsection{Regret bounds}
+The learner's \emph{regret} of online learning is the difference between his cumulative loss and the cumulative loss of the optimal fixed hypothesis, which is defined by
+\begin{equation}\label{regret}
+	R_t(w)=\sum_{\tau=1}^{t}(f_{\tau}(w_{\tau})+\Psi(w_{\tau})) - \sum_{\tau=1}^{t}(f_{\tau}(w)+\Psi(w)),
+\end{equation}
+and bounded by
+\begin{equation}
+	\Delta_t = \beta_t D^2 +\frac{G^2}{2}\sum\limits_{\tau=0}^{t-1}\frac{1}{\sigma\tau+\beta_\tau}+
+	\frac{2(\beta_0 -\beta_1)G^2}{(\beta_1+\sigma)^2},
+\end{equation}
+where $\beta_0=\max\{\sigma, \beta_1\}$. We could always set $\beta_1\geq \sigma$ so that $\beta_0=\beta_1$ and therefore $\frac{2(\beta_0 -\beta_1)G^2}{(\beta_1+\sigma)^2}$ vanishes.
+\begin{lemma}\label{lemma_regret}
+	Let the sequence $\{w_t\}_{t\geq 1}$ and $\{g_t\}_{t\geq 1}$ be generated by RDA method, and assume (\ref{assumpation12}) and (\ref{assumpation13}) hold. Then for any $t\geq 1$ and any $w\in \mathcal{F}_D=\{w\in\text{dom}\Psi|h(w)\leq D^2\}$, we have
+	\begin{itemize}
+		\item [(a)] The regret defined in (\ref{regret}) is bounded by $\Delta_t$
+		\begin{equation}
+			R_t(w)\leq \Delta_t
+		\end{equation}
+		\item [(b)] The primal variables are bounded as
+		\begin{equation}
+			\|w_{t+1}-w\|^2\leq \frac{2}{\sigma t+\beta_t}(\Delta_t-R_t(w)).
+		\end{equation}
+	\end{itemize}
+\end{lemma}
+\textbf{Proof of Part (a)} First, we define the following $gap$ sequence which measures the quality of the solutions $w_1,..,w_t$:
+\begin{equation}\label{52}
+	\delta_t = \max\limits_{w\in \mathcal{F}_D} \left\{ \sum\limits_{\tau=1}^{t} 
+	\big( \langle g_{\tau},w_{\tau}-w \rangle  + \Psi(w_{\tau}) \big) - t \Psi(w)\right\},~
+	t=1,2,3,....
+\end{equation}
+and $\delta_t$ is an upper bound on the regret $R_t(w)$ for all $w\in \mathcal{F}_D$, to see this, we use the convexity of $f_t(w)$ in the following:
+\begin{equation}\label{53}
+	\delta_t \geq \sum_{\tau=1}^{t} \left(f_{\tau}(w_{\tau}) - f_{\tau}(w) + \Psi(w_{\tau})\right) -t \Psi(w) = R_t(w).	
+\end{equation}
+Then, We are going to derive an upper bound on $\delta_t$. For this purpose, we subtract $\sum_{\tau=1}^{t} \langle g_{\tau},w_0 \rangle$ in (\ref{52}), which leads to 
+\begin{equation}\label{54}
+	\delta_t = \sum\limits_{\tau=1}^{t} \left( \langle g_{\tau},w_{\tau}-w_0 \rangle  + \Psi(w_{\tau})\right) +
+	\max\limits_{w\in \mathcal{F}_D} \left\{ \langle s_t,w_0 -w \rangle  - t \Psi(w) \right\},
+\end{equation}
+the maximization term in (\ref{54}) is in fact $U_t(-s_t)$, therefore, by applying Lemma \ref{lemma9}, we have
+\begin{equation}\label{55}
+	\delta_t\leq \sum\limits_{\tau=1}^{t} \big( \langle g_{\tau},w_{\tau}-w_0 \rangle  + \Psi(w_{\tau})\big) +V_t(-s_t)+\beta_t D^2.
+\end{equation}
+Next, we show that $\Delta_t$ is an upper bound for the right-hand side of inequality (\ref{55}). We consider $\tau \geq 2$ and $\tau =1$ respectively.\\
+For any $\tau \geq 2$, we have
+$$
+V_{\tau}(-s_{\tau})+\Psi(w_{\tau+1})\leq V_{\tau-1}(-s_{\tau-1})+\langle-g_{\tau},w_{\tau}-w_0\rangle+\frac{\|g_{\tau}\|^2_{\ast}}{2(\sigma(\tau-1)+\beta_{\tau -1})},
+$$
+where (\ref{49}),(\ref{42}),(\ref{48}) and (\ref{47}) are used. Therefore, we have
+$$
+\langle g_{\tau},w_{\tau}-w_0\rangle +\Psi(w_{\tau+1})\leq 
+V_{\tau-1}(-s_{\tau-1}) - V_{\tau}(-s_{\tau}) + \frac{\|g_{\tau}\|^2_{\ast}}{2(\sigma(\tau-1)+\beta_{\tau -1})},~~\forall\tau\geq 2.
+$$
+For $\tau =1$, we have a similar inequality
+$$
+\langle g_{1},w_1-w_0\rangle +\Psi(w_2)\leq 
+V_{0}(-s_{0}) - V_{1}(-s_{1}) + \frac{\|g_{1}\|^2_{\ast}}{2\beta_0} +(\beta_0-\beta_1)h(w_2),
+$$
+where the last term comes from (\ref{50}). Summing the above inequalities for $\tau=1,...,t$ and noting that $V_0(-s_0)=V_0=0$, we arrive at
+$$
+\sum\limits_{\tau=1}^{t} \big( \langle g_{\tau},w_{\tau}-w_0 \rangle  + \Psi(w_{\tau+1}) +V_t(-s_t) \leq
+(\beta_0-\beta_1)h(w_2)+\frac{1}{2} \sum\limits_{\tau=1}^{t}  \frac{\|g_{\tau}\|^2_{\ast}}{2(\sigma(\tau-1)+\beta_{\tau -1})}.
+$$ 
+Using $\Psi(w_{t+1})\geq \Psi(w_0)$ and adding the nonpositive quantity $\Psi(w_1)-\Psi(w_{t+1})$ to the left hand side of the above inequality yields
+\begin{equation}\label{56}
+	\sum\limits_{\tau=1}^{t} \big( \langle g_{\tau},w_{\tau}-w_0 \rangle  + \Psi(w_{\tau}) +V_t(-s_t) \leq
+	(\beta_0-\beta_1)h(w_2)+\frac{1}{2} \sum\limits_{\tau=1}^{t}  \frac{\|g_{\tau}\|^2_{\ast}}{2(\sigma(\tau-1)+\beta_{\tau -1})}.
+\end{equation}
+Combing (\ref{53}), (\ref{55}) and (\ref{56}) and using Lemma \ref{lemma12}, we conclude
+$$
+R_t(w)\leq \delta_t\leq \Delta_t.
+$$
+\textbf{Proof of Part (b)} First, We start with the optimality condition for the minimization problem in (\ref{RDA subproblem}): there exist subgradients $b_{t+1}\in \partial \Psi(w_{t+1})$ and $d_{t+1}\in \partial h(w_{t+1})$ such that
+\begin{equation}\label{57}
+	\langle s_t+tb_{t+1}+\beta_t d_{t+1},w-w_{t+1} \rangle \geq 0,~~ \forall w\in \text{dom} \Psi.
+\end{equation}
+By the strong convexity of $h$ and $\Psi$, we have for any $w\in \text{dom} \Psi$
+\begin{align}
+	&\Psi(w) \geq \Psi(w_{t+1})+\langle b_{t+1},w-w_{t+1} \rangle+\frac{\sigma}{2} \|w_{t+1}-w\|^2,\label{58}\\
+	&h(w) \geq h(w_{t+1})+\langle d_{t+1},w-w_{t+1} \rangle+\frac{1}{2} \|w_{t+1}-w\|^2,\label{59}
+\end{align}
+Multiplying both sides of (\ref{58}) by t and both sizes of (\ref{59}) by $\beta_t$, then adding them together, we have
+\begin{equation}\label{60}
+	\begin{split}
+		\frac{1}{2}(\sigma t+\beta_t)\|w_{t+1}-w\|^2 
+		&\leq \beta_t h(w)-\beta_t h(w_{t+1})-\langle tb_{t+1}+\beta_t d_{t+1},w-w_{t+1} \rangle +t\Psi(w)-t\Psi(w_{t+1})\\
+		&\leq \beta_t h(w)-\beta_t h(w_{t+1})+\langle s_t,w-w_{t+1} \rangle +t\Psi(w)-t\Psi(w_{t+1})\\
+		&\leq \beta_t h(w)+\{\langle -s_t,w_{t+1}-w_0 \rangle -t\Psi(w_{t+1})-\beta_t h(w_{t+1})\} +t\Psi(w)+\langle s_t,w-w_0 \rangle\\
+		&\leq \beta_t h(w)+V_t(-s_t) +t\Psi(w)+\langle s_t,w-w_0 \rangle,\\
+	\end{split}
+\end{equation}
+the second and fourth inequalities hold by using (\ref{57}) and (\ref{V}).\\
+Then, we rewrite the right-hand side of (\ref{60}) by expanding $\langle s_t,w-w_0 \rangle$, adding and subtracting $\sum\limits_{\tau =1}^{t}\Psi(w_{\tau})$ to get
+\begin{equation*}
+	\beta_t h(w)+ \left\{ V_t(-s_t)+ \sum\limits_{\tau =1}^{t}\big( \langle g_{\tau} ,w_{\tau}-w_0\rangle +\Psi(w_{\tau}) \big) \right\}  
+	+\left\{ \sum\limits_{\tau =1}^{t}\big( \langle g_{\tau} , w - w_{\tau}\rangle +t\Psi(w)-\sum\limits_{\tau =1}^{t}\Psi(w_{\tau}) \right\},
+\end{equation*}
+the terms in the first braces are exactly the left-hand side of (\ref{56}) and those in the second braces are bounded by $-R_t(w)$.\\
+Finally, putting everything together, using Lemma \ref{lemma12} and assumption \ref{assumpation12}, we have
+\begin{equation}
+	\begin{split}
+		\frac{1}{2}(\sigma t+\beta_t)\|w_{t+1}-w\|^2 &\leq \beta_t h(w)+
+		(\beta_0-\beta_1)h(w_2)+\frac{1}{2}\sum\limits_{\tau =1}^{t}\frac{\|g_{\tau}\|^2_{\ast}}{\sigma(\tau -1)+\beta_{\tau -1}}-
+		R_t(w)\\
+		&\leq \Delta_t-R_t(w).
+	\end{split}
+\end{equation}
+
+\subsubsection{Convergence rates}
+\begin{theorem}\label{2}
+	Assume there exists an optimal solution $w^{\star}$ to the problem (1) that satisfies $h(w^{\star})\leq D^2$ for some $D>0$, and let $\phi^{\star}=\phi(w^{\star}).$ Let the sequences $\{w_t\}_{t\geq 1}$ be generated by RDA method, and assume $\|g_t\|_{\ast}\leq G$ for some constant $G$. Then for any $t\geq 1$,
+	\begin{itemize}
+		\item[(a)] the expected cost associated with the random variable $\bar{w}_t$ is bounded as
+		$$
+		\mathbf{E}\phi(\bar{w}_t)-\phi^{\star}
+		\leq \frac{1}{t}\Delta_t.
+		$$
+		\item[(b)] the primal variables are bounded as 
+		$$
+		\mathbf{E}\|w_{t+1}-w^{\star}\|^2\leq \frac{2}{\sigma t+\beta_t}\Delta_t.
+		$$
+	\end{itemize}
+\end{theorem}
+\textbf{Proof} First, from the definition (\ref{regret}), We have the regret at $w^{\star}$
+$$
+R_t(w^{\star})=\sum_{\tau=1}^{t}(f(w_{\tau},z_{\tau})+\Psi(w_{\tau})) - \sum_{\tau=1}^{t}(f(w^{\star},z_{\tau})+\Psi(w^{\star})),
+$$
+Let $\mathbf{z}[t]$ denote the collection of i.i.d. random variables $(z_,...,z_t)$. We note that the random variable $w_{\tau}$, where $1\leq w \geq t$, is a function of $(z_1,...,z_{\tau -1})$ and is independent of $(z_{\tau},...,z_t)$. Therefore
+$$
+\mathbf{E}_{\mathbf{z}[t]}\left( f(w_{\tau},z_{\tau})+\Psi(w_{\tau})\right)=
+\mathbf{E}_{z[\tau-1]} \left( \mathbf{E}_{\tau} f(w_{\tau},z_{\tau})+\Psi(w_{\tau})\right)=
+\mathbf{E}_{z[\tau-1]}\phi(w_{\tau})=
+\mathbf{E}_{z[t]}\phi(w_{\tau}),
+$$
+and 
+$$
+\mathbf{E}_{\mathbf{z}[t]}\left( f(w^{\star},z_{\tau})+\Psi(w^{\star})\right)=
+\mathbf{E}_{\tau} f(w^{\star},z_{\tau})+\Psi(w^{\star}) = \phi(w^{\star}) = \phi^{\star}.
+$$
+Since $\phi^{\star}=\phi(w^{\star})=\min\limits_w\phi(w)$, we have the expected regret
+\begin{equation}\label{exp_regret}
+	\mathbf{E}_{\mathbf{z}[t]} R_t(w^{\star})=\sum_{\tau=1}^{t} \mathbf{E}_{\mathbf{z}[t]} \phi(w_\tau)-t\phi^{\star}\geq 0.
+\end{equation}
+Then, by convexity of $\phi$, we have  
+\begin{equation}\label{convexinequ}
+	\phi(\bar{w}_t)=\phi\left(\frac{1}{t} \sum_{\tau=1}^{t} w_\tau  \right) \leq
+	\frac{1}{t}\sum_{\tau=1}^{t}\phi\left( w_\tau  \right).
+\end{equation}
+Finally, from (\ref{convexinequ}) and (\ref{exp_regret}), we have
+$$
+\mathbf{E}_{\mathbf{z}[t]} \phi(\bar{w}_t)-\phi^{\star} \leq 
+\frac{1}{t}\left(\sum_{\tau=1}^{t}	\mathbf{E}_{\mathbf{z}[t]}\phi( w_\tau)-t\phi^{\star}\right) =
+\frac{1}{t}\mathbf{E}_{\mathbf{z}[t]} R_t(w^{\star}).
+$$
+Then part (a) follows from that of Lemma \ref{lemma_regret}. Similarly and obviously, part (b) follows from that of Lemma \ref{lemma_regret} and (\ref{exp_regret}).
+\\
+Some conclusions from the theorem:
+\begin{enumerate}
+	\item 
+	From the part (a) of Theorem \ref{2}, the expected cost associated with the random variable $\bar{w}_t$ is bounded as
+	\begin{equation}\label{convergencephi}
+		\mathbf{E}\phi(\bar{w}_t)-\phi^{\star}
+		\leq \frac{1}{t} \left(a \beta_t +b\sum\limits_{\tau=0}^{t-1}\frac{1}{\sigma\tau+\beta_\tau}\right),
+	\end{equation}
+	where $a$ and $b$ are some positive constants and $\sigma$ is the convexity parameter of $\Psi(w)$. Here, we consider $\ell_1$ regularization function $\Psi(w)=\|w\|_1$ and it is a convex but not strongly convex function, which means $\sigma=0$.\\
+	Now, we consider how to choose $\beta_t$ for $t\geq 1$ and $\beta_0 = \beta_1$. First if $\beta_t = t$, we have $\frac{1}{t}\cdot a t = a$, which means the expected cost does not converge. Then assume $\beta_t=t^{\alpha}$ and $\alpha\neq 1$, the right hand side of the inequality (\ref{convergencephi}) becomes 
+	$$
+	\frac{1}{t} \left(a t^{\alpha} +b\sum\limits_{\tau=0}^{t-1}\frac{1}{\tau^{\alpha}}\right) \leq 
+	\frac{1}{t} \left[ a t^{\alpha} +b \big( 2+ \sum\limits_{\tau=2}^{t-1}\frac{1}{\tau^{\alpha}} \big) \right] \leq
+	\frac{1}{t} \left[ a t^{\alpha} +b \big( 2+ \int_{1}^{t-1} \frac{1}{\tau^{\alpha}} \big) \right] 		    \sim
+	O(t^{\alpha-1} + t^{-\alpha}),
+	$$
+	from above, we see that if $0<\alpha<1$, the expected cost converges and the optimal convergence rate $O(t^{-\frac{1}{2}})$ achieves when $\alpha=\frac{1}{2}$.
+	\item 
+	From the part (b) of Theorem \ref{2}, the primal variables are bounded as 
+	$$
+	\mathbf{E}\|w_{t+1}-w^{\star}\|^2\leq \frac{2}{\sigma t+\beta_t}\left(a \beta_t +b\sum\limits_{\tau=0}^{t-1}\frac{1}{\sigma\tau+\beta_\tau}\right)
+	= \frac{2}{\beta_t}\left(a \beta_t +b\sum\limits_{\tau=0}^{t-1}\frac{1}{\beta_\tau}\right).
+	$$
+	Thus $\mathbf{E}\|w_{t+1}-w^{\star}\|^2$ is bounded by a constant.
+	\item 
+	Next, we consider how the coefficients $\gamma$ of $\beta_t = \gamma \sqrt{t}$ and $\lambda$ of $\Psi(w)=\lambda \| w \|_1$ affect the performance of convergence and accuracy. Note that in (\ref{convergencephi}), $a=D^2$ and $b=G^2$, where $h(w)\leq D^2$ and $\|g_t\|_2 \leq G$. We rewrite (\ref{convergencephi}) as
+	$$
+	\mathbf{E}\phi(\bar{w}_t)-\phi^{\star} = 
+	\mathbf{E}_{z_\tau}\big(f(\bar{w_t},z_{\tau})-f(w^{\star},z_{\tau})\big)+\lambda\big(\|\bar{w_t}\|_1-\|{w_t}^{\star}\|_1\big)
+	\leq
+	(\gamma D^2 +\frac{G^2}{\gamma})\frac{1}{\sqrt{t}}
+	$$
+	\begin{itemize}
+		\item 
+		Minimizing $\left(\gamma D^2 +\frac{G^2}{\gamma}\right)$ yields $\gamma = \frac{G}{D}$.
+		\item 
+		$\lambda$ stays at the left hand side of the inequality above.
+	\end{itemize}
+\end{enumerate}
+
+
+\subsubsection{Some Lemmas}
+First of all, we define some functions:
+\begin{align}
+	&U_t(s)=\max\limits_{w\in \mathcal{F}_D} \{ \langle s,w-w_0  \rangle-t\Psi(w)\},\label{U}\\
+	&V_t(s)=\max\limits_{w} \{ \langle s,w-w_0  \rangle-t\Psi(w) - \beta_t h(w)\}\label{V}.
+\end{align}
+The maximum in (\ref{U}) is always achieved because $\mathcal{F}_D=\{w\in\text{dom}\Psi|h(w)\leq D^2\}$ is a nonempty compact set. Because of (\ref{assumpation13}), we have $\sigma t+\beta_t \geq \beta_0 > 0$ for all $t\geq0$, which means  $t\Psi(w)+\beta_t h(w)$ are all strongly convex, therefore the maximum in (\ref{V}) is always achieved and unique. As a result, we have $\text{dom} U_t= \text{dom} V_t = E^{\ast}$ for all $t\geq 0$. Moreover, by the assumption (\ref{assumpation7}), both of the functions are nonnegative.\\
+Let $s_t$ denote the sum of the subgradients obtained up to time $t$ in RDA method,that is
+\begin{equation}\label{42}
+	s_t=\sum\limits_{\tau =1}^{t} g_{\tau} = t \bar{g}_t,
+\end{equation}
+and $\pi_t(s)$  denotes the unique maximizer in the definition of $V_t(s)$
+\begin{equation}
+	\begin{split}
+		\pi_t(s) &= \arg\max\limits_{w} \{ \langle s,w-w_0  \rangle-t\Psi(w) - \beta_t h(w)\}\\
+		&= \arg\min\limits_{w} \{ \langle -s,w \rangle + t\Psi(w) + \beta_t h(w)\},
+	\end{split}
+\end{equation}
+which then gives 
+\begin{equation}
+	w_{t+1} = \pi_t(-s_t).
+\end{equation}
+\begin{lemma}\label{lemma9}
+	For any $s\in E^{\ast}$ and $t\geq 0$, we have
+	\begin{equation}
+		U_t(s)<V_t(s)+\beta_t D^2.
+	\end{equation} 
+\end{lemma}	
+\begin{proof}
+	Starting with the definition of $U_t(s)$ and using $\mathcal{F}_D=\{w\in\text{dom}\Psi|h(w)\leq D^2\}$,
+	$$
+	\begin{aligned}
+	U_t(s) &= \max_{w\in\mathcal{F}_D} \{\langle s,w-w_0\rangle - t \Psi(w) \} \\
+	&=\max_w \min_{\beta \geq 0} \{\langle s,w-w_0\rangle - t \Psi(w) +\beta(D^2-h(w)) \} \\
+	&\leq \min_{\beta \geq 0} \max_w  \{\langle s,w-w_0\rangle - t \Psi(w) +\beta(D^2-h(w)) \} \\
+	&\leq  \max_w  \{\langle s,w-w_0\rangle - t \Psi(w) +\beta(D^2-h(w)) \} \\
+	&= V_t(s) +\beta_t D^2.
+	\end{aligned}
+	$$
+	For the second equality and the first inequality above, we used standard duality arguments and the max-min inequality.
+\end{proof}
+\begin{lemma}\label{lemma10}
+	The function $V_t$ is convex and differentiable. Its gradient is given by
+	\begin{equation}\label{47}
+		\nabla V_t(s)=\pi_t(s)-w_0
+	\end{equation}
+	Moreover, the gradient Lipschitz continuous with constant $1/(\sigma t+\beta_t)$, that is
+	\begin{equation}
+		\|\nabla V_t(s_1)-\nabla V_t(s_2) \| \leq \frac{1}{\sigma t+ \beta_t}\|s_1 - s_2\|_{\ast},~~ \forall s_1,s_2\in E^{\ast}.
+	\end{equation}
+\end{lemma}
+\begin{proof}
+	Indeed, $V_t(s)$ is convex as a maximum of functions, which are linear in $s$.
+	It is differentiable since $\pi_t(s)$ is unique.
+	Let us prove that its gradient is Lipschitz continuous.
+	Consider two points $s_1$ and $s_2$.
+	For the sake of notation, without loss of generality we assume that the functions $\Psi(\cdot)$ and $h(\cdot)$ are differentiable.
+	From the first-order optimality conditions we have
+	\begin{equation}
+		\langle s_1 - t \nabla \Psi(\pi_t(s_1)) -\beta_t \nabla h(\pi_t(s_1)), \pi_t(s_2)- \pi_t(s_1) \rangle \leq 0,
+	\end{equation}
+	\begin{equation}
+		\langle s_2 - t \nabla \Psi(\pi_t(s_2)) -\beta_t \nabla h(\pi_t(s_2)), \pi_t(s_1)- \pi_t(s_2) \rangle \leq 0.
+	\end{equation}
+	Adding these inequalities and using convexity of $\Psi(\cdot)$ and strongly convex of $h(\cdot)$, we continue as follows:
+	\begin{align*}
+		\langle s_1-s_2 , \pi_t(s_1) - \pi_t(s_2) \rangle
+		&\geq \langle t( \nabla \Psi(\pi_t(s_1)) -\nabla \Psi(\pi_t(s_2)) )+ \beta_t (\nabla h(\pi_t(s_1)) -\nabla h(\pi_t(s_2)) ) , \pi_t(s_1) -\pi_t(s_2) \rangle \\
+		& \geq t \langle ( \nabla \Psi(\pi_t(s_1)) -\nabla \Psi(\pi_t(s_2)) ), \pi_t(s_1) -\pi_t(s_2) \rangle + \beta_{t} \langle (\nabla h(\pi_t(s_1)) -\nabla h(\pi_t(s_2)) ) , \pi_t(s_1) -\pi_t(s_2) \rangle\\
+		& \geq t \sigma \|\pi_t(s_1)- \pi_t(s_2)\|^2_2 + \beta_{t} \|\pi_t(s_1)- \pi_t(s_2)\|^2_2\\
+		&= (\sigma t+ \beta_{t}) \|\pi_t(s_1)- \pi_t(s_2)\|^2_2
+	\end{align*}
+	i.e.
+	\begin{equation}
+		\langle s_1-s_2, \nabla V_t(s_1) - \nabla V_t (s_2) \rangle \geq (\sigma t +\beta_t) \|\pi_t(s_1)- \pi_t(s_2)\|^2_2
+	\end{equation}
+\end{proof}
+A direct consequence of Lemma (\ref{lemma10}) is the following inequality:
+\begin{equation}\label{48}
+	V_t(s+g)\leq V_t(s) + \langle g , \nabla V_t (s) \rangle +\frac{1}{2(\sigma t+\beta_t)}\|g\|_{\ast}^2,~~ \forall s,g\in E^{\ast}.
+\end{equation}
+\begin{lemma}\label{lemma11}
+	For each $t\geq 1$, we have
+	\begin{equation}
+		V_t (-s_t) +\Psi(w_{t+1})\leq V_{t-1}(-s_t)+(\beta_{t-1}-\beta_t)h(w_{t+1}).
+	\end{equation}
+\end{lemma}
+\begin{proof}
+	We start with the definition of $V_{t-1}(-s_t):$\\
+	$$
+	\begin{aligned}
+	V_{t-1}(-s_t) &= \max_w \{ \langle  -s_t,w-w_0    \rangle -(t-1)\Psi(w) - \beta_{t-1}h(w) \} \\
+	&\geq \langle  -s_t,w_{t+1}-w_0    \rangle -(t-1)\Psi(w_{t+1}) - \beta_{t-1}h(w_{t+1}) \\
+	&= \{ \langle  -s_t,w-w_0    \rangle -t\Psi(w) - \beta_{t}h(w) \} +\Psi(w_{t+1})+(beta_t-\beta_{t-1})h(w_{t+1})). \\
+	\end{aligned}
+	$$
+	The expression in the last braces above is precisely $V_t(-s_t)$, then making the substitution and rearranging terms give the desired result.
+\end{proof}
+Since $h(w_{t+1})\geq 0$ and the sequence $\{\beta_t\}_{t\geq 1}$ is nondecreasing, we have
+\begin{align}
+	&V_t(-s_t)+\Psi(w_{t+1})\leq V_{t-1}(-s_t),&\forall t\geq 2,\label{49}\\
+	&V_t(-s_1)+\Psi(w_2)\leq V_{0}(-s_1)+(\beta_0-\beta_1)h(w_2),&\forall t=1.\label{50}
+\end{align}
+\begin{lemma}\label{lemma12}
+	Assume $\max \{ \sigma,\beta_1 \}>0$. Let $h(w)=\frac{1}{\sigma}\Psi(w)$ if $\sigma\geq 0$. Then
+	\begin{equation}\label{51}
+		h(w_2)< \frac{2\|g_1\|^2_{\ast}}{(\beta_1+\sigma)^2}.
+	\end{equation}
+\end{lemma}
+\begin{proof}
+	For $t=1$, we have $w_1=w_0$, $\Psi(w_1)=\Psi(w_0)=0$, $h(w_1)=h(w_0)=0$, and $\bar{g}_1=g_1$. Since $w_2$ is the minimizer in (\ref{RDA}) for $t=1$, we have
+	$$
+	\langle g_1,w_2 \rangle +\Psi(w_2) +\beta_1 h(w_2) \leq \langle g_1,w_1 \rangle + \Psi(w_1)+\beta_1 h(w_1) = \langle g_1,w_1 \rangle.
+	$$
+	Therefore,
+	$$
+	\Psi(w_2) + \beta_1 h(w_2)\leq \langle g_1,w_1-w_2 \rangle \leq \|g_1\|_{*}\|w_2-w_1\|.
+	$$
+	On the other hand, by strongly convexity of $\Psi(w)$ and $h(w)$, we have
+	$$
+	\Psi(w_2) + \beta_1 h(w_2)\geq \frac{\sigma+\beta_1}{d2} \|w_2-w_1\|^2.
+	$$
+	Combining the last two inequalities together, we have
+	$$
+	\Psi(w_2) + \beta_1 h(w_2)\leq \frac{2\|g_1\|_{*}^{2}}{\sigma+\beta_1}.
+	$$
+	If $\sigma=0$, we must have $\beta_1>0$. In this case, since $\Psi(w_2)\geq 0$, we have
+	$$
+	h(w_2)\leq \frac{2\|g_1\|^2_{*}}{\beta_1^2}=\frac{2\|g_1\|^2_{*}}{(\sigma+\beta_1)^2}.
+	$$
+	If $\sigma>0,$ we have $\Psi(w) = \sigma h(w)$ by assumption and therefore
+	$$
+	\Psi(w_2) + \beta_1 h(w_2) = (\sigma + \beta_1) h(w_2)\leq \frac{2\|g_1\|_{*}^{2}}{\sigma+\beta_1},
+	$$
+	then we finished the proof.
+\end{proof}
+
+\begin{lemma}
+	max-min inequality:
+	\begin{equation}
+		\max_x \min_y f(x,y) \leq \min_y \max_x f(x,y).
+	\end{equation}
+\end{lemma}
+\begin{proof}
+	Denote
+	\begin{equation}
+		g(x) = \min_y f(x,y),
+	\end{equation}
+	and
+	\begin{equation}
+		h(y) =\max_x f(x,y).
+	\end{equation}
+	Let
+	\begin{equation}
+		a= \mathop{\arg \max}_x g(x),
+	\end{equation}
+	and
+	\begin{equation}
+		b = \mathop{\arg \min}_y h(y).
+	\end{equation}
+	Then we have
+	\begin{equation}
+		\max_x \min_y f(x,y) =\max_x g(x) =g(a),
+	\end{equation}
+	and
+	\begin{equation}
+		\min_y \max_x f(x.y) = \min h(y) = h(b).
+	\end{equation}
+	So,
+	\begin{equation}
+		g(a)= \min_y f(a,y) \leq f(a,b),
+	\end{equation}
+	and
+	\begin{equation}
+		h(b) = \max_x f(x,b) \geq f(a,b).
+	\end{equation}
+	Finally, we have
+	\begin{equation}
+		\max_x \min_y f(x,y) =g(a) \leq f(a,b) \leq h(b) =\min_x \max_y f(x,y).
+	\end{equation}
+	This is the so-called weak duality.
+	
+	The strong duality holds when there exist $(a,b)$ such that
+	\begin{equation}
+		g(a) = h(b),
+	\end{equation}
+\end{proof}
+
+\iffalse
+\section{Alternative Convergence Proofs for SDA and RDA}
+\subsection{SDA Convergence Analysis}
+In this section, we analyze the convergence of the SDA algorithm
+\begin{equation}\label{SDE_iteration}
+    x_n = \arg\min_x \left(\displaystyle\sum_{i = 1}^{n-1} \langle g_i, x\rangle + \sqrt{n}\|x\|_2^2\right),~x_1 = 0
+\end{equation}
+where $g_i\in \partial f(x_i)$.
+
+Let us first analyze the consequences of the definition of $x_n$ as an argmin. We note that if
+$z$ is any other point, then
+\begin{equation}
+    \displaystyle\sum_{i = 0}^{n-1} \langle g_i, x_n\rangle + \sqrt{n}\|x_n\|_2^2 \leq \displaystyle\sum_{i = 0}^{n-1} \langle g_i, z\rangle + \sqrt{n}\|z\|_2^2
+\end{equation}
+so that
+\begin{equation}\label{minimum_property}
+    \displaystyle\sum_{i = 0}^{n-1} \langle g_i, x_n - z\rangle \leq \sqrt{n}\|z\|_2^2 - \sqrt{n}\|x_n\|_2^2
+\end{equation}
+
+This is crucial in the proof of the following theorem
+\begin{theorem}
+ Assume that $f$ is convex and Lipschitz with constant $M$, i.e. $\|g\|_2 \leq M$ for all $g\in \partial f(x)$ and let
+ $x^*\in \arg\min_x f(x)$. Then the
+ iterates of (\ref{SDE_iteration}) satisfy
+ \begin{equation}
+     f(\bar{x}_n) - f(x^*) \leq \frac{2(\|x^*\|_2^2 + M^2)}{\sqrt{n}}
+ \end{equation}
+ where $\bar{x}_n = \frac{1}{n}\sum_{i = 1}^nx_i$ is the average of the first $n$ iterates.
+\end{theorem}
+\begin{proof}
+We consider the average of the first $n$ iterates $\bar{x}_n = \frac{1}{n}\sum_{i = 1}^nx_i$. Note that
+\begin{equation}
+    f(\bar{x}_n) - f(x^*) \leq \frac{1}{n}\displaystyle\sum_{i = 1}^n f(x_i) - f(x^*) \leq \frac{1}{n}\displaystyle\sum_{i = 1}^n \langle g_i, x_i - x^*\rangle
+\end{equation}
+We rewrite the sum above as follows
+\begin{equation}\label{eq45}
+    \displaystyle\sum_{i = 1}^n \langle g_i, x_i - x^*\rangle = \displaystyle\sum_{i = 1}^n \langle g_i, x_{n+1} - x^*\rangle + \displaystyle\sum_{i = 1}^n \displaystyle\sum_{j = 1}^i\langle g_j, x_i - x_{i+1}\rangle
+\end{equation}
+From observation (\ref{minimum_property}) we obtain
+\begin{equation}
+    \displaystyle\sum_{i = 1}^n \langle g_i, x_{n+1} - x^*\rangle \leq \sqrt{n+1}\|x^*\|_2^2 - \sqrt{n+1}\|x_{n+1}\|_2^2
+\end{equation}
+and
+\begin{equation}
+    \displaystyle\sum_{j = 1}^i\langle g_j, x_i - x_{i+1}\rangle \leq \langle g_i, x_i - x_{i+1}\rangle + \sqrt{i}\|x_{i+1}\|_2^2 - \sqrt{i}\|x_{i}\|_2^2
+\end{equation}
+Plugging this into equation (\ref{eq45}) and noting that $\sqrt{i} - \sqrt{i - 1} \geq \frac{1}{2\sqrt{i}}$ for $i > 1$ to get
+\begin{equation}
+    \displaystyle\sum_{i = 1}^n \langle g_i, x_i - x^*\rangle \leq \sqrt{n+1}\|x^*\|_2^2 - \|x_1\|_2^2 - \displaystyle\sum_{i = 2}^{n+1}\frac{\|x_i\|_2^2}{2\sqrt{i}} + \displaystyle\sum_{i=1}^n\langle g_i, x_i - x_{i+1}\rangle
+\end{equation}
+Throwing away the negative terms above we see that
+\begin{equation}\label{eq61}
+    \displaystyle\sum_{i = 1}^n \langle g_i, x_i - x^*\rangle \leq \sqrt{n+1}\|x^*\|_2^2 + \displaystyle\sum_{i=1}^n\langle g_i, x_i - x_{i+1}\rangle
+\end{equation}
+Finally, we bound the last sum above as
+\begin{equation}\label{eq65}
+    \displaystyle\sum_{i=1}^n\langle g_i, x_i - x_{i+1}\rangle \leq \displaystyle\sum_{i=1}^n \|g_i\|_2\|x_i - x_{i+1}\|_2 \leq M\displaystyle\sum_{i=1}^n\|x_i - x_{i+1}\|_2
+\end{equation}
+In order to bound this last part, we need to write out $x_i - x_{i+1}$ explicitly. We see that
+$$ x_i = \frac{1}{2\sqrt{i}}\displaystyle\sum_{j = 1}^{i-1} g_j
+$$
+and thus
+$$ x_i - x_{i+1} = \left(\frac{1}{2\sqrt{i}} - \frac{1}{2\sqrt{i+1}}\right)\displaystyle\sum_{j = 1}^{i-1} g_j - \frac{1}{2\sqrt{i+1}} g_{i+1}
+$$
+utilizing $\frac{1}{\sqrt{i}} - \frac{1}{\sqrt{i+1}} \leq \frac{1}{2i^{3/2}}$ and the triangle inequality, we see that
+\begin{equation}
+    \|x_i - x_{i+1}\|_2 \leq \frac{3}{4\sqrt{i}}M \leq \frac{M}{\sqrt{i}}
+\end{equation}
+We now plug this into equation (\ref{eq65}) to get
+\begin{equation}
+    \displaystyle\sum_{i=1}^n\langle g_i, x_i - x_{i+1}\rangle \leq  M^2 \displaystyle\sum_{i=1}^n \frac{1}{\sqrt{i}} \leq 2M^2 \sqrt{n}
+\end{equation}
+Pluggin this into equation (\ref{eq61}) we get
+\begin{equation}
+    \displaystyle\sum_{i = 1}^n \langle g_i, x_i - x^*\rangle \leq \sqrt{n+1}\|x^*\|_2^2 + 2M^2 \sqrt{n} \leq 2\sqrt{n}(\|x^*\|_2^2 + M^2)
+\end{equation}
+Thus we obtain
+\begin{equation}
+     f(\bar{x}_n) - f(x^*) \leq \frac{1}{n}\displaystyle\sum_{i = 1}^n \langle g_i, x_i - x^*\rangle \leq \frac{2(\|x^*\|_2^2 + M^2)}{\sqrt{n}}
+\end{equation}
+as desired.
+\end{proof}
+
+\subsection{RDA Convergence Analysis}
+We consider the optimization problem
+\begin{equation}
+    \arg\min_x f(x) + R(x)
+\end{equation}
+where $R(x)$ is a convex regularization term, which in our application is taken to be $\|\cdot\|_1$. We analyze the convergence of the RDA algorithm
+\begin{equation}\label{RDA_iteration}
+    x_n = \arg\min_x \left(\displaystyle\sum_{i = 1}^{n-1} \langle g_i, x\rangle + \sqrt{n}\|x\|_2^2 + nR(x)\right)
+\end{equation}
+with $g_i\in \partial f(x_i)$.
+
+Note that by completing the square, (\ref{RDA_iteration}) can be written as
+\begin{equation}
+    x_{n+\frac{1}{2}} = \frac{1}{2\sqrt{n}}\displaystyle\sum_{i=1}^n g_i,~x_n = P_{\sqrt{n}R}(x_{n+\frac{1}{2}}) = \arg\min_x \|x - x_{n+\frac{1}{2}}\|_2^2 + \sqrt{n}R(x)
+\end{equation}
+
+For example, if $R = \|\cdot\|_1$, we see that
+\begin{equation}
+    P_{\sqrt{n}R}(x_{n+\frac{1}{2}}) = 
+    \begin{cases}
+     x_{n+\frac{1}{2}} + \frac{1}{2}\sqrt{n} & \text{if $x_{n+\frac{1}{2}} < -\frac{1}{2}\sqrt{n}$} \\
+     0 & \text{if $|x_{n+\frac{1}{2}}| \leq \frac{1}{2}\sqrt{n}$} \\
+     x_{n+\frac{1}{2}} - \frac{1}{2}\sqrt{n} & \text{if $x_{n+\frac{1}{2}} > \frac{1}{2}\sqrt{n}$}
+    \end{cases}
+\end{equation}
+
+Before we begin our convergence proof, let us note a simple observation. Since $x_n$ is given by the $\arg\min$ in (\ref{RDA_iteration}), if
+$z$ is any point, we have
+\begin{equation}
+    \displaystyle\sum_{i = 0}^{n-1} \langle g_i, x_n\rangle + \sqrt{n}\|x_n\|_2^2 + nR(x_n)\leq \displaystyle\sum_{i = 0}^{n-1} \langle g_i, z\rangle + \sqrt{n}\|z\|_2^2 + nR(z)
+\end{equation}
+so that
+\begin{equation}\label{minimum_property}
+    \displaystyle\sum_{i = 0}^{n-1} \langle g_i, x_n - z\rangle \leq \sqrt{n}\|z\|_2^2 + nR(z) - \sqrt{n}\|x_n\|_2^2 - nR(x_n)
+\end{equation}
+
+
+Additionally, we will need the following well-known lemma.
+\begin{lemma}\label{non-expansive}
+ The proximal map $P_R$ is non-expansive for any convex function $R$, i.e.
+ \begin{equation}
+     \|P_R(x) - P_R(y)\|_2 \leq \|x - y\|_2
+ \end{equation}
+\end{lemma}
+\begin{proof}
+ Let $x^\prime = P_R(x)$ and $y^\prime = P_R(y)$. Then the definition of the proximal map implies that $\Delta x = x - x^\prime\in \partial R(x^\prime)$ and likewise for the $y$s. Thus we have
+ \begin{equation}
+     \langle x - y, x^\prime - y^\prime\rangle = \|x^\prime - y^\prime\|_2^2 + \langle\Delta x - \Delta y, x^\prime - y^\prime\rangle \geq \|x^\prime - y^\prime\|_2^2
+ \end{equation}
+ This last inequality follows from the convexity of $R$ and the fact that $\Delta x \in \partial R(x^\prime)$ and $\Delta y \in \partial R(y^\prime)$. The Cauchy-Schwartz inequality
+ now implies that
+ \begin{equation}
+     \|x^\prime - y^\prime\|_2 \leq \|x - y\|_2
+ \end{equation}
+ as desired.
+\end{proof}
+
+
+Letting $\phi(x)$ denote $f(x) + R(x)$, we have the following convergence result.
+\begin{theorem}
+ Assume that $f$ is convex and Lipschitz with constant $M$, i.e. $\|g\|_2 \leq M$ for all $g\in \partial f(x)$, and
+ that $R$ is convex and Lipschitz with constant $N$ and bounded below. Let
+ $x^*\in \arg\min_x \phi(x)$. Then the
+ iterates of (\ref{RDA_iteration}) satisfy
+ \begin{equation}
+\phi(\bar{x}_n) - \phi(x^*) \leq \frac{2\|x^*\|_2^2 + 3M^2}{\sqrt{n}} + \frac{(R(x^*) - \inf_x R(x)) + MN\log(n)}{n}
+\end{equation}
+ where $\bar{x}_n = \frac{1}{n}\sum_{i = 1}^nx_i$ is the average of the first $n$ iterates.
+\end{theorem}
+\begin{proof}
+Consider the average of the first $n$ iterates $\bar{x}_n = \frac{1}{n}\sum_{i = 1}^nx_i$. Note that
+\begin{align}\label{eq157}
+    \phi(\bar{x}_n) - \phi(x^*) \leq \frac{1}{n}\displaystyle\sum_{i = 1}^n (\phi(x_i) - \phi(x^*)) &\leq \frac{1}{n}\displaystyle\sum_{i = 1}^n \langle g_i, x_i - x^*\rangle\\ 
+    & + \frac{1}{n}\displaystyle\sum_{i = 1}^n (R(x_i) - R(x^*))
+\end{align}
+since $\phi(x) = f(x) + R(x)$ and $g_i\in\partial f(x_i)$.
+We rewrite the sum in (\ref{eq157}) as follows
+\begin{equation}\label{eq45}
+    \displaystyle\sum_{i = 1}^n \langle g_i, x_i - x^*\rangle = \displaystyle\sum_{i = 1}^n \langle g_i, x_{n+1} - x^*\rangle + \displaystyle\sum_{i = 1}^n \displaystyle\sum_{j = 1}^i\langle g_j, x_i - x_{i+1}\rangle
+\end{equation}
+By setting $z = x^*$ in observation (\ref{minimum_property}) we obtain
+\begin{align}
+    \displaystyle\sum_{i = 1}^n \langle g_i, x_{n+1} - x^*\rangle &\leq \sqrt{n+1}\|x^*\|_2^2 - \sqrt{n+1}\|x_{n+1}\|_2^2 \\
+    & + (n+1)R(x^*) - (n+1)R(x_{n+1})
+\end{align}
+and setting $z = x_{i+1}$ we get
+\begin{align}
+    \displaystyle\sum_{j = 1}^i\langle g_j, x_i - x_{i+1}\rangle &\leq \langle g_i, x_i - x_{i+1}\rangle + \sqrt{i}\|x_{i+1}\|_2^2 - \sqrt{i}\|x_{i}\|_2^2 \\
+    & + iR(x_{i+1}) - iR(x_i)
+\end{align}
+Plugging this into equation (\ref{eq45}) and noting that $\sqrt{i} - \sqrt{i - 1} \geq \frac{1}{2\sqrt{i}}$ for $i > 1$, we get
+\begin{align}
+    \displaystyle\sum_{i = 1}^n \langle g_i, x_i - x^*\rangle &\leq \sqrt{n+1}\|x^*\|_2^2 + (n+1)R(x^*) - \displaystyle\sum_{i = 1}^{n+1} R(x_i) \\
+    & - \displaystyle\sum_{i = 1}^{n+1}\frac{\|x_i\|_2^2}{2\sqrt{i}} + \displaystyle\sum_{i=1}^n\langle g_i, x_i - x_{i+1}\rangle
+\end{align}
+Plugging this into equation (\ref{eq157}) and throwing away the negative terms we see that
+\begin{equation}\label{eq61}
+    n(\phi(\bar{x}_n) - \phi(x^*)) \leq \sqrt{n+1}\|x^*\|_2^2 + R(x^*) - R(x_{n+1}) + \displaystyle\sum_{i=1}^n\langle g_i, x_i - x_{i+1}\rangle
+\end{equation}
+We bound the last sum above using Cauchy-Schwartz as
+\begin{equation}\label{eq65}
+    \displaystyle\sum_{i=1}^n\langle g_i, x_i - x_{i+1}\rangle \leq \displaystyle\sum_{i=1}^n \|g_i\|_2\|x_i - x_{i+1}\|_2 \leq M\displaystyle\sum_{i=1}^n\|x_i - x_{i+1}\|_2
+\end{equation}
+Finally, we must bound $\|x_i - x_{i+1}\|_2$. For this, we recall that by (\ref{RDA_iteration})
+\begin{equation}\label{eq201}
+    x_i = \arg\min_x \left(\displaystyle\sum_{j = 1}^{i-1} \langle g_j, x\rangle + \sqrt{i}\|x\|_2^2 + iR(x)\right)
+\end{equation}
+and note that by multiplying the objective in (\ref{RDA_iteration}) by $\sqrt{\frac{i}{i+1}}$ we have
+\begin{equation}\label{eq205}
+    x_{i+1} = \arg\min_x \left(\sqrt{\frac{i}{i+1}}\displaystyle\sum_{j = 1}^{i} \langle g_j, x\rangle + \sqrt{i}\|x\|_2^2 + \sqrt{i(i+1)}R(x)\right)
+\end{equation}
+The objective in equation (\ref{eq205}) (which I will denote $O_{i+1}$) is strongly convex with strong convexity parameter $2\sqrt{i}$. This means 
+that for any $z$ and $g_z\in \partial O_{i+1}(z)$, we have
+\begin{equation}\label{eq210}
+    \|z - x_{i+1}\|_2 \leq \frac{1}{\sqrt{i}}\|g_z\|_2
+\end{equation}
+since $x_{i + 1} = \arg\min_x O_{i+1}(x)$. We wish to set $z = x_i$, but we need a $g_z$ first. Recall that since $x_i$ 
+is the minimizer in equation (\ref{eq201})
+we have
+\begin{equation}
+    0 = \displaystyle\sum_{j = 1}^{i-1} g_j + 2\sqrt{i}x_i + i\lambda
+\end{equation}
+with $\lambda\in \partial R(x_i)$. Using this and taking the subdifferential of $O_{i+1}$ we see that
+\begin{equation}
+    \displaystyle\sum_{j = 1}^{i-1} \left(\sqrt{\frac{i}{i+1}} - 1\right)g_j + \sqrt{\frac{i}{i+1}}g_i + (\sqrt{i(i+1)} - i)\lambda \in \partial O_{i+1}(x_i)
+\end{equation}
+We can bound the norm of this expression using the triangle inequality and our bounds on the elements in the subdifferentials of $f$ and
+$R$ by
+\begin{equation}
+    \frac{3}{2}M + \frac{1}{2\sqrt{i}}N
+\end{equation}
+Plugging this into equation (\ref{eq210}) and setting $z = x_i$, we see that
+\begin{equation}
+    \|x_i - x_{i+1}\|_2 \leq \frac{3}{2\sqrt{i}}M + \frac{1}{2i}N
+\end{equation}
+We now plug this into equation (\ref{eq65}) to get
+\begin{equation}
+    \displaystyle\sum_{i=1}^n\langle g_i, x_i - x_{i+1}\rangle \leq \frac{3M^2}{2} \displaystyle\sum_{i=1}^n \frac{1}{\sqrt{i}} + \frac{MN}{2}\displaystyle\sum_{i=1}^n \frac{1}{i}\leq 3M^2 \sqrt{n} + MN\log(n)
+\end{equation}
+Plugging this into equation (\ref{eq61}) we get
+\begin{equation}
+    n(\phi(\bar{x}_n) - \phi(x^*)) \leq \sqrt{n+1}\|x^*\|_2^2 + R(x^*) - R(x_{n+1}) + 3M^2 \sqrt{n}+ MN\log(n)
+\end{equation}
+and finally
+\begin{equation}
+     \phi(\bar{x}_n) - \phi(x^*) \leq \frac{2\|x^*\|_2^2 + 3M^2}{\sqrt{n}} + \frac{(R(x^*) - \inf_x R(x)) + MN\log(n)}{n}
+\end{equation}
+as desired.
+\end{proof}
+\fi

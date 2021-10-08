@@ -1,0 +1,65 @@
+\section{Loss functions:  nonlinear least square and cross-entropy}
+Given a collection of data $D=(x_j,y_j)_{j=1}^N$ with $x_j\in A_{i_j}$
+and $y_j=e_{i_j}$ We now discuss how to find $\theta =(W,b)$ such that
+\begin{equation}
+\label{fitting}
+f(x_i,\theta)=\sigma(Wx_j+b)=y_j,\quad 1\le j \le N.
+\end{equation}
+
+\subsection{Least square}
+The data fitting problem \eqref{fitting} can be solved by find a minimizer of the following loss function
+\begin{equation}
+\label{L0}
+L_0(\theta)={1\over N}\sum_{i=1}^N\|f(x_i,\theta)-y_i\|^2
+\end{equation}
+
+Obviously,
+$$
+\theta^*=(W^*,b^*) \mathrm{satisfies}\ \eqref{fitting} \Leftrightarrow L_0(\theta^*)=0\Leftrightarrow \theta^*\in\arg\min_{\theta}L_0(\theta)
+$$
+
+We make the  following two observations on the loss function $L_0$ given by \eqref{L0}:
+\begin{enumerate}
+	\item It has infinitely many global minimizers.
+	\item It is a non-convex loss function.
+\end{enumerate}
+
+
+\input{6DL/KL-CR-LR}
+
+
+\subsection{Convex versus non-convex loss functions}
+\subsubsection{Convexity}
+The maximum likelihood and maximum posterior look difficult to optimize at first glance. Remarkably though,
+the logistic regression has the property that the negative log likelihood is a convex function of the parameters $W,b$.
+This means that we can apply a well-developed convergence theory for methods such as gradient descent, accelerated gradient
+descent, stochastic gradient descent, etc. Our goal in this section will be to prove this remarkable fact.
+
+The first thing to note is that the negative log-likelihood
+$$\displaystyle\sum_{j=1}^n \left(\log(\mathbbm{1}^T\exp(W x_j + b)) - 
+ (W x_j + b)_{i_j})\right)$$
+is a sum of terms over all of the data points $(x_i,y_i)$. Since a sum of convex functions is convex, it suffices to show that
+the term corresponding to a single data point is convex (i.e. the negative log-likelihood of a single data point is a convex
+function). So we consider the function
+\begin{equation}
+ f_{x,i}(W,b) = \log(\mathbbm{1}^T\exp(W x + b)) - 
+ (W x + b)_{i}
+\end{equation}
+We will show that this function is convex for any choice of data $x$ and label $i$. First note that the second term
+$$ - (W x + b)_{i}$$
+is a linear function, so it suffices to show that the first term
+$$\log(\mathbbm{1}^T\exp(W x + b))$$
+is convex. To see this, we note that $W x + b$ is a linear function of the parameters $W,b$. Combining
+this with the easy fact that a convex function composed with a linear function is convex, we only need to consider the LogSumExp
+function $s:\mathbb{R}^k\rightarrow \mathbb{R}$ defined by
+\begin{equation}
+ s(x) = \log(\exp(x_1) + \cdots + \exp(x_k))
+\end{equation}
+We can easily verify that this function is convex by calculating its Hessian and noting that $\nabla^2s$ is diagonally dominant.
+%\begin{equation}
+% D^2s(x) =   \left(\displaystyle\sum_{i=1}^k \exp(x_i)\right)^{-2}\begin{pmatrix}
+%    \left(\displaystyle\sum_{i\neq 1} \exp(x_1 + x_i)\right) & -\exp(x_1 + x_2) & -\exp(x_1 + x_3) & \cdots & -\exp(x_1 + x_k) \\
+%    -e^{x_1}e^{x_2} & e^{x_2}(e^{x_1} + e^{x_3} + \cdots + e^{x_k}) & -e^{x_2}e^{x_3} & \cdots & -e^{x_2}e^{x_k}
+%  \end{pmatrix} 
+%\end{equation}
+

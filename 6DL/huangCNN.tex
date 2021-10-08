@@ -1,0 +1,940 @@
+\subsection{Huang's summary}
+
+\subsubsection{MgNet Notation}
+The main algorithm is given by: 
+\begin{breakablealgorithm}
+	\caption{$[u^1,u^2,\cdots,u^J]={\rm MgNet}(f; \Theta;J,\nu_1, \cdots, \nu_J)$}
+	\label{alg:mgnet}
+	\begin{algorithmic}
+		\State Initialization:  $f^1 =\sigma \circ \theta(f)$, $u^{1,0}=0$
+		%		\State Initialization $u^{1,0}$
+		\For{$\ell = 1:J$}
+		\For{$i = 1:\nu_\ell$}
+		\State Feature extraction (smoothing):
+		\begin{equation}\label{mgnet}
+		u^{\ell,i} = u^{\ell,i-1} + B^{\ell,i}  ({f^\ell -  A^{\ell} (u^{\ell,i-1})}).
+		\end{equation}
+		\EndFor
+		\State Note: 
+		$
+		u^\ell= u^{\ell,\nu_\ell} 
+		$
+		\State Interpolation and restriction:
+		\begin{equation}
+		\label{interpolation}
+		u^{\ell+1,0} = \Pi_\ell^{\ell+1}u^{\ell}
+		\end{equation}
+		\begin{equation}
+		\label{restrict-f}
+		f^{\ell+1} = R^{\ell+1}_\ell(f^\ell - A^\ell(u^{\ell})) + A^{\ell+1} (u^{\ell+1,0}).
+		\end{equation}
+		\EndFor
+	\end{algorithmic}
+\end{breakablealgorithm}
+
+
+
+
+\begin{itemize}
+	\item $\Theta$ is the set consists all of parameters that needed to train
+	\item $\theta (=f_{in})$: This is dependent with different data sets for standard ResNet and iResNet.
+	\item $J$: the number of grids. As all images in CIFAR-10 or CIFAR-100
+	are $32\times 32 \times 3$,  we choose $J = 4$ to be consistent with ResNet.
+	\item $\nu_\ell$:  the number of smoothings in each grids. To be consistent with
+	ResNet-18 or ResNet-34 we choose $\nu_\ell = 2$ or $\nu_\ell = 4$.
+	\item $c^\ell_u$ and $c^\ell_f$: the number of feature and data channels. 
+	\item $A^\ell$: the data-feature mapping. We choose the linear case in 
+	\item $B^{\ell,i}$: the feature extractor.
+	\item $R_{\ell}^{\ell+1}$: the restriction operator in 
+	Here we choose it as a convolution with stride $2$ which need to be trained.
+	\item $\Pi_\ell^{\ell+1}$: the interpolation operator in
+	\eqref{interpolation}.  
+\end{itemize}
+
+
+The logistic regression is give by:
+\begin{breakablealgorithm}
+	\caption{$[p]={\rm LR}(x; \omega)$}
+	\label{alg: LR}
+	\begin{algorithmic}
+		\For{$i = 1:k$}
+		\begin{equation}
+		g^{i} = \sum_{j=1}^{n}\omega_{i,j}*x_j
+		\end{equation}
+		\EndFor
+		\For{$i = 1:k$}
+		\begin{equation}
+		p^{i} = \frac{e^{g^i}}{\sum_{t=1}^{k}e^{g^t}}
+		\end{equation}
+		\EndFor		
+	\end{algorithmic}
+\end{breakablealgorithm}
+
+\begin{itemize}
+	\item  $x \in \mathbf{R}^n$ is input data
+	\item n is input size
+	\item k is output size, for cifar100, k is 100
+	\item $\omega$ is the set consists all of parameters that needed to train
+\end{itemize}
+
+
+In general, the complete classification model is given by: 
+%\begin{align}
+%[u^1, u^2, \cdots, u^J] & = MgNet(f; J, \nu_1,\cdots,\nu_J)  \\ 
+%u^{J_0} & = \tilde{\Pi}_{J}^{J_0}(u^J) \\
+%p & = LR(u^{J_0};)  \label{o=fc}
+%\end{align}
+
+\begin{breakablealgorithm}
+	\caption{$[p]={\rm Classification}(f; \Theta,\omega)$}
+	\begin{algorithmic}
+		\begin{equation}
+		[u^1, u^2, \cdots, u^J,f^1,f^2,\cdots,f^J]  = MgNet(f; \Theta; J, \nu_1,\cdots,\nu_J)
+		\end{equation}
+		\begin{equation}
+		u^{J_0} = \tilde{\Pi}_{J}^{J_0}(u^J)
+		\end{equation}
+		\begin{equation}
+		p  = LR(u^{J_0};)
+		\end{equation}
+	\end{algorithmic}
+\end{breakablealgorithm}
+
+Here, $J_0$ deppends on input data size, for cifar, $J_0$ is always equal to 6; $\tilde{\Pi}_{J}^{J_0}$ is a simple average that decrease data from grid J to gird $J_0$.
+
+\subsubsection{Get Linear Seperate Data By some feature extraction}
+In this subsection, we want to find some model to map raw data to linear seperable. Further more, we want get good validation by minimize the feature size.
+
+\paragraph{Summary}
+\begin{itemize}
+	\item For cifar100, we can find a map composed of convolutions and this map makes data size from 3*32*32 to 8*16*16 and being linear seperable
+	\item We can not get good validtion accuracy through this way. The best validation we get is only 30\%
+	\item Linear seperable is to easy to get for finite data set
+\end{itemize}
+
+\paragraph{Algorithm in this subsubsection}
+We introduced a training algorithm called Two-Stage-Algorithm here in order to the job metioned above.
+
+
+
+This two stage training can be written as:
+
+\begin{breakablealgorithm}
+	\caption{$[\hat{\omega}_1]={\rm Two \ Stage \ Training}(\{f_i\}_1^N; \{label_i\}_1^N,\Phi,J,\nu_1, \cdots, \nu_J)$}
+	\label{two stage training}
+	\begin{algorithmic}
+		\State First Stage
+		\begin{equation}
+		\Theta_0,\omega_0 = \arg \min_{\Theta,\omega} \sum_{i=1}^N Loss(p_i, label_i )
+		\end{equation}
+		\begin{equation}
+		Where\  p_i = Classification(f_i; \Theta,\omega)  \label{stage 1}
+		\end{equation}
+		\State Second Stage
+		\For{$i = 1:N$}
+		\State extraction feature
+		\begin{equation}
+		[u_i^1,u_i^2,\cdots,u_i^J,f_i^1,f_i^2,\cdots,f_i^J]={\rm MgNet}(f_i; \Theta_0;J,\nu_1, \cdots, \nu_J) 
+		\end{equation}
+		\begin{equation}
+		\hat{f}_i = \Phi([u_i^1,u_i^2,\cdots,u_i^J,f_i^1,f_i^2,\cdots,f_i^J])
+		\end{equation}
+		\EndFor
+		\begin{equation}
+		\hat{\omega}_1 = \arg \min_{\hat{\omega}} \sum_{i=1}^N Loss(\hat{p}_i, label_i )
+		\end{equation}
+		\begin{equation}
+		Where\  \hat{p}_i = LR(\hat{f}_i; \hat{\omega}) \label{stage 2}
+		\end{equation}
+	\end{algorithmic}
+\end{breakablealgorithm}
+Here $\Phi$ is a map to get feature from the output of MgNet. This $\phi$ could be choosen as:
+\begin{itemize}
+	\item some simple map, like average or identity
+	\item some trainable map, like convolution
+\end{itemize}
+
+For First case, we just need algorithm \ref{two stage training}.But for second case, we introduced a new algorithm base on \ref{two stage training}, it can be find in \ref{two stage training 2}. 
+\begin{breakablealgorithm}
+	\caption{$[\hat{\omega}_2]={\rm Two \ Stage \ Training \ With \ Trainable\  \Phi \ }(\{f_i\}_1^N; \{label_i\}_1^N,\Phi(\cdot;\cdot),J,\nu_1, \cdots, \nu_J)$}
+	\label{two stage training 2}
+	\begin{algorithmic}
+		\State First Stage
+		\begin{equation}
+		\Theta_0,\omega_0 = \arg \min_{\Theta,\omega} \sum_{i=1}^N Loss(p_i, label_i )
+		\end{equation}
+		\begin{equation}
+		Where\  p_i = Classification(f_i; \Theta,\omega) 
+		\end{equation}
+		\State Second Stage
+		\For{$i = 1:N$}
+		\State extraction feature
+		\begin{equation}
+		[u_i^1,u_i^2,\cdots,u_i^J]={\rm MgNet}(f_i; \Theta_0;J,\nu_1, \cdots, \nu_J) 
+		\end{equation}
+		\EndFor
+		\begin{equation}
+		\hat{\omega}_1,\hat{\Theta}_1 = \arg \min_{\hat{\omega},\hat{\Theta}} \sum_{i=1}^N Loss(\hat{p}_i, label_i )
+		\end{equation}
+		\begin{equation}
+		Where\  \hat{p}_i = LR(\Phi([u_i^1,u_i^2,\cdots,u_i^J];\hat{\Theta}); \hat{\omega})
+		\end{equation}
+		\State finetune
+		\For{$i = 1:N$}
+		\begin{equation}
+		\hat{f}_i = \Phi([u_i^1,u_i^2,\cdots,u_i^J]; \hat{\Theta}_1)
+		\end{equation}
+		\EndFor
+		\begin{equation}
+		\hat{\omega}_2 = \arg \min_{\hat{\omega}} \sum_{i=1}^N Loss(\hat{f}_i, \hat{\omega_1}), label_i )
+		\end{equation}
+	\end{algorithmic}
+\end{breakablealgorithm}
+
+\paragraph{numerical results}
+In each table, we record the model hyper-parameters in table caption, and
+\begin{itemize}
+	\item the first column is the result of map $\Phi(\cdot)$
+	\item the second column is the training accuracy in stage-1 \ref{stage 1}, which called mgnet training accuracy
+	\item the thrid column is the training accuracy in stage-2 \ref{stage 2}, which called linear model training accuracy
+	\item the 4th column is the sum of parameters number of alg\ref{alg:mgnet} and alg\ref{alg: LR}, which called MgNet parameters
+	\item the 5th column is the feature size mapped by $\Phi$, which called feature size or input size for linear
+\end{itemize}
+
+With changeless $\Phi$, the results is in table \ref{case1 with 4 grids} and tabel \ref{case1 with 1 grids}
+\begin{table}[!htbp]
+	\caption{algorithm \ref{two stage training},$J=4, \nu_1=2,\nu_2=2,\nu_3=2,\nu_4=2,c_u^\ell=c_f^\ell=8$}
+	\label{case1 with 4 grids}
+	\begin{center}
+		\resizebox{\textwidth}{!}{
+			\begin{tabular}{|c|c|c|c|c|}
+				\hline
+				$\Phi(\cdot)$ & mgnet training accuracy & linear model training accuracy
+				& parameters for mgnet & feature size\tabularnewline
+				\hline
+				$u^1$,  & 32.4 &  99.996 & 9644 &
+				8\(*\)1024\tabularnewline
+				\hline
+				$u^2$,  & 32.4& 90.1 & 9644 &
+				8\(*\)256\tabularnewline
+				\hline
+				$u^3$,  & 32.4 &  44.44 & 9644 &
+				8\(*\)64\tabularnewline
+				\hline
+				$u^4$,  & 32.4 &  35.6 & 9644 &
+				8\(*\)16\tabularnewline
+				\hline
+				$[u^1,u^2,u^3,u^4]$  &    32.4 &  99.96 & 9644 &
+				10800=32*32+16*16+8*8+4*4\tabularnewline
+				\hline
+				$([\tilde{\Pi}_1^2(u^1),\tilde{\Pi}_2^3(u^2),\tilde{\Pi}_3^4(u^3),u^4])$  &  32.4 &  98.546 & 9644 &
+				2720=16*16+8*8+4*4+2*2\tabularnewline
+				\hline
+				$[\tilde{\Pi}_1^2(u^1),u^2,u^3,u^4])$ &  32.4 &  99.996 & 9644 &
+				4736=16*16+16*16+8*8+4*4\tabularnewline
+				\hline
+				$([\tilde{\Pi}_1^4(u^1),\tilde{\Pi}_2^4(u^2),\tilde{\Pi}_3^4(u^3),(u^4)])$   &   32.4&  50.34 & 9644 &
+				512=4*4+4*4+4*4+4*4\tabularnewline
+				\hline				
+			\end{tabular} 
+		}
+	\end{center}
+\end{table}
+
+
+\begin{table}[!htbp]
+	\caption{algorithm \ref{two stage training}:$J=1,\nu_1=2,c_u^1=c_f^1=8$,case1: one grid's feature}
+	\label{case1 with 1 grids}
+	\begin{threeparttable}
+		
+		\begin{center}
+			\resizebox{\textwidth}{!}{
+				\begin{tabular}{|c|c|c|c|c|}
+					\hline
+					$\Phi(\cdot)$ & mgnet training accuracy & linear model training  accuracy
+					& mgnet parameters & input size for linear\tabularnewline
+					\hline
+					$u^1$  &  20.7  &  99.996 & 2348 &
+					8192\tabularnewline
+					\hline	
+					$f^1$  &  20.7  &  99.89 & 2348 &
+					8192\tabularnewline
+					\hline
+					$(Lian)u^1$  &  18.6980  &  99.9967 & 2348 &
+					8192\tabularnewline
+					\hline	
+					$(Lian)f^1$  &  18.6980  &  99.9550 & 2348  &
+					8192\tabularnewline
+					\hline
+					$(Lian)\hat{BN}(\hat{\theta}(f))^{*}$  &  18.6980  & 53.395 & 2348  &
+					8192\tabularnewline
+					\hline	
+					$\tilde{\Pi}_1^2(u^1)$  &   \red{20.7}   &  95 & 2348 &
+					2048\tabularnewline
+					\hline	
+					$\tilde{\Pi}_1^3(u^1)$  &   \red{20.7}  &  35 & 2348 &
+					512\tabularnewline
+					\hline
+					$\tilde{\Pi}_1^4(u^1)$  &   \red{20.7}   &  29 & 2348 &
+					128\tabularnewline
+					\hline					
+					$\tilde{\Pi}_1^6(u^1)$  &   \red{20.7}  &  21 & 2348 &
+					8\tabularnewline
+					\hline										
+				\end{tabular} 
+				
+			}
+			\begin{tablenotes}
+				\footnotesize
+				\item[*] $\hat{\theta}$ is the first conv in MgNet with parameters after training. $\hat{BN}$ is the BN layer Corresponding to $\hat{\theta}$.
+			\end{tablenotes}
+		\end{center}
+		
+	\end{threeparttable}
+\end{table}
+With trainable $\Phi$, the results is in table \ref{one conv with stride 2}
+\begin{table}[!htbp]
+	\caption{algorithm \ref{two stage training 2}: $J=1,\nu_1=2,c_u^1=c_f^1=8$,case4: with trainable layer}
+	\label{one conv with stride 2}
+	\begin{center}
+		\resizebox{\textwidth}{!}{
+			\begin{tabular}{|c|c|c|c|c|}
+				\hline
+				$\Phi(\cdot;\cdot)$ & mgnet training accuracy & linear model training accuracy(fine-tune)
+				& mgnet parameters(conv and fc) & input size for linear\tabularnewline
+				\hline
+				$\Pi_1^{2,*}(u^1)$  &  \red{20.7}  &  99.978(99.996) & 2348 &
+				2048\tabularnewline
+				\hline	
+				$\Pi_2^{3,*}(\Pi_1^{2,*}(u^1))$  &\red{20.7}  & \red{44.77(38.515)}  & 2348 &
+				512\tabularnewline
+				\hline
+				$MgNet_{Linear}(u^1;J=2;\nu_1=2,\nu_2=2)$  &  \red{20.7}  & 87.56(99.996)  & 2348 &
+				2048\tabularnewline
+				\hline		
+				$MgNet_{Linear}(u^1;J=2;\nu_1=0,\nu_2=2)$  &  \red{20.7}  & 84.1(99.996)  & 2348 &
+				2048\tabularnewline
+				\hline		
+				$MgNet_{Linear}(u^1;J=3;\nu_1=2,\nu_2=2,\nu_3=2)$  &  \red{20.7}  & 51.37(-)  & 2348 &
+				512\tabularnewline
+				\hline														
+		\end{tabular} }
+	\end{center}
+\end{table}
+
+
+\subsubsection{MgNet: Activation Just In The First Grid}
+For MgNet \ref{alg:mgnet}, we always share the convolutional kernel of B, namely:
+\begin{equation}
+A^{\ell,i} = \xi^{\ell}, \quad B^{\ell,i} = \sigma \circ  \eta^{\ell} \circ \sigma ,
+\end{equation} 
+Here, $\sigma=ReLU \circ BN$.
+
+When we want to use different B, namely:
+\begin{equation}
+A^{\ell,i} = \xi^{\ell}, \quad B^{\ell,i} = \sigma \circ  \eta^{\ell,i} \circ \sigma ,
+\end{equation} 
+we will record it with mark $B^{\ell,i}$ at first column of each table.
+
+In this subsubsetion, we remove the activation $\sigma$ except the first layer, that is 
+\begin{equation}
+\begin{split}
+A^{1,i} = \xi^{1}, \quad B^{1,i} = \sigma \circ  \eta^{1} \circ \sigma , \\
+A^{\ell,i} = \xi^{1}, \quad B^{\ell,i} =   \eta^{\ell} ,\ for \ \ell > 1 .
+\end{split}
+\end{equation}
+
+
+\paragraph{summary}
+\begin{itemize}
+	\item only use activation in the first grid can get some good validation accuracy
+	\item increasing all $c^\ell$ together always help, showed in table \ref{data setting3  channel 128}
+	\item increasing $\nu_1$ always help when $\nu_1$ is not too big, showed in table \ref{data setting3  channel 128} and table \ref{different ite num in 2nd grid, not fix ell}
+	\item when $\nu_\ell=0$ increasing $\nu_\ell, \ell>1$  always help, showed in table \ref{different ite num in 2nd grid} and table \ref{different ite num in 2nd grid, not fix ell-case0}
+	
+	\item when $\nu_\ell \geq 2$, increasing $\nu_\ell, \ell>1$ help model prevent over fitting and get higher training accuracy, but it's not help for validation, showed in table \ref{different ite num in 2nd grid case1}
+	\item with small $c^1$, increasing $c^\ell, \ell=1$ is just good for training accuracy but not benifit for validation accuracy, showed in table \ref{different ite num in 2nd grid, not fix ell}
+	\item sharing B increase validation accuracy in raw MgNet, showed in \ref{raw MgNet results}
+	\item sharing B increase training accuracynot in MgNet remove some activation but not help for validation , show in \ref{data setting3  share B} 
+
+\end{itemize}
+
+We display some results as contrast first with raw MgNet \ref{alg:mgnet},The result is in table \ref{raw MgNet results}
+
+Because this kind of model is very easy to get over-fiiting, we not only record the best validation accuracy in the whole training progress, but also record the validation accuracy in the last epoch behind the best one with  a pair of $()$
+\begin{table}[!htbp]
+	\caption{MgNet: raw version, nonlinear as in algorithm \ref{alg:mgnet} }
+	\label{raw MgNet results}
+	\begin{center}
+		\resizebox{\textwidth}{!}{
+			\begin{tabular}{|c|c|c|c|c|}
+				\hline
+				$[\nu_1,\nu_2,\cdots,\nu_J], c_\ell$,  & accuracy in training dataset &  accuracy in  validation best(last)
+				& mgnet parameters & input size for FC\tabularnewline
+				\hline
+				[2,2,2,2], 256  &   99.99  &  79.94(79.67)  & 8,304,996 &
+				256\tabularnewline
+				\hline			
+				[4,2,2,2], 256  &  99.99 & 80.25(80.02)  & 8,307,044 &
+				256\tabularnewline
+				\hline
+				[2,2,2,2], 256, $B^{\ell,i}$  &   99.992  &  80.1(80.0) & 10,664,292 &
+				256\tabularnewline
+				\hline			
+				[4,2,2,2], 256, $B^{\ell,i}$  &  99.992 & 80.3(80.1)  & 11,845,988 &
+				256\tabularnewline
+				\hline
+				[2,0,0,0], 256  &   99.90  &   72.68(72.04) & - &
+				256\tabularnewline
+				\hline		
+				[2,1,1,1], 256  &   99.99  &   78.68(78.35) & - &
+				256\tabularnewline
+				\hline			
+				[4,0,0,0], 256  &   99.98  &   74.67(74.09) & - &
+				256\tabularnewline
+				\hline
+				[4,1,1,1], 256  &   99.99   &   78.71(78.47)  & - &
+				256\tabularnewline
+				\hline
+				[4,4,4,4], 256  &  99.989 &  79.84(79.57)  & - &
+				256\tabularnewline
+				\hline
+				[5,1,1,1], 256  &   99.98   &   78.6(78.43)  & - &
+				256\tabularnewline
+				\hline
+				[8,0,0,0], 256  &   99.99   &  76.5(76.1)    & - &
+				256\tabularnewline
+				\hline
+				[8,2,2,2], 256  &   99.99   &  80.32(80.12)    & - &
+				256\tabularnewline
+				\hline
+				[16,2,2,2], 256  &   99.99   &  80.42(80.22)    & - &
+				256\tabularnewline
+				\hline
+				[2,2,2,2],[512,512,512,512]  &   99.99   & 81.29(81.29)     & - 
+				\tabularnewline
+				\hline
+				[2,4,4,4],[512,512,512,512]  &   99.99   & 80.95(80.90)    & - 
+				\tabularnewline
+				\hline
+				[4,4,4,4],[512,512,512,512]  &   99.99   & 81.36(81.11)    & - 
+				\tabularnewline
+				\hline
+				[2,2,2,2],[768,768,768,768]  &   99.99   & 81.74(81.67)     & - 
+				\tabularnewline
+				\hline
+				[2,2,2,2],[1024,1024,1024,1024]  &   99.99   & 82.24(82.11)    & - 
+				\tabularnewline
+				\hline						
+			\end{tabular} 
+		}
+	\end{center}
+\end{table}
+
+\begin{table}[!htbp]
+	\caption{MgNet : activation just on the first grid}
+	\label{data setting3  channel 128}
+	\begin{center}
+		\resizebox{\textwidth}{!}{
+			\begin{tabular}{|c|c|c|c|c|}
+				\hline
+				$[\nu_1,\nu_2,\cdots,\nu_J], c_\ell$,  & accuracy in training dataset &  accuracy in  validation best(last)
+				& mgnet parameters & input size for FC\tabularnewline
+				\hline	
+				[2,2,2,2], 128  &  86.32  & 63.78(62.2)  &  2,082,020&
+				128\tabularnewline
+				\hline			
+				[4,2,2,2], 128  &  93.5  & 65.5(62.8)  & 2,083,044 &
+				128\tabularnewline
+				\hline	
+				[8,2,2,2], 128  &  94.6 & 66.5(64.4)   & 2,085,092 &
+				128\tabularnewline
+				\hline
+				[16,2,2,2], 128  &  97.8  &  66.7(64.97)  & 2,089,188 &
+				128\tabularnewline
+				\hline
+				[2,2,2,2], 256  &   98  & 65.07(63.11)  & 8,292,708 &
+				256\tabularnewline
+				\hline			
+				[4,2,2,2], 256  &  99.93  & 67.77(66.5)  & 8,294,756 &
+				256\tabularnewline
+				\hline			
+				[8,2,2,2], 256  &  99.98  & 69.35(68.3)  & 8,298,852 &
+				256\tabularnewline
+				\hline
+				[16,2,2,2], 256  &  99.98 & 69.89(69.48)  & 8,307,044 &
+				256\tabularnewline
+				\hline					
+			\end{tabular} 
+		}
+	\end{center}
+\end{table}
+
+\begin{table}[!htbp]
+	\caption{MgNet: activation just on the first grid; different ite num after 1st grid}
+	\label{different ite num in 2nd grid}
+	\begin{center}
+		\resizebox{\textwidth}{!}{
+			\begin{tabular}{|c|c|c|c|c|}
+				\hline
+				$[\nu_1,\nu_2,\cdots,\nu_J], c_\ell$,  & accuracy in training dataset &  accuracy in  validation best(last)
+				& mgnet parameters & input size for FC\tabularnewline
+				\hline
+				[2,0,0,0], 128  &   97  & 62.5(56.2)  & 1,639,652 &
+				128\tabularnewline
+				\hline
+				[2,2,2,2], 128  &  86.32  & 63.78(62.2)  &  2,082,020&
+				128\tabularnewline
+				\hline
+				[2,4,2,2], 128  &   87  & 63.9(62.4)  & 2,082,020 &
+				128\tabularnewline
+				\hline
+				[2,8,2,2], 128  &  87.3  & 63.6(62.7)  & 2,082,020 &
+				128\tabularnewline
+				\hline
+				[2,2,2,2], 256  &   98  & 65.07(63.11)  & 8,292,708 &
+				256\tabularnewline
+				\hline
+				[2,4,2,2], 256  &   99.25  & 65.0(63.2)  & 8,292,708 &
+				256\tabularnewline
+				\hline
+				[2,8,2,2], 256  &   99.19  & 64.9(63.67)  & 8,292,708 &
+				256\tabularnewline
+				\hline
+				[8,0,0,0], 128  &   99.9  & 65.3(60.8)  & 1,642,724 &
+				128\tabularnewline
+				\hline
+				[8,2,2,2], 128  &  94.6 & 66.5(64.4)   & 2,085,092 &
+				128\tabularnewline
+				\hline						
+			\end{tabular} 
+		}
+	\end{center}
+\end{table}
+
+\begin{table}[!htbp]
+	\caption{MgNet: activation just on the first grid; different $c_\ell$}
+	\label{different ite num in 2nd grid, not fix ell-case0}
+	\begin{center}
+		\resizebox{\textwidth}{!}{
+			\begin{tabular}{|c|c|c|c|c|}
+				\hline
+				$[\nu_1,\nu_2,\cdots,\nu_J], [c_1,c_2,c_3,c_4]$,  & accuracy in training dataset &  accuracy in  validation best(last)
+				& mgnet parameters \tabularnewline
+				\hline
+				[2,0,0,0], [128,256,256,256]  &   98.6   & 61.9(58.0)  &-
+				\tabularnewline
+				\hline				
+				[2,2,2,2], [128,256,256,256]  &   98.1  & 65.1(61.5)  &-
+				\tabularnewline
+				\hline
+				
+			\end{tabular} 
+		}
+	\end{center}
+\end{table}
+
+\begin{table}[!htbp]
+	\caption{MgNet: activation just on the first grid; different ite num after 1st grid}
+	\label{different ite num in 2nd grid case1}
+	\begin{center}
+		\resizebox{\textwidth}{!}{
+			\begin{tabular}{|c|c|c|c|c|}
+				\hline
+				$[\nu_1,\nu_2,\cdots,\nu_J], c_\ell$,  & accuracy in training dataset &  accuracy in  validation best(last)
+				& mgnet parameters & input size for FC\tabularnewline
+				\hline
+				[2,0,0,0], 128  &   97  & 62.5(56.2)  & 1,639,652 &
+				128\tabularnewline
+				\hline
+				[2,2,2,2], 128  &  86.32  & 63.78(62.2)  &  2,082,020&
+				128\tabularnewline
+				\hline
+				[2,4,2,2], 128  &   87  & 63.9(62.4)  & 2,082,020 &
+				128\tabularnewline
+				\hline
+				[2,8,2,2], 128  &  87.3  & 63.6(62.7)  & 2,082,020 &
+				128\tabularnewline
+				\hline
+				[2,2,2,2], 256  &   98  & 65.07(63.11)  & 8,292,708 &
+				256\tabularnewline
+				\hline
+				[2,4,2,2], 256  &   99.25  & 65.0(63.2)  & 8,292,708 &
+				256\tabularnewline
+				\hline
+				[2,8,2,2], 256  &   99.19  & 64.9(63.67)  & 8,292,708 &
+				256\tabularnewline
+				\hline						
+			\end{tabular} 
+		}
+	\end{center}
+\end{table}
+
+\begin{table}[!htbp]
+	\caption{MgNet: activation just on the first grid; different $c_\ell$}
+	\label{different ite num in 2nd grid, not fix ell}
+	\begin{center}
+		\resizebox{\textwidth}{!}{
+			\begin{tabular}{|c|c|c|c|c|}
+				\hline
+				$[\nu_1,\nu_2,\cdots,\nu_J], [c_1,c_2,c_3,c_4]$,  & accuracy in training dataset &  accuracy in  validation best(last)
+				& mgnet parameters \tabularnewline
+				\hline
+				[2,2,2,2], [8,128,128,128]  &   40  & 43.3(42.3)  &-
+				\tabularnewline
+				\hline
+				[2,2,2,2], [8,512,512,512]  &   40  & 42.8(42.7)  &-
+				\tabularnewline
+				\hline	
+				[2,2,2,2], [16,128,128,128]  &   49  & 49.9(49.7) &-
+				\tabularnewline
+				\hline
+				[2,2,2,2], [16,256,256,256]  &   49  & 50.2(49.8)  &-
+				\tabularnewline
+				\hline
+				[2,2,2,2], [64,128,128,128]  &   71  & 60.9(60.7) &-
+				\tabularnewline
+				\hline
+				[2,2,2,2], [64,256,256,256]  &   72  & 61.7(61.6)  &-
+				\tabularnewline
+				\hline
+				[2,2,2,2], [128,128,128,128]  &  86.32  & 63.78(62.2)  &  -
+				\tabularnewline
+				\hline				
+				[2,2,2,2], [128,256,256,256]  &   98.1  & 65.1(61.5)  &-
+				\tabularnewline
+				\hline	
+			\end{tabular} 
+		}
+	\end{center}
+\end{table}
+
+\begin{table}[!htbp]
+	\caption{MgNet : with $B^{\ell,i}$}
+	\label{data setting3  share B}
+	\begin{center}
+		\resizebox{\textwidth}{!}{
+			\begin{tabular}{|c|c|c|c|c|}
+				\hline
+				$[\nu_1,\nu_2,\cdots,\nu_J], c_\ell$,  & accuracy in training dataset &  accuracy in  validation best(last)
+				& mgnet parameters & input size for FC\tabularnewline
+				\hline	
+				[8,2,2,2], 128  &  94.6 & 66.5(64.4)   & 2,085,092 &
+				128\tabularnewline
+				\hline
+				[8,2,2,2], 128,$B^{\ell,i}$  &  99.99 & 63.8(63.02)    &  4,444,388 &
+				128\tabularnewline
+				\hline				
+			\end{tabular} 
+		}
+	\end{center}
+\end{table}
+
+
+\paragraph{the influence with BN in linear layer}
+Because Batch-Normalization is also a linear opearation, we design some experiment to check whether the BN help withoud actionvation, namely:
+\begin{equation}
+A^{1,i} = \xi^{1}, \quad B^{1,i} = \sigma \circ  \eta^{1} \circ \sigma , 
+\end{equation}
+\begin{equation}
+A^{\ell,i} = \xi^{1}, \quad B^{\ell,i} =  BN \circ \eta^{\ell} \circ BN ,\ for \ \ell > 1 .
+\end{equation}
+The results are in \ref{data setting3 BN}. It showed that:
+
+\begin{itemize}
+	\item BN without relu help training accuracy, and it can work with bigger lr which makes computation overflow without BN
+	\item BN without relu enlarge over-fitting
+\end{itemize}
+BN help training accuracy, 
+\begin{table}[!htbp]
+	\caption{MgNet: activation just on the first grid, BN in every grids}
+	\label{data setting3 BN}
+	\begin{center}
+		\resizebox{\textwidth}{!}{
+			\begin{tabular}{|c|c|c|c|c|}
+				\hline
+				$[\nu_1,\nu_2,\cdots,\nu_J], c_\ell$,  & accuracy in training dataset &  accuracy in  validation best(last) 
+				& mgnet parameters & input size for FC\tabularnewline
+				\hline		
+				[8,2,2,2], 128, lr=0.01  &  94.6 & 66.5(64.4)   & 2,085,092 &
+				128\tabularnewline
+				\hline	
+				[8,2,2,2], 128, lr=0.1  &  failure(overflow) & failure(overflow)   & 2,085,092 &
+				128\tabularnewline
+				\hline
+				[8,2,2,2], 256, lr=0.01  &  99.98  & 69.35(68.3)  & 8,298,852 &
+				256\tabularnewline
+				\hline
+				[8,2,2,2], 128, BN,lr=0.01  &  99.976  & 64.15(57.8)  & 2,089,700 &
+				128\tabularnewline
+				\hline
+				[8,2,2,2], 128, BN,lr=0.1  &  96.5  & 65.56(59.11)  & 2,089,700 &
+				128\tabularnewline
+				\hline
+				[8,2,2,2], 256, BN,lr=0.1  &  99.99  & 70.07(67.15)  & 8,308,068 &
+				256\tabularnewline
+				\hline
+			\end{tabular} 
+		}
+	\end{center}
+\end{table}
+
+
+\subsubsection{MgNet: share same kernel in every grids}
+In this sussubsection, we use the same convolutional kernel in every grid, namely:
+\begin{equation}
+A^{\ell,i} = \xi, \quad B^{\ell,i} = \sigma \circ  \eta \circ \sigma ,
+\end{equation}
+\begin{equation}
+R_{\ell}^{\ell+1} = \eta^{R} \circ \sigma, \quad \Pi_{\ell}^{\ell+1} = \sigma \circ  \eta^{\Pi} ,
+\end{equation}
+
+Here, $\xi,\eta,\eta^{R},\eta^\Pi$ are convolution corresponding to $A,B,R,\Pi$, they are independent of the grid's index $\ell$ and iteration index $i$.The results in tabel \ref{MgNet: share cnn in all Grids} shows it can achieve some good validation accuracy by this model.And the parameters is just about one fourth of raw MgNet which we only share kernel inside each grid.
+
+\paragraph{summary}
+\begin{itemize}
+\item use same kernel in every grid, it reduces the parameters to a quarter and still remains some good validation accuracy. see table \ref{MgNet: share cnn in all Grids}
+\item increase channel is always good for validation. see table \ref{MgNet: share cnn in all Grids}
+\item The validation accuracy when sharing cnn in all grids in table \ref{MgNet: share cnn in all Grids} is lower than which only sharing in one grid in \ref{raw MgNet results}. 
+\end{itemize}
+
+\begin{table}[!htbp]
+	\caption{MgNet: share cnn in all Grids}
+	\label{MgNet: share cnn in all Grids}
+	\begin{center}
+		\resizebox{\textwidth}{!}{
+			\begin{tabular}{|c|c|c|c|c|}
+				\hline
+				$[\nu_1,\nu_2,\nu_3,\nu_4] [c_1,c_2,c_3,c_4]$,  & accuracy in training dataset &  accuracy in  validation best(last)
+				& mgnet parameters \tabularnewline
+				\hline
+				[2,2,2,2],[128,128,128,128]  &   96.59  & 73.04  (72.5)  & 612,068
+				\tabularnewline
+				\hline
+				[2,2,2,2],[256,256,256,256]  &   99.96  & 76.62(76.28)   & 2,403,684
+				\tabularnewline
+				\hline
+				[2,8,2,2] ,[256,256,256,256]  &   99.98    & 77.08(76.53)    & -
+				\tabularnewline
+				\hline
+				[8,2,2,2] ,[256,256,256,256]  &   99.98    & 77.54(77.09)    & -
+				\tabularnewline
+				\hline
+				[16,2,2,2] ,[256,256,256,256]  &   99.98    & 77.51(77.01)    & -
+				\tabularnewline
+				\hline
+				[3,3,3,3] ,[256,256,256,256]  &   99.98    & 76.94(76.48)    & -
+				\tabularnewline
+				\hline
+				[4,4,4,4] ,[256,256,256,256]  &   99.98    & 77.40(77.12)    & -
+				\tabularnewline
+				\hline
+				[2,2,2,2],[512,512,512,512]  &   99.99   & 79.61(79.21)    & - 
+				\tabularnewline
+				\hline
+				[2,4,4,4],[512,512,512,512]  &   99.99   & 79.44(79.40)    & - 
+				\tabularnewline
+				\hline
+				[4,4,4,4],[512,512,512,512]  &   99.99   & 80.23(79.96)    & - 
+				\tabularnewline
+				\hline
+				[2,2,2,2],[768,768,768,768]  &   99.99   & 80.26(80.15)     & - 
+				\tabularnewline
+				\hline
+				[2,2,2,2],[1024,1024,1024,1024]  &   99.99   & 81.30(81.23)    & - 
+				\tabularnewline
+				\hline
+			\end{tabular} 
+		}
+	\end{center}
+\end{table}
+
+\paragraph{Big Channel Test for MgNet}
+
+\begin{table}[!htbp]
+	\caption{MgNet: $B^{\ell,i}=\sigma \circ \eta^{\ell} \circ \sigma,\quad c_\ell=c_1$}
+	\begin{center}
+				%	\resizebox{\textwidth}{!}{
+		\begin{tabular}{|c|c|c|c|c|}
+			\hline
+			$[\nu_1,\nu_2,\cdots,\nu_J], c_\ell$,   &  test accuracy
+			& parameters   \tabularnewline
+			\hline
+			[2,2,2,2], 256    &  79.94(79.67)  & 8.3M
+			\tabularnewline
+			\hline			
+			[2,2,2,2],512     & 81.29(81.29)     & 33.1M
+			\tabularnewline
+			\hline
+			[2,2,2,2],768   & 81.74(81.67)     & 74.4M 
+			\tabularnewline
+			\hline
+			[2,2,2,2],1024    & 82.24(82.11)    & 132.2M 
+			\tabularnewline
+			\hline						
+		\end{tabular} 
+		%	}
+	\end{center}
+\end{table}
+
+\begin{table}[!htbp]
+	\caption{MgNet: $B^{\ell,i}=\sigma \circ \eta^{\ell} \circ \sigma$, increase$c_\ell$}
+	\begin{center}
+		%	\resizebox{\textwidth}{!}{
+		\begin{tabular}{|c|c|c|c|c|}
+			\hline
+			$[\nu_1,\nu_2,\cdots,\nu_J], c_\ell$,  &  test accuracy
+			& parameters  \tabularnewline
+			\hline
+			[2,2,2,2], [32,64,128,256]   &  74.95(74.75)  & 2.3M
+			\tabularnewline
+			\hline			
+			[2,2,2,2], [64,128,256,512]      & 78.06(78.04)     & 12.5M
+			\tabularnewline
+			\hline
+			[2,2,2,2],[128,256,512,1024]     & 80.29(80.28)      & 37.5M 
+			\tabularnewline
+			\hline
+			[2,2,2,2],[256,512,1024,2048]     & 81.49(81.41)    & 150.0M 
+			\tabularnewline
+			\hline						
+		\end{tabular} 
+		%	}
+	\end{center}
+\end{table}
+
+\newpage
+\paragraph{MgNet:scale for B}
+change \ref{mgnet} to a new version which scaler B by a scalar s
+$$	u^{\ell,i} = u^{\ell,i-1} + s^{\ell,i} B^{\ell,i}  ({f^\ell -  A^{\ell} (u^{\ell,i-1})}).$$
+\begin{table}[!htbp]
+	\caption{MgNet:scale-B: $u^{\ell,i} = u^{\ell,i-1} + s^{\ell,i} \sigma \circ \eta^{\ell} \circ \sigma   ({f^\ell -  \xi^{\ell} (u^{\ell,i-1})}).$}
+	\label{tabel:mgnet-scale}	
+	\begin{center}
+		\resizebox{\textwidth}{!}{
+			\begin{tabular}{|c|c|c|c|c|}
+				\hline
+				$[\nu_1,\nu_2,\cdots,\nu_J], c_\ell, s^{\ell,i}$,  &  test accuracy
+				& parameters  \tabularnewline
+				\hline
+				[2,2,2,2], 256, 1   &  79.78(79.45)   & -
+				\tabularnewline
+				\hline	
+				[2,2,2,16], 256, 1   &  78.43(78.14)    & -
+				\tabularnewline
+				\hline		
+				[2,2,2,32], 256, 1   & 77.99(77.60)    & -
+				\tabularnewline
+				\hline	
+				[2,2,2,2], 256, 1,warm-up   &  79.93(79.61)   & -
+				\tabularnewline
+				\hline	
+				[2,2,2,16], 256, 1 ,warm-up  & 79.50(79.23)   & -
+				\tabularnewline
+				\hline		
+				[2,2,2,32], 256, 1 ,warm-up  &  79.39(79.22)     & -
+				\tabularnewline
+				\hline		
+				[2,2,2,2], 256, $\frac{1}{\nu_\ell}$   &  79.54(79.31)    & -
+				\tabularnewline
+				\hline		
+				[2,2,2,16], 256, $\frac{1}{\nu_\ell}$   & 79.04(78.79)     & -
+				\tabularnewline
+				\hline		
+				[2,2,2,32], 256, $\frac{1}{\nu_\ell}$   &  78.85(78.35)   & -
+				\tabularnewline
+				\hline
+				[2,2,2,2], 256, $\frac{1}{\nu_\ell}$,warm-up   &  79.75(79.47)     & -
+				\tabularnewline
+				\hline		
+				[2,2,2,16], 256, $\frac{1}{\nu_\ell}$,warm-up   & 79.37(79.03)   & -
+				\tabularnewline
+				\hline		
+				[2,2,2,32], 256, $\frac{1}{\nu_\ell}$ ,warm-up  &  79.12(78.89) & -
+				\tabularnewline
+				\hline
+				[2,2,2,16], 256, $\frac{1}{\nu_\ell c_\ell}$   &  70.13(69.27)    & -
+				\tabularnewline
+				\hline		
+				[2,2,2,16], 256, $\frac{1}{\nu_\ell c_\ell}$,warm-up   &  70.39(69.40)    & -
+				\tabularnewline
+				\hline
+			\end{tabular} 
+		}
+	\end{center}
+\end{table}
+
+
+\begin{table}[!htbp]
+	\caption{MgNet:scale-B: $u^{\ell,i} = u^{\ell,i-1} + s^{\ell,i} \sigma \circ \eta^{\ell} \circ \sigma   ({f^\ell -  \xi^{\ell} (u^{\ell,i-1})}).$}
+	\label{tabel:mgnet-scale1}	
+	\begin{center}
+		\resizebox{\textwidth}{!}{
+			\begin{tabular}{|c|c|c|c|c|}
+				\hline
+				$[\nu_1,\nu_2,\cdots,\nu_J], c_\ell, s^{\ell,i}$,  &  test accuracy
+				& parameters  \tabularnewline
+				\hline
+				[2,2,2,2], 256, 1   &  79.78(79.45)   & -
+				\tabularnewline
+				\hline	
+				[4,2,2,2], 256, 1  &   80.25(80.02)  &-
+				\tabularnewline
+				\hline
+				[8,2,2,2], 256, 1  &     80.32(80.12)    & - 
+				\tabularnewline
+				\hline
+				[16,2,2,2], 256 , 1 &     80.42(80.22)    & - 
+				\tabularnewline
+				\hline
+				
+				[2,2,2,2], 256, $\frac{1}{\nu_\ell}$   &  79.54(79.31)    & -
+				\tabularnewline
+				\hline		
+				[2,2,2,2], 256, $\frac{1}{\nu_\ell}$,warm-up   &  79.75(79.47)     & -
+				\tabularnewline
+				\hline
+				[4,2,2,2], 256, $\frac{1}{\nu_\ell}$   & 80.18(79.93)     & -
+				\tabularnewline
+				\hline		
+				[4,2,2,2], 256, $\frac{1}{\nu_\ell}$,warm-up   &80.16(79.90)    & -
+				\tabularnewline
+				\hline		
+				[8,2,2,2], 256, $\frac{1}{\nu_\ell}$   &   80.35(80.03)    & -
+				\tabularnewline
+				\hline
+				[8,2,2,2], 256, $\frac{1}{\nu_\ell}$  ,warm-up &   79.97(79.65)   & -
+				\tabularnewline
+\hline
+			\end{tabular} 
+		}
+	\end{center}
+\end{table}
+
+\begin{table}[!htbp]
+	\caption{MgNet:increase channel:  increase $\nu_1$}
+	\label{tabel:mgnet-0531}	
+	\begin{center}
+	\resizebox{\textwidth}{!}{
+		\begin{tabular}{|c|c|c|c|c|}
+		\hline
+		$[\nu_1,\nu_2,\cdots,\nu_J], c_\ell, s^{\ell,i}$,  &  test accuracy
+		& parameters  \tabularnewline
+		\hline
+		[2,2,2,2], [64,128,256,512]   &  78.24(78.22)   & -
+		\tabularnewline
+		\hline	
+		[4,2,2,2], [64,128,256,512]  &   78.51(78.32)  &-
+		\tabularnewline
+		\hline
+		[8,2,2,2], [64,128,256,512]  &     78.42(78.29)    & - 
+		\tabularnewline
+		\hline
+		[16,2,2,2], [64,128,256,512]  &     78.25(78.12)    & - 
+		\tabularnewline
+		\hline
+		
+	\end{tabular} 
+}
+\end{center}
+\end{table}

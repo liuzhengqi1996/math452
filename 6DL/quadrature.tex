@@ -1,0 +1,70 @@
+\section{Numerical Quadrature}
+Define
+$$
+\Sigma_{n, M}(\mathbb{P}_t^d)=\{ \sum_{i=1}^n a_i\sigma_k(\omega_i\cdot x + b_i):  \omega_i\in \mathbb{S}^{d-1},\ |b_i|\le 2\}.
+$$
+\begin{lemma}
+It holds that $\Sigma_{n, M}(\mathbb{P}_t^d)\subset W^{k,\infty}(\Omega)$ and
+$$
+\|v\|_{k,\infty}\le M,\quad \forall v\in \Sigma_{n, M}(\mathbb{P}_t^d),
+$$
+where $M=\|u\|_{\mathcal{K}_1(\mathbb{P}_t^d)}$.
+\end{lemma}
+
+For any $n>0$, there exists $\displaystyle \omega_i\in \mathbb{S}^{d-1}$, $\displaystyle |b_i|\le 2, \sum_{i=1}^n |a_i|\le M$ such that
+$$
+u_n(x)= \sum_{i=1}^n a_i\sigma_k(\omega_i\cdot x + b_i)
+$$
+satisfies
+$$
+\|u-u_n\|_a\lesssim n^{-\frac12-\frac{2k+1}{2d}}\|u\|_{\mathcal{K}_1(\mathbb{P}_k^d)}.
+$$
+For a bounded domain $\Omega$, 
+the activation function $\sigma_k\in W^{k,\infty}(\Omega)$.
+Suppose quadrature points $x_i$  and weights $w_i$ satisfies 
+$$
+\int_\Omega g(x)dx - |\Omega|\sum_{i=1}^{N} w_ig(x_i)=0, \quad \forall g(x)\in P_{r} (\Omega)
+$$
+with $N=\frac{(k-1)d}{2}$, and 
+$$
+\left |\int_\Omega g(x)dx - |\Omega|\sum_{i=1}^N w_ig(x_i)\right |\lesssim N^{-\frac{r+1}{d}}\|g\|_{r,\infty}.
+$$ 
+Recall $J(v)$ in \eqref{auv} and \eqref{Jv} with $m=1$ and consider 
+$$
+J(u)=\min J(v),\quad J_N(u_N)=\min J_N(v_N),
+$$
+where 
+$$
+J_N(v_N)=|\Omega |\sum_{i=1}^Nw_i \left(\frac12 |\nabla v_N(x_i)|^2 - f(x_i)v_N(x_i)\right).
+$$ 
+For any conforming $v$,
+\begin{align}
+|J_N(v) - J(v)|&\le N^{-\frac{k-1}{d}}\|v\|_{k,\infty}.
+\end{align}
+Since $\Omega$ is bounded, $\displaystyle \omega_i\in \mathbb{S}^{d-1}$, $|b_i|\le 2, \sum_{i=1}^n |a_i|\le M$, 
+$$
+\|u_N\|_{k,\infty}\lesssim 1.
+$$
+Since $J_N(u_N)\le J_N(v_N)$,
+\begin{align*}
+\frac12 \|u_N-u\|_a^2
+=&J(u_N)- J(u) 
+\\
+\le &J(u_N)- J_N(u_N) + J_N(v_N) - J(v_N)+ J(v_N)- J(u)
+\\
+\lesssim &N^{-\frac{k-1}{d}}  + \|v_N-u\|_a^2
+\lesssim N^{-\frac{k-1}{d}} +n^{-\frac12-\frac{2k+1}{2d}}.
+\end{align*}
+Choose 
+$ N = \mathcal{O}(n^{2+\frac{d+2}{2(k-1)}})$, then
+\begin{align*}
+\|u_N-u\|_a^2
+\lesssim & n^{-\frac12-\frac{2k+1}{d}}.
+\end{align*}
+
+
+
+
+
+
+

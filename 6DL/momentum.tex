@@ -1,0 +1,113 @@
+\subsection{Momentum method and Averaged Gradient} 
+
+Another way of thinking about the momentum method is that we are simply replacing our gradient direction by an average of the previously encountered gradients. Specifically, the momentum method can be rewritten
+\begin{equation}\label{Ave_grad1}
+x_{t+1} = x_t - \frac{\eta_t}{1-\mu}[\nabla f]_t,
+\end{equation}
+where $[\nabla f]_t$ is an average of the past gradients with exponentially decaying weights given by
+\begin{equation}\label{Ave_grad2}
+[\nabla f]_t= (1-\mu)\sum_{i=0}^t \mu^{t-i} \nabla f(x_i).
+\end{equation}
+(Note that this isn't quite exactly the average, since it isn't normalized correctly.)
+Here $\mu$ is the momentum parameter which determines the time scale of the averaging, i.e. how many previous gradients are taken into account. A typical value used in deep learning is $\mu = 0.9$, which corresponds to an average over around $10$ iterations.
+
+The relationship between this formulation and the more standard formulation of momentum can be seen by noting the following recursive formula for $[\nabla f]_t$,
+\begin{equation}
+[\nabla f]_t = \mu[\nabla f]_{t-1} + (1-\mu)\nabla f(x_t).
+\end{equation}
+
+%Usually, the factor $(1-\mu)$ is absorbed into the step size $s_t$ in implementations. 
+It is important in this context to note that pushing $\mu$ closer to $1$ effectively increases the step size. This gives to PyTorch implementations below.
+
+\begin{theorem}
+	Given $v_0=0$ and random initial value $x_0$, the averaged gradient (\ref{Ave_grad1}) and (\ref{Ave_grad2}) are equivalent to 
+	\begin{align}
+	&v_{t+1} = \mu v_t + \nabla f(x_t),\\
+	&x_{t+1} = x_{t} - \eta_t v_{t+1},
+	\end{align}
+	for any $t\geq 0$.
+\end{theorem}
+
+
+\begin{algorithm}[H]\caption{SGD with mini-batch and momentum}
+	\label{alg:batch-momentum-SGD}
+	{\bf Input}: initialization $x_0$, learning rate $\eta_t$, momentum parameter $\mu$, $v_0=0$.
+	
+	{\bf For}: t = 0,1,2,$\dots$ 
+	
+	\begin{center}
+		Randomly pick $B_t \subset \{1, 2, \cdots, N\}$ independently \\
+		with probability $\frac{1}{\tbinom{N}{m}}$ and $\# B_t = m$.
+	\end{center}
+	\begin{align}\label{equ:sgd-iteration-momentum}
+	&v_{t+1} = \mu v_t + g_t(x_t),\\
+	&x_{t+1} = x_{t} - \eta_t v_{t+1}.
+	\end{align}
+	\quad where 
+	$$
+	g_{t}(x_t) = \frac{1}{m} \sum_{i \in B_{t}}  \nabla f_i(x_t)
+	$$
+\end{algorithm}
+
+
+\subsection{Derivation of momentum method} 
+
+
+The gradient descent method previously introduced can be viewed as a discretization of the gradient flow differential equation
+\begin{equation}\label{gradient_flow}
+ x'(t) = -\nabla f(x(t)).
+\end{equation}
+
+Gradient descent with momentum can be understood as a discretization of the damped Hamiltonian dynamics
+\begin{equation}\label{hamiltonian}
+ \begin{split}
+  &v'(t) = -\alpha v(t) - \nabla f(x(t)) \\
+  &x'(t) = v(t).
+ \end{split}
+\end{equation}
+This can be thought of as describing the motion of a particle in a potential well given by $f(x)$ which experiences friction, the strength of which is determined by $\alpha$.
+
+The relationship between this and the gradient flow dynamics can be seen by taking the high-friction limit $\alpha\rightarrow \infty$. In fact, rewriting the Hamiltonian dynamics \eqref{hamiltonian} as
+\begin{equation}
+ x''(t) = v'(t) = -\alpha x'(t) - \nabla f(x(t)),
+\end{equation}
+we make the time change $s = \alpha t$ to get
+\begin{equation}
+ \frac{1}{\alpha^2}x''(s) + x'(s) +\nabla f(x(s)) = 0. 
+\end{equation}
+Taking the limit as $\alpha\rightarrow \infty$, we get the gradient flow equation \eqref{gradient_flow}. So we see that the gradient flow is a high-friction limit of the damped Hamiltonian flow \eqref{hamiltonian}.
+
+It turns out that discretizing the Hamiltonian flow results in a method which converges much faster than gradient descent, provided we choose the friction parameter $\alpha$ correctly. To see this, it is instructive to analyze a strongly convex quadratic objective, from which we see that
+the dynamics \eqref{gradient_flow} converges at an exponential rate
+\begin{equation}
+ f(x(t)) - f(x^*) = O(e^{-\lambda_{min} t}),
+\end{equation}
+where $\lambda_{min}$ is the smallest eigenvalue of the quadratic objective.
+
+Choosing the optimal damping rate $\alpha = 2\sqrt{\lambda_{min}}$ (note that this makes the lowest frequency modes critically damped), the dynamics \eqref{hamiltonian} achieve an exponential convergence rate of
+\begin{equation}
+ f(x(t)) - f(x^*) = O(e^{-\sqrt{\lambda_{min}} t}).
+\end{equation}
+
+Combined with the fact that \eqref{hamiltonian} can be stably discretized with a step size $s = 0(\lambda_{max}^{-\frac{1}{2}})$, while \eqref{gradient_flow} can only be stably discretized with a step size $s = O(\lambda_{max}^{-1})$, shows that discretizing the Hamiltonian dynamics \eqref{hamiltonian} results in a method which convergences much faster than gradient descent (the number of iterations scales with $\sqrt{\frac{\lambda_{max}}{\lambda_{min}}}$ vs $\frac{\lambda_{max}}{\lambda_{min}}$.
+
+Only certain special descretizations of \eqref{hamiltonian} achieve this improved convergence rate globally for convex functions. The most famous of these is Nesterov's accelerated gradient descent
+\begin{equation}
+ \begin{split}
+  &x_{t+1} = y_t - \frac{1}{\lambda_{max}}\nabla f(y_t) \\
+  &y_{t+1} = x_{t+1} + \frac{\sqrt{\lambda_{max}} - \sqrt{\lambda_{min}}}{\sqrt{\lambda_{max}} + \sqrt{\lambda_{min}}}(x_{t+1} - x_t).
+ \end{split}
+\end{equation}
+
+However, for deep learning we often use the much simpler discretization
+\begin{equation}
+ \begin{split}
+  &v_{t+1} = (1 - s\alpha) v_t + s\nabla f(x_t)\\
+  &x_{t+1} = x_t - sv_t.
+ \end{split}
+\end{equation}
+This often gives similar results since deep learning problems are non-convex and the theory of convex optimization doesn't apply anyway.
+
+However, there is work which analyzes different versions of momentum (i.e. different discretizations of the Hamiltonian dynamics \eqref{hamiltonian}) for deep learning problems.
+
+\includepdf{HandWrittenNotes/Momentum.pdf}

@@ -1,0 +1,132 @@
+\subsection{DenseNet} 
+\begin{itemize}
+	\item Semi-iterative method for accelerating the residual correction iterative scheme,
+	\begin{equation}\label{eq:multi}
+	u^{i} = \sum_{j=0}^{i-1}  \alpha_{j}^i\left( u^{j} + B^{i}_j(f - A(u^j)) \right), \quad i=1:\nu,
+	\end{equation}
+	where $\alpha_j^i \ge 0$ and $\sum_{j=0}^{i-1}  \alpha_{j}^i = 1$.
+	Letting the residual $r^j = f - A(u^{j})$ for $j=0:i$, 
+	the following iterative scheme for $r^j$ is implied by \eqref{eq:multi}
+	\begin{equation}\label{eq:multi-res}
+	r^{i} = \sum_{j=0}^{i-1}\alpha^i_j(I - AB^{i}_j)(r^j),
+	\end{equation}
+	because of the linearity of $A$. This scheme is analogous to the 
+	DenseNet \cite{huang2017densely} which will be discussed more in \S~\ref{sec:CNNs} and below.
+	More discussion on semi-iterative method for linear system 
+	can be found in \cite{hackbusch1994iterative, golub2012matrix}.
+\end{itemize}
+
+
+The DenseNet \cite{huang2017densely} can be written as:
+\begin{equation}\label{eq:densenet}
+\begin{cases}
+f^{1,0} &=R_{\rm max}\circ \sigma \circ \theta^0(f), \\
+\text{\bf For} &\ell = 1:J \\
+\quad &\text{\bf For} \quad i = 1:\nu_\ell \\
+&f^{\ell,i} = \sigma \circ \theta^{\ell,i} (\tilde f^{\ell,i-1}), \quad i = 1:\nu_\ell ,\\
+&\tilde f^{\ell,i} = [f^{\ell,0,}, \cdots, f^{\ell,i}] \quad i = 1:\nu_\ell  , \\
+\quad &\text{\bf EndFor} \\
+f^{\ell+1,0} &=  R_\ell^{\ell+1} (\tilde f^{\ell, \nu_\ell} ) , \\
+\text{\bf End} &\\
+H_0(f) &=  R_{\rm ave}(f^{L,\nu_\ell}). \\
+\end{cases}
+\end{equation}
+Here $[f^{\ell,0,}, \cdots, f^{\ell,i}]$ means the collection of 
+all the previous output in $\ell$-th grids after $i$-th smoother.
+
+The original setup in DenseNet is:
+\begin{equation}
+f^{\ell,0} \in \mathbb{R}^{n_\ell \times n_\ell \times k_0}, \quad f^{\ell,i} \in \mathbb{R}^{n_\ell \times n_\ell \times k}, \quad i = 1:\nu_\ell.
+\end{equation}
+Thus to say,
+\begin{equation}
+\theta^{\ell,i} = [[\theta^{\ell,i}]_0, [\theta^{\ell,i}]_{1}, \cdots, [\theta^{\ell,i}]_i]: \mathbb{R}^{n_\ell\times n_\ell \times (k_0 + ck)} \mapsto \mathbb{R}^{n_\ell\times n_\ell \times k} .
+\end{equation}
+This means that,
+\begin{equation}
+[\theta^{\ell,i}]_{0}:  \mathbb{R}^{n_\ell\times n_\ell \times k_0 } \mapsto \mathbb{R}^{n_\ell\times n_\ell \times k}, \quad [\theta^{\ell,i}]_{j}:  \mathbb{R}^{n_\ell\times n_\ell \times k } \mapsto \mathbb{R}^{n_\ell\times n_\ell \times k}, \quad j = 1:i.
+\end{equation}
+At last, we have 
+\begin{equation}
+\theta^{\ell,i}(\tilde f^{\ell,i}) = \sum_{j=0}^i [\theta^{\ell,i}]_{j} [\tilde f^{\ell,i}]_j = \sum_{j=0}^i [\theta^{\ell,i}]_{j} f^{\ell,j}.
+\end{equation}
+Finally, we have that 
+\begin{equation}
+[\theta^{\ell,i}]_{j},
+\end{equation}
+plays the role of $A$ in MgNet?
+
+So, we can rewrite the above DenseNet with the above formula without $\tilde f$:
+\begin{equation}\label{eq:densenet1}
+\begin{cases}
+f^{1,0} &=R_{\rm max}\circ \sigma \circ \theta^0(f), \\
+\text{\bf For} &\ell = 1:J \\
+\quad &\text{\bf For} \quad i = 1:\nu_\ell \\
+&f^{\ell,i} = \sigma \left( \sum_{j=0}^{i-1} [\theta^{\ell,i}]_{j} f^{\ell,j} \right) ,\\
+\quad &\text{\bf EndFor} \\
+f^{\ell+1,0} &=  R_\ell^{\ell+1} ([f^{\ell,0,}, \cdots, f^{\ell,\nu_\ell}] ) , \\
+\text{\bf End} &\\
+H_0(f) &=  R_{\rm ave}(f^{L,\nu_\ell}). \\
+\end{cases}
+\end{equation}
+So, similar idea in removing $i$ in $A^{\ell,i}$ in MgNet, we can remove $j$ in $\theta^{\ell,i}$ or
+even remove $i$, this can reduce the number of parameters very efficient....
+
+We can also adopt this idea into MgNet.
+\begin{breakablealgorithm}
+	\caption{$u^{J}={\rm Dense-MgNet}(f; J,\nu_1, \cdots, \nu_J)$}
+	\label{alg:dense-mgnet}
+	\begin{algorithmic}
+		\State Initialization:  $f^1 =\theta(f)$, $u^{1,0} \leftarrow 0$
+		%		\State Initialization $u^{1,0}$
+		\For{$\ell = 1:J$}
+		\For{$i = 1:\nu_\ell$}
+		\State 
+		\begin{itemize}
+			\item Standard Chebyshev iteration:
+			\begin{equation}\label{chebyshev-mgnet}
+			u^{\ell,i} \leftarrow u^{\ell,i-1} + B_{\ell,i}  ({f^\ell -  A^{\ell} (u^{\ell,i-1})}) + C_{\ell}(u^{\ell,i-1} - u^{\ell,i-2}).
+			\end{equation}
+			\item Expanded version: 
+			\begin{equation}\label{expanded-mgnet}
+			u^{\ell,i} \leftarrow \sum_{j=0}^{i-1} \mathcal F^{\ell,i}(u^{\ell,j}, f^\ell),
+			\end{equation}
+			where $\mathcal F^{\ell,i}$ is defined by $A^\ell, B_{\ell,i}$ and $C_\ell$ with some special forms.(Parameter sharing in some sense.)
+			\item Dense-MgNet:
+			\begin{itemize}
+				\item Extended form:
+				\begin{equation}\label{extendes-mgnet}
+				u^{\ell,i} \leftarrow \sum_{j=0}^{i-1} \mathcal F^{\ell,i}(u^{\ell,j}, f^\ell),
+				\end{equation}
+				where $\mathcal F^{\ell,i}$ is free to be trained with some special forms.(Removing parameter sharing...)
+				\item $\tilde u^{\ell,i}$ form:
+				\begin{equation}\label{dense-mgnet}
+				u^{\ell,i} \leftarrow \mathcal D_{\ell,i}([\tilde u^{\ell,i-1}, f^{\ell}]).
+				\end{equation}
+				where 
+				\begin{equation}\label{eq:tilde-u}
+				u^{\ell,i-1} = [u^{\ell,0}, \cdots, u^{\ell,i-1}],
+				\end{equation}
+				and $\mathcal D_{\ell,i}$ needs to be trained with some special forms.
+			\end{itemize}
+		
+		\end{itemize}
+		
+		\EndFor
+		\State Note $u^\ell = u^{\ell,\nu_\ell}$
+		\begin{equation}
+		\label{d-interpolation}
+		u^{\ell+1,0} \leftarrow \Pi_\ell^{\ell+1}u^{\ell}
+		\end{equation}
+		\begin{equation}
+		\label{d-restrict-f}
+		f^{\ell+1} = R^{\ell+1}_\ell(f^\ell - A^\ell(u^{\ell})) + A^{\ell+1} (u^{\ell+1,0}).
+		\end{equation}
+		\EndFor
+	\end{algorithmic}
+\end{breakablealgorithm}
+
+%What's more, the above ideas consider about the DenseNet structures (Chebyshev iteration)
+%into the grids level for MgNet.
+
+

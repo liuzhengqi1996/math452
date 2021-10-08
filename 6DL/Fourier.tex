@@ -1,0 +1,79 @@
+\section{Fourier transform and Fourier series}
+We make use of the theory of tempered distributions (see
+\cite{strichartz2003guide} for an introduction)
+and we begin by collecting some results of independent interest, which
+will also be important later. 
+\subsection{Fourier transform}
+Before studying the Fourier transform, we first consider Schwartz space which is defined below.
+\begin{definition} \label{def:schwarz}
+The Schwartz space $\mathcal{S}\left(\mathbb{R}^{n}\right)$ is the topological vector space of functions $f: \mathbb{R}^{n} \rightarrow \mathbb{C}$ such that $f \in C^{\infty}\left(\mathbb{R}^{n}\right)$ and
+$$
+x^{\alpha} \partial^{\beta} f(x) \rightarrow 0 \quad \text { as }|x| \rightarrow \infty
+$$
+for every pair of multi-indices $\alpha, \beta \in \mathbb{N}_{0}^{n} .$ For $\alpha, \beta \in \mathbb{N}_{0}^{n}$ and $f \in \mathcal{S}\left(\mathbb{R}^{n}\right)$ let
+(5.10)
+$$
+\|f\|_{\alpha, \beta}=\sup _{\mathbb{R}^{n}}\left|x^{\alpha} \partial^{\beta} f\right|
+$$
+A sequence of functions $\left\{f_{k}: k \in \mathbb{N}\right\}$ converges to a function $f$ in $\mathcal{S}\left(\mathbb{R}^{n}\right)$ if
+$$
+\left\|f_{n}-f\right\|_{\alpha, \beta} \rightarrow 0 \quad \text { as } k \rightarrow \infty
+$$
+for every $\alpha, \beta \in \mathbb{N}_{0}^{n}$.
+\end{definition}
+The Schwartz space consists of smooth functions whose derivatives and the function itself decay at infinity faster than any power. Schwartz functions are rapidly decreasing. When there is no ambiguity, we will write $\mathcal{S}\left(\mathbb{R}^{n}\right)$ as $\mathcal{S}$.
+Roughly speaking, tempered distributions grow no faster than a polynomial at infinity.
+
+\begin{definition}
+A tempered distribution $T$ on $\mathbb{R}^{n}$ is a continuous linear functional $T: \mathcal{S}\left(\mathbb{R}^{n}\right) \rightarrow \mathbb{C} .$ The topological vector space of tempered distributions is denoted by $\mathcal{S}^{\prime}\left(\mathbb{R}^{n}\right)$ or $\mathcal{S}^{\prime} .$ If $\langle T, f\rangle$ denotes the value of $T \in \mathcal{S}^{\prime}$ acting on $f \in \mathcal{S}$
+then a sequence $\left\{T_{k}\right\}$ converges to $T$ in $\mathcal{S}^{\prime}$, written $T_{k} \rightarrow T$, if
+$$
+\left\langle T_{k}, f\right\rangle \rightarrow\langle T, f\rangle
+$$
+for every $f \in \mathcal{S}$.
+\end{definition}
+Since $\mathcal{D} \subset \mathcal{S}$ is densely and continuously imbedded, we have $\mathcal{S}^{\prime} \subset \mathcal{D}^{\prime} .$ Moreover, a distribution $T \in \mathcal{D}^{\prime}$ extends uniquely to a tempered distribution $T \in \mathcal{S}^{\prime}$ if and only if it is continuous on $\mathcal{D}$ with respect to the topology on $\mathcal{S}$. Every function $f \in L_{\text {loc }}^{1}$ defines a regular distribution $T_{f} \in \mathcal{D}^{\prime}$ by
+$$
+\left\langle T_{f}, \phi\right\rangle=\int f \phi d x \quad \text { for all } \phi \in \mathcal{D}.
+$$
+If $|f| \leq p$ is bounded by some polynomial $p,$ then $T_{f}$ extends to a tempered distribution $T_{f} \in \mathcal{S}^{\prime}$, but this is not the case for functions $f$ that grow too rapidly at infinity.
+
+The Schwartz space is a natural one to use for the Fourier transform. Differentiation and multiplication exchange roles under the Fourier transform and therefore so do the properties of smoothness and rapid decrease. As a result, the Fourier transform is an automorphism of the Schwartz space. By duality, the Fourier transform is also an automorphism of the space of tempered distributions.
+
+\begin{definition}\label{def:fourier1}
+The Fourier transform of a function $f \in \mathcal{S}\left(\mathbb{R}^{n}\right)$ is the function $\hat{f}: \mathbb{R}^{n} \rightarrow \mathbb{C}$ defined by 
+$$
+\hat{f}(\omega)= \int f(x) e^{-2 \pi i\omega \cdot x} d x.
+$$
+The inverse Fourier transform of $f$ is the function $\check{f}: \mathbb{R}^{n} \rightarrow \mathbb{C}$ defined by
+$$
+\check{f}(x)=\int f(\omega) e^{2 \pi i\omega \cdot x} d k.
+$$
+\end{definition}
+
+\begin{definition}\label{def:fourier2}
+The Fourier transform of a tempered distribution $f \in \mathcal{S}'$ is  defined by 
+$$
+\langle \hat{f}, \phi\rangle = \langle f, \hat \phi\rangle,\quad \forall \phi\in \mathcal{S}.
+$$ 
+\end{definition}
+
+The support of a continuous function $f$ is the closure  of the set $\{x\in \mathbb{R}: f(x)\neq 0\}$.
+\begin{properties}
+The Fourier transform has the following properties
+\begin{enumerate}
+\item If $f\in \mathcal{S}'$ and the support of $\hat f$ is $\{0\}$, then $f$ is a polynomial.
+\item If $f\in \mathcal{S}'$ and the support of $\hat f$ is a single point $\{a\}$, then $f(x)=e^{2\pi iax}P(x)$, where $P(x)$ is a polynomial.
+\end{enumerate}
+\end{properties}
+
+
+
+
+
+
+
+\subsection{Poisson summation formula}
+\input{6DL/PoissonSum}
+\subsection{A special cut-off function}
+\input{6DL/Cut-off-function}
