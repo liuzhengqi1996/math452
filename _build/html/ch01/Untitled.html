@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>A basic machine learning problem: image classification &#8212; Math 452 Site</title>
+    <title>A basic machine learning problem: image classification . &#8212; Math 452 Site</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet" />
   <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -53,8 +53,8 @@
     <script async="async" src="../_static/sphinx-thebe.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Image classification problem" href="ch1_2_video.html" />
-    <link rel="prev" title="Machine Learning and Image Classification" href="ch1_.html" />
+    <link rel="next" title="Linear Machine Learning Models" href="../ch02/ch2_.html" />
+    <link rel="prev" title="Some popular data sets in image classification ttt" href="ch1_3.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
     
@@ -107,24 +107,24 @@
    </i>
   </label>
   <ul class="current">
-   <li class="toctree-l2 current active">
-    <a class="current reference internal" href="#">
+   <li class="toctree-l2">
+    <a class="reference internal" href="ch1_1_video.html">
      A basic machine learning problem: image classification
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="ch1_2_video.html">
+    <a class="reference internal" href="ch1_2.html">
      Image classification problem
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="ch1_3_video.html">
-     Some popular data sets in image classification
+    <a class="reference internal" href="ch1_3.html">
+     Some popular data sets in image classification ttt
     </a>
    </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="ch1_4_video.html">
-     Some popular data sets in image classification
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     A basic machine learning problem: image classification .
     </a>
    </li>
   </ul>
@@ -273,7 +273,7 @@
         <!-- ipynb file if we had a myst markdown file -->
         
         <!-- Download raw file -->
-        <a class="dropdown-buttons" href="../_sources/ch01/ch1_1_video.ipynb"><button type="button"
+        <a class="dropdown-buttons" href="../_sources/ch01/Untitled.ipynb"><button type="button"
                 class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
                 data-placement="left">.ipynb</button></a>
         <!-- Download PDF via print -->
@@ -298,7 +298,7 @@
         aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
     <div class="dropdown-buttons">
         
-        <a class="binder-button" href="https://mybinder.org/v2/gh/liuzhengqi1996/binder/0857756f6027721a1be25c69bd6b9061d94d5b7a?urlpath=lab%2Ftree%2Ftutorial.ipynb/v2/gh/liuzhengqi1996/binder/master?urlpath=lab/tree/ch01/ch1_1_video.ipynb"><button type="button"
+        <a class="binder-button" href="https://mybinder.org/v2/gh/liuzhengqi1996/binder/0857756f6027721a1be25c69bd6b9061d94d5b7a?urlpath=lab%2Ftree%2Ftutorial.ipynb/v2/gh/liuzhengqi1996/binder/master?urlpath=lab/tree/ch01/Untitled.ipynb"><button type="button"
                 class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
                 data-placement="left"><img class="binder-button-logo"
                     src="../_static/images/logo_binder.svg"
@@ -321,18 +321,8 @@
             <nav id="bd-toc-nav" aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#can-a-machine-function-tell-the-difference">
-   Can a machine (function) tell the difference ?
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#supervised-learning">
-   Supervised learning
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#formulate-learning">
-   Formulate “learning”
+  <a class="reference internal nav-link" href="#id1">
+   A basic machine learning problem: image classification
   </a>
  </li>
 </ul>
@@ -347,103 +337,85 @@
               <div>
                 
   <div class="section" id="a-basic-machine-learning-problem-image-classification">
-<h1>A basic machine learning problem: image classification<a class="headerlink" href="#a-basic-machine-learning-problem-image-classification" title="Permalink to this headline">¶</a></h1>
-<div class="cell tag_hide-input docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">IFrame</span>
-
-<span class="n">IFrame</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s2">&quot;https://cdnapisec.kaltura.com/p/2356971/sp/235697100/embedIframeJs/uiconf_id/41416911/partner_id/2356971?iframeembed=true&amp;playerId=kaltura_player&amp;entry_id=1_z2ldie17&amp;flashvars[streamerType]=auto&amp;amp;flashvars[localizationCode]=en&amp;amp;flashvars[leadWithHTML5]=true&amp;amp;flashvars[sideBarContainer.plugin]=true&amp;amp;flashvars[sideBarContainer.position]=left&amp;amp;flashvars[sideBarContainer.clickToClose]=true&amp;amp;flashvars[chapters.plugin]=true&amp;amp;flashvars[chapters.layout]=vertical&amp;amp;flashvars[chapters.thumbnailRotator]=false&amp;amp;flashvars[streamSelector.plugin]=true&amp;amp;flashvars[EmbedPlayer.SpinnerTarget]=videoHolder&amp;amp;flashvars[dualScreen.plugin]=true&amp;amp;flashvars[hotspots.plugin]=1&amp;amp;flashvars[mediaProxy.mediaPlayFrom]=0&amp;amp;flashvars[mediaProxy.mediaPlayTo]=600&amp;amp;flashvars[Kaltura.addCrossoriginToIframe]=true&amp;amp;&amp;wid=1_27z0chwl&quot;</span> <span class="p">,</span><span class="n">width</span><span class="o">=</span><span class="s1">&#39;800&#39;</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="s1">&#39;500&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_html">
-<iframe
-    width="800"
-    height="500"
-    src="https://cdnapisec.kaltura.com/p/2356971/sp/235697100/embedIframeJs/uiconf_id/41416911/partner_id/2356971?iframeembed=true&playerId=kaltura_player&entry_id=1_z2ldie17&flashvars[streamerType]=auto&amp;flashvars[localizationCode]=en&amp;flashvars[leadWithHTML5]=true&amp;flashvars[sideBarContainer.plugin]=true&amp;flashvars[sideBarContainer.position]=left&amp;flashvars[sideBarContainer.clickToClose]=true&amp;flashvars[chapters.plugin]=true&amp;flashvars[chapters.layout]=vertical&amp;flashvars[chapters.thumbnailRotator]=false&amp;flashvars[streamSelector.plugin]=true&amp;flashvars[EmbedPlayer.SpinnerTarget]=videoHolder&amp;flashvars[dualScreen.plugin]=true&amp;flashvars[hotspots.plugin]=1&amp;flashvars[mediaProxy.mediaPlayFrom]=0&amp;flashvars[mediaProxy.mediaPlayTo]=600&amp;flashvars[Kaltura.addCrossoriginToIframe]=true&amp;&wid=1_27z0chwl"
-    frameborder="0"
-    allowfullscreen
-></iframe>
-</div></div>
-</div>
-<div class="section" id="can-a-machine-function-tell-the-difference">
-<h2>Can a machine (function) tell the difference ?<a class="headerlink" href="#can-a-machine-function-tell-the-difference" title="Permalink to this headline">¶</a></h2>
-<a class="reference internal image-reference" href="../_images/cat-dog-1.png" id="label"><img alt="../_images/cat-dog-1.png" id="label" src="../_images/cat-dog-1.png" style="height: 150px;" /></a>
+<h1>A basic machine learning problem: image classification .<a class="headerlink" href="#a-basic-machine-learning-problem-image-classification" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2>A basic machine learning problem: image classification<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<div class="admonition-can-a-machine-function-tell-the-difference admonition">
+<p class="admonition-title">Can a machine (function) tell the difference ?</p>
 <p>Mathematically, gray-scale image can be just taken as matrix in <span class="math notranslate nohighlight">\(R^{n_0\times n_0}\)</span>.</p>
-<a class="reference internal image-reference" href="../_images/gray-1.png"><img alt="../_images/gray-1.png" src="../_images/gray-1.png" style="height: 250px;" /></a>
-<p>The next figure shows different result from: human vision and computer representation:</p>
-<a class="reference internal image-reference" href="../_images/ImagePixels.png" id="id1"><img alt="../_images/ImagePixels.png" id="id1" src="../_images/ImagePixels.png" style="height: 150px;" /></a>
+<p>The next figure shows different result from: human vision and computer representation: (pic not found)</p>
 <p>An image is just a big grid of numbers between [0,255]
 e.g. <span class="math notranslate nohighlight">\(800 \times 600 \times 3\)</span> (3 channels RGB)</p>
 <p>Futhermore, color image can be taken as 3D tensor (matrix with 3 channel(RGB) ) in <span class="math notranslate nohighlight">\(R^{n_0\times n_0 \times 3}\)</span>.</p>
-<a class="reference internal image-reference" href="../_images/corlor-1.png" id="id2"><img alt="../_images/corlor-1.png" id="id2" src="../_images/corlor-1.png" style="height: 150px;" /></a>
-</div>
-<div class="section" id="supervised-learning">
-<h2>Supervised learning<a class="headerlink" href="#supervised-learning" title="Permalink to this headline">¶</a></h2>
 <p>Then, let us think about the general supervised learning case.</p>
 <p>Each image = a big vector of pixel values</p>
 <ul class="simple">
 <li><p><span class="math notranslate nohighlight">\(d = 1280\times 720 \times 3\)</span>(width <span class="math notranslate nohighlight">\(\times\)</span> height <span class="math notranslate nohighlight">\(\times\)</span> RGB channel)</p></li>
 </ul>
-<p>3 different sets of points in <span class="math notranslate nohighlight">\(\mathbb{R}^d\)</span>, are they separable?</p>
-<a class="reference internal image-reference" href="../_images/cat-dog-2.png"><img alt="../_images/cat-dog-2.png" src="../_images/cat-dog-2.png" style="height: 250px;" /></a>
-<a class="reference internal image-reference" href="../_images/cat-dog-3.png"><img alt="../_images/cat-dog-3.png" src="../_images/cat-dog-3.png" style="height: 250px;" /></a>
-<ul class="simple">
-<li><p>Mathematical problem
-Find <span class="math notranslate nohighlight">\(f(\cdot; \theta): \mathbb{R}^d \to \mathbb{R}^3\)</span> such that:</p></li>
-</ul>
-<p><span class="math notranslate nohighlight">\(f(cat,\theta) \approx \begin{pmatrix}
-	1\\ 0 \\ 0 
-	\end{pmatrix} \)</span></p>
-<p><span class="math notranslate nohighlight">\(f(dog,\theta)\approx \begin{pmatrix}
-	0\\ 1 \\ 0 
-	\end{pmatrix} 
-    \)</span></p>
-<p><span class="math notranslate nohighlight">\(
-f(rabbit,\theta)
-\approx 
-	\begin{pmatrix}
-	0\\ 0 \\ 1
-	\end{pmatrix} 
-\)</span></p>
+</div>
+<div class="admonition-different-sets-of-points-in-mathbb-r-d-are-they-separable admonition">
+<p class="admonition-title">3 different sets of points in <span class="math notranslate nohighlight">\(\mathbb{R}^d\)</span>, are they separable?</p>
+<p>(cannot find three pictures here)</p>
+</div>
+<div class="admonition-convert-into-mathematical-problem admonition">
+<p class="admonition-title">Convert into mathematical problem</p>
+<p>Find <span class="math notranslate nohighlight">\(f(\cdot; \theta): \mathbb{R}^d \to \mathbb{R}^3\)</span> such that: (no picture)</p>
 <ul class="simple">
 <li><p>Function interpolation</p></li>
 <li><p>Data fitting</p></li>
 </ul>
 </div>
-<div class="section" id="formulate-learning">
-<h2>Formulate “learning”<a class="headerlink" href="#formulate-learning" title="Permalink to this headline">¶</a></h2>
+<div class="admonition-how-to-formulate-learning admonition">
+<p class="admonition-title">How to formulate “learning”?</p>
 <ul class="simple">
 <li><p>Data: <span class="math notranslate nohighlight">\(\{x_j, y_j\}_{j=1}^N\)</span></p></li>
 <li><p>Find <span class="math notranslate nohighlight">\(f^*\)</span> in some function class s.t. <span class="math notranslate nohighlight">\(f^*(x_j) \approx y_j\)</span>.</p></li>
 <li><p>Mathematically, solve the optimization problem by parameterizing the abstract function class
 <span class="math notranslate nohighlight">\(
-  \min_{\theta} \mathcal L(\theta)
+ \min_{\theta} \mathcal L(\theta)
 \)</span></p></li>
-</ul>
-<p>where
+<li><p>where
 <span class="math notranslate nohighlight">\(
-		\mathcal L( \theta):=
-		{\mathbb E}_{(x,y)\sim \mathcal D}[\ell(f(x;  \theta), y)]\approx L( \theta) :=
-		\frac{1}{N} \sum_{j=1}^N\ell(y_j, f(x_j;  \theta))
-\)</span></p>
-<p>Here
+ 	\mathcal L( \theta):=
+ 	{\mathbb E}_{(x,y)\sim \mathcal D}[\ell(f(x;  \theta), y)]\approx L( \theta) :=
+ 	\frac{1}{N} \sum_{j=1}^N\ell(y_j, f(x_j;  \theta))
+\)</span></p></li>
+<li><p>Here
 <span class="math notranslate nohighlight">\(
 \ell(y_j,f(x_j;  \theta))
 \)</span>
-is a  general distance between real label <span class="math notranslate nohighlight">\(y_j\)</span> and predicted label <span class="math notranslate nohighlight">\(f(x_j;\theta)\)</span></p>
+is a  general distance between real label <span class="math notranslate nohighlight">\(y_j\)</span> and predicted label <span class="math notranslate nohighlight">\(f(x_j;\theta)\)</span></p></li>
+</ul>
 <p>Two commonly used distances are</p>
 <ul class="simple">
 <li><p><span class="math notranslate nohighlight">\(l^2\)</span> distance:
 <span class="math notranslate nohighlight">\(
-  	\ell(y_j,f(x_j; \theta)) = \|y_j - f(x_j; \theta)\|^2.
+ 	\ell(y_j,f(x_j; \theta)) = \|y_j - f(x_j; \theta)\|^2.
 \)</span></p></li>
 <li><p>KL-divergence distance:
 <span class="math notranslate nohighlight">\(
 \ell(y_j, f(x_j;  \theta)) = \sum_{i=1}^k [y_j]_i \log\frac{[y_j]_i }{[f(x_j; \theta)]_i}.
 \)</span></p></li>
 </ul>
+</div>
+<div class="admonition-application-image-classification admonition">
+<p class="admonition-title">Application: image classification</p>
+<p>TBD (cannot find pictures)</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">HTML</span>
+<span class="n">HTML</span><span class="p">(</span><span class="s1">&#39;&lt;iframe id=&quot;kaltura_player&quot; src=&quot;https://cdnapisec.kaltura.com/p/2356971/sp/235697100/embedIframeJs/uiconf_id/41416911/partner_id/2356971?iframeembed=true&amp;playerId=kaltura_player&amp;entry_id=1_b5pq3bnx&amp;flashvars[streamerType]=auto&amp;amp;flashvars[localizationCode]=en&amp;amp;flashvars[leadWithHTML5]=true&amp;amp;flashvars[sideBarContainer.plugin]=true&amp;amp;flashvars[sideBarContainer.position]=left&amp;amp;flashvars[sideBarContainer.clickToClose]=true&amp;amp;flashvars[chapters.plugin]=true&amp;amp;flashvars[chapters.layout]=vertical&amp;amp;flashvars[chapters.thumbnailRotator]=false&amp;amp;flashvars[streamSelector.plugin]=true&amp;amp;flashvars[EmbedPlayer.SpinnerTarget]=videoHolder&amp;amp;flashvars[dualScreen.plugin]=true&amp;amp;flashvars[hotspots.plugin]=1&amp;amp;flashvars[Kaltura.addCrossoriginToIframe]=true&amp;amp;&amp;wid=1_qcnp6cit&quot; width=&quot;560&quot; height=&quot;590&quot; allowfullscreen webkitallowfullscreen mozAllowFullScreen allow=&quot;autoplay *; fullscreen *; encrypted-media *&quot; sandbox=&quot;allow-forms allow-same-origin allow-scripts allow-top-navigation allow-pointer-lock allow-popups allow-modals allow-orientation-lock allow-popups-to-escape-sandbox allow-presentation allow-top-navigation-by-user-activation&quot; frameborder=&quot;0&quot; title=&quot;Kaltura Player&quot;&gt;&lt;/iframe&gt;&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/anaconda3/envs/myenv/lib/python3.9/site-packages/IPython/core/display.py:724: UserWarning: Consider using IPython.display.IFrame instead
+  warnings.warn(&quot;Consider using IPython.display.IFrame instead&quot;)
+</pre></div>
+</div>
+<div class="output text_html"><iframe id="kaltura_player" src="https://cdnapisec.kaltura.com/p/2356971/sp/235697100/embedIframeJs/uiconf_id/41416911/partner_id/2356971?iframeembed=true&playerId=kaltura_player&entry_id=1_b5pq3bnx&flashvars[streamerType]=auto&amp;flashvars[localizationCode]=en&amp;flashvars[leadWithHTML5]=true&amp;flashvars[sideBarContainer.plugin]=true&amp;flashvars[sideBarContainer.position]=left&amp;flashvars[sideBarContainer.clickToClose]=true&amp;flashvars[chapters.plugin]=true&amp;flashvars[chapters.layout]=vertical&amp;flashvars[chapters.thumbnailRotator]=false&amp;flashvars[streamSelector.plugin]=true&amp;flashvars[EmbedPlayer.SpinnerTarget]=videoHolder&amp;flashvars[dualScreen.plugin]=true&amp;flashvars[hotspots.plugin]=1&amp;flashvars[Kaltura.addCrossoriginToIframe]=true&amp;&wid=1_qcnp6cit" width="560" height="590" allowfullscreen webkitallowfullscreen mozAllowFullScreen allow="autoplay *; fullscreen *; encrypted-media *" sandbox="allow-forms allow-same-origin allow-scripts allow-top-navigation allow-pointer-lock allow-popups allow-modals allow-orientation-lock allow-popups-to-escape-sandbox allow-presentation allow-top-navigation-by-user-activation" frameborder="0" title="Kaltura Player"></iframe></div></div>
+</div>
 </div>
 </div>
 
@@ -477,19 +449,19 @@ is a  general distance between real label <span class="math notranslate nohighli
 <div class='prev-next-bottom'>
     
     <div id="prev">
-        <a class="left-prev" href="ch1_.html" title="previous page">
+        <a class="left-prev" href="ch1_3.html" title="previous page">
             <i class="prevnext-label fas fa-angle-left"></i>
             <div class="prevnext-info">
                 <p class="prevnext-label">previous</p>
-                <p class="prevnext-title">Machine Learning and Image Classification</p>
+                <p class="prevnext-title">Some popular data sets in image classification ttt</p>
             </div>
         </a>
     </div>
      <div id="next">
-        <a class="right-next" href="ch1_2_video.html" title="next page">
+        <a class="right-next" href="../ch02/ch2_.html" title="next page">
             <div class="prevnext-info">
                 <p class="prevnext-label">next</p>
-                <p class="prevnext-title">Image classification problem</p>
+                <p class="prevnext-title">Linear Machine Learning Models</p>
             </div>
             <i class="prevnext-label fas fa-angle-right"></i>
         </a>

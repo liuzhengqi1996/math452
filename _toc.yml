@@ -6,12 +6,12 @@ root: intro
 parts:
 - caption: contents
   chapters:
+  - file: ch00/intro.ipynd
   - file: ch01/ch1_
     sections:
     - file: ch01/ch1_1_video.ipynb 
-    - file: ch01/ch1_2.ipynb  
-    - file: ch01/ch1_3.ipynb 
-    - file: ch01/ch1_4.ipynb 
+    - file: ch01/ch1_2_video.ipynb  
+    - file: ch01/ch1_3_video.ipynb 
   - file: ch02/ch2_
     sections:
     - file: ch02/ch2_1
