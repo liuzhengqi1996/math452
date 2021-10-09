@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>KL divergence, cross-entropy and logistic regression &#8212; Math 452 Site</title>
+    <title>KL divergence and cross-entropy &#8212; Math 452 Site</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet" />
   <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -42,6 +42,8 @@
     <script src="../_static/copybutton.js"></script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]]}})</script>
     <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
     <script >
         const thebe_selector = ".thebe"
@@ -51,8 +53,8 @@
     <script async="async" src="../_static/sphinx-thebe.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Binary LR and SVM and their relations" href="ch2_4.html" />
-    <link rel="prev" title="Multi-class classification" href="ch2_2_2.html" />
+    <link rel="next" title="Support vector machine {#sec:SVMintro}" href="ch2_4.html" />
+    <link rel="prev" title="Introduction to logistic regression" href="ch2_2.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
     
@@ -96,11 +98,38 @@
 </p>
 <ul class="current nav bd-sidenav">
  <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../ch01/ch1_.html">
-   Machine Learning and Image Classification
+  <a class="reference internal" href="../ch00/ch0_.html">
+   Get started: course information and preparations:
   </a>
   <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
   <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../ch00/ch0_1.html">
+     Course information, requirements and reference
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../ch00/ch0_2.html">
+     Course background and introduction
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../ch00/ch0_3.html">
+     Introduction to Python and Pytorch
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../ch01/ch1_.html">
+   Machine Learning and Image Classification
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
    <i class="fas fa-chevron-down">
    </i>
   </label>
@@ -120,113 +149,37 @@
      Some popular data sets in image classification
     </a>
    </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../ch01/ch1_4_video.html">
-     Some popular data sets in image classification
-    </a>
-   </li>
   </ul>
  </li>
  <li class="toctree-l1 current active has-children">
   <a class="reference internal" href="ch2_.html">
    Linear Machine Learning Models
   </a>
-  <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
-  <label for="toctree-checkbox-2">
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+  <label for="toctree-checkbox-3">
    <i class="fas fa-chevron-down">
    </i>
   </label>
   <ul class="current">
-   <li class="toctree-l2 has-children">
+   <li class="toctree-l2">
     <a class="reference internal" href="ch2_1.html">
      Definition of linearly separable sets
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
-    <label for="toctree-checkbox-3">
-     <i class="fas fa-chevron-down">
-     </i>
-    </label>
-    <ul>
-     <li class="toctree-l3">
-      <a class="reference internal" href="ch2_1_1.html">
-       Binary classification
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="ch2_1_2.html">
-       Multi-class classification
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="ch2_1_3.html">
-       Geometric interpretation for multi-label cases (k &gt; 2)
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="ch2_1_4.html">
-       Two more definitions of linearly separable sets .
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="ch2_1_5.html">
-       Comparison of different definitions of linearly separable sets 2
-      </a>
-     </li>
-    </ul>
    </li>
-   <li class="toctree-l2 has-children">
+   <li class="toctree-l2">
     <a class="reference internal" href="ch2_2.html">
      Introduction to logistic regression
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
-    <label for="toctree-checkbox-4">
-     <i class="fas fa-chevron-down">
-     </i>
-    </label>
-    <ul>
-     <li class="toctree-l3">
-      <a class="reference internal" href="ch2_2_1.html">
-       Binary classification .
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="ch2_2_2.html">
-       Multi-class classification
-      </a>
-     </li>
-    </ul>
    </li>
    <li class="toctree-l2 current active">
     <a class="current reference internal" href="#">
-     KL divergence, cross-entropy and logistic regression
+     KL divergence and cross-entropy
     </a>
    </li>
-   <li class="toctree-l2 has-children">
+   <li class="toctree-l2">
     <a class="reference internal" href="ch2_4.html">
-     Binary LR and SVM and their relations
+     Support vector machine {#sec:SVMintro}
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
-    <label for="toctree-checkbox-5">
-     <i class="fas fa-chevron-down">
-     </i>
-    </label>
-    <ul>
-     <li class="toctree-l3">
-      <a class="reference internal" href="ch2_4_1.html">
-       Binary SVM
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="ch2_4_2.html">
-       Soft margin maximization and kernel methods
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="ch2_4_3.html">
-       Binary Logistic Regression
-      </a>
-     </li>
-    </ul>
    </li>
   </ul>
  </li>
@@ -271,9 +224,9 @@
         <!-- ipynb file if we had a myst markdown file -->
         
         <!-- Download raw file -->
-        <a class="dropdown-buttons" href="../_sources/ch02/ch2_3.md"><button type="button"
+        <a class="dropdown-buttons" href="../_sources/ch02/ch2_3.ipynb"><button type="button"
                 class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
-                data-placement="left">.md</button></a>
+                data-placement="left">.ipynb</button></a>
         <!-- Download PDF via print -->
         <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
             onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
@@ -291,6 +244,23 @@
 
             <!-- Launch buttons -->
 
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
+    <div class="dropdown-buttons">
+        
+        <a class="binder-button" href="https://mybinder.org/v2/gh/liuzhengqi1996/binder/0857756f6027721a1be25c69bd6b9061d94d5b7a?urlpath=lab%2Ftree%2Ftutorial.ipynb/v2/gh/liuzhengqi1996/binder/master?urlpath=lab/tree/ch02/ch2_3.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
+                data-placement="left"><img class="binder-button-logo"
+                    src="../_static/images/logo_binder.svg"
+                    alt="Interact on binder">Binder</button></a>
+        
+        
+        
+        
+    </div>
+</div>
+
         </div>
 
         <!-- Table of contents -->
@@ -304,19 +274,96 @@
         
               <div>
                 
-  <div class="section" id="kl-divergence-cross-entropy-and-logistic-regression">
-<h1>KL divergence, cross-entropy and logistic regression<a class="headerlink" href="#kl-divergence-cross-entropy-and-logistic-regression" title="Permalink to this headline">¶</a></h1>
-<p>This is a small sample book to give you a feel for how book content is
-structured.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Here is a note!</p>
-</div>
-<p>And here is a code block:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">e</span> <span class="o">=</span> <span class="n">mc</span><span class="o">^</span><span class="mi">2</span>
+  <div class="section" id="kl-divergence-and-cross-entropy">
+<h1>KL divergence and cross-entropy<a class="headerlink" href="#kl-divergence-and-cross-entropy" title="Permalink to this headline">¶</a></h1>
+<p>Cross-entropy minimization is frequently used in optimization and
+rare-event probability estimation. When comparing a distribution against
+a fixed reference distribution, cross-entropy and KL divergence are
+identical up to an additive constant. See more details in
+[&#64;murphy2012machine; &#64;kullback1951information; &#64;kullback1997information]
+and the reference therein.</p>
+<p>The KL(Kullback–Leibler) divergence defines a special distance between
+two discrete probability distributions $<span class="math notranslate nohighlight">\(p=\left( \begin{array}{ccc}
+p_1\\
+\vdots \\
+p_k
+\end{array} \right),\quad  q=\left( \begin{array}{ccc}
+q_1\\
+\vdots \\
+q_k
+\end{array} \right)\)</span><span class="math notranslate nohighlight">\( with \)</span>0\le p_i, q_i\le1<span class="math notranslate nohighlight">\( and
+\)</span>\sum_{i=1}^{k}p_i=\sum_{i=1}^{k}q_i=1<span class="math notranslate nohighlight">\( by \)</span><span class="math notranslate nohighlight">\(\label{KL-divergence}
+D_{\rm KL}(q,p)= \sum_{i=1}^k q_i\log \frac{q_i}{p_i}.\)</span>$</p>
+<div class="highlight-lemma notranslate"><div class="highlight"><pre><span></span>$D_{\rm KL}(q,p)$ works like a &quot;distance\&quot; without the symmetry:
+
+1.  $D_{\rm KL}(q,p)\ge0$;
+
+2.  $D_{\rm KL}(q,p)=0$ if and only if $p=q$;
 </pre></div>
 </div>
-<p>Check out the content pages bundled with this sample book to see more.</p>
+<div class="highlight-proof notranslate"><div class="highlight"><pre><span></span>*Proof.* We first note that the elementary inequality
+$$\log x \le x - 1, \quad\mathrm{for\ any\ }x\ge0,$$ and the equality
+holds if and only if $x=1$.
+$$-D_{\rm KL}(q,p) = - \sum_{i=1}^c q_i\log \frac{q_i}{p_i}   = \sum_{i=1}^k q_i\log \frac{p_i}{q_i} \le \sum_{i=1}^k q_i( \frac{p_i}{q_i}  - 1) = 0.$$
+And the equality holds if and only if
+$$\frac{p_i}{q_i} = 1 \quad \forall i = 1:k.$$ ◻
+</pre></div>
+</div>
+<p>Define cross-entropy for distribution <span class="math notranslate nohighlight">\(p\)</span> and <span class="math notranslate nohighlight">\(q\)</span> by
+$<span class="math notranslate nohighlight">\(\label{Cross-Entropy}
+H(q,p) = - \sum_{i=1}^k q_i \log p_i,\)</span><span class="math notranslate nohighlight">\( and the entropy for distribution
+\)</span>q<span class="math notranslate nohighlight">\( by \)</span><span class="math notranslate nohighlight">\(\label{Entropy}
+H(q) = - \sum_{i=1}^k q_i \log q_i.\)</span><span class="math notranslate nohighlight">\( Note that
+\)</span><span class="math notranslate nohighlight">\(D_{\rm KL}(q,p)= \sum_{i=1}^k q_i\log \frac{q_i}{p_i} =  \sum_{i=1}^k q_i \log q_i - \sum_{i=1}^k q_i \log p_i\)</span><span class="math notranslate nohighlight">\(
+Thus, \)</span><span class="math notranslate nohighlight">\(\label{KLandEntropy}
+H(q,p) = H(q) + D_{\rm KL}(q,p).\)</span><span class="math notranslate nohighlight">\( It follows from the relation
+[\[KLandEntropy\]](#KLandEntropy){reference-type=&quot;eqref&quot;
+reference=&quot;KLandEntropy&quot;} that \)</span><span class="math notranslate nohighlight">\(\label{EntropyandKL}
+\mathop{\arg\min}_p D_{\rm KL}(q,p)=\mathop{\arg\min}_p H(q,p).\)</span>$</p>
+<p>The concept of cross-entropy can be used to define a loss function in
+machine learning and optimization. Let us assume <span class="math notranslate nohighlight">\(y_i\)</span> is the true label
+for <span class="math notranslate nohighlight">\(x_i\)</span>, for example <span class="math notranslate nohighlight">\(y_i = e_{k_i}\)</span> if <span class="math notranslate nohighlight">\(x_i \in A_{k_i}\)</span>. Consider
+the predicted distribution $$\label{key}
+\bm p(x; \bm \theta) = \frac{1}{\sum\limits_{i=1}^k e^{w_i x+b_i}}</p>
+<div class="amsmath math notranslate nohighlight" id="equation-e1a12f88-a362-4f3c-8470-962aaccb0631">
+<span class="eqno">(5)<a class="headerlink" href="#equation-e1a12f88-a362-4f3c-8470-962aaccb0631" title="Permalink to this equation">¶</a></span>\[\begin{pmatrix}
+e^{w_1 x+b_1}\\
+e^{w_2 x+b_2}\\
+\vdots\\
+e^{w_k x+b_k}
+\end{pmatrix}\]</div>
+<p>= \begin{pmatrix}
+p_1(x; \bm\theta) \
+p_2(x; \bm\theta) \
+\vdots \
+p_k(x; \bm\theta)
+\end{pmatrix}$<span class="math notranslate nohighlight">\( for any data \)</span>x \in A<span class="math notranslate nohighlight">\(. By
+[\[EntropyandKL\]](#EntropyandKL){reference-type=&quot;eqref&quot;
+reference=&quot;EntropyandKL&quot;}, the minimization of KL divergence is
+equivalent to the minimization of the cross-entropy, namely
+\)</span><span class="math notranslate nohighlight">\(\mathop{\arg\min}_{\theta} \sum_{i=1}^N D_{\rm KL}(y_i,\bm p(x_i; \bm \theta)) = \mathop{\arg\min}_{\theta} \sum_{i=1}^N H(y_i, \bm p(x_i; \bm \theta)).\)</span><span class="math notranslate nohighlight">\(
+Recall that we have all data
+\)</span>D = {(x_1,y_1),(x_2,y_2),\cdots, (x_N, y_N)}<span class="math notranslate nohighlight">\(. Then, it is natural to
+consider the loss function as following:
+\)</span><span class="math notranslate nohighlight">\(\sum_{j=1}^N H(y_i, \bm p(x_i; \bm \theta)),\)</span><span class="math notranslate nohighlight">\( which measures the
+distance between the real label and predicted one for all data. In the
+meantime, we can check that \)</span><span class="math notranslate nohighlight">\(\begin{aligned}
+\sum_{j=1}^N H(y_j, \bm p(x_j; \bm \theta))&amp;=-\sum_{j=1}^N y_j  \cdot \log  \bm p(x_j; \bm \theta )\\
+&amp;=-\sum_{j=1}^N  \log p_{i_j}(x_i; \bm \theta) \quad (\text{because}~y_j = e_{i_j}~\text{for}~x_j \in A_{i_j})\\
+&amp;=-\sum_{i=1}^k \sum_{x\in A_i}  \log p_{i}(x; \bm \theta) \\
+&amp;=-\log \prod_{i=1}^k \prod_{x\in A_i}   p_{i}(x; \bm \theta)\\
+&amp; = L(\theta)
+\end{aligned}\)</span><span class="math notranslate nohighlight">\( with \)</span>L(\theta)<span class="math notranslate nohighlight">\( defined in
+[\[logistic\]](#logistic){reference-type=&quot;eqref&quot; reference=&quot;logistic&quot;}
+as
+\)</span><span class="math notranslate nohighlight">\(L(\bm \theta) = - \sum_{i=1}^k \sum_{x\in A_i} \log p_{i}(x;\bm \theta).\)</span>$</p>
+<p>That is to say, the logistic regression loss function defined by
+likelihood in <a class="reference external" href="#logistic">[logistic]</a>{reference-type=”eqref”
+reference=”logistic”} is exact the loss function defined by measuring
+the distance between real label and predicted one via cross-entropy. We
+can note $<span class="math notranslate nohighlight">\(\label{key}
+\min_{\bm \theta} L_\lambda(\bm \theta) \Leftrightarrow \min_{\bm \theta} \sum_{j=1}^N H(y_i, \bm p(x_i; \bm \theta)) + \lambda R(\|\bm \theta\|) 
+\Leftrightarrow \min_{\bm \theta} \sum_{j=1}^N D_{\rm KL}(y_i, \bm p(x_i; \bm \theta)) + \lambda R(\|\bm \theta\|).\)</span>$</p>
 </div>
 
     <script type="text/x-thebe-config">
@@ -349,11 +396,11 @@ structured.</p>
 <div class='prev-next-bottom'>
     
     <div id="prev">
-        <a class="left-prev" href="ch2_2_2.html" title="previous page">
+        <a class="left-prev" href="ch2_2.html" title="previous page">
             <i class="prevnext-label fas fa-angle-left"></i>
             <div class="prevnext-info">
                 <p class="prevnext-label">previous</p>
-                <p class="prevnext-title">Multi-class classification</p>
+                <p class="prevnext-title">Introduction to logistic regression</p>
             </div>
         </a>
     </div>
@@ -361,7 +408,7 @@ structured.</p>
         <a class="right-next" href="ch2_4.html" title="next page">
             <div class="prevnext-info">
                 <p class="prevnext-label">next</p>
-                <p class="prevnext-title">Binary LR and SVM and their relations</p>
+                <p class="prevnext-title">Support vector machine {#sec:SVMintro}</p>
             </div>
             <i class="prevnext-label fas fa-angle-right"></i>
         </a>
