@@ -1,19 +1,19 @@
 Traceback (most recent call last):
-  File "/anaconda3/envs/myenv/lib/python3.9/site-packages/jupyter_cache/executors/utils.py", line 51, in single_nb_execution
+  File "/Users/david/opt/anaconda3/lib/python3.8/site-packages/jupyter_cache/executors/utils.py", line 51, in single_nb_execution
     executenb(
-  File "/anaconda3/envs/myenv/lib/python3.9/site-packages/nbclient/client.py", line 1117, in execute
+  File "/Users/david/opt/anaconda3/lib/python3.8/site-packages/nbclient/client.py", line 1112, in execute
     return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
-  File "/anaconda3/envs/myenv/lib/python3.9/site-packages/nbclient/util.py", line 78, in wrapped
+  File "/Users/david/opt/anaconda3/lib/python3.8/site-packages/nbclient/util.py", line 74, in wrapped
     return just_run(coro(*args, **kwargs))
-  File "/anaconda3/envs/myenv/lib/python3.9/site-packages/nbclient/util.py", line 57, in just_run
+  File "/Users/david/opt/anaconda3/lib/python3.8/site-packages/nbclient/util.py", line 53, in just_run
     return loop.run_until_complete(coro)
-  File "/anaconda3/envs/myenv/lib/python3.9/asyncio/base_events.py", line 642, in run_until_complete
+  File "/Users/david/opt/anaconda3/lib/python3.8/asyncio/base_events.py", line 616, in run_until_complete
     return future.result()
-  File "/anaconda3/envs/myenv/lib/python3.9/site-packages/nbclient/client.py", line 558, in async_execute
+  File "/Users/david/opt/anaconda3/lib/python3.8/site-packages/nbclient/client.py", line 553, in async_execute
     await self.async_execute_cell(
-  File "/anaconda3/envs/myenv/lib/python3.9/site-packages/nbclient/client.py", line 862, in async_execute_cell
+  File "/Users/david/opt/anaconda3/lib/python3.8/site-packages/nbclient/client.py", line 857, in async_execute_cell
     self._check_raise_for_error(cell, exec_reply)
-  File "/anaconda3/envs/myenv/lib/python3.9/site-packages/nbclient/client.py", line 765, in _check_raise_for_error
+  File "/Users/david/opt/anaconda3/lib/python3.8/site-packages/nbclient/client.py", line 760, in _check_raise_for_error
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
@@ -33,13 +33,13 @@ H_0=\{x:wx+b=0\}$, such that $wx+b>0$ if $x\in A_1$ and $wx+b<0$ if
 $x\in A_2$.
 ```
 ```{figure} ../figures/LinearS1.png
-:name: label1
+:name: LinearS1
 :height: 150px
 One linearly separable set    
 ```
 
 ```{figure} ../figures/NLinearS2.png
-:name: label1
+:name: NLinearS2
 :height: 150px
 Two non-linearly separable sets   
 ```
@@ -47,7 +47,7 @@ Two non-linearly separable sets
 ```{admonition} Lemma 1
 The two sets $A_1$,
 $A_2\subset \mathbb{R}^d$ are linearly separable if there exists
-$$\label{Wb}
+$
 W=
 \begin{pmatrix}
   w_1\\
@@ -59,9 +59,11 @@ b=
   b_1\\
 b_2
 \end{pmatrix}
-\in \mathbb{R}^{2\times d},$$ such that, $$\label{eq:3}
- w_1x+b_1 > w_2x+b_2,\ \forall x\in A_1,$$ and $$\label{eq:3}
- w_1x+b_1 < w_2x+b_2,\ \forall x\in A_2.$$
+\in R^{2\times d},
+$ such that, $
+w_1x+b_1 > w_2x+b_2,\ \forall x\in A_1,$ and
+$
+w_1x+b_1 < w_2x+b_2,\ \forall x\in A_2.$
 ```
 
 ```{admonition} Proof
@@ -95,11 +97,13 @@ b_k
 \end{pmatrix}
 \in \mathbb{R}^{k\times d},
 $
-such that, for each $1\le i\le k$ and
-$j \neq i$ $$\label{eq:3}
- w_ix+b_i > w_jx+b_j,\ \forall x\in A_i.$$ namely, each pairs of $A_i$
-and $A_j$ are linearly separable by the plane $$\label{Hij}
-H_{ij}=\{(w_i-w_j)\cdot x+(b_i-b_j) = 0\}, \quad \forall j\neq i.$$
+such that, for each 
+$
+1\le i\le k$ and
+$j \neq i$ $
+ w_ix+b_i > w_jx+b_j,\ \forall x\in A_i.$ namely, each pairs of $A_i$
+and $A_j$ are linearly separable by the plane $
+H_{ij}=\{(w_i-w_j)\cdot x+(b_i-b_j) = 0\}, \quad \forall j\neq i.$
 ```
 
 The geometric interpretation for linearly separable sets is less obvious
@@ -121,7 +125,7 @@ of hyperplanes given by [\[Hij\]](#Hij){reference-type="eqref"
 reference="Hij"}.
 
 ```{figure} ../figures/3-class.png
-:name: label1
+:name: 3-class
 :height: 150px
 Linearly separable sets in 2-d space (k =
 3)    
@@ -185,7 +189,7 @@ If $A_1,...,A_k\subset \mathbb{R}^n$ are linearly separable, then they
 are pairwise linearly separable as well.
 ```
 
-```{} proof
+```{admonition} Proof
 *Proof.* If $A_1,...,A_k\subset \mathbb{R}^d$ are linearly separable,
 suppose that $W = (w_1^T,w_2^T,\cdots,w_k^T)^T$, $b =
   (b_1,b_2,\cdots,b_k)^T$. So we have $$\begin{cases} 
@@ -196,12 +200,12 @@ have $$w_{i,j}x + b_{i,j}\begin{cases}
     > 0 & x\in A_i \\
     < 0 & x\in A_j \\
     \end{cases}$$ So $A_1,...,A_k$ are pairwise linearly separable. ◻
-:::
+```
 
 However, the converses of both of these statements are false, as the
 following examples show.
 
-::: example
+```{admonition} example
 Consider the sets $A_1, A_2, A_3\subset \mathbb{R}$ given by
 $A_1 = [-4,-2]$, $A_2 = [-1,1]$, and $A_3 = [2,4]$. These sets are
 clearly not one-vs-all linearly separable because $A_2$ cannot be
@@ -211,9 +215,9 @@ the middle).
 
 However, these sets are linearly separated by $W = [-2,0,2]^T$ and
 $b = [-3,0,-3]^T$, for example.
-:::
+```
 
-::: example
+```{admonition} example
 Consider the sets $A_1, A_2, A_3\subset \mathbb{R}^2$ shown in figure
 [6](#pairwise_separable_example){reference-type="ref"
 reference="pairwise_separable_example"}. Note that $A_i$ and $A_j$ are
@@ -241,7 +245,7 @@ and $A_3$ are pairwise linearly separable, no possible pairwise
 separation allows us to consistently classify arbitrary new points.
 However, a linear separation would give us a consistent scheme for
 classifying new points.
-:::
+```
 
 So the notion of linear separability is sandwiched in between the more
 intuitive notions of all-vs-one and pairwise separability. It turns out
@@ -250,10 +254,10 @@ $k$-class classification problem and so we focus on this notion of
 separability from now on.
 ------------------
 
-[0;36m  File [0;32m"/var/folders/xz/fhb2zgq551315f5zf88k__ph0000gn/T/ipykernel_69780/3632945930.py"[0;36m, line [0;32m3[0m
+[0;36m  File [0;32m"<ipython-input-1-5f382dc56198>"[0;36m, line [0;32m3[0m
 [0;31m    In this section, we consider a special class of $k$ linearly separable[0m
 [0m       ^[0m
 [0;31mSyntaxError[0m[0;31m:[0m invalid syntax
 
-SyntaxError: invalid syntax (3632945930.py, line 3)
+SyntaxError: invalid syntax (<ipython-input-1-5f382dc56198>, line 3)
 
