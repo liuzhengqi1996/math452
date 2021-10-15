@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# # Support vector machine {#sec:SVMintro}
+# # Support vector machine 
 # 
 # There is a lot of work about SVM in literature , see
 # [@drucker1997support; @ben2001support; @cortes1995support; @cristianini2000introduction]
-# for example. Given a binary linearly separable classification dataset
+# for example.
+# Given a binary linearly separable classification dataset
 # ${(x_i,y_i)}_{i = 1}^N$, where
 # $x_i\in \mathbb{R}^d, y_i\in \left \{\begin{pmatrix}1\\0\end{pmatrix}, \begin{pmatrix}0\\1\end{pmatrix}\right \}$.
 # We use $A_1,A_2$ to denote the data with label
@@ -14,14 +15,13 @@
 # $w\in \mathbb{R}^{1\times d}, b\in \mathbb{R}$ such that the hyperplane
 # $H_{\theta} = \{x:wx + b = 0\}$ can separate $A_1,A_2$.
 # 
-# ## Binary SVM {#sec:SVM}
+# ## Binary SVM 
 # 
 # Binary Support Vector Machine (SVM for short hereinafter) wants to find
 # the classifiable hyperplane which has the biggest distance with $A_1$
 # and $A_2$. Assume that we have the hyperplanes $wx+b=\pm 1$ with
-# $$wx_i+b\ge 1 \quad \mbox{for}\quad x_i\in A_1,\quad wx_i+b\le -1 \quad \mbox{for}\quad x_i\in A_2,$$
-# which is similar to the definition
-# [\[2classH\]](#2classH){reference-type="eqref" reference="2classH"}. Let
+# $wx_i+b\ge 1 \quad \mbox{for}\quad x_i\in A_1,\quad wx_i+b\le -1 \quad \mbox{for}\quad x_i\in A_2,$
+# which is similar to the definition. Let
 # $y_1=\begin{pmatrix}1\\0\end{pmatrix}$ for $x_i\in A_1$ and
 # $y_2=\begin{pmatrix}0\\1\end{pmatrix}$ for $x_i\in A_2$. Note that $w$
 # is normal to the hyperplane and the distance between the points
