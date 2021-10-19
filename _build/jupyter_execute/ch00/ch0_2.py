@@ -56,7 +56,7 @@ IFrame(src="https://cdnapisec.kaltura.com/p/2356971/sp/235697100/embedIframeJs/u
 # medical, robots and so on. They can learn by themselves since they are artificial
 # intelligence, and transfer learning can be done with enough data.
 
-# ### Success Stories - III: Auto-driving
+# ## Success Stories - III: Auto-driving
 # - In 2009, Google proposed the plan to replace
 # human driving with softwares. Afterwards,
 # many large technology companies such as

@@ -13,15 +13,20 @@ parts:
     - file: ch00/ch0_3.ipynb
   - file: ch01/ch1_
     sections:
+    - file: ch01/video.ipynb
     - file: ch01/ch1_1_video.ipynb 
     - file: ch01/ch1_2_video.ipynb  
     - file: ch01/ch1_3_video.ipynb 
   - file: ch02/ch2_
     sections:
     - file: ch02/ch2_1.ipynb
+    - file: ch02/ch2_1_test.md
     - file: ch02/ch2_2.ipynb
+    - file: ch02/ch2_2_test.md
     - file: ch02/ch2_3.ipynb
+    - file: ch02/ch2_3_test.md
     - file: ch02/ch2_4.ipynb
+    - file: ch02/ch2_4_test.md
 
 
    

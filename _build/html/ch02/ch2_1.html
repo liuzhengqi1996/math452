@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>&lt;no title&gt; &#8212; Math 452 Site</title>
+    <title>2.1 Definition of linearly separable sets &#8212; Math 452 Site</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet" />
   <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -23,7 +23,7 @@
 
     
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" type="text/css" />
+    <link rel="stylesheet" href="../_static/sphinx-book-theme.e8f53015daec13862f6db5e763c41738.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
@@ -42,6 +42,8 @@
     <script src="../_static/copybutton.js"></script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]]}})</script>
     <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
     <script >
         const thebe_selector = ".thebe"
@@ -51,7 +53,7 @@
     <script async="async" src="../_static/sphinx-thebe.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="&lt;no title&gt;" href="ch2_2.html" />
+    <link rel="next" title="Introduction to logistic regression" href="ch2_2.html" />
     <link rel="prev" title="Linear Machine Learning Models" href="ch2_.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
@@ -70,10 +72,6 @@
     
         <div class="navbar-brand-box">
     <a class="navbar-brand text-wrap" href="../index.html">
-      
-        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
-        
-      
       
       <img src="../_static/PSU_SCI_RGB_2C.png" class="logo" alt="logo">
       
@@ -98,7 +96,7 @@
   contents
  </span>
 </p>
-<ul class="nav bd-sidenav">
+<ul class="current nav bd-sidenav">
  <li class="toctree-l1 has-children">
   <a class="reference internal" href="../ch00/ch0_.html">
    Get started: course information and preparations:
@@ -137,6 +135,11 @@
   </label>
   <ul>
    <li class="toctree-l2">
+    <a class="reference internal" href="../ch01/video.html">
+     Chapter 1 video
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="../ch01/ch1_1_video.html">
      A basic machine learning problem: image classification
     </a>
@@ -153,16 +156,26 @@
    </li>
   </ul>
  </li>
- <li class="toctree-l1 has-children">
+ <li class="toctree-l1 current active has-children">
   <a class="reference internal" href="ch2_.html">
    Linear Machine Learning Models
   </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
   <label for="toctree-checkbox-3">
    <i class="fas fa-chevron-down">
    </i>
   </label>
-  <ul>
+  <ul class="current">
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     2.1 Definition of linearly separable sets
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="ch2_2.html">
+     Introduction to logistic regression
+    </a>
+   </li>
    <li class="toctree-l2">
     <a class="reference internal" href="ch2_3.html">
      KL divergence and cross-entropy
@@ -216,9 +229,9 @@
         <!-- ipynb file if we had a myst markdown file -->
         
         <!-- Download raw file -->
-        <a class="dropdown-buttons" href="../_sources/ch02/ch2_1.ipynb"><button type="button"
+        <a class="dropdown-buttons" href="../_sources/ch02/ch2_1.md"><button type="button"
                 class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
-                data-placement="left">.ipynb</button></a>
+                data-placement="left">.md</button></a>
         <!-- Download PDF via print -->
         <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
             onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
@@ -236,36 +249,11 @@
 
             <!-- Launch buttons -->
 
-<div class="dropdown-buttons-trigger">
-    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
-        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
-    <div class="dropdown-buttons">
-        
-        <a class="binder-button" href="https://mybinder.org/v2/gh/liuzhengqi1996/binder/0857756f6027721a1be25c69bd6b9061d94d5b7a?urlpath=lab%2Ftree%2Ftutorial.ipynb/v2/gh/liuzhengqi1996/binder/master?urlpath=lab/tree/ch02/ch2_1.ipynb"><button type="button"
-                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
-                data-placement="left"><img class="binder-button-logo"
-                    src="../_static/images/logo_binder.svg"
-                    alt="Interact on binder">Binder</button></a>
-        
-        
-        
-        
-    </div>
-</div>
-
         </div>
 
         <!-- Table of contents -->
         <div class="d-none d-md-block col-md-2 bd-toc show">
             
-            <div class="tocsection onthispage pt-5 pb-3">
-                <i class="fas fa-list"></i> Contents
-            </div>
-            <nav id="bd-toc-nav" aria-label="Page">
-                <ul class="simple visible nav section-nav flex-column">
-</ul>
-
-            </nav>
         </div>
     </div>
 </div>
@@ -274,39 +262,50 @@
         
               <div>
                 
-  <div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Definition of linearly separable sets
-
-In this section, we consider a special class of $k$ linearly separable
-sets for $k\ge 2$. Let us first introduce the following definition for
-binary classification.
-
-For $k=2$, there is a very simple geometric interpretation of two
-linearly separable sets.
-
-```{admonition} Definition 1
-The two sets $A_1$, $A_2\subset \mathbb{R}^d$ are linearly separable if there exists a
-hyperplane $\label{2classH}
-H_0=\{x:wx+b=0\}$, such that $wx+b&gt;0$ if $x\in A_1$ and $wx+b&lt;0$ if
-$x\in A_2$.
-```
-```{figure} ../figures/LinearS1.png
-:name: LinearS1
-:height: 150px
-One linearly separable set    
-```
-
-```{figure} ../figures/NLinearS2.png
-:name: NLinearS2
-:height: 150px
-Two non-linearly separable sets   
-```
-
-```{admonition} Lemma 1
-The two sets $A_1$,
+  <div class="section" id="definition-of-linearly-separable-sets">
+<h1>2.1 Definition of linearly separable sets<a class="headerlink" href="#definition-of-linearly-separable-sets" title="Permalink to this headline">¶</a></h1>
+<p>In this section, we consider a special class of <span class="math notranslate nohighlight">\(k\)</span> linearly separable
+sets for <span class="math notranslate nohighlight">\(k\ge 2\)</span>. Let us first introduce the following definition for
+binary classification.</p>
+<p>For <span class="math notranslate nohighlight">\(k=2\)</span>, there is a very simple geometric interpretation of two
+linearly separable sets.</p>
+<div class="tip admonition" id="lem2class">
+<p class="admonition-title">Definition</p>
+<p>The two sets <span class="math notranslate nohighlight">\(A_1\)</span>, <span class="math notranslate nohighlight">\(A_2\subset \mathbb{R}^d\)</span> are linearly separable if there exists a
+hyperplane</p>
+<p>such that <span class="math notranslate nohighlight">\(wx+b&gt;0\)</span> if <span class="math notranslate nohighlight">\(x \in A_1\)</span> and <span class="math notranslate nohighlight">\(wx+b&lt;0\)</span> if
+<span class="math notranslate nohighlight">\(x \in A_2\)</span></p>
+<div class="math notranslate nohighlight" id="equation-2classh">
+<span class="eqno">(3)<a class="headerlink" href="#equation-2classh" title="Permalink to this equation">¶</a></span>\[
+  H_{0}=\{x:wx+b=0\} 
+\]</div>
+<div class="math notranslate nohighlight" id="equation-my-other-label">
+<span class="eqno">(4)<a class="headerlink" href="#equation-my-other-label" title="Permalink to this equation">¶</a></span>\[
+  w_{t+1} = (1 + r_{t+1}) s(w_t) + y_{t+1}
+\]</div>
+</div>
+<div class="math notranslate nohighlight" id="equation-2classh">
+<span class="eqno">(3)<a class="headerlink" href="#equation-2classh" title="Permalink to this equation">¶</a></span>\[
+  H_{0}=\{x:wx+b=0\} 
+\]</div>
+<div class="math notranslate nohighlight" id="equation-my-other-label">
+<span class="eqno">(4)<a class="headerlink" href="#equation-my-other-label" title="Permalink to this equation">¶</a></span>\[
+  w_{t+1} = (1 + r_{t+1}) s(w_t) + y_{t+1}
+\]</div>
+<p>a\ref{2classH}</p>
+<div class="figure align-default" id="twoclassification">
+<a class="reference internal image-reference" href="../_images/LinearS1.png"><img alt="../_images/LinearS1.png" src="../_images/LinearS1.png" style="height: 150px;" /></a>
+<p class="caption"><span class="caption-number">Fig. 1 </span><span class="caption-text">One linearly separable set</span><a class="headerlink" href="#twoclassification" title="Permalink to this image">¶</a></p>
+</div>
+<p><a class="reference internal" href="#twoclassification"><span class="std std-ref">One linearly separable set</span></a></p>
+<ul class="simple">
+<li><p>Alink to eq: <a class="reference internal" href="#equation-2classh">(3)</a>
+<img alt="Two non-linearly separablesets" src="ch02/NLinearS1.png" />{#twoclassification width=”1.5in”} <img alt="Twonon-linearly separable sets" src="ch02/NLinearS2.png" />{#twoclassification
+width=”1.5in”}</p></li>
+</ul>
+<div class="highlight-lemma notranslate"><div class="highlight"><pre><span></span>[\[lem:2class\]]{#lem:2class label=&quot;lem:2class&quot;} The two sets $A_1$,
 $A_2\subset \mathbb{R}^d$ are linearly separable if there exists
-$
+$$\label{Wb}
 W=
 \begin{pmatrix}
   w_1\\
@@ -318,29 +317,23 @@ b=
   b_1\\
 b_2
 \end{pmatrix}
-\in R^{2\times d},
-$ such that, $
-w_1x+b_1 &gt; w_2x+b_2,\ \forall x\in A_1,$ and
-$
-w_1x+b_1 &lt; w_2x+b_2,\ \forall x\in A_2.$
-```
-
-```{admonition} Proof
-*Proof.* Here, we can just take $w = w_1 - w_2$ and $b = b_1 - b_2$,
+\in \mathbb{R}^{2\times d},$$ such that, $$\label{eq:3}
+ w_1x+b_1 &gt; w_2x+b_2,\ \forall x\in A_1,$$ and $$\label{eq:3}
+ w_1x+b_1 &lt; w_2x+b_2,\ \forall x\in A_2.$$
+</pre></div>
+</div>
+<div class="highlight-proof notranslate"><div class="highlight"><pre><span></span>*Proof.* Here, we can just take $w = w_1 - w_2$ and $b = b_1 - b_2$,
 then we can check that the hyperplane $wx + b$ satisfies the definition
 as presented before. ◻
-```
-
-Now let us consider multi-class classification. To begin with the
-definition, let us assume that the data space is divided into $k$
-classes represented by $k$ disjoint sets
-$A_1,A_2,\cdots,A_k\subset \mathbb{R}^d$, which means
-$$A = A_1\cup A_2\cup \cdots \cup A_k, ~A_i\cap A_j = \emptyset, \forall i \neq j.$$
-
-```{admonition} Definition 2
-A collection of subsets $A_1,...,A_k\subset \mathbb{R}^d$ are linearly
-separable if there exist $
-\label{Wb}
+</pre></div>
+</div>
+<p>Now let us consider multi-class classification. To begin with the
+definition, let us assume that the data space is divided into <span class="math notranslate nohighlight">\(k\)</span>
+classes represented by <span class="math notranslate nohighlight">\(k\)</span> disjoint sets
+<span class="math notranslate nohighlight">\(A_1,A_2,\cdots,A_k\subset \mathbb{R}^d\)</span>, which means
+$<span class="math notranslate nohighlight">\(A = A_1\cup A_2\cup \cdots \cup A_k, ~A_i\cap A_j = \emptyset, \forall i \neq j.\)</span>$</p>
+<div class="highlight-definition notranslate"><div class="highlight"><pre><span></span>A collection of subsets $A_1,...,A_k\subset \mathbb{R}^d$ are linearly
+separable if there exist $$\label{Wb}
 W=
 \begin{pmatrix}
   w_1\\
@@ -354,86 +347,55 @@ b=
 \vdots\\
 b_k
 \end{pmatrix}
-\in \mathbb{R}^{k\times d},
-$
-such that, for each 
-$
-1\le i\le k$ and
-$j \neq i$ $
- w_ix+b_i &gt; w_jx+b_j,\ \forall x\in A_i.$ namely, each pairs of $A_i$
-and $A_j$ are linearly separable by the plane $
-H_{ij}=\{(w_i-w_j)\cdot x+(b_i-b_j) = 0\}, \quad \forall j\neq i.$
-```
-
-The geometric interpretation for linearly separable sets is less obvious
-when $k&gt;2$.
-
-```{admonition} Lemma 2
-Assume that
+\in \mathbb{R}^{k\times d},$$ such that, for each $1\le i\le k$ and
+$j \neq i$ $$\label{eq:3}
+ w_ix+b_i &gt; w_jx+b_j,\ \forall x\in A_i.$$ namely, each pairs of $A_i$
+and $A_j$ are linearly separable by the plane $$\label{Hij}
+H_{ij}=\{(w_i-w_j)\cdot x+(b_i-b_j) = 0\}, \quad \forall j\neq i.$$
+</pre></div>
+</div>
+<p>The geometric interpretation for linearly separable sets is less obvious
+when <span class="math notranslate nohighlight">\(k&gt;2\)</span>.</p>
+<div class="highlight-lemma notranslate"><div class="highlight"><pre><span></span>[\[Interplation\]]{#Interplation label=&quot;Interplation&quot;} Assume that
 $A_1,...,A_k$ are linearly separable and $W\in
 \mathbb{R}^{k\times d}$ and $b\in\mathbb{R}^k$ satisfy
 [\[Wb\]](#Wb){reference-type=&quot;eqref&quot; reference=&quot;Wb&quot;}. Define
-$\label{Gammai}
+$$\label{Gammai}
 \Gamma_i(W,b) = \{x\in\mathbb R^d: (Wx+b)_i &gt; (Wx+b)_j,\ \forall j \neq i\}$$
 Then for each $i$, $$\label{AiGamma}
-A_i \subset \Gamma_i(W,b)$
-```
-
-We note that each $\Gamma_i(W,b)$ is a polygon whose boundary consists
-of hyperplanes given by [\[Hij\]](#Hij){reference-type=&quot;eqref&quot;
-reference=&quot;Hij&quot;}.
-
-```{figure} ../figures/3-class.png
-:name: 3-class
-:height: 150px
-Linearly separable sets in 2-d space (k =
-3)    
-```
-
-
-We next introduce two more definitions of linearly separable sets that
-have more clear geometric interpretation.
-
-```{admonition} Definition 3
-A collection of subsets $A_1,...,A_k\subset \mathbb{R}^d$ is all-vs-one
+A_i \subset \Gamma_i(W,b)$$
+</pre></div>
+</div>
+<p>We note that each <span class="math notranslate nohighlight">\(\Gamma_i(W,b)\)</span> is a polygon whose boundary consists
+of hyperplanes given by <a class="reference external" href="#Hij">[Hij]</a>{reference-type=”eqref”
+reference=”Hij”}.</p>
+<p><img alt="Linearly separable sets in 2-d space (k =3)" src="ch02/figures/3-class.PNG" />{#twoclassification width=”1.5in”}</p>
+<p>We next introduce two more definitions of linearly separable sets that
+have more clear geometric interpretation.</p>
+<div class="highlight-definition notranslate"><div class="highlight"><pre><span></span>A collection of subsets $A_1,...,A_k\subset \mathbb{R}^d$ is all-vs-one
 linearly separable if for each $i = 1,...,k$, $A_i$ and
 $\displaystyle \cup_{j\neq i} A_j$ are linearly separable.
-```
-```{figure} ../figures/MulLClassfication.png
-:name: MulLClassfication
-:height: 150px
-All-vs-One linearly separable sets (k =
-3)    
-```
-
-
-```{admonition} Definition 4
-A collection of subsets $A_1,...,A_k\subset \mathbb{R}^d$ is pairwise
+</pre></div>
+</div>
+<p><img alt="All-vs-One linearly separable sets (k =3)" src="ch02/figures/MulLClassfication.PNG" />{#twoclassification width=”1.5in”}</p>
+<div class="highlight-definition notranslate"><div class="highlight"><pre><span></span>A collection of subsets $A_1,...,A_k\subset \mathbb{R}^d$ is pairwise
 linearly separable if for each pair of indices $1\leq i &lt;
   j\leq k$, $A_i$ and $A_j$ are linearly separable.
-```
-```{figure} ../figures/pairwise_linearly_separable.png
-:name: pairwise_linearly_separable
-:height: 150px
-Pairwise linearly separable sets in 2-d space (k =
-3) 
-```
-
-
-We begin by comparing our notion of linearly separable to the two other
+</pre></div>
+</div>
+<p><img alt="Pairwise linearly separable sets in 2-d space (k =3)" src="ch02/figures/pairwise_linearly_separable.png" />{#pairwise_separable_example
+width=”1.5in”}</p>
+<p>We begin by comparing our notion of linearly separable to the two other
 previously introduced geometric definitions of all-vs-one linearly
 separable and pairwise lineaerly separable. Obviously, in the case of
 two classes, they are all equivalent, however, with more than two
 classes this is no longer the case. We do have the following
-implications, though.
-
-```{admonition} Lemma 3
-If $A_1,...,A_k\subset \mathbb{R}^d$ are all-vs-one linearly separable,
+implications, though.</p>
+<div class="highlight-lemma notranslate"><div class="highlight"><pre><span></span>If $A_1,...,A_k\subset \mathbb{R}^d$ are all-vs-one linearly separable,
 then they are linearly separable as well.
-```
-
-```{admonition} Proof
-*Proof.* Assume that $A_1,...,A_k$ are all-vs-one linearly separable.
+</pre></div>
+</div>
+<div class="highlight-proof notranslate"><div class="highlight"><pre><span></span>*Proof.* Assume that $A_1,...,A_k$ are all-vs-one linearly separable.
 For each $i$, let $w_i$, $b_i$ be such that $w_ix + b_i$ separates $A_i$
 from $\cup_{j\neq i} A_j$, i.e. $w_ix + b_i &gt; 0$ for $x\in A_i$ and
 $w_ix + b_i &lt; 0$ for $x \in \cup_{j\neq i} A_j$.
@@ -441,15 +403,13 @@ $w_ix + b_i &lt; 0$ for $x \in \cup_{j\neq i} A_j$.
 Set $W = (w_1^T,w_2^T,\cdots,w_k^T)^T$, $b = (b_1,b_2,\cdots,b_k)^T$ and
 observe that if $x\in A_i$, then $(Wx + b)_i &gt; 0$ while $(Wx + b)_j &lt; 0$
 for all $j\neq i$. ◻
-```
-
-```{admonition} Lemma 4
-If $A_1,...,A_k\subset \mathbb{R}^n$ are linearly separable, then they
+</pre></div>
+</div>
+<div class="highlight-lemma notranslate"><div class="highlight"><pre><span></span>If $A_1,...,A_k\subset \mathbb{R}^n$ are linearly separable, then they
 are pairwise linearly separable as well.
-```
-
-```{admonition} Proof
-*Proof.* If $A_1,...,A_k\subset \mathbb{R}^d$ are linearly separable,
+</pre></div>
+</div>
+<div class="highlight-proof notranslate"><div class="highlight"><pre><span></span>*Proof.* If $A_1,...,A_k\subset \mathbb{R}^d$ are linearly separable,
 suppose that $W = (w_1^T,w_2^T,\cdots,w_k^T)^T$, $b =
   (b_1,b_2,\cdots,b_k)^T$. So we have $$\begin{cases} 
     w_i x+ b_i &gt; w_j x + b_j &amp; x\in A_i \\
@@ -459,13 +419,11 @@ have $$w_{i,j}x + b_{i,j}\begin{cases}
     &gt; 0 &amp; x\in A_i \\
     &lt; 0 &amp; x\in A_j \\
     \end{cases}$$ So $A_1,...,A_k$ are pairwise linearly separable. ◻
-```
-
-However, the converses of both of these statements are false, as the
-following examples show.
-
-```{admonition} example
-Consider the sets $A_1, A_2, A_3\subset \mathbb{R}$ given by
+</pre></div>
+</div>
+<p>However, the converses of both of these statements are false, as the
+following examples show.</p>
+<div class="highlight-example notranslate"><div class="highlight"><pre><span></span>Consider the sets $A_1, A_2, A_3\subset \mathbb{R}$ given by
 $A_1 = [-4,-2]$, $A_2 = [-1,1]$, and $A_3 = [2,4]$. These sets are
 clearly not one-vs-all linearly separable because $A_2$ cannot be
 separated from both $A_1$ and $A_3$ by a single plane (in $\mathbb{R}$
@@ -474,10 +432,9 @@ the middle).
 
 However, these sets are linearly separated by $W = [-2,0,2]^T$ and
 $b = [-3,0,-3]^T$, for example.
-```
-
-```{admonition} example
-Consider the sets $A_1, A_2, A_3\subset \mathbb{R}^2$ shown in figure
+</pre></div>
+</div>
+<div class="highlight-example notranslate"><div class="highlight"><pre><span></span>Consider the sets $A_1, A_2, A_3\subset \mathbb{R}^2$ shown in figure
 [6](#pairwise_separable_example){reference-type=&quot;ref&quot;
 reference=&quot;pairwise_separable_example&quot;}. Note that $A_i$ and $A_j$ are
 separated by hyperplane $H_{i,j}$ (drawn in the figure) and so these
@@ -504,24 +461,13 @@ and $A_3$ are pairwise linearly separable, no possible pairwise
 separation allows us to consistently classify arbitrary new points.
 However, a linear separation would give us a consistent scheme for
 classifying new points.
-```
-
-So the notion of linear separability is sandwiched in between the more
+</pre></div>
+</div>
+<p>So the notion of linear separability is sandwiched in between the more
 intuitive notions of all-vs-one and pairwise separability. It turns out
 that linear separability is the notion which is most useful for the
-$k$-class classification problem and so we focus on this notion of
-separability from now on.
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span>  File &quot;&lt;ipython-input-1-5f382dc56198&gt;&quot;, line 3
-    In this section, we consider a special class of $k$ linearly separable
-       ^
-SyntaxError: invalid syntax
-</pre></div>
-</div>
-</div>
+<span class="math notranslate nohighlight">\(k\)</span>-class classification problem and so we focus on this notion of
+separability from now on.</p>
 </div>
 
     <script type="text/x-thebe-config">
@@ -566,7 +512,7 @@ SyntaxError: invalid syntax
         <a class="right-next" href="ch2_2.html" title="next page">
             <div class="prevnext-info">
                 <p class="prevnext-label">next</p>
-                <p class="prevnext-title">&lt;no title&gt;</p>
+                <p class="prevnext-title">Introduction to logistic regression</p>
             </div>
             <i class="prevnext-label fas fa-angle-right"></i>
         </a>
@@ -576,7 +522,7 @@ SyntaxError: invalid syntax
         
         </div>
     </div>
-    <footer class="footer">
+    <footer class="footer mt-5 mt-md-0">
     <div class="container">
       <p>
         

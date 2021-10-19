@@ -23,7 +23,7 @@
 
     
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" type="text/css" />
+    <link rel="stylesheet" href="../_static/sphinx-book-theme.e8f53015daec13862f6db5e763c41738.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
@@ -54,7 +54,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="KL divergence and cross-entropy" href="ch2_3.html" />
-    <link rel="prev" title="&lt;no title&gt;" href="ch2_1.html" />
+    <link rel="prev" title="2.1 Definition of linearly separable sets" href="ch2_1.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
     
@@ -72,10 +72,6 @@
     
         <div class="navbar-brand-box">
     <a class="navbar-brand text-wrap" href="../index.html">
-      
-        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
-        
-      
       
       <img src="../_static/PSU_SCI_RGB_2C.png" class="logo" alt="logo">
       
@@ -139,6 +135,11 @@
   </label>
   <ul>
    <li class="toctree-l2">
+    <a class="reference internal" href="../ch01/video.html">
+     Chapter 1 video
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="../ch01/ch1_1_video.html">
      A basic machine learning problem: image classification
     </a>
@@ -165,6 +166,11 @@
    </i>
   </label>
   <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="ch2_1.html">
+     2.1 Definition of linearly separable sets
+    </a>
+   </li>
    <li class="toctree-l2 current active">
     <a class="current reference internal" href="#">
      Introduction to logistic regression
@@ -311,22 +317,22 @@ classifiable weights. But how can we find one element in <span class="math notra
 <span class="math notranslate nohighlight">\(s = (s_1,s_2,\cdots,s_k)^T\in \mathbb{R}^k\)</span>, we define the soft-max
 mapping <span class="math notranslate nohighlight">\(\sigma: \mathbb{R}^k \rightarrow\mathbb{R}^k\)</span> as
 $$\sigma(s)  = \frac{e^{s}}{e^{s}\cdot 1} = \frac{1}{\sum\limits_{i=1}^k e^{s_i}}</p>
-<div class="amsmath math notranslate nohighlight" id="equation-f62a57ba-feb5-4362-95c8-362b2d69e601">
-<span class="eqno">(1)<a class="headerlink" href="#equation-f62a57ba-feb5-4362-95c8-362b2d69e601" title="Permalink to this equation">¶</a></span>\[\begin{pmatrix}
+<div class="amsmath math notranslate nohighlight" id="equation-98f51629-a459-411a-9dc7-be76abb09600">
+<span class="eqno">(5)<a class="headerlink" href="#equation-98f51629-a459-411a-9dc7-be76abb09600" title="Permalink to this equation">¶</a></span>\[\begin{pmatrix}
  e^{s_1}\\
  e^{s_2}\\
  \vdots\\
  e^{s_k}
  \end{pmatrix}\]</div>
-<div class="amsmath math notranslate nohighlight" id="equation-78c1e4a5-ca7d-4572-92e3-516e0cc7b21d">
-<span class="eqno">(2)<a class="headerlink" href="#equation-78c1e4a5-ca7d-4572-92e3-516e0cc7b21d" title="Permalink to this equation">¶</a></span>\[\begin{pmatrix}
+<div class="amsmath math notranslate nohighlight" id="equation-f1671410-40f6-4849-9a7c-26f71e3d2a63">
+<span class="eqno">(6)<a class="headerlink" href="#equation-f1671410-40f6-4849-9a7c-26f71e3d2a63" title="Permalink to this equation">¶</a></span>\[\begin{pmatrix}
  e^{s_1}\\
  e^{s_2}\\
  \vdots\\
  e^{s_k}
  \end{pmatrix}\]</div>
-<div class="amsmath math notranslate nohighlight" id="equation-8a6f83b9-a0b4-45af-b2ed-4feaaf4e2aef">
-<span class="eqno">(3)<a class="headerlink" href="#equation-8a6f83b9-a0b4-45af-b2ed-4feaaf4e2aef" title="Permalink to this equation">¶</a></span>\[\begin{pmatrix}
+<div class="amsmath math notranslate nohighlight" id="equation-63d68b0f-02c7-4318-b1a3-e95bd2098bd7">
+<span class="eqno">(7)<a class="headerlink" href="#equation-63d68b0f-02c7-4318-b1a3-e95bd2098bd7" title="Permalink to this equation">¶</a></span>\[\begin{pmatrix}
  1\\
  1 \\
  \vdots \\
@@ -338,8 +344,8 @@ $$\sigma(s)  = \frac{e^{s}}{e^{s}\cdot 1} = \frac{1}{\sum\limits_{i=1}^k e^{s_i}
 <p>Given parameter <span class="math notranslate nohighlight">\(\theta = (W,b)\)</span>, we define a feature mapping
 <span class="math notranslate nohighlight">\( p: \mathbb{R}^d \rightarrow \mathbb{R}^k\)</span> as
 $$ p(x; \theta)  = \sigma(Wx+b) = \frac{1}{\sum\limits_{i=1}^k e^{w_i x+b_i}}</p>
-<div class="amsmath math notranslate nohighlight" id="equation-c9f3dfbe-b0f7-4541-8fb5-00b9e0d0fdd0">
-<span class="eqno">(4)<a class="headerlink" href="#equation-c9f3dfbe-b0f7-4541-8fb5-00b9e0d0fdd0" title="Permalink to this equation">¶</a></span>\[\begin{pmatrix}
+<div class="amsmath math notranslate nohighlight" id="equation-a752dca9-509c-48c4-a6d2-13dd7eaf886f">
+<span class="eqno">(8)<a class="headerlink" href="#equation-a752dca9-509c-48c4-a6d2-13dd7eaf886f" title="Permalink to this equation">¶</a></span>\[\begin{pmatrix}
  e^{w_1 x+b_1}\\
  e^{w_2 x+b_2}\\
  \vdots\\
@@ -585,7 +591,7 @@ which will be discussed in the next section.</p></li>
             <i class="prevnext-label fas fa-angle-left"></i>
             <div class="prevnext-info">
                 <p class="prevnext-label">previous</p>
-                <p class="prevnext-title">&lt;no title&gt;</p>
+                <p class="prevnext-title">2.1 Definition of linearly separable sets</p>
             </div>
         </a>
     </div>
@@ -603,7 +609,7 @@ which will be discussed in the next section.</p></li>
         
         </div>
     </div>
-    <footer class="footer">
+    <footer class="footer mt-5 mt-md-0">
     <div class="container">
       <p>
         
