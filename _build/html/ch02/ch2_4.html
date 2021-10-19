@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Support vector machine {#sec:SVMintro} &#8212; Math 452 Site</title>
+    <title>Support vector machine &#8212; Math 452 Site</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet" />
   <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -167,7 +167,11 @@
   <ul class="current">
    <li class="toctree-l2">
     <a class="reference internal" href="ch2_1.html">
+<<<<<<< HEAD
      2.1 Definition of linearly separable sets
+=======
+     Definition of linearly separable sets
+>>>>>>> 489abbd408a4cdb4f8697853b0ed37941440da75
     </a>
    </li>
    <li class="toctree-l2">
@@ -182,7 +186,7 @@
    </li>
    <li class="toctree-l2 current active">
     <a class="current reference internal" href="#">
-     Support vector machine {#sec:SVMintro}
+     Support vector machine
     </a>
    </li>
   </ul>
@@ -276,8 +280,8 @@
             <nav id="bd-toc-nav" aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#binary-svm-sec-svm">
-   Binary SVM {#sec:SVM}
+  <a class="reference internal nav-link" href="#binary-svm">
+   Binary SVM
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -301,11 +305,12 @@
         
               <div>
                 
-  <div class="section" id="support-vector-machine-sec-svmintro">
-<h1>Support vector machine {#sec:SVMintro}<a class="headerlink" href="#support-vector-machine-sec-svmintro" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="support-vector-machine">
+<h1>Support vector machine<a class="headerlink" href="#support-vector-machine" title="Permalink to this headline">¶</a></h1>
 <p>There is a lot of work about SVM in literature , see
 [&#64;drucker1997support; &#64;ben2001support; &#64;cortes1995support; &#64;cristianini2000introduction]
-for example. Given a binary linearly separable classification dataset
+for example.
+Given a binary linearly separable classification dataset
 <span class="math notranslate nohighlight">\({(x_i,y_i)}_{i = 1}^N\)</span>, where
 <span class="math notranslate nohighlight">\(x_i\in \mathbb{R}^d, y_i\in \left \{\begin{pmatrix}1\\0\end{pmatrix}, \begin{pmatrix}0\\1\end{pmatrix}\right \}\)</span>.
 We use <span class="math notranslate nohighlight">\(A_1,A_2\)</span> to denote the data with label
@@ -313,18 +318,17 @@ We use <span class="math notranslate nohighlight">\(A_1,A_2\)</span> to denote t
 respectively. Our goal is to find a <span class="math notranslate nohighlight">\(\theta = (w,b)\)</span> where
 <span class="math notranslate nohighlight">\(w\in \mathbb{R}^{1\times d}, b\in \mathbb{R}\)</span> such that the hyperplane
 <span class="math notranslate nohighlight">\(H_{\theta} = \{x:wx + b = 0\}\)</span> can separate <span class="math notranslate nohighlight">\(A_1,A_2\)</span>.</p>
-<div class="section" id="binary-svm-sec-svm">
-<h2>Binary SVM {#sec:SVM}<a class="headerlink" href="#binary-svm-sec-svm" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="binary-svm">
+<h2>Binary SVM<a class="headerlink" href="#binary-svm" title="Permalink to this headline">¶</a></h2>
 <p>Binary Support Vector Machine (SVM for short hereinafter) wants to find
 the classifiable hyperplane which has the biggest distance with <span class="math notranslate nohighlight">\(A_1\)</span>
 and <span class="math notranslate nohighlight">\(A_2\)</span>. Assume that we have the hyperplanes <span class="math notranslate nohighlight">\(wx+b=\pm 1\)</span> with
-$<span class="math notranslate nohighlight">\(wx_i+b\ge 1 \quad \mbox{for}\quad x_i\in A_1,\quad wx_i+b\le -1 \quad \mbox{for}\quad x_i\in A_2,\)</span><span class="math notranslate nohighlight">\(
-which is similar to the definition
-[\[2classH\]](#2classH){reference-type=&quot;eqref&quot; reference=&quot;2classH&quot;}. Let
-\)</span>y_1=\begin{pmatrix}1\0\end{pmatrix}<span class="math notranslate nohighlight">\( for \)</span>x_i\in A_1<span class="math notranslate nohighlight">\( and
-\)</span>y_2=\begin{pmatrix}0\1\end{pmatrix}<span class="math notranslate nohighlight">\( for \)</span>x_i\in A_2<span class="math notranslate nohighlight">\(. Note that \)</span>w<span class="math notranslate nohighlight">\(
+<span class="math notranslate nohighlight">\(wx_i+b\ge 1 \quad \mbox{for}\quad x_i\in A_1,\quad wx_i+b\le -1 \quad \mbox{for}\quad x_i\in A_2,\)</span>
+which is similar to the definition. Let
+<span class="math notranslate nohighlight">\(y_1=\begin{pmatrix}1\\0\end{pmatrix}\)</span> for <span class="math notranslate nohighlight">\(x_i\in A_1\)</span> and
+<span class="math notranslate nohighlight">\(y_2=\begin{pmatrix}0\\1\end{pmatrix}\)</span> for <span class="math notranslate nohighlight">\(x_i\in A_2\)</span>. Note that <span class="math notranslate nohighlight">\(w\)</span>
 is normal to the hyperplane and the distance between the points
-satisfying \)</span><span class="math notranslate nohighlight">\(wx_i+b=\pm 1\)</span><span class="math notranslate nohighlight">\( and the hyperplane \)</span>wx+b=0<span class="math notranslate nohighlight">\( is
+satisfying $<span class="math notranslate nohighlight">\(wx_i+b=\pm 1\)</span><span class="math notranslate nohighlight">\( and the hyperplane \)</span>wx+b=0<span class="math notranslate nohighlight">\( is
 \)</span>\displaystyle {1\over |w|_2}<span class="math notranslate nohighlight">\(. Thus, the width of the margin is
 \)</span>\displaystyle {2\over |w|_2}$ as shown in Figure
 <a class="reference external" href="#fig:margin">1</a>{reference-type=”ref” reference=”fig:margin”}.</p>

@@ -53,7 +53,7 @@
     <script async="async" src="../_static/sphinx-thebe.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Support vector machine {#sec:SVMintro}" href="ch2_4.html" />
+    <link rel="next" title="Support vector machine" href="ch2_4.html" />
     <link rel="prev" title="Introduction to logistic regression" href="ch2_2.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
@@ -168,7 +168,11 @@
   <ul class="current">
    <li class="toctree-l2">
     <a class="reference internal" href="ch2_1.html">
+<<<<<<< HEAD
      2.1 Definition of linearly separable sets
+=======
+     Definition of linearly separable sets
+>>>>>>> 489abbd408a4cdb4f8697853b0ed37941440da75
     </a>
    </li>
    <li class="toctree-l2">
@@ -183,7 +187,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="ch2_4.html">
-     Support vector machine {#sec:SVMintro}
+     Support vector machine
     </a>
    </li>
   </ul>
@@ -279,7 +283,26 @@
         
               <div>
                 
-  <div class="section" id="kl-divergence-and-cross-entropy">
+  <div class="cell tag_hide-input docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">IFrame</span>
+
+<span class="n">IFrame</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s2">&quot;https://cdnapisec.kaltura.com/p/2356971/sp/235697100/embedIframeJs/uiconf_id/41416911/partner_id/2356971?iframeembed=true&amp;playerId=kaltura_player&amp;entry_id=1_1x5pta90&amp;flashvars[streamerType]=auto&amp;amp;flashvars[localizationCode]=en&amp;amp;flashvars[leadWithHTML5]=true&amp;amp;flashvars[sideBarContainer.plugin]=true&amp;amp;flashvars[sideBarContainer.position]=left&amp;amp;flashvars[sideBarContainer.clickToClose]=true&amp;amp;flashvars[chapters.plugin]=true&amp;amp;flashvars[chapters.layout]=vertical&amp;amp;flashvars[chapters.thumbnailRotator]=false&amp;amp;flashvars[streamSelector.plugin]=true&amp;amp;flashvars[EmbedPlayer.SpinnerTarget]=videoHolder&amp;amp;flashvars[dualScreen.plugin]=true&amp;amp;flashvars[hotspots.plugin]=1&amp;amp;flashvars[Kaltura.addCrossoriginToIframe]=true&amp;amp;&amp;wid=1_l1sjg1vv&quot;</span>  <span class="p">,</span><span class="n">width</span><span class="o">=</span><span class="s1">&#39;800&#39;</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="s1">&#39;500&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html">
+<iframe
+    width="800"
+    height="500"
+    src="https://cdnapisec.kaltura.com/p/2356971/sp/235697100/embedIframeJs/uiconf_id/41416911/partner_id/2356971?iframeembed=true&playerId=kaltura_player&entry_id=1_1x5pta90&flashvars[streamerType]=auto&amp;flashvars[localizationCode]=en&amp;flashvars[leadWithHTML5]=true&amp;flashvars[sideBarContainer.plugin]=true&amp;flashvars[sideBarContainer.position]=left&amp;flashvars[sideBarContainer.clickToClose]=true&amp;flashvars[chapters.plugin]=true&amp;flashvars[chapters.layout]=vertical&amp;flashvars[chapters.thumbnailRotator]=false&amp;flashvars[streamSelector.plugin]=true&amp;flashvars[EmbedPlayer.SpinnerTarget]=videoHolder&amp;flashvars[dualScreen.plugin]=true&amp;flashvars[hotspots.plugin]=1&amp;flashvars[Kaltura.addCrossoriginToIframe]=true&amp;&wid=1_l1sjg1vv"
+    frameborder="0"
+    allowfullscreen
+></iframe>
+</div></div>
+</div>
+<div class="section" id="kl-divergence-and-cross-entropy">
 <h1>KL divergence and cross-entropy<a class="headerlink" href="#kl-divergence-and-cross-entropy" title="Permalink to this headline">¶</a></h1>
 <p>Cross-entropy minimization is frequently used in optimization and
 rare-event probability estimation. When comparing a distribution against
@@ -288,7 +311,9 @@ identical up to an additive constant. See more details in
 [&#64;murphy2012machine; &#64;kullback1951information; &#64;kullback1997information]
 and the reference therein.</p>
 <p>The KL(Kullback–Leibler) divergence defines a special distance between
-two discrete probability distributions $<span class="math notranslate nohighlight">\(p=\left( \begin{array}{ccc}
+two discrete probability distributions
+<span class="math notranslate nohighlight">\(
+p=\left( \begin{array}{ccc}
 p_1\\
 \vdots \\
 p_k
@@ -296,79 +321,89 @@ p_k
 q_1\\
 \vdots \\
 q_k
-\end{array} \right)\)</span><span class="math notranslate nohighlight">\( with \)</span>0\le p_i, q_i\le1<span class="math notranslate nohighlight">\( and
-\)</span>\sum_{i=1}^{k}p_i=\sum_{i=1}^{k}q_i=1<span class="math notranslate nohighlight">\( by \)</span><span class="math notranslate nohighlight">\(\label{KL-divergence}
-D_{\rm KL}(q,p)= \sum_{i=1}^k q_i\log \frac{q_i}{p_i}.\)</span>$</p>
-<div class="highlight-lemma notranslate"><div class="highlight"><pre><span></span>$D_{\rm KL}(q,p)$ works like a &quot;distance\&quot; without the symmetry:
-
-1.  $D_{\rm KL}(q,p)\ge0$;
-
-2.  $D_{\rm KL}(q,p)=0$ if and only if $p=q$;
-</pre></div>
+\end{array} \right
+)
+\)</span>
+with <span class="math notranslate nohighlight">\(
+0\le p_i, q_i\le1\)</span>
+and
+<span class="math notranslate nohighlight">\(\sum_{i=1}^{k}p_i=\sum_{i=1}^{k}q_i=1\)</span> by <span class="math notranslate nohighlight">\(\label{KL-divergence}
+D_{\rm KL}(q,p)= \sum_{i=1}^k q_i\log \frac{q_i}{p_i}.\)</span></p>
+<div class="admonition-lema admonition">
+<p class="admonition-title">lema</p>
+<p><span class="math notranslate nohighlight">\(D_{\rm KL}(q,p)\)</span> works like a “distance” without the symmetry:</p>
+<ol class="simple">
+<li><p><span class="math notranslate nohighlight">\(D_{\rm KL}(q,p)\ge0\)</span>;</p></li>
+<li><p><span class="math notranslate nohighlight">\(D_{\rm KL}(q,p)=0\)</span> if and only if <span class="math notranslate nohighlight">\(p=q\)</span>;</p></li>
+</ol>
 </div>
-<div class="highlight-proof notranslate"><div class="highlight"><pre><span></span>*Proof.* We first note that the elementary inequality
-$$\log x \le x - 1, \quad\mathrm{for\ any\ }x\ge0,$$ and the equality
-holds if and only if $x=1$.
-$$-D_{\rm KL}(q,p) = - \sum_{i=1}^c q_i\log \frac{q_i}{p_i}   = \sum_{i=1}^k q_i\log \frac{p_i}{q_i} \le \sum_{i=1}^k q_i( \frac{p_i}{q_i}  - 1) = 0.$$
+<div class="admonition-proof admonition">
+<p class="admonition-title">proof</p>
+<p><em>Proof.</em> We first note that the elementary inequality
+<span class="math notranslate nohighlight">\(\log x \le x - 1, \quad\mathrm{for\ any\ }x\ge0,\)</span> and the equality
+holds if and only if <span class="math notranslate nohighlight">\(x=1\)</span>.
+<span class="math notranslate nohighlight">\(-D_{\rm KL}(q,p) = - \sum_{i=1}^c q_i\log \frac{q_i}{p_i}   = \sum_{i=1}^k q_i\log \frac{p_i}{q_i} \le \sum_{i=1}^k q_i( \frac{p_i}{q_i}  - 1) = 0.\)</span>
 And the equality holds if and only if
-$$\frac{p_i}{q_i} = 1 \quad \forall i = 1:k.$$ ◻
-</pre></div>
+<span class="math notranslate nohighlight">\(\frac{p_i}{q_i} = 1 \quad \forall i = 1:k.\)</span> ◻</p>
 </div>
 <p>Define cross-entropy for distribution <span class="math notranslate nohighlight">\(p\)</span> and <span class="math notranslate nohighlight">\(q\)</span> by
-$<span class="math notranslate nohighlight">\(\label{Cross-Entropy}
-H(q,p) = - \sum_{i=1}^k q_i \log p_i,\)</span><span class="math notranslate nohighlight">\( and the entropy for distribution
-\)</span>q<span class="math notranslate nohighlight">\( by \)</span><span class="math notranslate nohighlight">\(\label{Entropy}
-H(q) = - \sum_{i=1}^k q_i \log q_i.\)</span><span class="math notranslate nohighlight">\( Note that
-\)</span><span class="math notranslate nohighlight">\(D_{\rm KL}(q,p)= \sum_{i=1}^k q_i\log \frac{q_i}{p_i} =  \sum_{i=1}^k q_i \log q_i - \sum_{i=1}^k q_i \log p_i\)</span><span class="math notranslate nohighlight">\(
-Thus, \)</span><span class="math notranslate nohighlight">\(\label{KLandEntropy}
-H(q,p) = H(q) + D_{\rm KL}(q,p).\)</span><span class="math notranslate nohighlight">\( It follows from the relation
-[\[KLandEntropy\]](#KLandEntropy){reference-type=&quot;eqref&quot;
-reference=&quot;KLandEntropy&quot;} that \)</span><span class="math notranslate nohighlight">\(\label{EntropyandKL}
-\mathop{\arg\min}_p D_{\rm KL}(q,p)=\mathop{\arg\min}_p H(q,p).\)</span>$</p>
+<span class="math notranslate nohighlight">\(
+H(q,p) = - \sum_{i=1}^k q_i \log p_i,\)</span> and the entropy for distribution
+<span class="math notranslate nohighlight">\(q\)</span> by <span class="math notranslate nohighlight">\(
+H(q) = - \sum_{i=1}^k q_i \log q_i.\)</span> Note that
+<span class="math notranslate nohighlight">\(D_{\rm KL}(q,p)= \sum_{i=1}^k q_i\log \frac{q_i}{p_i} =  \sum_{i=1}^k q_i \log q_i - \sum_{i=1}^k q_i \log p_i\)</span>
+Thus, <span class="math notranslate nohighlight">\(
+H(q,p) = H(q) + D_{\rm KL}(q,p).\)</span> It follows from the relation
+that <span class="math notranslate nohighlight">\(
+\mathop{\arg\min}_p D_{\rm KL}(q,p)=\mathop{\arg\min}_p H(q,p).\)</span></p>
 <p>The concept of cross-entropy can be used to define a loss function in
 machine learning and optimization. Let us assume <span class="math notranslate nohighlight">\(y_i\)</span> is the true label
 for <span class="math notranslate nohighlight">\(x_i\)</span>, for example <span class="math notranslate nohighlight">\(y_i = e_{k_i}\)</span> if <span class="math notranslate nohighlight">\(x_i \in A_{k_i}\)</span>. Consider
+<<<<<<< HEAD
 the predicted distribution $$\label{key}
 \bm p(x; \bm \theta) = \frac{1}{\sum\limits_{i=1}^k e^{w_i x+b_i}}</p>
 <div class="amsmath math notranslate nohighlight" id="equation-244e5408-a94c-444b-8f0d-e18e062863df">
 <span class="eqno">(9)<a class="headerlink" href="#equation-244e5408-a94c-444b-8f0d-e18e062863df" title="Permalink to this equation">¶</a></span>\[\begin{pmatrix}
+=======
+the predicted distribution
+<span class="math notranslate nohighlight">\(p(x;\theta) = \frac{1}{\sum\limits_{i=1}^k e^{w_i x+b_i}}\)</span>.
+<span class="math notranslate nohighlight">\(\begin{pmatrix}
+>>>>>>> 489abbd408a4cdb4f8697853b0ed37941440da75
 e^{w_1 x+b_1}\\
 e^{w_2 x+b_2}\\
 \vdots\\
 e^{w_k x+b_k}
-\end{pmatrix}\]</div>
-<p>= \begin{pmatrix}
-p_1(x; \bm\theta) \
-p_2(x; \bm\theta) \
-\vdots \
-p_k(x; \bm\theta)
-\end{pmatrix}$<span class="math notranslate nohighlight">\( for any data \)</span>x \in A<span class="math notranslate nohighlight">\(. By
-[\[EntropyandKL\]](#EntropyandKL){reference-type=&quot;eqref&quot;
-reference=&quot;EntropyandKL&quot;}, the minimization of KL divergence is
+\end{pmatrix}
+= \begin{pmatrix}
+p_1(x; \theta) \\
+p_2(x; \theta) \\
+\vdots \\
+p_k(x; \theta)
+\end{pmatrix}\)</span>
+for any data <span class="math notranslate nohighlight">\(x \in A\)</span>. By, the minimization of KL divergence is
 equivalent to the minimization of the cross-entropy, namely
-\)</span><span class="math notranslate nohighlight">\(\mathop{\arg\min}_{\theta} \sum_{i=1}^N D_{\rm KL}(y_i,\bm p(x_i; \bm \theta)) = \mathop{\arg\min}_{\theta} \sum_{i=1}^N H(y_i, \bm p(x_i; \bm \theta)).\)</span><span class="math notranslate nohighlight">\(
+<span class="math notranslate nohighlight">\(\mathop{\arg\min}_{\theta} \sum_{i=1}^N D_{\rm KL}(y_i, p(x_i;\theta)) = \mathop{\arg\min}_{\theta} \sum_{i=1}^N H(y_i,  p(x_i;  \theta)).\)</span>
 Recall that we have all data
-\)</span>D = {(x_1,y_1),(x_2,y_2),\cdots, (x_N, y_N)}<span class="math notranslate nohighlight">\(. Then, it is natural to
+<span class="math notranslate nohighlight">\(D = \{(x_1,y_1),(x_2,y_2),\cdots, (x_N, y_N)\}\)</span>. Then, it is natural to
 consider the loss function as following:
-\)</span><span class="math notranslate nohighlight">\(\sum_{j=1}^N H(y_i, \bm p(x_i; \bm \theta)),\)</span><span class="math notranslate nohighlight">\( which measures the
+<span class="math notranslate nohighlight">\(\sum_{j=1}^N H(y_i,  p(x_i;  \theta)),\)</span> which measures the
 distance between the real label and predicted one for all data. In the
-meantime, we can check that \)</span><span class="math notranslate nohighlight">\(\begin{aligned}
-\sum_{j=1}^N H(y_j, \bm p(x_j; \bm \theta))&amp;=-\sum_{j=1}^N y_j  \cdot \log  \bm p(x_j; \bm \theta )\\
-&amp;=-\sum_{j=1}^N  \log p_{i_j}(x_i; \bm \theta) \quad (\text{because}~y_j = e_{i_j}~\text{for}~x_j \in A_{i_j})\\
-&amp;=-\sum_{i=1}^k \sum_{x\in A_i}  \log p_{i}(x; \bm \theta) \\
-&amp;=-\log \prod_{i=1}^k \prod_{x\in A_i}   p_{i}(x; \bm \theta)\\
+meantime, we can check that <span class="math notranslate nohighlight">\(\begin{aligned}
+\sum_{j=1}^N H(y_j,  p(x_j;  \theta))&amp;=-\sum_{j=1}^N y_j  \cdot \log   p(x_j;  \theta )\\
+&amp;=-\sum_{j=1}^N  \log p_{i_j}(x_i; \theta) \quad (\text{because}~y_j = e_{i_j}~\text{for}~x_j \in A_{i_j})\\
+&amp;=-\sum_{i=1}^k \sum_{x\in A_i}  \log p_{i}(x;  \theta) \\
+&amp;=-\log \prod_{i=1}^k \prod_{x\in A_i}   p_{i}(x;  \theta)\\
 &amp; = L(\theta)
-\end{aligned}\)</span><span class="math notranslate nohighlight">\( with \)</span>L(\theta)<span class="math notranslate nohighlight">\( defined in
-[\[logistic\]](#logistic){reference-type=&quot;eqref&quot; reference=&quot;logistic&quot;}
-as
-\)</span><span class="math notranslate nohighlight">\(L(\bm \theta) = - \sum_{i=1}^k \sum_{x\in A_i} \log p_{i}(x;\bm \theta).\)</span>$</p>
+\end{aligned}\)</span> with <span class="math notranslate nohighlight">\(L(\theta)\)</span> defined in</p>
+<p>as
+<span class="math notranslate nohighlight">\(L( \theta) = - \sum_{i=1}^k \sum_{x\in A_i} \log p_{i}(x; \theta).\)</span></p>
 <p>That is to say, the logistic regression loss function defined by
-likelihood in <a class="reference external" href="#logistic">[logistic]</a>{reference-type=”eqref”
-reference=”logistic”} is exact the loss function defined by measuring
+likelihood in [[logistic]] is exact the loss function defined by measuring
 the distance between real label and predicted one via cross-entropy. We
-can note $<span class="math notranslate nohighlight">\(\label{key}
-\min_{\bm \theta} L_\lambda(\bm \theta) \Leftrightarrow \min_{\bm \theta} \sum_{j=1}^N H(y_i, \bm p(x_i; \bm \theta)) + \lambda R(\|\bm \theta\|) 
-\Leftrightarrow \min_{\bm \theta} \sum_{j=1}^N D_{\rm KL}(y_i, \bm p(x_i; \bm \theta)) + \lambda R(\|\bm \theta\|).\)</span>$</p>
+can note <span class="math notranslate nohighlight">\(\label{key}
+\min_{ \theta} L_\lambda( \theta) \Leftrightarrow \min_{ \theta} \sum_{j=1}^N H(y_i,  p(x_i;  \theta)) + \lambda R(\| \theta\|) 
+\Leftrightarrow \min_{ \theta} \sum_{j=1}^N D_{\rm KL}(y_i, p(x_i;  \theta)) + \lambda R(\| \theta\|).\)</span></p>
+<p>HERE $<span class="math notranslate nohighlight">\(x^2 \in R\)</span>$ is something</p>
 </div>
 
     <script type="text/x-thebe-config">
@@ -413,7 +448,7 @@ can note $<span class="math notranslate nohighlight">\(\label{key}
         <a class="right-next" href="ch2_4.html" title="next page">
             <div class="prevnext-info">
                 <p class="prevnext-label">next</p>
-                <p class="prevnext-title">Support vector machine {#sec:SVMintro}</p>
+                <p class="prevnext-title">Support vector machine</p>
             </div>
             <i class="prevnext-label fas fa-angle-right"></i>
         </a>
