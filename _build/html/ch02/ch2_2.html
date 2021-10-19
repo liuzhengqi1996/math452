@@ -23,7 +23,7 @@
 
     
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/sphinx-book-theme.e8f53015daec13862f6db5e763c41738.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
@@ -54,11 +54,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="KL divergence and cross-entropy" href="ch2_3.html" />
-<<<<<<< HEAD
     <link rel="prev" title="2.1 Definition of linearly separable sets" href="ch2_1.html" />
-=======
-    <link rel="prev" title="Definition of linearly separable sets" href="ch2_1.html" />
->>>>>>> 489abbd408a4cdb4f8697853b0ed37941440da75
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
     
@@ -76,6 +72,10 @@
     
         <div class="navbar-brand-box">
     <a class="navbar-brand text-wrap" href="../index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
       
       <img src="../_static/PSU_SCI_RGB_2C.png" class="logo" alt="logo">
       
@@ -172,11 +172,7 @@
   <ul class="current">
    <li class="toctree-l2">
     <a class="reference internal" href="ch2_1.html">
-<<<<<<< HEAD
      2.1 Definition of linearly separable sets
-=======
-     Definition of linearly separable sets
->>>>>>> 489abbd408a4cdb4f8697853b0ed37941440da75
     </a>
    </li>
    <li class="toctree-l2 current active">
@@ -187,11 +183,6 @@
    <li class="toctree-l2">
     <a class="reference internal" href="ch2_3.html">
      KL divergence and cross-entropy
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="ch2_4.html">
-     Support vector machine
     </a>
    </li>
   </ul>
@@ -362,29 +353,10 @@ classifiable weights. But how can we find one element in <span class="math notra
 <p>Given
 <span class="math notranslate nohighlight">\(s = (s_1,s_2,\cdots,s_k)^T\in R^k\)</span>, we define the soft-max
 mapping <span class="math notranslate nohighlight">\(\sigma: \mathbb{R}^k \rightarrow\mathbb{R}^k\)</span> as
-<<<<<<< HEAD
-$$\sigma(s)  = \frac{e^{s}}{e^{s}\cdot 1} = \frac{1}{\sum\limits_{i=1}^k e^{s_i}}</p>
-<div class="amsmath math notranslate nohighlight" id="equation-98f51629-a459-411a-9dc7-be76abb09600">
-<span class="eqno">(5)<a class="headerlink" href="#equation-98f51629-a459-411a-9dc7-be76abb09600" title="Permalink to this equation">¶</a></span>\[\begin{pmatrix}
- e^{s_1}\\
- e^{s_2}\\
- \vdots\\
- e^{s_k}
- \end{pmatrix}\]</div>
-<div class="amsmath math notranslate nohighlight" id="equation-f1671410-40f6-4849-9a7c-26f71e3d2a63">
-<span class="eqno">(6)<a class="headerlink" href="#equation-f1671410-40f6-4849-9a7c-26f71e3d2a63" title="Permalink to this equation">¶</a></span>\[\begin{pmatrix}
- e^{s_1}\\
- e^{s_2}\\
- \vdots\\
- e^{s_k}
- \end{pmatrix}\]</div>
-<div class="amsmath math notranslate nohighlight" id="equation-63d68b0f-02c7-4318-b1a3-e95bd2098bd7">
-<span class="eqno">(7)<a class="headerlink" href="#equation-63d68b0f-02c7-4318-b1a3-e95bd2098bd7" title="Permalink to this equation">¶</a></span>\[\begin{pmatrix}
-=======
 <span class="math notranslate nohighlight">\(\sigma(s)  = \frac{e^{s}}{e^{s}\cdot 1} = \frac{1}{\sum\limits_{i=1}^k e^{s_i}}\)</span>.
 $</p>
-<div class="amsmath math notranslate nohighlight" id="equation-be3caba1-fe37-4b1d-8b19-bd8571bdaac4">
-<span class="eqno">(5)<a class="headerlink" href="#equation-be3caba1-fe37-4b1d-8b19-bd8571bdaac4" title="Permalink to this equation">¶</a></span>\[\begin{pmatrix}
+<div class="amsmath math notranslate nohighlight" id="equation-3037c0e2-74d1-446a-a740-6fe9154f442c">
+<span class="eqno">(10)<a class="headerlink" href="#equation-3037c0e2-74d1-446a-a740-6fe9154f442c" title="Permalink to this equation">¶</a></span>\[\begin{pmatrix}
 e^{s_1}\\
 e^{s_2}\\
 \vdots\\
@@ -393,17 +365,16 @@ e^{s_k}
 <p><span class="math notranslate nohighlight">\( 
 where \)</span>
 e^{s} =</p>
-<div class="amsmath math notranslate nohighlight" id="equation-d8354498-e7af-4ef6-85b2-bf194cc8ec51">
-<span class="eqno">(6)<a class="headerlink" href="#equation-d8354498-e7af-4ef6-85b2-bf194cc8ec51" title="Permalink to this equation">¶</a></span>\[\begin{pmatrix}
+<div class="amsmath math notranslate nohighlight" id="equation-c893737f-481a-4a9f-8e5b-a191f36aed36">
+<span class="eqno">(11)<a class="headerlink" href="#equation-c893737f-481a-4a9f-8e5b-a191f36aed36" title="Permalink to this equation">¶</a></span>\[\begin{pmatrix}
 e^{s_1}\\
 e^{s_2}\\
 \vdots\\
 e^{s_k}
 \end{pmatrix}\]</div>
 <p>$1 =</p>
-<div class="amsmath math notranslate nohighlight" id="equation-93cd31f5-0322-4857-afce-42775ed86d82">
-<span class="eqno">(7)<a class="headerlink" href="#equation-93cd31f5-0322-4857-afce-42775ed86d82" title="Permalink to this equation">¶</a></span>\[\begin{pmatrix}
->>>>>>> 489abbd408a4cdb4f8697853b0ed37941440da75
+<div class="amsmath math notranslate nohighlight" id="equation-029d2965-ede2-4d98-b79d-6bc6de29d41a">
+<span class="eqno">(12)<a class="headerlink" href="#equation-029d2965-ede2-4d98-b79d-6bc6de29d41a" title="Permalink to this equation">¶</a></span>\[\begin{pmatrix}
  1\\
  1 \\
  \vdots \\
@@ -414,17 +385,10 @@ e^{s_k}
 <p class="admonition-title">definition</p>
 <p>Given parameter <span class="math notranslate nohighlight">\(\theta = (W,b)\)</span>, we define a feature mapping
 <span class="math notranslate nohighlight">\( p: \mathbb{R}^d \rightarrow \mathbb{R}^k\)</span> as
-<<<<<<< HEAD
-$$ p(x; \theta)  = \sigma(Wx+b) = \frac{1}{\sum\limits_{i=1}^k e^{w_i x+b_i}}</p>
-<div class="amsmath math notranslate nohighlight" id="equation-a752dca9-509c-48c4-a6d2-13dd7eaf886f">
-<span class="eqno">(8)<a class="headerlink" href="#equation-a752dca9-509c-48c4-a6d2-13dd7eaf886f" title="Permalink to this equation">¶</a></span>\[\begin{pmatrix}
- e^{w_1 x+b_1}\\
-=======
 $ p(x; \theta)  = \sigma(Wx+b) = \frac{1}{\sum\limits_{i=1}^k e^{w_i x+b_i}}</p>
-<div class="amsmath math notranslate nohighlight" id="equation-ff037a9d-e0c5-4e30-beac-b9a380af8992">
-<span class="eqno">(8)<a class="headerlink" href="#equation-ff037a9d-e0c5-4e30-beac-b9a380af8992" title="Permalink to this equation">¶</a></span>\[\begin{pmatrix}
+<div class="amsmath math notranslate nohighlight" id="equation-4b10b276-6c3f-4e63-b5ed-fda1a5439971">
+<span class="eqno">(13)<a class="headerlink" href="#equation-4b10b276-6c3f-4e63-b5ed-fda1a5439971" title="Permalink to this equation">¶</a></span>\[\begin{pmatrix}
 e^{w_1 x+b_1}\\
->>>>>>> 489abbd408a4cdb4f8697853b0ed37941440da75
  e^{w_2 x+b_2}\\
  \vdots\\
  e^{w_k x+b_k}
@@ -668,11 +632,7 @@ which will be discussed in the next section.</p></li>
             <i class="prevnext-label fas fa-angle-left"></i>
             <div class="prevnext-info">
                 <p class="prevnext-label">previous</p>
-<<<<<<< HEAD
                 <p class="prevnext-title">2.1 Definition of linearly separable sets</p>
-=======
-                <p class="prevnext-title">Definition of linearly separable sets</p>
->>>>>>> 489abbd408a4cdb4f8697853b0ed37941440da75
             </div>
         </a>
     </div>
@@ -690,7 +650,7 @@ which will be discussed in the next section.</p></li>
         
         </div>
     </div>
-    <footer class="footer mt-5 mt-md-0">
+    <footer class="footer">
     <div class="container">
       <p>
         

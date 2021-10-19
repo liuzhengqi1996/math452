@@ -23,7 +23,7 @@
 
     
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/sphinx-book-theme.e8f53015daec13862f6db5e763c41738.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
@@ -53,7 +53,6 @@
     <script async="async" src="../_static/sphinx-thebe.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Support vector machine" href="ch2_4.html" />
     <link rel="prev" title="Introduction to logistic regression" href="ch2_2.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
@@ -72,6 +71,10 @@
     
         <div class="navbar-brand-box">
     <a class="navbar-brand text-wrap" href="../index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
       
       <img src="../_static/PSU_SCI_RGB_2C.png" class="logo" alt="logo">
       
@@ -168,11 +171,7 @@
   <ul class="current">
    <li class="toctree-l2">
     <a class="reference internal" href="ch2_1.html">
-<<<<<<< HEAD
      2.1 Definition of linearly separable sets
-=======
-     Definition of linearly separable sets
->>>>>>> 489abbd408a4cdb4f8697853b0ed37941440da75
     </a>
    </li>
    <li class="toctree-l2">
@@ -183,11 +182,6 @@
    <li class="toctree-l2 current active">
     <a class="current reference internal" href="#">
      KL divergence and cross-entropy
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="ch2_4.html">
-     Support vector machine
     </a>
    </li>
   </ul>
@@ -359,16 +353,9 @@ that <span class="math notranslate nohighlight">\(
 <p>The concept of cross-entropy can be used to define a loss function in
 machine learning and optimization. Let us assume <span class="math notranslate nohighlight">\(y_i\)</span> is the true label
 for <span class="math notranslate nohighlight">\(x_i\)</span>, for example <span class="math notranslate nohighlight">\(y_i = e_{k_i}\)</span> if <span class="math notranslate nohighlight">\(x_i \in A_{k_i}\)</span>. Consider
-<<<<<<< HEAD
-the predicted distribution $$\label{key}
-\bm p(x; \bm \theta) = \frac{1}{\sum\limits_{i=1}^k e^{w_i x+b_i}}</p>
-<div class="amsmath math notranslate nohighlight" id="equation-244e5408-a94c-444b-8f0d-e18e062863df">
-<span class="eqno">(9)<a class="headerlink" href="#equation-244e5408-a94c-444b-8f0d-e18e062863df" title="Permalink to this equation">¶</a></span>\[\begin{pmatrix}
-=======
 the predicted distribution
 <span class="math notranslate nohighlight">\(p(x;\theta) = \frac{1}{\sum\limits_{i=1}^k e^{w_i x+b_i}}\)</span>.
 <span class="math notranslate nohighlight">\(\begin{pmatrix}
->>>>>>> 489abbd408a4cdb4f8697853b0ed37941440da75
 e^{w_1 x+b_1}\\
 e^{w_2 x+b_2}\\
 \vdots\\
@@ -444,21 +431,12 @@ can note <span class="math notranslate nohighlight">\(\label{key}
             </div>
         </a>
     </div>
-     <div id="next">
-        <a class="right-next" href="ch2_4.html" title="next page">
-            <div class="prevnext-info">
-                <p class="prevnext-label">next</p>
-                <p class="prevnext-title">Support vector machine</p>
-            </div>
-            <i class="prevnext-label fas fa-angle-right"></i>
-        </a>
-     </div>
 
 </div>
         
         </div>
     </div>
-    <footer class="footer mt-5 mt-md-0">
+    <footer class="footer">
     <div class="container">
       <p>
         
