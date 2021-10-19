@@ -416,12 +416,12 @@ separable and pairwise lineaerly separable. Obviously, in the case of
 two classes, they are all equivalent, however, with more than two
 classes this is no longer the case. We do have the following
 implications, though.</p>
-<div class="admonition-lemma admonition">
+<div class="dropdown admonition">
 <p class="admonition-title">Lemma</p>
 <p>If <span class="math notranslate nohighlight">\(A_1,...,A_k\subset \mathbb{R}^d\)</span> are all-vs-one linearly separable,
 then they are linearly separable as well.</p>
 </div>
-<div class="admonition-proof admonition">
+<div class="dropdown admonition">
 <p class="admonition-title">Proof</p>
 <p><em>Proof.</em> Assume that <span class="math notranslate nohighlight">\(A_1,...,A_k\)</span> are all-vs-one linearly separable.
 For each <span class="math notranslate nohighlight">\(i\)</span>, let <span class="math notranslate nohighlight">\(w_i\)</span>, <span class="math notranslate nohighlight">\(b_i\)</span> be such that <span class="math notranslate nohighlight">\(w_ix + b_i\)</span> separates <span class="math notranslate nohighlight">\(A_i\)</span>
@@ -441,18 +441,22 @@ are pairwise linearly separable as well.</p>
 <p><em>Proof.</em> If <span class="math notranslate nohighlight">\(A_1,...,A_k\subset \mathbb{R}^d\)</span> are linearly separable,
 suppose that <span class="math notranslate nohighlight">\(W = (w_1^T,w_2^T,\cdots,w_k^T)^T\)</span>, <span class="math notranslate nohighlight">\(b =
   (b_1,b_2,\cdots,b_k)^T\)</span>. So we have</p>
-<p>$<span class="math notranslate nohighlight">\(
+<div class="math notranslate nohighlight">
+\[\begin{split}
   \begin{cases} 
   w_i x+ b_i &gt; w_j x + b_j &amp; x\in A_i \\
   w_i x+ b_i &lt; w_j x + b_j&amp; x\in A_j \\
-  \end{cases}\)</span><span class="math notranslate nohighlight">\( Take \)</span>w_{i,j} = w_i - w_j, b_{i,j} = b_i-b_j<span class="math notranslate nohighlight">\(, then we
-  have \)</span>$w_{i,j}x + b_{i,j}\begin{cases}</p>
-<blockquote>
-<div><p>0 &amp; x\in A_i \
-&lt; 0 &amp; x\in A_j \
-\end{cases}
-$<span class="math notranslate nohighlight">\( So \)</span>A_1,…,A_k$ are pairwise linearly separable.◻</p>
-</div></blockquote>
+  \end{cases}
+\end{split}\]</div>
+<p>Take <span class="math notranslate nohighlight">\(w_{i,j} = w_i - w_j, b_{i,j} = b_i-b_j\)</span>, then we have</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+  w_{i,j}x + b_{i,j}\begin{cases} 
+  &gt; 0 &amp; x\in A_i \\
+  &lt; 0 &amp; x\in A_j \\
+  \end{cases}
+\end{split}\]</div>
+<p>So <span class="math notranslate nohighlight">\(A_1,...,A_k\)</span> are pairwise linearly separable.◻</p>
 </div>
 <p>However, the converses of both of these statements are false, as the
 following examples show.</p>
