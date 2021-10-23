@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# # Course information, requirements and reference
+# # 0.1 Course information, requirements and reference
 
 # In[1]:
 

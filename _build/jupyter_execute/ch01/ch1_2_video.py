@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# # Image classification problem 
+# # 1.2 Image classification problem 
 
 # ## Image classification problem 
 # We consider a basic machine learning problem for classifying a collection of images

@@ -1,4 +1,4 @@
-# Linear Machine Learning Models
+# Ch2 Linear Machine Learning Models
 In this chapter, we will mainly consider two statistic models, namely
 logistic regression for linearly separable sets, and support vector
 machine (SVM). These two linear models form the foundation of deep

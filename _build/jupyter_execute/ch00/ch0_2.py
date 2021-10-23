@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# # Course background and introduction 
+# # 0.2 Course background and introduction 
 
 # In[1]:
 

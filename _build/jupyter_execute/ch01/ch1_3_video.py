@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# # Some popular data sets in image classification 
+# # 1.3 Some popular data sets in image classification 
 # 
 # In this subsection, we will introduce some popular and standard data sets in image
 # classification.

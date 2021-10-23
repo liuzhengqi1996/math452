@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# # A basic machine learning problem: image classification
+# # 1.1 A basic machine learning problem: image classification
 
 # ## Can a machine (function) tell the difference ?
 # ```{image} /figures/cat-dog-1.png
