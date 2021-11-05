@@ -366,7 +366,8 @@ import torch
 # import Pytorch
 
 
-# ### **Example 1**: Plot the curve of a funtion
+# ### **Example 1**
+# Plot the curve of a funtion
 
 # In[24]:
 
@@ -398,14 +399,16 @@ plt.legend()
 # plt.legend()
 
 
-# ### **Exercise 1**: Plot the curve of function 
+# ### **Exercise 1**
+# Plot the curve of function 
 # $
 # f(x) = x^3 - x, x \in [-1,1].
 # $
 
 # =================================================================================================================
 
-# ### **Example 2**: Find the roots of a function
+# ### **Example 2**
+# Find the roots of a function
 
 # ### $f(x) = x-2$
 
@@ -451,7 +454,7 @@ plt.plot(x0, h(x0), '*',label='root') # draw the solution point on the curve
 plt.legend()
 
 
-# ### **Exercise 2**: 
+# ### **Exercise 2**
 # ### (1) Find the two roots of the function
 # 
 # $
@@ -462,7 +465,8 @@ plt.legend()
 
 # =================================================================================================================
 
-# ### **Example 3**: create A vector and a matrix (generally use tensors in Pytorch) and solve $Ax=b$
+# ### **Example 3**
+# create A vector and a matrix (generally use tensors in Pytorch) and solve $Ax=b$
 # 
 # $
 # A=\begin{bmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \\ 7 & 8 & 9 \end{bmatrix}, \quad\quad 
@@ -554,9 +558,11 @@ c = torch.mm(c,d)
 print(c)
 
 
-# ### **Exercise 3.1**: Given $P=\begin{bmatrix} 1 & 2 \\ 3 & 4\end{bmatrix}$, investigate the two different multiplications $P*P$ and $torch.mm(P,P)$.
+# ### **Exercise 3.1**
+# Given $P=\begin{bmatrix} 1 & 2 \\ 3 & 4\end{bmatrix}$, investigate the two different multiplications $P*P$ and $torch.mm(P,P)$.
 
-# ### Exercise **3.2**: Given 
+# ### Exercise **3.2**
+# Given 
 # $
 # A=\begin{bmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \\ 7 & 8 & 9 \end{bmatrix}, \quad\quad 
 # b=\begin{bmatrix} 1  \\ 2 \\ 3 \end{bmatrix}.
@@ -565,7 +571,8 @@ print(c)
 
 # =================================================================================================================
 
-# ### **Example 4**: Calculate the derivate of $(xy)^2$ at  $x=1, y=2$ w.r.t  $x$. 
+# ### **Example 4**
+# Calculate the derivate of $(xy)^2$ at  $x=1, y=2$ w.r.t  $x$. 
 
 # We wish to calculate $ \dfrac{\partial f}{\partial y}|_{x=1,y=2}$ where $f(x,y)=(xy)^2$
 
@@ -591,11 +598,13 @@ grad = torch.autograd.grad(outputs=z, inputs=x)
 print(grad)
 
 
-# ### **Exercise 4**:  Calculate the derivative of $x^2+y^2+(xy)^3$ at $x=1,y=2$ w.r.t $y$.
+# ### **Exercise 4**
+# Calculate the derivative of $x^2+y^2+(xy)^3$ at $x=1,y=2$ w.r.t $y$.
 
 # =================================================================================================================
 
-# ### **Example 5**: Define a function to find the maximum of three numbers $a,~b,~c$. Test your code and print the maximum of the three numbers, where $a=\sqrt{2},~ b=\frac{4}{3},~ c=0.5e$
+# ### **Example 5**
+# Define a function to find the maximum of three numbers $a,~b,~c$. Test your code and print the maximum of the three numbers, where $a=\sqrt{2},~ b=\frac{4}{3},~ c=0.5e$
 
 # In[36]:
 
@@ -626,15 +635,18 @@ print('c=',c)
 print('The maximum of a,b,c is:',f_max(a,b,c))
 
 
-# ### **Exercise 5.1**: Define a function to find the minimum of three numbers $a,~b,~c$. Test your code and print the minimum of the three numbers, where $a=\sqrt{2},~ b=\frac{4}{3},~ c=0.5e$
+# ### **Exercise 5.1**
+# Define a function to find the minimum of three numbers $a,~b,~c$. Test your code and print the minimum of the three numbers, where $a=\sqrt{2},~ b=\frac{4}{3},~ c=0.5e$
 
 # 
-# ### **Exercise 5.2**: Define a function to find the maximum and minimum of a sequence with n numbers.
+# ### **Exercise 5.2**
+# Define a function to find the maximum and minimum of a sequence with n numbers.
 # 
 # Hint: x = np.random.randint(a,b,size=n) can randomly generate n numbers (saved in a row vector x ) and each number is between a and b.
 # 
 
-# ### **Exercise 5.3**: Define a function to sort a sequence with n numbers in ascending order.
+# ### **Exercise 5.3**
+# Define a function to sort a sequence with n numbers in ascending order.
 # 
 
 # =================================================================================================================

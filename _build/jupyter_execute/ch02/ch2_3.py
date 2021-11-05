@@ -46,13 +46,13 @@ IFrame(src="https://cdnapisec.kaltura.com/p/2356971/sp/235697100/embedIframeJs/u
 # 2.  $D_{\rm KL}(q,p)=0$ if and only if $p=q$;
 # ```
 # 
-# ```{admonition} proof
+# ```{admonition} Proof
 # *Proof.* We first note that the elementary inequality
 # $\log x \le x - 1, \quad\mathrm{for\ any\ }x\ge0,$ and the equality
 # holds if and only if $x=1$.
 # $-D_{\rm KL}(q,p) = - \sum_{i=1}^c q_i\log \frac{q_i}{p_i}   = \sum_{i=1}^k q_i\log \frac{p_i}{q_i} \le \sum_{i=1}^k q_i( \frac{p_i}{q_i}  - 1) = 0.$
 # And the equality holds if and only if
-# $\frac{p_i}{q_i} = 1 \quad \forall i = 1:k.$ ◻
+# $\frac{p_i}{q_i} = 1 \quad \forall i = 1:k.$ 
 # ```
 # 
 # Define cross-entropy for distribution $p$ and $q$ by
