@@ -90,7 +90,7 @@ IFrame(src="https://cdnapisec.kaltura.com/p/2356971/sp/235697100/embedIframeJs/u
 # \vdots \\
 # p_k(x; \theta)
 # \end{pmatrix}$
-# for any data $x \in A$. By[](rel2), the minimization of KL divergence is
+# for any data $x \in A$. By[.](rel2), the minimization of KL divergence is
 # equivalent to the minimization of the cross-entropy, namely
 # $\mathop{\arg\min}_{\theta} \sum_{i=1}^N D_{\rm KL}(y_i, p(x_i;\theta)) = \mathop{\arg\min}_{\theta} \sum_{i=1}^N H(y_i,  p(x_i;  \theta)).$
 # Recall that we have all data
@@ -98,26 +98,24 @@ IFrame(src="https://cdnapisec.kaltura.com/p/2356971/sp/235697100/embedIframeJs/u
 # consider the loss function as following:
 # $\sum_{j=1}^N H(y_i,  p(x_i;  \theta)),$ which measures the
 # distance between the real label and predicted one for all data. In the
-# meantime, we can check that $\begin{aligned}
+# meantime, we can check that 
+# $\begin{aligned}
 # \sum_{j=1}^N H(y_j,  p(x_j;  \theta))&=-\sum_{j=1}^N y_j  \cdot \log   p(x_j;  \theta )\\
 # &=-\sum_{j=1}^N  \log p_{i_j}(x_i; \theta) \quad (\text{because}~y_j = e_{i_j}~\text{for}~x_j \in A_{i_j})\\
 # &=-\sum_{i=1}^k \sum_{x\in A_i}  \log p_{i}(x;  \theta) \\
 # &=-\log \prod_{i=1}^k \prod_{x\in A_i}   p_{i}(x;  \theta)\\
 # & = L(\theta)
-# \end{aligned}$ with $L(\theta)$ defined in
-# 
-# as
+# \end{aligned}$ with $L(\theta)$ 
+# defined in as
 # $L( \theta) = - \sum_{i=1}^k \sum_{x\in A_i} \log p_{i}(x; \theta).$
 # 
 # That is to say, the logistic regression loss function defined by
-# likelihood in [\[logistic\]] is exact the loss function defined by measuring
+# likelihood in []() is exact the loss function defined by measuring
 # the distance between real label and predicted one via cross-entropy. We
 # can note $\label{key}
 # \min_{ \theta} L_\lambda( \theta) \Leftrightarrow \min_{ \theta} \sum_{j=1}^N H(y_i,  p(x_i;  \theta)) + \lambda R(\| \theta\|) 
 # \Leftrightarrow \min_{ \theta} \sum_{j=1}^N D_{\rm KL}(y_i, p(x_i;  \theta)) + \lambda R(\| \theta\|).$
 # 
-
-# HERE $$x^2 \in R$$ is something
 
 # In[ ]:
 

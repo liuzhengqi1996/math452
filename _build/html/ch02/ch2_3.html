@@ -382,22 +382,22 @@ Recall that we have all data
 consider the loss function as following:
 <span class="math notranslate nohighlight">\(\sum_{j=1}^N H(y_i,  p(x_i;  \theta)),\)</span> which measures the
 distance between the real label and predicted one for all data. In the
-meantime, we can check that <span class="math notranslate nohighlight">\(\begin{aligned}
+meantime, we can check that
+<span class="math notranslate nohighlight">\(\begin{aligned}
 \sum_{j=1}^N H(y_j,  p(x_j;  \theta))&amp;=-\sum_{j=1}^N y_j  \cdot \log   p(x_j;  \theta )\\
 &amp;=-\sum_{j=1}^N  \log p_{i_j}(x_i; \theta) \quad (\text{because}~y_j = e_{i_j}~\text{for}~x_j \in A_{i_j})\\
 &amp;=-\sum_{i=1}^k \sum_{x\in A_i}  \log p_{i}(x;  \theta) \\
 &amp;=-\log \prod_{i=1}^k \prod_{x\in A_i}   p_{i}(x;  \theta)\\
 &amp; = L(\theta)
-\end{aligned}\)</span> with <span class="math notranslate nohighlight">\(L(\theta)\)</span> defined in</p>
-<p>as
+\end{aligned}\)</span> with <span class="math notranslate nohighlight">\(L(\theta)\)</span>
+defined in as
 <span class="math notranslate nohighlight">\(L( \theta) = - \sum_{i=1}^k \sum_{x\in A_i} \log p_{i}(x; \theta).\)</span></p>
 <p>That is to say, the logistic regression loss function defined by
-likelihood in [[logistic]] is exact the loss function defined by measuring
+likelihood in <span class="xref myst"></span> is exact the loss function defined by measuring
 the distance between real label and predicted one via cross-entropy. We
 can note <span class="math notranslate nohighlight">\(\label{key}
 \min_{ \theta} L_\lambda( \theta) \Leftrightarrow \min_{ \theta} \sum_{j=1}^N H(y_i,  p(x_i;  \theta)) + \lambda R(\| \theta\|) 
 \Leftrightarrow \min_{ \theta} \sum_{j=1}^N D_{\rm KL}(y_i, p(x_i;  \theta)) + \lambda R(\| \theta\|).\)</span></p>
-<p>HERE $<span class="math notranslate nohighlight">\(x^2 \in R\)</span>$ is something</p>
 </div>
 
     <script type="text/x-thebe-config">
