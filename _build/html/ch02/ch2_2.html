@@ -343,9 +343,12 @@ regression, see [&#64;gelman2006data] for more details.</p>
 <h2>Logistic regression<a class="headerlink" href="#logistic-regression" title="Permalink to this headline">¶</a></h2>
 <p>Assume that we are given <span class="math notranslate nohighlight">\(k\)</span> linearly separable sets
 <span class="math notranslate nohighlight">\(A_1,A_2,\cdots,A_k\in \mathbb{R}^d\)</span>, we define the set of classifiable
-weights as
-$<span class="math notranslate nohighlight">\(\mathbf\Theta = \{\mathbf\theta = (W,b): w_ix+b_i&gt;w_jx+b_j,~\forall x\in A_i, j\neq i, i= 1,\cdots,k\}\)</span><span class="math notranslate nohighlight">\(
-which means those \)</span>(W,b)<span class="math notranslate nohighlight">\( can separate \)</span>A_1,A_2,\cdots,A_k$ correctly.</p>
+weights as</p>
+<div class="math notranslate nohighlight">
+\[
+    \mathbf\Theta = \{\mathbf\theta = (W,b): w_ix+b_i&gt;w_jx+b_j,~\forall x\in A_i, j\neq i, i= 1,\cdots,k\}
+\]</div>
+<p>which means those <span class="math notranslate nohighlight">\((W,b)\)</span> can separate <span class="math notranslate nohighlight">\(A_1,A_2,\cdots,A_k\)</span> correctly.</p>
 <p>Our linearly separable assumption implies that
 <span class="math notranslate nohighlight">\(\mathbf\Theta\neq \emptyset\)</span>. Now we know the existence of linearly
 classifiable weights. But how can we find one element in <span class="math notranslate nohighlight">\(\mathbf\Theta\)</span>?</p>
@@ -385,11 +388,14 @@ probability distribution of data points which means that given
 </li>
 <li><p><span class="math notranslate nohighlight">\(p_i(x; \mathbf\theta)&gt;p_j(x; \mathbf\theta)\Leftrightarrow w_ix+b_i&gt;w_j x+b_j.\)</span></p>
 <p>This implies that the linearly classifiable weights have an
-equivalent description as
-$<span class="math notranslate nohighlight">\(
-\mathbf{\Theta} = \left\{\mathbf\theta: p_i(x; \mathbf\theta)&gt;p_j(x,\mathbf\theta),~\forall x\in A_i, j\neq i, i= 1,\cdots,k\right\}
-\)</span>$</p>
+equivalent description as</p>
 </li>
+</ol>
+<div class="math notranslate nohighlight">
+\[
+    \mathbf{\Theta} = \left\{\mathbf\theta: p_i(x; \mathbf\theta)&gt;p_j(x,\mathbf\theta),~\forall x\in A_i, j\neq i, i= 1,\cdots,k\right\}
+\]</div>
+<ol>
 <li><p>We usually use the max-out method to do classification. For a given
 data point <span class="math notranslate nohighlight">\(x\)</span>, we first use a soft-max mapping to map it to
 <span class="math notranslate nohighlight">\(\mathbf p(x; \mathbf\theta)\)</span>, then we attach <span class="math notranslate nohighlight">\(x\)</span> to the class

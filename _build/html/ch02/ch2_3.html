@@ -322,10 +322,10 @@ q_k
 with <span class="math notranslate nohighlight">\(
 0\le p_i, q_i\le1\)</span>
 and
-<span class="math notranslate nohighlight">\(\sum_{i=1}^{k}p_i=\sum_{i=1}^{k}q_i=1\)</span> by <span class="math notranslate nohighlight">\(\label{KL-divergence}
+<span class="math notranslate nohighlight">\(\sum_{i=1}^{k}p_i=\sum_{i=1}^{k}q_i=1\)</span> by <span class="math notranslate nohighlight">\(
 D_{\rm KL}(q,p)= \sum_{i=1}^k q_i\log \frac{q_i}{p_i}.\)</span></p>
-<div class="admonition-lema admonition">
-<p class="admonition-title">lema</p>
+<div class="admonition-lemma admonition">
+<p class="admonition-title">Lemma</p>
 <p><span class="math notranslate nohighlight">\(D_{\rm KL}(q,p)\)</span> works like a “distance” without the symmetry:</p>
 <ol class="simple">
 <li><p><span class="math notranslate nohighlight">\(D_{\rm KL}(q,p)\ge0\)</span>;</p></li>
@@ -347,10 +347,16 @@ H(q,p) = - \sum_{i=1}^k q_i \log p_i,\)</span> and the entropy for distribution
 <span class="math notranslate nohighlight">\(q\)</span> by <span class="math notranslate nohighlight">\(
 H(q) = - \sum_{i=1}^k q_i \log q_i.\)</span> Note that
 <span class="math notranslate nohighlight">\(D_{\rm KL}(q,p)= \sum_{i=1}^k q_i\log \frac{q_i}{p_i} =  \sum_{i=1}^k q_i \log q_i - \sum_{i=1}^k q_i \log p_i\)</span>
-Thus, <span class="math notranslate nohighlight">\(
-H(q,p) = H(q) + D_{\rm KL}(q,p).\)</span> It follows from the relation
-that <span class="math notranslate nohighlight">\(
-\mathop{\arg\min}_p D_{\rm KL}(q,p)=\mathop{\arg\min}_p H(q,p).\)</span></p>
+Thus,</p>
+<div class="math notranslate nohighlight" id="equation-rel1">
+<span class="eqno">(15)<a class="headerlink" href="#equation-rel1" title="Permalink to this equation">¶</a></span>\[
+    H(q,p) = H(q) + D_{\rm KL}(q,p).
+\]</div>
+<p>It follows from the <a class="reference internal" href="#equation-rel1">(15)</a> that</p>
+<div class="math notranslate nohighlight" id="equation-rel2">
+<span class="eqno">(16)<a class="headerlink" href="#equation-rel2" title="Permalink to this equation">¶</a></span>\[
+    \mathop{\arg\min}_p D_{\rm KL}(q,p)=\mathop{\arg\min}_p H(q,p).
+\]</div>
 <p>The concept of cross-entropy can be used to define a loss function in
 machine learning and optimization. Let us assume <span class="math notranslate nohighlight">\(y_i\)</span> is the true label
 for <span class="math notranslate nohighlight">\(x_i\)</span>, for example <span class="math notranslate nohighlight">\(y_i = e_{k_i}\)</span> if <span class="math notranslate nohighlight">\(x_i \in A_{k_i}\)</span>. Consider
@@ -368,7 +374,7 @@ p_2(x; \theta) \\
 \vdots \\
 p_k(x; \theta)
 \end{pmatrix}\)</span>
-for any data <span class="math notranslate nohighlight">\(x \in A\)</span>. By, the minimization of KL divergence is
+for any data <span class="math notranslate nohighlight">\(x \in A\)</span>. By<a class="reference internal" href="#equation-rel2">(16)</a>, the minimization of KL divergence is
 equivalent to the minimization of the cross-entropy, namely
 <span class="math notranslate nohighlight">\(\mathop{\arg\min}_{\theta} \sum_{i=1}^N D_{\rm KL}(y_i, p(x_i;\theta)) = \mathop{\arg\min}_{\theta} \sum_{i=1}^N H(y_i,  p(x_i;  \theta)).\)</span>
 Recall that we have all data

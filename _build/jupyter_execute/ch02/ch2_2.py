@@ -26,7 +26,11 @@ IFrame(src="https://cdnapisec.kaltura.com/p/2356971/sp/235697100/embedIframeJs/u
 # Assume that we are given $k$ linearly separable sets
 # $A_1,A_2,\cdots,A_k\in \mathbb{R}^d$, we define the set of classifiable
 # weights as
-# $$\mathbf\Theta = \{\mathbf\theta = (W,b): w_ix+b_i>w_jx+b_j,~\forall x\in A_i, j\neq i, i= 1,\cdots,k\}$$
+# 
+# $$
+#     \mathbf\Theta = \{\mathbf\theta = (W,b): w_ix+b_i>w_jx+b_j,~\forall x\in A_i, j\neq i, i= 1,\cdots,k\}
+# $$
+# 
 # which means those $(W,b)$ can separate $A_1,A_2,\cdots,A_k$ correctly.
 # 
 # Our linearly separable assumption implies that
@@ -105,6 +109,7 @@ IFrame(src="https://cdnapisec.kaltura.com/p/2356971/sp/235697100/embedIframeJs/u
 # 
 #     This implies that the linearly classifiable weights have an
 #     equivalent description as
+#     
 # $$
 #     \mathbf{\Theta} = \left\{\mathbf\theta: p_i(x; \mathbf\theta)>p_j(x,\mathbf\theta),~\forall x\in A_i, j\neq i, i= 1,\cdots,k\right\}
 # $$

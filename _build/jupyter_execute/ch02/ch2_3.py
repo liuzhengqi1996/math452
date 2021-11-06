@@ -35,10 +35,10 @@ IFrame(src="https://cdnapisec.kaltura.com/p/2356971/sp/235697100/embedIframeJs/u
 # with $
 # 0\le p_i, q_i\le1$
 # and
-# $\sum_{i=1}^{k}p_i=\sum_{i=1}^{k}q_i=1$ by $\label{KL-divergence}
+# $\sum_{i=1}^{k}p_i=\sum_{i=1}^{k}q_i=1$ by $
 # D_{\rm KL}(q,p)= \sum_{i=1}^k q_i\log \frac{q_i}{p_i}.$
 # 
-# ```{admonition} lema
+# ```{admonition} Lemma
 # $D_{\rm KL}(q,p)$ works like a "distance\" without the symmetry:
 # 
 # 1.  $D_{\rm KL}(q,p)\ge0$;
@@ -61,10 +61,17 @@ IFrame(src="https://cdnapisec.kaltura.com/p/2356971/sp/235697100/embedIframeJs/u
 # $q$ by $
 # H(q) = - \sum_{i=1}^k q_i \log q_i.$ Note that
 # $D_{\rm KL}(q,p)= \sum_{i=1}^k q_i\log \frac{q_i}{p_i} =  \sum_{i=1}^k q_i \log q_i - \sum_{i=1}^k q_i \log p_i$
-# Thus, $
-# H(q,p) = H(q) + D_{\rm KL}(q,p).$ It follows from the relation
-#  that $
-# \mathop{\arg\min}_p D_{\rm KL}(q,p)=\mathop{\arg\min}_p H(q,p).$
+# Thus, 
+# 
+# $$
+#     H(q,p) = H(q) + D_{\rm KL}(q,p).
+# $$ (rel1)
+# 
+# It follows from the [relation](rel1) that 
+# 
+# $$
+#     \mathop{\arg\min}_p D_{\rm KL}(q,p)=\mathop{\arg\min}_p H(q,p).
+# $$ (rel2)
 # 
 # The concept of cross-entropy can be used to define a loss function in
 # machine learning and optimization. Let us assume $y_i$ is the true label
@@ -83,7 +90,7 @@ IFrame(src="https://cdnapisec.kaltura.com/p/2356971/sp/235697100/embedIframeJs/u
 # \vdots \\
 # p_k(x; \theta)
 # \end{pmatrix}$
-# for any data $x \in A$. By, the minimization of KL divergence is
+# for any data $x \in A$. By[](rel2), the minimization of KL divergence is
 # equivalent to the minimization of the cross-entropy, namely
 # $\mathop{\arg\min}_{\theta} \sum_{i=1}^N D_{\rm KL}(y_i, p(x_i;\theta)) = \mathop{\arg\min}_{\theta} \sum_{i=1}^N H(y_i,  p(x_i;  \theta)).$
 # Recall that we have all data
