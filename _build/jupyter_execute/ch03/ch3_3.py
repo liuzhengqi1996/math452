@@ -64,7 +64,7 @@
 # -   Coin Flip: 2 independent copies:
 #     $C_{1}=\left\{H,T\right\}, C_{2}=\left\{H,T\right\}\Rightarrow C_{1}\times C_{2}$
 # 
-#                    $H^{\operatorname{P_{H}}}$   $T^{P_{T}}$
+#              $H^{\operatorname{P_{H}}}$   $T^{P_{T}}$
 #       ----------- ---------------------------- -------------
 #        $P_{H} H$             $H H$                 $H T$
 #        $P_{T}T$              $T H$                 $T T$
