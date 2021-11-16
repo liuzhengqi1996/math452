@@ -53,7 +53,7 @@
     <script async="async" src="../_static/sphinx-thebe.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Probability interpretation of logistic regression" href="ch3_5.html" />
+    <link rel="next" title="3.5 Probability interpretation of logistic regression" href="ch3_5.html" />
     <link rel="prev" title="3.3 Basic Probability Theory" href="ch3_3.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
@@ -225,12 +225,12 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="ch3_5.html">
-     Probability interpretation of logistic regression
+     3.5 Probability interpretation of logistic regression
     </a>
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="ch3_6.html">
-     Maximamum Likelihood
+     3.6 Maximamum Likelihood
     </a>
    </li>
    <li class="toctree-l2">
@@ -395,62 +395,74 @@
 <ul class="simple">
 <li><p>Defin: A random variable X is a function <span class="math notranslate nohighlight">\(X: \Omega \rightarrow S\)</span>
 Here <span class="math notranslate nohighlight">\(S=R, R^{d}\)</span>, but could be arbitrary.</p></li>
-<li><p>Ex: Rolling a die:</p>
-<ul>
+<li><p>Ex: Rolling a die:</p></li>
 <li><p>Outcomes: <span class="math notranslate nohighlight">\(\Omega={1,2,...,6}\)</span></p></li>
 <li><p>Events are subsets of <span class="math notranslate nohighlight">\(\Omega\)</span></p></li>
 <li><p>Distribution: <span class="math notranslate nohighlight">\(p(1)=p(2)=...=p(6)=\frac{1}{6}\)</span> Suppose we roll
 the die, then if the die comes up d times, you win d dollars,
 minus 1 dollar if it’s even. The amount you win is a random
 variable. <span class="math notranslate nohighlight">\(\begin{array}{l}
-        X_{1}: \Omega \rightarrow R\\
-        X_{1}(1)=1 \\
-        X_{1}(2)=1 \\
-        X_{1}(3)=3 \\
-        X_{1}(4)=3 \\
-        X_{1}(5)=5 \\
-        X_{1}(6)=5
-    \end{array}\)</span> Can define multiple random variables on a
+         X_{1}: \Omega \rightarrow R\\
+         X_{1}(1)=1 \\
+         X_{1}(2)=1 \\
+         X_{1}(3)=3 \\
+         X_{1}(4)=3 \\
+         X_{1}(5)=5 \\
+         X_{1}(6)=5
+     \end{array}\)</span> Can define multiple random variables on a
 single outcome space <span class="math notranslate nohighlight">\(\Omega\)</span>.</p></li>
-</ul>
-</li>
 <li><p>Ex: Rolling a die. If the die comes up d times, you get d dollars.
 If d is even, then you give a dollar to your friend.
 <span class="math notranslate nohighlight">\(X_{1} \leftarrow\)</span> your winnings, <span class="math notranslate nohighlight">\(X_{2}\leftarrow\)</span> your friends
-winnings. $<span class="math notranslate nohighlight">\(\begin{aligned}
+winnings.</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+    \begin{aligned}
     X_{2}: \Omega \rightarrow \mathbb{R}, &amp; X_{2}(1)=0, \quad X_{2}(2)=1 \\
     &amp; X_{2}(3)=0, \quad X_{2}(4)=1 \\
     &amp; X_{2}(5)=0, \quad X_{2}(6)=1
-\end{aligned}\)</span><span class="math notranslate nohighlight">\( From here on out \)</span>\Omega<span class="math notranslate nohighlight">\( will be fixed, we talk
-about different random variables on \)</span>\Omega$.</p></li>
-</ul>
+    \end{aligned}
+\end{split}\]</div>
+<p>From here on out <span class="math notranslate nohighlight">\(\Omega\)</span> will be fixed, we talk about different random variables on <span class="math notranslate nohighlight">\(\Omega\)</span>.</p>
 </div>
 <div class="section" id="mean-of-random-variable">
 <h2>3.4.2 Mean of random variable<a class="headerlink" href="#mean-of-random-variable" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>Defin: Mean of a random variable <span class="math notranslate nohighlight">\(X\)</span>. Expectation of <span class="math notranslate nohighlight">\(X\)</span>:
-$<span class="math notranslate nohighlight">\(\mathbb{E}[X]=\sum_{\omega \in \Omega} p(\omega) X(\omega)\left(=\int_{\Omega} X(\omega) p(\omega) d \omega\right)\)</span>$</p></li>
-<li><p>Ex: $<span class="math notranslate nohighlight">\(\begin{aligned}
-&amp; \mathbb{E}\left[X_{1}\right]=\frac{1}{6}(1+1+3+3+5+5)=3 \\
-&amp; \mathbb{E}\left[X_{2}\right]=\frac{1}{6}(0+1+0+1+0+1)=\frac{1}{2}
-\end{aligned}\)</span>$</p></li>
+<li><p>Defin: Mean of a random variable <span class="math notranslate nohighlight">\(X\)</span>. Expectation of <span class="math notranslate nohighlight">\(X\)</span>:</p></li>
 </ul>
+<div class="math notranslate nohighlight">
+\[
+    \mathbb{E}[X]=\sum_{\omega \in \Omega} p(\omega) X(\omega)\left(=\int_{\Omega} X(\omega) p(\omega) d \omega\right)
+\]</div>
+<ul class="simple">
+<li><p>Ex:</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+    \begin{aligned}
+    &amp; \mathbb{E}\left[X_{1}\right]=\frac{1}{6}(1+1+3+3+5+5)=3 \\
+    &amp; \mathbb{E}\left[X_{2}\right]=\frac{1}{6}(0+1+0+1+0+1)=\frac{1}{2}
+    \end{aligned}
+\end{split}\]</div>
 </div>
 <div class="section" id="variance-of-random-variables">
 <h2>3.4.3 Variance of Random Variables<a class="headerlink" href="#variance-of-random-variables" title="Permalink to this headline">¶</a></h2>
-<ul>
+<ul class="simple">
 <li><p>Defin: Variance of a Random Variable <span class="math notranslate nohighlight">\(X\)</span>:
 $<span class="math notranslate nohighlight">\(V[X]=\mathbb{E}\left[X^{2}\right]-\mathbb{E}[X]^{2}=\mathbb{E}\left[(X-\mathbb{E}[X])^{2}\right]\)</span>$</p></li>
-<li><p>Ex:
-$<span class="math notranslate nohighlight">\(\begin{array}{l} V\left[X_{1}\right]=\mathbb{E}\left[X_{1}^{2}\right]-(3)^{2}\\
-    = \frac{1}{6}\left(1^{2}+1^{2}+3^{2}+3^{2}+5^{2}+5^{2}\right)-9\\
-    =\frac{1}{3}(1+9+25)-9\\
-    =\frac{35}{3}-9=\frac{8}{3}\\
-\end{array}\)</span><span class="math notranslate nohighlight">\( Variance measures \&quot;how much \)</span>X$ deviates from it’s
-average”.</p>
-<p><img alt="image" src="../_images/probability4.png" />{width=”.35\textwidth”}</p>
-</li>
+<li><p>Ex:</p></li>
 </ul>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+    \begin{array}{l} V\left[X_{1}\right]=\mathbb{E}\left[X_{1}^{2}\right]-(3)^{2}\\
+        = \frac{1}{6}\left(1^{2}+1^{2}+3^{2}+3^{2}+5^{2}+5^{2}\right)-9\\
+        =\frac{1}{3}(1+9+25)-9\\
+        =\frac{35}{3}-9=\frac{8}{3}\\
+    \end{array}
+\end{split}\]</div>
+<p>Variance measures “how much <span class="math notranslate nohighlight">\(X\)</span> deviates from it’s average”.</p>
+<p><img alt="image" src="../_images/probability4.png" />{width=”.35\textwidth”}</p>
 </div>
 <div class="section" id="independenve-of-random-variables">
 <h2>3.4.4 Independenve of Random variables<a class="headerlink" href="#independenve-of-random-variables" title="Permalink to this headline">¶</a></h2>
@@ -460,23 +472,54 @@ average”.</p>
 <span class="math notranslate nohighlight">\(E_{1}=\left\{w: X_{1}(\omega)&lt;\alpha\right\}, E_{2}=\left\{w: X_{2}(\omega)&lt;\beta\right\}\)</span>
 are independent events.</p></li>
 <li><p>Ex: <span class="math notranslate nohighlight">\(X_{1} , X_{2}\)</span> are independent: if
-<span class="math notranslate nohighlight">\((\alpha, \beta) \quad \alpha=4, \quad \beta=\frac{1}{2}\)</span>,
-$<span class="math notranslate nohighlight">\(\begin{array}{l} 
-E_{1}=\left\{w: X_{1}(u)&lt;4\right\}=\{1,2,3,4\} \\
-E_{2}=\left\{w: X_{2}(\omega)&lt;\frac{1}{2}\right\}=\{1,3,5\}
-\end{array}\)</span><span class="math notranslate nohighlight">\( \)</span><span class="math notranslate nohighlight">\(\begin{array}{l}
-p\left(E_{1}\bigcap E_{2}\right)=p\left(E_{1}\right) p\left(E_{2}\right) \\
-p(\{1,3\})=p\left(E_{1}\right) p\left(E_{2}\right)
-\end{array}\)</span>$</p></li>
+<span class="math notranslate nohighlight">\((\alpha, \beta) \quad \alpha=4, \quad \beta=\frac{1}{2}\)</span>,</p></li>
 </ul>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+    \begin{array}{l} 
+    E_{1}=\left\{w: X_{1}(u)&lt;4\right\}=\{1,2,3,4\} \\
+    E_{2}=\left\{w: X_{2}(\omega)&lt;\frac{1}{2}\right\}=\{1,3,5\}
+    \end{array}
+\end{split}\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+    \begin{array}{l}
+    p\left(E_{1}\bigcap E_{2}\right)=p\left(E_{1}\right) p\left(E_{2}\right) \\
+    p(\{1,3\})=p\left(E_{1}\right) p\left(E_{2}\right)
+    \end{array}
+\end{split}\]</div>
 </div>
 <div class="section" id="properties-of-e-v-independence">
 <h2>3.4.5 Properties of E, V, Independence<a class="headerlink" href="#properties-of-e-v-independence" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>-   If $X_{1}, X_{2}$ are random variable, then
-    $$\left(a_{1}X_{1}+a_{2} x_{2}\right)(w)=a_{1} x_{1}(w)+a_{2} x_{2}(w)$$
-    $$\mathbb{E}\left[a_{1}X_{1}+a_{2} X_{2}\right]=a_{1}\mathbb{E}\left[X_{1}\right]+a_{2} \mathbb{E}\left[X_{2}\right]$$
-</pre></div>
-</div>
+<ul class="simple">
+<li><p>If <span class="math notranslate nohighlight">\(X_{1}, X_{2}\)</span> are random variable, then</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[
+    \left(a_{1}X_{1}+a_{2} x_{2}\right)(w)=a_{1} x_{1}(w)+a_{2} x_{2}(w)
+\]</div>
+<div class="math notranslate nohighlight">
+\[
+    \mathbb{E}\left[a_{1}X_{1}+a_{2} X_{2}\right]=a_{1}\mathbb{E}\left[X_{1}\right]+a_{2} \mathbb{E}\left[X_{2}\right]
+\]</div>
+<ul class="simple">
+<li><p>If <span class="math notranslate nohighlight">\(X_{1}, X_{2}\)</span> are independent random variables, then</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[
+    \mathbb{E}\left[X, X_{2}\right]=\mathbb{E}\left[X_{1}\right] \mathbb{E}\left[X_{2}\right]
+\]</div>
+<ul class="simple">
+<li><p>From this, we get if <span class="math notranslate nohighlight">\(X_{1}, X_{2}\)</span> are independent,</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[
+    V\left[X_{1}+X_{2}\right]=V\left[X_{1}\right]+V\left[X_{2}\right]
+\]</div>
+<div class="math notranslate nohighlight">
+\[
+    V\left[a_{1} x_{1}+a_{2} x_{2}\right]=a_{1}^{2} V\left[x_{1}\right]+a_{2}^{2} V\left[x_{2}\right]
+\]</div>
 </div>
 </div>
 
@@ -522,7 +565,7 @@ p(\{1,3\})=p\left(E_{1}\right) p\left(E_{2}\right)
         <a class="right-next" href="ch3_5.html" title="next page">
             <div class="prevnext-info">
                 <p class="prevnext-label">next</p>
-                <p class="prevnext-title">Probability interpretation of logistic regression</p>
+                <p class="prevnext-title">3.5 Probability interpretation of logistic regression</p>
             </div>
             <i class="prevnext-label fas fa-angle-right"></i>
         </a>

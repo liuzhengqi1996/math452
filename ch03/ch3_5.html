@@ -345,12 +345,12 @@
                 <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#logistic-regression-model">
-   Logistic Regression Model
+   3.5.1 Logistic Regression Model
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#learning-the-parameters-vec-a-b-from-data">
-   Learning the parameters
+   3.5.2 Learning the parameters
    <span class="math notranslate nohighlight">
     \(\vec{a}, b\)
    </span>
@@ -385,13 +385,20 @@ family history, etc), we try to predict incidence of heart disease.
 The label will be binary <span class="math notranslate nohighlight">\(\{0, 1\}\)</span>, called binary classification.</p></li>
 </ul>
 <div class="section" id="logistic-regression-model">
-<h2>Logistic Regression Model<a class="headerlink" href="#logistic-regression-model" title="Permalink to this headline">¶</a></h2>
+<h2>3.5.1 Logistic Regression Model<a class="headerlink" href="#logistic-regression-model" title="Permalink to this headline">¶</a></h2>
 <p>Given input feature vector <span class="math notranslate nohighlight">\(x\in R^{n}\)</span>, the model predicts a
-probability distribution over the labels <span class="math notranslate nohighlight">\(\{0, \ldots, k\}\)</span>.
-$<span class="math notranslate nohighlight">\(\mbox{affine linear map: }Ax+b:\quad R^{n} \rightarrow R^{k}\)</span><span class="math notranslate nohighlight">\( with
-\)</span>A\in R^{k \times n}<span class="math notranslate nohighlight">\(, \)</span>x\in R^{n}<span class="math notranslate nohighlight">\(, \)</span>b\in R^{k}<span class="math notranslate nohighlight">\(.
-\)</span><span class="math notranslate nohighlight">\(\mbox{softmax} \left( Ax+b\right) : \quad R^{n} \rightarrow R^{k} \xrightarrow{softmax}P\left( \{1, \ldots, k\}\right)\)</span>$
-Softmax:</p>
+probability distribution over the labels <span class="math notranslate nohighlight">\(\{0, \ldots, k\}\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[
+    \mbox{affine linear map: }Ax+b:\quad R^{n} \rightarrow R^{k}
+\]</div>
+<p>with
+<span class="math notranslate nohighlight">\(A\in R^{k \times n}\)</span>, <span class="math notranslate nohighlight">\(x\in R^{n}\)</span>, <span class="math notranslate nohighlight">\(b\in R^{k}\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[
+    \mbox{softmax} \left( Ax+b\right) : \quad R^{n} \rightarrow R^{k} \xrightarrow{softmax}P\left( \{1, \ldots, k\}\right)
+\]</div>
+<p>Softmax:</p>
 <ol class="simple">
 <li><p>Input:
 <span class="math notranslate nohighlight">\(y \in \mathbb{R}^{k}=\left(\begin{array}{l}y_{1} \\ \vdots \\ y_{k}\end{array}\right)\)</span></p></li>
@@ -402,28 +409,44 @@ Softmax:</p>
 <p><strong>Logistic Regression Model</strong>: Given input (feature/data) <span class="math notranslate nohighlight">\(x \in R^{n}\)</span>,
 we return the distribution softmax <span class="math notranslate nohighlight">\(\left( Ax+b\right)\)</span> where A, b are
 parameters.</p>
-<ul class="simple">
+<ul>
 <li><p>Example 1: Divide data into two classes: parameters are
-<span class="math notranslate nohighlight">\(\vec{a}\in \mathbb{R}^{n}, b \in \mathbb{R}\)</span>
-$<span class="math notranslate nohighlight">\(A\in \mathbb{R}^{1\times n},\quad Ax+b\in \mathbb{R}.\)</span><span class="math notranslate nohighlight">\( The
-probability that the data \)</span>x<span class="math notranslate nohighlight">\( belongs to class 1 is
-\)</span><span class="math notranslate nohighlight">\(P(1)=\frac{e^{\vec{a}\cdot x+b}}{e^{\vec{a} \cdot x+b}+1},\)</span><span class="math notranslate nohighlight">\( and
-the probability that the data \)</span>x<span class="math notranslate nohighlight">\( belongs to class 2 is
-\)</span><span class="math notranslate nohighlight">\(P(2)=\frac{1}{e^{\vec{a} \cdot x+ b}+1}.\)</span><span class="math notranslate nohighlight">\( If
-\)</span>\vec{a} \cdot x+ b=0<span class="math notranslate nohighlight">\(, \)</span>P(1)=   P(2)={1\over 2}<span class="math notranslate nohighlight">\(. We don't know how
-to classify the data lying on the line \)</span>\vec{a} \cdot x+ b=0$ as
-shown in the figure below.</p></li>
+<span class="math notranslate nohighlight">\(\vec{a}\in \mathbb{R}^{n}, b \in \mathbb{R}\)</span></p>
+<div class="math notranslate nohighlight">
+\[
+        A\in \mathbb{R}^{1\times n},\quad Ax+b\in \mathbb{R}.
+    \]</div>
+<p>The
+probability that the data <span class="math notranslate nohighlight">\(x\)</span> belongs to class 1 is</p>
+<div class="math notranslate nohighlight">
+\[
+        P(1)=\frac{e^{\vec{a}\cdot x+b}}{e^{\vec{a} \cdot x+b}+1},
+    \]</div>
+<p>and
+the probability that the data <span class="math notranslate nohighlight">\(x\)</span> belongs to class 2 is</p>
+<div class="math notranslate nohighlight">
+\[
+        P(2)=\frac{1}{e^{\vec{a} \cdot x+ b}+1}.
+    \]</div>
+<p>If
+<span class="math notranslate nohighlight">\(\vec{a} \cdot x+ b=0\)</span>, <span class="math notranslate nohighlight">\(P(1)=   P(2)={1\over 2}\)</span>. We don’t know how
+to classify the data lying on the line <span class="math notranslate nohighlight">\(\vec{a} \cdot x+ b=0\)</span> as
+shown in the figure below.</p>
+</li>
 </ul>
 <p><img alt="image" src="../_images/probabilityLR1.png" />{width=”.55\textwidth”}</p>
-<p>Note that
-$<span class="math notranslate nohighlight">\(\frac{p(1)}{p(2)}=e^{\vec{a} \cdot x+b},\quad \log \left(\frac{p(1)}{p(2)}\right)=\vec{a} \cdot x+b.\)</span><span class="math notranslate nohighlight">\(
-By the above equation, \)</span>\vec{a}<span class="math notranslate nohighlight">\( means which feature is important.
-Logarithm of the odds: \)</span>\log \left(\frac{p(1)}{p(2)}\right)<span class="math notranslate nohighlight">\(.
-Assumption: \)</span>\log \left(\frac{p(1)}{p(2)}\right)$ is linear in the
+<p>Note that</p>
+<div class="math notranslate nohighlight">
+\[
+    \frac{p(1)}{p(2)}=e^{\vec{a} \cdot x+b},\quad \log \left(\frac{p(1)}{p(2)}\right)=\vec{a} \cdot x+b.
+\]</div>
+<p>By the above equation, <span class="math notranslate nohighlight">\(\vec{a}\)</span> means which feature is important.
+Logarithm of the odds: <span class="math notranslate nohighlight">\(\log \left(\frac{p(1)}{p(2)}\right)\)</span>.
+Assumption: <span class="math notranslate nohighlight">\(\log \left(\frac{p(1)}{p(2)}\right)\)</span> is linear in the
 feature vector</p>
 </div>
 <div class="section" id="learning-the-parameters-vec-a-b-from-data">
-<h2>Learning the parameters <span class="math notranslate nohighlight">\(\vec{a}, b\)</span> from data<a class="headerlink" href="#learning-the-parameters-vec-a-b-from-data" title="Permalink to this headline">¶</a></h2>
+<h2>3.5.2 Learning the parameters <span class="math notranslate nohighlight">\(\vec{a}, b\)</span> from data<a class="headerlink" href="#learning-the-parameters-vec-a-b-from-data" title="Permalink to this headline">¶</a></h2>
 <p>Data: feature vectors <span class="math notranslate nohighlight">\(x\)</span> and corresponding labels <span class="math notranslate nohighlight">\(l\)</span>. Given data</p>
 <div class="math notranslate nohighlight">
 \[

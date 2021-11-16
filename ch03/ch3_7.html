@@ -54,7 +54,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="3.8 Classfication/ Logistic Regression" href="ch3_8.html" />
-    <link rel="prev" title="Maximamum Likelihood" href="ch3_6.html" />
+    <link rel="prev" title="3.6 Maximamum Likelihood" href="ch3_6.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
     
@@ -225,12 +225,12 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="ch3_5.html">
-     Probability interpretation of logistic regression
+     3.5 Probability interpretation of logistic regression
     </a>
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="ch3_6.html">
-     Maximamum Likelihood
+     3.6 Maximamum Likelihood
     </a>
    </li>
    <li class="toctree-l2 current active">
@@ -345,7 +345,7 @@
                 <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#maximum-likelihood-estimate-mle">
-   Maximum Likelihood Estimate(MLE)
+   3.7.1 Maximum Likelihood Estimate(MLE)
   </a>
  </li>
 </ul>
@@ -366,8 +366,7 @@
 from samples <span class="math notranslate nohighlight">\((i,i,d)\)</span> <span class="math notranslate nohighlight">\(x_{1}, \ldots, x_{n} \in X\)</span></p></li>
 <li><p>Introduce a family of distributions <span class="math notranslate nohighlight">\(P_{\theta}\)</span> for
 <span class="math notranslate nohighlight">\(\theta \in \Theta\)</span> and try to choose <span class="math notranslate nohighlight">\(\theta\)</span> to “match” the
-samples.</p>
-<ul>
+samples.</p></li>
 <li><p>Maximum Likelihood Estimate: Choose <span class="math notranslate nohighlight">\(\theta\)</span> to maximize the
 probability of the samples.</p></li>
 <li><p>Example: Let <span class="math notranslate nohighlight">\(X=R\)</span>, have some samples <span class="math notranslate nohighlight">\(x_{1}, \ldots, x_{n}\)</span>
@@ -379,30 +378,41 @@ density
 </li>
 <li><p>Use the samples to find the center <span class="math notranslate nohighlight">\(\theta\)</span>.</p></li>
 </ul>
-</li>
-</ul>
 <div class="section" id="maximum-likelihood-estimate-mle">
-<h2>Maximum Likelihood Estimate(MLE)<a class="headerlink" href="#maximum-likelihood-estimate-mle" title="Permalink to this headline">¶</a></h2>
+<h2>3.7.1 Maximum Likelihood Estimate(MLE)<a class="headerlink" href="#maximum-likelihood-estimate-mle" title="Permalink to this headline">¶</a></h2>
 <ul>
 <li><p>Given <span class="math notranslate nohighlight">\(\theta \in \Theta (=\mathbb{R}\)</span> for this example), what is
-the probability of the data <span class="math notranslate nohighlight">\(\left\{x_{j}\right\}_{j=1}^{n}\)</span>?</p>
-<ul class="simple">
+the probability of the data <span class="math notranslate nohighlight">\(\left\{x_{j}\right\}_{j=1}^{n}\)</span>?</p></li>
 <li><p>Samles independent: Likelihood function(as a function of
-<span class="math notranslate nohighlight">\(\sigma\)</span>)
-$<span class="math notranslate nohighlight">\(P_{\theta}\left(\left\{x_{j}\right\}_{j=1}^{n}\right)=\prod_{j=1}^{n} p_{\theta}\left(x_{j}\right)
-        =\frac{1}{(\sqrt{2 \pi})^{n}}\prod_{j=1}^{n} e^{-\left(x_{j}-\theta\right)^{2} / 2}
-        =\frac{1}{(2 \pi)^{n/ 2}} e^{-\sum_{j=1}^{n}\left(x_{j}-\theta\right)^{2} / 2}\)</span>$</p></li>
+<span class="math notranslate nohighlight">\(\sigma\)</span>)</p>
+<div class="math notranslate nohighlight">
+\[
+            P_{\theta}\left(\left\{x_{j}\right\}_{j=1}^{n}\right)=\prod_{j=1}^{n} p_{\theta}\left(x_{j}\right)
+                =\frac{1}{(\sqrt{2 \pi})^{n}}\prod_{j=1}^{n} e^{-\left(x_{j}-\theta\right)^{2} / 2}
+                =\frac{1}{(2 \pi)^{n/ 2}} e^{-\sum_{j=1}^{n}\left(x_{j}-\theta\right)^{2} / 2}
+        \]</div>
+</li>
 <li><p>MLE: Choose <span class="math notranslate nohighlight">\(\theta\)</span> to maximize this!</p></li>
 <li><p>Often it’s useful to consider log likelihood function
-<span class="math notranslate nohighlight">\(\log \left(P_{\theta}\left(\left\{x_{j}\right\}_{j=1}^{n}\right)\right)\)</span>
-$<span class="math notranslate nohighlight">\(\begin{aligned} \theta^{*}= \operatorname{argmax} _{\theta \in \Theta}\log \left(P_{\theta}\left(\left\{x_{j}\right\}_{j=1}^{n}\right)\right) \\
-        \left(\operatorname{argmin} _{\theta \in \Theta}-\log \left(P_{\theta}\left(\left\{x_{j}\right\}_{j=1}^{n}\right)\right)\right) \end{aligned}\)</span>$</p></li>
-</ul>
+<span class="math notranslate nohighlight">\(\log \left(P_{\theta}\left(\left\{x_{j}\right\}_{j=1}^{n}\right)\right)\)</span></p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned} \theta^{*}= \operatorname{argmax} _{\theta \in \Theta}\log \left(P_{\theta}\left(\left\{x_{j}\right\}_{j=1}^{n}\right)\right) \\
+                \left(\operatorname{argmin} _{\theta \in \Theta}-\log \left(P_{\theta}\left(\left\{x_{j}\right\}_{j=1}^{n}\right)\right)\right) \end{aligned}
+        \end{split}\]</div>
 </li>
-<li><p>For this example:
-$<span class="math notranslate nohighlight">\(\log \left(P_{\theta}\left(\left\{x_{j}\right\}_{j=1}^{n}\right)\right)=-\log (2 \pi) \cdot\left(\frac{n}{2}\right)-\sum_{j=1}^{n} \frac{\left(x_{j}-\theta\right)^{2}}{2}\)</span><span class="math notranslate nohighlight">\(
-\)</span><span class="math notranslate nohighlight">\(\theta^{*}=\operatorname{argmin}_{\theta \in \mathbb{R}} \sum_{j=1}^{n} \frac{\left(x_{j}-\theta\right)^{2}}{2}.\)</span><span class="math notranslate nohighlight">\(
-\)</span><span class="math notranslate nohighlight">\(\theta^{*}=\frac{1}{n} \sum_{j=1}^{n} x_{j}.\)</span>$</p>
+<li><p>For this example:</p>
+<div class="math notranslate nohighlight">
+\[
+        \log \left(P_{\theta}\left(\left\{x_{j}\right\}_{j=1}^{n}\right)\right)=-\log (2 \pi) \cdot\left(\frac{n}{2}\right)-\sum_{j=1}^{n} \frac{\left(x_{j}-\theta\right)^{2}}{2}
+    \]</div>
+<div class="math notranslate nohighlight">
+\[
+        \theta^{*}=\operatorname{argmin}_{\theta \in \mathbb{R}} \sum_{j=1}^{n} \frac{\left(x_{j}-\theta\right)^{2}}{2}.
+    \]</div>
+<div class="math notranslate nohighlight">
+\[
+        \theta^{*}=\frac{1}{n} \sum_{j=1}^{n} x_{j}.
+    \]</div>
 <p><img alt="image" src="../_images/probabilityLR3.png" />{width=”.55\textwidth”}</p>
 </li>
 </ul>
@@ -443,7 +453,7 @@ $<span class="math notranslate nohighlight">\(\log \left(P_{\theta}\left(\left\{
             <i class="prevnext-label fas fa-angle-left"></i>
             <div class="prevnext-info">
                 <p class="prevnext-label">previous</p>
-                <p class="prevnext-title">Maximamum Likelihood</p>
+                <p class="prevnext-title">3.6 Maximamum Likelihood</p>
             </div>
         </a>
     </div>
