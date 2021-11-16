@@ -14,11 +14,16 @@
 #     p(1)
 #      \\ \vdots \\ 
 #     p(k)
-#     \end{array}\right)$$ This means that the probability that the model 
-#     assigns to $l_{1}$ is
+#     \end{array}\right)
 # $$
 # 
-# p(l)=\frac{1}{\sum_{i=1}^{k} e^{a_{i}\cdot x_{i}+b_{i}}} \cdot e^{\vec{a}_{l} \cdot x_{1}+b_{l}}$$
+# This means that the probability that the model 
+#     assigns to $l_{1}$ is
+# 
+# $$
+#     p(l)=\frac{1}{\sum_{i=1}^{k} e^{a_{i}\cdot x_{i}+b_{i}}} \cdot e^{\vec{a}_{l} \cdot x_{1}+b_{l}}
+# $$
+# 
 # Instead of considering this probability, we consider its negtive
 # logarithm:
 # 

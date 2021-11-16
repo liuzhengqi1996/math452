@@ -20,13 +20,22 @@
 #     family history, etc), we try to predict incidence of heart disease.
 #     The label will be binary $\{0, 1\}$, called binary classification.
 # 
-# ## Logistic Regression Model
+# ## 3.5.1 Logistic Regression Model
 # 
 # Given input feature vector $x\in R^{n}$, the model predicts a
 # probability distribution over the labels $\{0, \ldots, k\}$.
-# $$\mbox{affine linear map: }Ax+b:\quad R^{n} \rightarrow R^{k}$$ with
+# 
+# $$
+#     \mbox{affine linear map: }Ax+b:\quad R^{n} \rightarrow R^{k}
+# $$
+# 
+# with
 # $A\in R^{k \times n}$, $x\in R^{n}$, $b\in R^{k}$.
-# $$\mbox{softmax} \left( Ax+b\right) : \quad R^{n} \rightarrow R^{k} \xrightarrow{softmax}P\left( \{1, \ldots, k\}\right)$$
+# 
+# $$
+#     \mbox{softmax} \left( Ax+b\right) : \quad R^{n} \rightarrow R^{k} \xrightarrow{softmax}P\left( \{1, \ldots, k\}\right)
+# $$
+# 
 # Softmax:
 # 
 # 1.  Input:
@@ -43,11 +52,26 @@
 # 
 # -   Example 1: Divide data into two classes: parameters are
 #     $\vec{a}\in \mathbb{R}^{n}, b \in \mathbb{R}$
-#     $$A\in \mathbb{R}^{1\times n},\quad Ax+b\in \mathbb{R}.$$ The
+#     
+#     $$
+#         A\in \mathbb{R}^{1\times n},\quad Ax+b\in \mathbb{R}.
+#     $$
+#     
+#     The
 #     probability that the data $x$ belongs to class 1 is
-#     $$P(1)=\frac{e^{\vec{a}\cdot x+b}}{e^{\vec{a} \cdot x+b}+1},$$ and
+#     
+#     $$
+#         P(1)=\frac{e^{\vec{a}\cdot x+b}}{e^{\vec{a} \cdot x+b}+1},
+#     $$ 
+#     
+#     and
 #     the probability that the data $x$ belongs to class 2 is
-#     $$P(2)=\frac{1}{e^{\vec{a} \cdot x+ b}+1}.$$ If
+#     
+#     $$
+#         P(2)=\frac{1}{e^{\vec{a} \cdot x+ b}+1}.
+#     $$ 
+#     
+#     If
 #     $\vec{a} \cdot x+ b=0$, $P(1)=   P(2)={1\over 2}$. We don't know how
 #     to classify the data lying on the line $\vec{a} \cdot x+ b=0$ as
 #     shown in the figure below.
@@ -55,13 +79,17 @@
 # ![image](../figures/probabilityLR1.png){width=".55\\textwidth"}
 # 
 # Note that
-# $$\frac{p(1)}{p(2)}=e^{\vec{a} \cdot x+b},\quad \log \left(\frac{p(1)}{p(2)}\right)=\vec{a} \cdot x+b.$$
+# 
+# $$
+#     \frac{p(1)}{p(2)}=e^{\vec{a} \cdot x+b},\quad \log \left(\frac{p(1)}{p(2)}\right)=\vec{a} \cdot x+b.
+# $$
+# 
 # By the above equation, $\vec{a}$ means which feature is important.
 # Logarithm of the odds: $\log \left(\frac{p(1)}{p(2)}\right)$.
 # Assumption: $\log \left(\frac{p(1)}{p(2)}\right)$ is linear in the
 # feature vector
 #     
-# ## Learning the parameters $\vec{a}, b$ from data 
+# ## 3.5.2 Learning the parameters $\vec{a}, b$ from data 
 # 
 # Data: feature vectors $x$ and corresponding labels $l$. Given data
 # 

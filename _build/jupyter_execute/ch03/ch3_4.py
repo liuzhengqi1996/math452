@@ -18,11 +18,11 @@
 # 
 # -   Ex: Rolling a die:
 # 
-#     -   Outcomes: $\Omega={1,2,...,6}$
+#    -   Outcomes: $\Omega={1,2,...,6}$
 # 
-#     -   Events are subsets of $\Omega$
+#    -   Events are subsets of $\Omega$
 # 
-#     -   Distribution: $p(1)=p(2)=...=p(6)=\frac{1}{6}$ Suppose we roll
+#    -   Distribution: $p(1)=p(2)=...=p(6)=\frac{1}{6}$ Suppose we roll
 #         the die, then if the die comes up d times, you win d dollars,
 #         minus 1 dollar if it's even. The amount you win is a random
 #         variable. $\begin{array}{l}
@@ -39,22 +39,34 @@
 # -   Ex: Rolling a die. If the die comes up d times, you get d dollars.
 #     If d is even, then you give a dollar to your friend.
 #     $X_{1} \leftarrow$ your winnings, $X_{2}\leftarrow$ your friends
-#     winnings. $$\begin{aligned}
-#         X_{2}: \Omega \rightarrow \mathbb{R}, & X_{2}(1)=0, \quad X_{2}(2)=1 \\
-#         & X_{2}(3)=0, \quad X_{2}(4)=1 \\
-#         & X_{2}(5)=0, \quad X_{2}(6)=1
-#     \end{aligned}$$ From here on out $\Omega$ will be fixed, we talk
-#     about different random variables on $\Omega$.
+#     winnings. 
+#     
+# $$
+#     \begin{aligned}
+#     X_{2}: \Omega \rightarrow \mathbb{R}, & X_{2}(1)=0, \quad X_{2}(2)=1 \\
+#     & X_{2}(3)=0, \quad X_{2}(4)=1 \\
+#     & X_{2}(5)=0, \quad X_{2}(6)=1
+#     \end{aligned}
+# $$ 
+# 
+# From here on out $\Omega$ will be fixed, we talk about different random variables on $\Omega$.
 # 
 # ## 3.4.2 Mean of random variable
 # 
 # -   Defin: Mean of a random variable $X$. Expectation of $X$:
-#     $$\mathbb{E}[X]=\sum_{\omega \in \Omega} p(\omega) X(\omega)\left(=\int_{\Omega} X(\omega) p(\omega) d \omega\right)$$
 # 
-# -   Ex: $$\begin{aligned}
+# $$
+#     \mathbb{E}[X]=\sum_{\omega \in \Omega} p(\omega) X(\omega)\left(=\int_{\Omega} X(\omega) p(\omega) d \omega\right)
+# $$
+# 
+# -   Ex: 
+# 
+# $$
+#     \begin{aligned}
 #     & \mathbb{E}\left[X_{1}\right]=\frac{1}{6}(1+1+3+3+5+5)=3 \\
 #     & \mathbb{E}\left[X_{2}\right]=\frac{1}{6}(0+1+0+1+0+1)=\frac{1}{2}
-#     \end{aligned}$$
+#     \end{aligned}
+# $$
 # 
 # ## 3.4.3 Variance of Random Variables
 # 
@@ -62,14 +74,18 @@
 #     $$V[X]=\mathbb{E}\left[X^{2}\right]-\mathbb{E}[X]^{2}=\mathbb{E}\left[(X-\mathbb{E}[X])^{2}\right]$$
 # 
 # -   Ex:
-#     $$\begin{array}{l} V\left[X_{1}\right]=\mathbb{E}\left[X_{1}^{2}\right]-(3)^{2}\\
+# 
+# $$
+#     \begin{array}{l} V\left[X_{1}\right]=\mathbb{E}\left[X_{1}^{2}\right]-(3)^{2}\\
 #         = \frac{1}{6}\left(1^{2}+1^{2}+3^{2}+3^{2}+5^{2}+5^{2}\right)-9\\
 #         =\frac{1}{3}(1+9+25)-9\\
 #         =\frac{35}{3}-9=\frac{8}{3}\\
-#     \end{array}$$ Variance measures \"how much $X$ deviates from it's
-#     average\".
+#     \end{array}
+# $$ 
 # 
-#     ![image](../figures/probability4.png){width=".35\\textwidth"}
+# Variance measures \"how much $X$ deviates from it's average\".
+# 
+#   ![image](../figures/probability4.png){width=".35\\textwidth"}
 # 
 # ## 3.4.4 Independenve of Random variables
 # 
@@ -80,19 +96,49 @@
 # 
 # -   Ex: $X_{1} , X_{2}$ are independent: if
 #     $(\alpha, \beta) \quad \alpha=4, \quad \beta=\frac{1}{2}$,
-#     $$\begin{array}{l} 
+#     
+# $$
+#     \begin{array}{l} 
 #     E_{1}=\left\{w: X_{1}(u)<4\right\}=\{1,2,3,4\} \\
 #     E_{2}=\left\{w: X_{2}(\omega)<\frac{1}{2}\right\}=\{1,3,5\}
-#     \end{array}$$ $$\begin{array}{l}
+#     \end{array}
+# $$
+#     
+# $$
+#     \begin{array}{l}
 #     p\left(E_{1}\bigcap E_{2}\right)=p\left(E_{1}\right) p\left(E_{2}\right) \\
 #     p(\{1,3\})=p\left(E_{1}\right) p\left(E_{2}\right)
-#     \end{array}$$
+#     \end{array}
+# $$
 # 
 # ## 3.4.5 Properties of E, V, Independence
 # 
-#     -   If $X_{1}, X_{2}$ are random variable, then
-#         $$\left(a_{1}X_{1}+a_{2} x_{2}\right)(w)=a_{1} x_{1}(w)+a_{2} x_{2}(w)$$
-#         $$\mathbb{E}\left[a_{1}X_{1}+a_{2} X_{2}\right]=a_{1}\mathbb{E}\left[X_{1}\right]+a_{2} \mathbb{E}\left[X_{2}\right]$$
+#    -   If $X_{1}, X_{2}$ are random variable, then
+#    
+# $$
+#     \left(a_{1}X_{1}+a_{2} x_{2}\right)(w)=a_{1} x_{1}(w)+a_{2} x_{2}(w)
+# $$
+#         
+# $$
+#     \mathbb{E}\left[a_{1}X_{1}+a_{2} X_{2}\right]=a_{1}\mathbb{E}\left[X_{1}\right]+a_{2} \mathbb{E}\left[X_{2}\right]
+# $$
+# 
+#    -   If $X_{1}, X_{2}$ are independent random variables, then
+#     
+# $$
+#     \mathbb{E}\left[X, X_{2}\right]=\mathbb{E}\left[X_{1}\right] \mathbb{E}\left[X_{2}\right]
+# $$
+# 
+#    -   From this, we get if $X_{1}, X_{2}$ are independent,
+# 
+# $$
+#     V\left[X_{1}+X_{2}\right]=V\left[X_{1}\right]+V\left[X_{2}\right]
+# $$
+# 
+# $$
+#     V\left[a_{1} x_{1}+a_{2} x_{2}\right]=a_{1}^{2} V\left[x_{1}\right]+a_{2}^{2} V\left[x_{2}\right]
+# $$
+# 
 
 # In[ ]:
 

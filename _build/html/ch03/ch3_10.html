@@ -224,12 +224,12 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="ch3_5.html">
-     Probability interpretation of logistic regression
+     3.5 Probability interpretation of logistic regression
     </a>
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="ch3_6.html">
-     Maximamum Likelihood
+     3.6 Maximamum Likelihood
     </a>
    </li>
    <li class="toctree-l2">
@@ -344,7 +344,7 @@
                 <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#whitening">
-   Whitening
+   3.10.1 Whitening
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -372,32 +372,56 @@
 <h1>3.10 General Covariance<a class="headerlink" href="#general-covariance" title="Permalink to this headline">¶</a></h1>
 <p>Let <span class="math notranslate nohighlight">\(X \in V\)</span> be a random variable living in an inner product space V
 with <span class="math notranslate nohighlight">\(E\left[ X\right] = 0\)</span> Define: The covariance of X is the quadratic
-form <span class="math notranslate nohighlight">\(\operatorname{Cov}(X): V \rightarrow R\)</span> defined by
-$<span class="math notranslate nohighlight">\(\operatorname{Cov}(X)(v)=E\left[\langle X, v\rangle^{2}\right]\)</span><span class="math notranslate nohighlight">\( If V
-is finite dimensional and \)</span>e_{1}, \dots, e_{n}<span class="math notranslate nohighlight">\( is an orthonormal matrix
-then \)</span><span class="math notranslate nohighlight">\(\langle X, v\rangle=X^{\top} v=v^{\top} X\)</span><span class="math notranslate nohighlight">\( and so
-\)</span><span class="math notranslate nohighlight">\(\operatorname{Cov}(X)(v)=\mathbb{E}\left[v^{\top} X X^{\top} v\right]=v^{\top} \mathbb{E}\left[X X^{\top}\right] v\)</span><span class="math notranslate nohighlight">\(
-Sometimes, we may define a scalar variance
-\)</span><span class="math notranslate nohighlight">\(\operatorname{Var}(X)=\mathbb{E}\left[\|X\|^{2}\right]=\operatorname{tr}\left(\mathbb{E}\left[X X^{\top}\right]\right)\)</span>$</p>
+form <span class="math notranslate nohighlight">\(\operatorname{Cov}(X): V \rightarrow R\)</span> defined by</p>
+<div class="math notranslate nohighlight">
+\[
+    \operatorname{Cov}(X)(v)=E\left[\langle X, v\rangle^{2}\right]
+    \]</div>
+<p>If V is finite dimensional and <span class="math notranslate nohighlight">\(e_{1}, \dots, e_{n}\)</span> is an orthonormal matrix
+then</p>
+<div class="math notranslate nohighlight">
+\[
+    \langle X, v\rangle=X^{\top} v=v^{\top} X
+\]</div>
+<p>and so</p>
+<div class="math notranslate nohighlight">
+\[
+    \operatorname{Cov}(X)(v)=\mathbb{E}\left[v^{\top} X X^{\top} v\right]=v^{\top} \mathbb{E}\left[X X^{\top}\right] v
+\]</div>
+<p>Sometimes, we may define a scalar variance</p>
+<div class="math notranslate nohighlight">
+\[
+    \operatorname{Var}(X)=\mathbb{E}\left[\|X\|^{2}\right]=\operatorname{tr}\left(\mathbb{E}\left[X X^{\top}\right]\right)
+\]</div>
 <div class="section" id="whitening">
-<h2>Whitening<a class="headerlink" href="#whitening" title="Permalink to this headline">¶</a></h2>
+<h2>3.10.1 Whitening<a class="headerlink" href="#whitening" title="Permalink to this headline">¶</a></h2>
 <p>Consider transforming the random variable X with a linear transformation
-matrix A. Then
-$<span class="math notranslate nohighlight">\(Cov(A X)=\mathbb{E}\left[AXX^{\top} A^{\top}\right]=A \mathbb{E}\left[X X^{\top}\right] A^{\top}=A V A^{T}\)</span><span class="math notranslate nohighlight">\(
-where \)</span>V= \mathbb{E}\left[X X^{\top}\right]<span class="math notranslate nohighlight">\( is the coveriance of \)</span>X<span class="math notranslate nohighlight">\(.
-So if we choose A s.t.
-\)</span><span class="math notranslate nohighlight">\(A VA^{\top}=I \Leftrightarrow V=A^{-1} A^{-T},\)</span><span class="math notranslate nohighlight">\( then \)</span><span class="math notranslate nohighlight">\(Cov(A X)= I,\)</span><span class="math notranslate nohighlight">\(
-so \)</span>AX<span class="math notranslate nohighlight">\( is \&quot;white noise\&quot;. Clearly there are many choice for \)</span>A<span class="math notranslate nohighlight">\(.
-Namely given an \)</span>A<span class="math notranslate nohighlight">\(, \)</span>OA<span class="math notranslate nohighlight">\( also works for any orthonormal \)</span>O$.</p>
+matrix A. Then</p>
+<div class="math notranslate nohighlight">
+\[
+    Cov(A X)=\mathbb{E}\left[AXX^{\top} A^{\top}\right]=A \mathbb{E}\left[X X^{\top}\right] A^{\top}=A V A^{T}
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(V= \mathbb{E}\left[X X^{\top}\right]\)</span> is the coveriance of <span class="math notranslate nohighlight">\(X\)</span>.
+So if we choose A s.t.</p>
+<div class="math notranslate nohighlight">
+\[
+    A VA^{\top}=I \Leftrightarrow V=A^{-1} A^{-T},$$ then $$Cov(A X)= I,
+\]</div>
+<p>so <span class="math notranslate nohighlight">\(AX\)</span> is “white noise”. Clearly there are many choice for <span class="math notranslate nohighlight">\(A\)</span>.
+Namely given an <span class="math notranslate nohighlight">\(A\)</span>, <span class="math notranslate nohighlight">\(OA\)</span> also works for any orthonormal <span class="math notranslate nohighlight">\(O\)</span>.</p>
 </div>
 <div class="section" id="batch-normalization">
 <h2>Batch Normalization<a class="headerlink" href="#batch-normalization" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
+<ul>
 <li><p>Calculating an appropriate A is generally competationally too
 expensive. The most efficient way to do it is likely a Cholesky
 factorization.</p></li>
-<li><p>In BN, we instead choose A diagonal so that
-$<span class="math notranslate nohighlight">\(\operatorname{diag}\left(A \cup A^{T}\right)=(1,1, \ldots, 1)\)</span>$</p></li>
+<li><p>In BN, we instead choose A diagonal so that</p>
+<div class="math notranslate nohighlight">
+\[
+        \operatorname{diag}\left(A \cup A^{T}\right)=(1,1, \ldots, 1)
+    \]</div>
+</li>
 <li><p>Of course the off-diagonal entries of <span class="math notranslate nohighlight">\(A \cup A^{T}\)</span> will generally
 not be <span class="math notranslate nohighlight">\(O\)</span>.</p></li>
 </ul>
@@ -405,13 +429,24 @@ not be <span class="math notranslate nohighlight">\(O\)</span>.</p></li>
 <div class="section" id="central-limiting-theorem">
 <h2>Central Limiting Theorem<a class="headerlink" href="#central-limiting-theorem" title="Permalink to this headline">¶</a></h2>
 <p>Let <span class="math notranslate nohighlight">\(X_{1}, X_{2}, \ldots, X_{n}\)</span> be independent copies of <span class="math notranslate nohighlight">\(X\in \Omega\)</span>
-with <span class="math notranslate nohighlight">\(E\left[ X\right] = 0\)</span>. Then <span class="math notranslate nohighlight">\(V=E\left[ XX^T\right]\)</span>. Consider
-$<span class="math notranslate nohighlight">\(\bar{X}_{n}=\frac{1}{\sqrt{n}} \sum\limits_{i=1}^{n} X_{i}.\)</span><span class="math notranslate nohighlight">\( As
-\)</span>n\rightarrow \infty<span class="math notranslate nohighlight">\(, \)</span>\bar{X}_{n}<span class="math notranslate nohighlight">\( converges to a Gaussian
-distribution, namely,
-\)</span><span class="math notranslate nohighlight">\(\lim_{n \rightarrow \infty} \bar{X}_{n}= {\rm Gaussian}(0, V)\)</span><span class="math notranslate nohighlight">\( with
-distribution
-\)</span><span class="math notranslate nohighlight">\(P(X)=\frac{1}{(\sqrt{2 n}\ {\rm det}(V))^{d}} e^{\frac{-x^{T}V^{-1}x}{2}}d x.\)</span>$</p>
+with <span class="math notranslate nohighlight">\(E\left[ X\right] = 0\)</span>. Then <span class="math notranslate nohighlight">\(V=E\left[ XX^T\right]\)</span>. Consider</p>
+<div class="math notranslate nohighlight">
+\[
+    \bar{X}_{n}=\frac{1}{\sqrt{n}} \sum\limits_{i=1}^{n} X_{i}.
+\]</div>
+<p>As
+<span class="math notranslate nohighlight">\(n\rightarrow \infty\)</span>, <span class="math notranslate nohighlight">\(\bar{X}_{n}\)</span> converges to a Gaussian
+distribution, namely,</p>
+<div class="math notranslate nohighlight">
+\[
+    \lim_{n \rightarrow \infty} \bar{X}_{n}= {\rm Gaussian}(0, V)
+\]</div>
+<p>with
+distribution</p>
+<div class="math notranslate nohighlight">
+\[
+    P(X)=\frac{1}{(\sqrt{2 n}\ {\rm det}(V))^{d}} e^{\frac{-x^{T}V^{-1}x}{2}}d x.
+\]</div>
 </div>
 </div>
 

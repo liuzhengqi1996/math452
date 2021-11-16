@@ -359,11 +359,15 @@ model gives softmax <span class="math notranslate nohighlight">\(\left( Ax_1+b\r
     p(1)
      \\ \vdots \\ 
     p(k)
-    \end{array}\right)$$ This means that the probability that the model 
-    assigns to $l_{1}$ is
+    \end{array}\right)
 \end{split}\]</div>
-<p>p(l)=\frac{1}{\sum_{i=1}^{k} e^{a_{i}\cdot x_{i}+b_{i}}} \cdot e^{\vec{a}<em>{l} \cdot x</em>{1}+b_{l}}$$
-Instead of considering this probability, we consider its negtive
+<p>This means that the probability that the model
+assigns to <span class="math notranslate nohighlight">\(l_{1}\)</span> is</p>
+<div class="math notranslate nohighlight">
+\[
+    p(l)=\frac{1}{\sum_{i=1}^{k} e^{a_{i}\cdot x_{i}+b_{i}}} \cdot e^{\vec{a}_{l} \cdot x_{1}+b_{l}}
+\]</div>
+<p>Instead of considering this probability, we consider its negtive
 logarithm:</p>
 <div class="math notranslate nohighlight">
 \[

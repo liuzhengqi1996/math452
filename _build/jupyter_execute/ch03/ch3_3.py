@@ -32,7 +32,7 @@
 # 
 # -   Rolling a Die:
 # 
-#     -   Outcomes:$\left\{ 1, 2, 3, 4, 5, 6\right\}$
+#     -   Outcomes: $\left\{ 1, 2, 3, 4, 5, 6\right\}$
 # 
 #     -   Event: some examples $E_{1}=\left\{ 3\right\}$--- rolling a 3
 #         $E_{2}=\left\{ 1, 3, 5\right\}$ --- rolling an odd number
@@ -62,12 +62,24 @@
 # ## 3.3.2 Independent Copies
 # 
 # -   Coin Flip: 2 independent copies:
-#     $C_{1}=\left\{H,T\right\}, C_{2}=\left\{H,T\right\}\Rightarrow C_{1}\times C_{2}$
+#     $
+#         C_{1}=\left\{H,T\right\}, C_{2}=\left\{H,T\right\}\Rightarrow C_{1}\times C_{2}
+#     $
 # 
-#              $H^{\operatorname{P_{H}}}$   $T^{P_{T}}$
-#       ----------- ---------------------------- -------------
-#        $P_{H} H$             $H H$                 $H T$
-#        $P_{T}T$              $T H$                 $T T$
+#     ```{list-table}
+#     :header-rows: 1
+#     :name: example-table
+# 
+#     * - 
+#       - $H^{\operatorname{P_{H}}}$ 
+#       - $T^{P_{T}}$
+#     * - $P_{H} H$ 
+#       - $H H$
+#       - $H T$
+#     * - $P_{T}T$
+#       - $T H$
+#       - $T T$
+#     ```
 # 
 #     -   Event: $\left\{HT,HT\right\} \Rightarrow$ exactly one head
 #         $\left\{HT,HH,TH\right\} \Rightarrow$at least one head
@@ -88,7 +100,7 @@
 #     $\left[ 0,0.25\right] \bigcup \left[ 0.5,0.75\right]$ means random
 #     number less than $0.025$ or between $0.5$ and $0.75$
 # 
-#     ![image](../figures/probability1.png){width=".35\\textwidth"}
+#     ![image](../figures/probability1.png)
 # 
 # -   Distribution: A distribution a rule which gives the probability of
 #     any event. Properties to satisfy: if events
@@ -100,38 +112,44 @@
 #     2.  $p(E)=\int_{E} d_{x}$, \"length of E\"
 # 
 #     3.  examples 1: $E_{1}=\left[ 0,0.5\right]$
-#         $$P\left(E_{1}\right)=\int_{E_{1}} d_{x}=\int_{0}^{1 / 2} d x=\frac{1}{2}.$$
+#     
+#         $$
+#             P\left(E_{1}\right)=\int_{E_{1}} d_{x}=\int_{0}^{1 / 2} d x=\frac{1}{2}.
+#         $$
 # 
 #     4.  examples 2:
 #         $E_{2}=\left[ 0,0.25\right] \bigcup \left[ 0.5,0.75\right]$
-#         $$p\left(E_{2}\right)=\int_{E_{2}} d x=\int_{0}^{1 / 4} d x+\int_{1 / 2} ^{3/4}d x=\frac{1}{4}+\frac{1}{4}=\frac{1}{2}$$
+#         
+#         $$
+#             p\left(E_{2}\right)=\int_{E_{2}} d x=\int_{0}^{1 / 4} d x+\int_{1 / 2} ^{3/4}d x=\frac{1}{4}+\frac{1}{4}=\frac{1}{2}
+#         $$
 # 
-#     ![image](../figures/probability2.jpeg){width=".7\\textwidth"}
+#     ![image](../figures/probability2.jpeg)
 # 
 # -   Independence: Two events $E_{1}, E_{2}$ are independent if
+# 
 # $$
 #     p\left(E_{1} \cap E_{2}\right)=p\left(E_{1}\right) p\left(E_{2}\right)
 # $$
-#     For example,
-#     $E_{1} \cap E_{2}=[0,0.5] \cap\left(\left[0, \frac{1}{4}\right] \cup\left[\frac{1}{2}, \frac{3}{4}\right]\right)$
+# 
+# For example,
+#     
+# $ E_{1} \cap E_{2}=[0,0.5] \cap\left(\left[0, \frac{1}{4}\right] \cup\left[\frac{1}{2}, \frac{3}{4}\right]\right) $
+#     
 # $$
 #     p\left(E_{1}\bigcap E_{2}\right)=\frac{1}{4}=\frac{1}{2} \cdot \frac{1}{2}=p\left(E_{1}\right) p\left(E_{2}\right)
 # $$
 # 
-#     Frist two binary digits are like two independent coin flips. Every
-#     binary digit is like an independent coin flip, so we ca think of the
-#     random number as being an infinite sequence of coin flips. In
-#     general, we'll consider distribution defined by a probability
-#     density function p(x). The probability of an event is given by
+# Frist two binary digits are like two independent coin flips. Every binary digit is like an independent coin flip, so we ca think of therandom number as being an infinite sequence of coin flips. In general, we'll consider distribution defined by a probability density function p(x). The probability of an event is given by
 #     $P\left(E\right)=\int_{E_{1}} p(x)d_{x}$
 # 
-#     -   Outcomes: $\left[ 0,1\right]$
+#    - Outcomes: $\left[ 0,1\right]$
 # 
-#     -   Density function: $p(x)=1$ ($\int_0^1 p(x)=1$)
+#    - Density function: $p(x)=1$ ($\int_0^1 p(x)=1$)
 # 
 # ## 3.3.4 Gaussian/ Normal Distribution
 # 
-# ![image](../figures/probability3.png){width=".7\\textwidth"}
+# ![image](../figures/probability3.png)
 # 
 # -   Outcomes:
 # 
@@ -145,6 +163,7 @@
 # $$
 # 
 # -   Cummulative distribution Function
+# 
 # $$
 #     F(x)=\int_{-\infty}^{x} p(t) d t=p(t<x)
 # $$
@@ -154,21 +173,7 @@
 # 
 # 
 # 
-#     -   If $X_{1}, X_{2}$ are independent random variables, then
-# $$
-#     \mathbb{E}\left[X, X_{2}\right]=\mathbb{E}\left[X_{1}\right] \mathbb{E}\left[X_{2}\right]
-# $$
-# 
-#     -   From this, we get if $X_{1}, X_{2}$ are independent,
-# 
-# $$
-#     V\left[X_{1}+X_{2}\right]=V\left[X_{1}\right]+V\left[X_{2}\right]
-# $$
-# 
-# $$
-#     V\left[a_{1} x_{1}+a_{2} x_{2}\right]=a_{1}^{2} V\left[x_{1}\right]+a_{2}^{2} V\left[x_{2}\right]
-# $$
-# 
+#    
 
 # In[ ]:
 
