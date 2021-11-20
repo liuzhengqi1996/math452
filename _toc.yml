@@ -36,6 +36,10 @@ parts:
     - file: ch03/ch3_8.ipynb
     - file: ch03/ch3_9.ipynb
     - file: ch03/ch3_10.ipynb
+  - file: ch04/ch4_ 
+    sections:
+    - file: ch04/ch4_1.ipynb
+    - file: ch04/ch4_2.ipynb
 
 
    

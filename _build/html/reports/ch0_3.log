@@ -27,7 +27,7 @@ print('A is', A)
 
 [0;31m---------------------------------------------------------------------------[0m
 [0;31mModuleNotFoundError[0m                       Traceback (most recent call last)
-[0;32m/var/folders/xz/fhb2zgq551315f5zf88k__ph0000gn/T/ipykernel_91225/1310228693.py[0m in [0;36m<module>[0;34m[0m
+[0;32m/var/folders/xz/fhb2zgq551315f5zf88k__ph0000gn/T/ipykernel_66466/1310228693.py[0m in [0;36m<module>[0;34m[0m
 [1;32m      1[0m [0;31m# How to use Pytorch[0m[0;34m[0m[0;34m[0m[0;34m[0m[0m
 [0;32m----> 2[0;31m [0;32mimport[0m [0mtorch[0m[0;34m[0m[0;34m[0m[0m
 [0m[1;32m      3[0m [0;34m[0m[0m
