@@ -6,12 +6,13 @@
 # ## 4.1.1 Gradient descent method
 # 
 # For simplicity, let us just consider a general optimization problem
+# 
 # $$
 #     \label{optmodel}
 #     \min_{x\in \mathbb{R}^n } f(x).
-# $$
+# $$ (problem)
 # 
-# ![image](figures/diag_GD.png){height="5cm" width="7cm"}
+# ![image](../figures/diag_GD.png){height="5cm" width="7cm"}
 # 
 # #### A general approach: line search method
 # 
@@ -19,7 +20,7 @@
 # algorithm
 # 
 # $$
-#     \eta_t=\argmin_{\eta\in \mathbb{R}^1} f(x_t - \eta p_t)\qquad \mbox{\scriptsize(1D minimization problem)}
+#     \eta_t= argmin_{\eta\in \mathbb{R}^1} f(x_t - \eta p_t)\qquad \mbox{(1D minimization problem)}
 # $$
 # 
 # to produce $\{ x_{t}\}_{t=1}^{\infty}$ 
@@ -30,12 +31,13 @@
 # $$
 # 
 # Here $\eta_t$ is called the step size in
-# optimization and also learning rate in machine learning, $p_t$ is called
+# optimization and also learning rate in machine learn
+# ing, $p_t$ is called
 # the descent direction, which is the critical component of this
 # algorithm. And $x_t$ tends to
 # 
 # $$
-#     x^*=\argmin_{x\in \mathbb{R}^n} f(x) \iff f(x^*)=\min_{x\in \mathbb{R}^n} f(x)
+#     x^*= argmin_{x\in \mathbb{R}^n} f(x) \iff f(x^*)=\min_{x\in \mathbb{R}^n} f(x)
 # $$
 # 
 # as $t$ tends to infinity. There is a series of optimization algorithms
@@ -45,20 +47,19 @@
 # have the following theorem to show why gradient direction is a good
 # choice for $p_t$.
 # 
-# ::: lemma
+# ```{admonition} lemma
 # Given $x \in \mathbb{R}^n$, if $\nabla f(x)\neq 0$, the fast descent
 # direction of $f$ at $x$ is the negative gradient direction, namely
 # 
 # $$
-#     \label{key}
 #     -\frac{\nabla f(x)}{\|\nabla f(x)\|} = \mathop{\arg\min}_{ p \in \mathbb{R}^n, \|p\|=1} \left. \frac{\partial f(x + \eta p)}{\partial \eta} \right|_{\eta=0}.
 # $$
 # 
 # It means that $f(x)$ decreases most rapidly along the negative gradient
 # direction.
-# :::
+# ```
 # 
-# ::: proof
+# ```{admonition} proof
 # *Proof.* Let $p$ be a direction in $\mathbb{R}^{n},\|p\|=1$. Consider
 # the local decrease of the function $f(\cdot)$ along direction $p$
 # 
@@ -107,7 +108,7 @@
 # 
 # The direction $-\nabla f(x)$ (the antigradient) is the direction of the
 # fastest local decrease of the function $f(\cdot)$ at point $x.$ ◻
-# :::
+# ```
 # 
 # Here is a simple diagram for this property.
 # 
@@ -117,16 +118,19 @@
 # reference="line-search"} in the negative gradient direction and the
 # resulting algorithm is the so-called gradient descent method.
 # 
-# ::: algorithm
+# ```{prf:algorithm} Algrihthm
+# :label: my-algorithm
 # Given the initial guess $x_0$, learning rate $\eta_t>0$
 # 
 # **For** t=1,2,$\cdots$,\
 # 
 # $$
-#     \label{key}
 #     x_{t+1} =  x_{t} - \eta_{t} \nabla f({x}_{t}),
 # $$
-# :::
+# 
+# ```
+# 
+# 
 # 
 # In practice, we need a "stopping criterion" that determines when the
 # above gradient descent method to stop. One possibility is
@@ -146,17 +150,20 @@
 # 
 # 1.  The sequence $\left\{\eta_t\right\}_{t=0}^{\infty}$ is chosen in
 #     advance. For example, (constant step)
+#     
 #     $$
 #         \eta_t=\frac{\eta}{\sqrt{t+1}};
 #     $$
 # 
 # 2.  Full relaxation:
+# 
 #     $$
 #         \eta_t=\arg \min _{\eta \geq 0} f\left(x_t-\eta \nabla f\left(x_t\right)\right);
 #     $$
 # 
 # 3.  The Armijo rule: Find $x_{t+1}=x_t-\eta \nabla f\left(x_t\right)$
 #     with $\eta>0$ such that
+#     
 #     $$
 #         \alpha\left(\nabla f\left(x_t\right), x_t-x_{t+1}\right) \leq f\left(x_t\right)-f\left(x_{t+1}\right),
 #     $$
@@ -201,6 +208,138 @@
 #     bounded below. There are several very fast one-dimensional
 #     procedures for finding a point satisfying the Armijo conditions.
 #     However, their detailed description is not important for us now.
+#     
+# 
+# ##  4.1.2 Convergence of Gradient Descent method
+# 
+# Now we are ready to study the rate of convergence of unconstrained
+# minimization schemes. For the optimization problem {eq}`problem`
+# 
+# 
+# $$
+#     \min_{x\in \mathbb{R}^n} f(x).
+# $$
+# 
+# We assume that $f(x)$ is convex. Then we say that $x^*$ is a minimizer if
+# 
+# $$
+#     f(x^*) = \min_{x \in \mathbb{R}^n} f(x).
+# $$
+# 
+# For minimizer $x^*$, we have
+# 
+# $$
+#     \label{key}
+#     \nabla f(x^*) = 0.
+# $$
+# 
+# We have the next two properties of the minimizer
+# for convex functions:
+# 
+# 1.  If $f(x) \ge c_0$, for some $c_0 \in \mathbb{R}$, then we have
+# 
+#     $$
+#         \mathop{\arg\min} f \neq \emptyset.
+#     $$
+# 
+# 2.  If $f(x)$ is $\lambda$-strongly convex, then $f(x)$ has a unique
+#     minimizer, namely, there exists a unique $x^*\in \mathbb{R}^n$ such
+#     that
+#     
+#     $$
+#         f(x^*) = \min_{x\in \mathbb{R}^n }f(x).
+#     $$
+# 
+# To investigate the convergence of gradient descent method, let us recall
+# the gradient descent method:
+# 
+# ```{prf:algorithm} Algorithm
+# :label: my-algorithm
+# 
+# **For**: $t = 1, 2, \cdots$ 
+#  
+# $$
+#     \label{equ:fgd-iteration}
+#     x_{t+1} =  x_{t} - \eta_t \nabla f(x_t),
+# $$
+# 
+# where $\eta_t$ is the stepsize / learning rate.
+# ```
+# 
+# We have the next theorem about the convergence of gradient descent
+# method under the Assumption.
+# 
+# ```{admonition} Theorem
+# For Gradient Descent Algorithm {prf:ref}`my-algorithm` , if
+# $f(x)$ satisfies Assumption, then
+# 
+# $$
+#     \|x_t - x^*\|^2 \le  \alpha^t \|x_0 - x^*\|^2
+# $$
+# 
+# if $0<\eta_t <\frac{2\lambda}{L^2}$ and $\alpha < 1$.
+# 
+# Particularly, if $\eta_t = \frac{\lambda}{L^2}$, then
+# 
+# $$
+#     \|x_t - x^*\|^2 \le  \left(1 - \frac{\lambda^2}{L^2}\right)^t \|x_0 - x^*\|^2.
+# $$
+# ```
+# 
+# ```{admonition} Proof
+# *Proof.* Note that 
+# 
+# $$
+#     x_{t+1} - x =  x_{t} - \eta_t \nabla f(x_t)  - x.
+# $$
+# 
+# By taking $L^2$ norm for both sides, we get
+# 
+# $$
+#     \|x_{t+1} - x \|^2 = \|x_{t} - \eta_t \nabla f(x_t) - x \|^2.
+# $$
+# 
+# Let
+# $x = x^*$. It holds that 
+# 
+# $$
+#     \begin{aligned}
+#     \|x_{t+1} - x^* \|^2 &=  \| x_{t} - \eta_t \nabla f(x_t) - x^* \|^2 \\
+#     &= \|x_t-x^*\|^2 - 2\eta_t \nabla f(x_t)^\top (x_t - x^*) + \eta_t^2 \|\nabla f(x_t) - \nabla f(x^*)\|^2 \qquad \mbox{ (by $\nabla f(x^*)=0$)}\\
+#     &\le \|x_t - x^*\|^2 - 2\eta_t \lambda \|x_t - x^*\|^2 + \eta_t ^2 L^2 \|x_t - x^*\|^2  \quad
+#     \mbox{(by $\lambda$- strongly convex \eqref{strongConvIneq} and Lipschitz)}\\
+#     &\le (1 - 2\eta_t \lambda + \eta_t^2 L^2) \|x_t - x^*\|^2
+#     =\alpha \|x_t - x^*\|^2,
+#     \end{aligned}
+# $$
+# 
+# where
+# 
+# $$
+#     \alpha = \left(L^2 (\eta_t  -{\lambda\over L^2})^2 + 1-{\lambda^2\over L^2}\right)<1\  \mbox{if } 0< \eta_t<\frac{2\lambda}{L^2}.
+# $$
+# 
+# Particularly, if $\eta_t =\frac{\lambda}{L^2}$,
+# 
+# $$
+#     \alpha=1-{\lambda^2\over L^2},
+# $$ 
+# 
+# which finishes the proof. ◻
+# ```
+# 
+# This means that if the learning rate is chosen appropriatly,
+# $\{x_t\}_{t=1}^\infty$ from the gradient descent method will converge to
+# the minimizer $x^*$ of the function.
+# 
+# There are some issues on Gradient Descent method:
+# 
+# -   $\nabla f(x_{t})$ is very expensive to compute.
+# 
+# -   Gradient Descent method does not yield generalization accuracy.
+# 
+# The stochastic gradient descent (SGD) method in the next section will
+# focus on these two issues.
 
 # In[ ]:
 

@@ -23,11 +23,12 @@
 
     
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/sphinx-book-theme.e8f53015daec13862f6db5e763c41738.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
     <link rel="stylesheet" type="text/css" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     
@@ -54,7 +55,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="4.2 Stochastic gradient descent method and convergence theory" href="ch4_2.html" />
-    <link rel="prev" title="Chapter 4" href="ch4_.html" />
+    <link rel="prev" title="Chapter 4 Training Algorithms" href="ch4_.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
     
@@ -72,6 +73,10 @@
     
         <div class="navbar-brand-box">
     <a class="navbar-brand text-wrap" href="../index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
       
       <img src="../_static/PSU_SCI_RGB_2C.png" class="logo" alt="logo">
       
@@ -257,7 +262,7 @@
  </li>
  <li class="toctree-l1 current active has-children">
   <a class="reference internal" href="ch4_.html">
-   Chapter 4
+   Chapter 4 Training Algorithms
   </a>
   <input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
   <label for="toctree-checkbox-5">
@@ -273,6 +278,28 @@
    <li class="toctree-l2">
     <a class="reference internal" href="ch4_2.html">
      4.2 Stochastic gradient descent method and convergence theory
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../ch05/ch5_.html">
+   Chapter 5 Polynomials and Weierstrass theorem
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+  <label for="toctree-checkbox-6">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../ch05/ch5_1.html">
+     5.1 Weierstrass Theorem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../ch05/ch5_2.html">
+     Fourier transform and Fourier series
     </a>
    </li>
   </ul>
@@ -377,6 +404,11 @@
    </li>
   </ul>
  </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#convergence-of-gradient-descent-method">
+   4.1.2 Convergence of Gradient Descent method
+  </a>
+ </li>
 </ul>
 
             </nav>
@@ -392,19 +424,20 @@
 <h1>4.1 Line search and gradient descent method<a class="headerlink" href="#line-search-and-gradient-descent-method" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="gradient-descent-method">
 <h2>4.1.1 Gradient descent method<a class="headerlink" href="#gradient-descent-method" title="Permalink to this headline">¶</a></h2>
-<p>For simplicity, let us just consider a general optimization problem
-$<span class="math notranslate nohighlight">\(
+<p>For simplicity, let us just consider a general optimization problem</p>
+<div class="math notranslate nohighlight" id="equation-problem">
+<span class="eqno">(17)<a class="headerlink" href="#equation-problem" title="Permalink to this equation">¶</a></span>\[
     \label{optmodel}
     \min_{x\in \mathbb{R}^n } f(x).
-\)</span>$</p>
-<p><img alt="image" src="ch04/figures/diag_GD.png" />{height=”5cm” width=”7cm”}</p>
+\]</div>
+<p><img alt="image" src="../_images/diag_GD.png" />{height=”5cm” width=”7cm”}</p>
 <div class="section" id="a-general-approach-line-search-method">
 <h3>A general approach: line search method<a class="headerlink" href="#a-general-approach-line-search-method" title="Permalink to this headline">¶</a></h3>
 <p>Given any initial guess <span class="math notranslate nohighlight">\(x_1\)</span>, the line search method uses the following
 algorithm</p>
 <div class="math notranslate nohighlight">
 \[
-    \eta_t=\argmin_{\eta\in \mathbb{R}^1} f(x_t - \eta p_t)\qquad \mbox{\scriptsize(1D minimization problem)}
+    \eta_t= argmin_{\eta\in \mathbb{R}^1} f(x_t - \eta p_t)\qquad \mbox{(1D minimization problem)}
 \]</div>
 <p>to produce <span class="math notranslate nohighlight">\(\{ x_{t}\}_{t=1}^{\infty}\)</span></p>
 <div class="math notranslate nohighlight">
@@ -413,79 +446,73 @@ algorithm</p>
     x_{t+1} = x_{t} - \eta_t p_t.
 \]</div>
 <p>Here <span class="math notranslate nohighlight">\(\eta_t\)</span> is called the step size in
-optimization and also learning rate in machine learning, <span class="math notranslate nohighlight">\(p_t\)</span> is called
+optimization and also learning rate in machine learn
+ing, <span class="math notranslate nohighlight">\(p_t\)</span> is called
 the descent direction, which is the critical component of this
 algorithm. And <span class="math notranslate nohighlight">\(x_t\)</span> tends to</p>
 <div class="math notranslate nohighlight">
 \[
-    x^*=\argmin_{x\in \mathbb{R}^n} f(x) \iff f(x^*)=\min_{x\in \mathbb{R}^n} f(x)
+    x^*= argmin_{x\in \mathbb{R}^n} f(x) \iff f(x^*)=\min_{x\in \mathbb{R}^n} f(x)
 \]</div>
 <p>as <span class="math notranslate nohighlight">\(t\)</span> tends to infinity. There is a series of optimization algorithms
 which follow the above form just using different choices of <span class="math notranslate nohighlight">\(p_t\)</span>.</p>
 <p>Then, the next natural question is what a good choice of <span class="math notranslate nohighlight">\(p_t\)</span> is? We
 have the following theorem to show why gradient direction is a good
 choice for <span class="math notranslate nohighlight">\(p_t\)</span>.</p>
-<div class="highlight-lemma notranslate"><div class="highlight"><pre><span></span>Given $x \in \mathbb{R}^n$, if $\nabla f(x)\neq 0$, the fast descent
-direction of $f$ at $x$ is the negative gradient direction, namely
-
-$$
-    \label{key}
+<div class="admonition-lemma admonition">
+<p class="admonition-title">lemma</p>
+<p>Given <span class="math notranslate nohighlight">\(x \in \mathbb{R}^n\)</span>, if <span class="math notranslate nohighlight">\(\nabla f(x)\neq 0\)</span>, the fast descent
+direction of <span class="math notranslate nohighlight">\(f\)</span> at <span class="math notranslate nohighlight">\(x\)</span> is the negative gradient direction, namely</p>
+<div class="math notranslate nohighlight">
+\[
     -\frac{\nabla f(x)}{\|\nabla f(x)\|} = \mathop{\arg\min}_{ p \in \mathbb{R}^n, \|p\|=1} \left. \frac{\partial f(x + \eta p)}{\partial \eta} \right|_{\eta=0}.
-$$
-
-It means that $f(x)$ decreases most rapidly along the negative gradient
-direction.
-</pre></div>
+\]</div>
+<p>It means that <span class="math notranslate nohighlight">\(f(x)\)</span> decreases most rapidly along the negative gradient
+direction.</p>
 </div>
-<div class="highlight-proof notranslate"><div class="highlight"><pre><span></span>*Proof.* Let $p$ be a direction in $\mathbb{R}^{n},\|p\|=1$. Consider
-the local decrease of the function $f(\cdot)$ along direction $p$
-
-$$
+<div class="admonition-proof admonition">
+<p class="admonition-title">proof</p>
+<p><em>Proof.</em> Let <span class="math notranslate nohighlight">\(p\)</span> be a direction in <span class="math notranslate nohighlight">\(\mathbb{R}^{n},\|p\|=1\)</span>. Consider
+the local decrease of the function <span class="math notranslate nohighlight">\(f(\cdot)\)</span> along direction <span class="math notranslate nohighlight">\(p\)</span></p>
+<div class="math notranslate nohighlight">
+\[
     \Delta(p)=\lim _{\eta \downarrow 0} \frac{1}{\eta}\left(f(x+\eta p)-f(x)\right)=\left. \frac{\partial f(x + \eta p)}{\partial \eta} \right|_{\eta=0}.
-$$
-
-Note that 
-
-$$
+\]</div>
+<p>Note that</p>
+<div class="math notranslate nohighlight">
+\[
     \begin{split}
 \left. \frac{\partial f(x + \eta p)}{\partial \eta} \right|_{\eta=0}=\sum_{i=1}^n\left. \frac{\partial f}{\partial x_i}(x + \eta p)p_i \right|_{\eta=0} =(\nabla f, p),
 \end{split}
-$$
-
-which means that
-
-$$
+\]</div>
+<p>which means that</p>
+<div class="math notranslate nohighlight">
+\[
     f(x+\eta p)-f(x)=\eta(\nabla f(x), p)+o(\eta) .
-$$
-
-Therefore
-
-$$
+\]</div>
+<p>Therefore</p>
+<div class="math notranslate nohighlight">
+\[
     \Delta(p)=(\nabla f(x), p).
-$$
-
-Using the Cauchy-Schwarz inequality
-$-\|x\| \cdot\|y\| \leq( x, y) \leq\|x\| \cdot\|y\|,$ we obtain
-
-$$
+\]</div>
+<p>Using the Cauchy-Schwarz inequality
+<span class="math notranslate nohighlight">\(-\|x\| \cdot\|y\| \leq( x, y) \leq\|x\| \cdot\|y\|,\)</span> we obtain</p>
+<div class="math notranslate nohighlight">
+\[
     -\|\nabla f(x)\| \le (\nabla f(x), p)\le \|\nabla f(x)\| .
-$$
-
-Let us take
-
-$$
+\]</div>
+<p>Let us take</p>
+<div class="math notranslate nohighlight">
+\[
     \bar{p}=-\nabla f(x) /\|\nabla f(x)\|.
-$$
-
-Then
-
-$$
+\]</div>
+<p>Then</p>
+<div class="math notranslate nohighlight">
+\[
     \Delta(\bar{p})=-(\nabla f(x), \nabla f(x)) /\|\nabla f(x)\|=-\|\nabla f(x)\|.
-$$
-
-The direction $-\nabla f(x)$ (the antigradient) is the direction of the
-fastest local decrease of the function $f(\cdot)$ at point $x.$ ◻
-</pre></div>
+\]</div>
+<p>The direction <span class="math notranslate nohighlight">\(-\nabla f(x)\)</span> (the antigradient) is the direction of the
+fastest local decrease of the function <span class="math notranslate nohighlight">\(f(\cdot)\)</span> at point <span class="math notranslate nohighlight">\(x.\)</span> ◻</p>
 </div>
 <p>Here is a simple diagram for this property.</p>
 <p>Since at each point, <span class="math notranslate nohighlight">\(f(x)\)</span> decreases most rapidly along the negative
@@ -493,17 +520,17 @@ gradient direction, it is then natural to choose the search direction in
 <a class="reference external" href="#line-search">[line-search]</a>{reference-type=”eqref”
 reference=”line-search”} in the negative gradient direction and the
 resulting algorithm is the so-called gradient descent method.</p>
-<div class="highlight-algorithm notranslate"><div class="highlight"><pre><span></span>Given the initial guess $x_0$, learning rate $\eta_t&gt;0$
-
-**For** t=1,2,$\cdots$,\
-
-$$
-    \label{key}
+<div class="proof algorithm admonition" id="my-algorithm">
+<p class="admonition-title"><span class="caption-number">Algorithm 2 </span> (Algrihthm)</p>
+<div class="algorithm-content section" id="proof-content">
+<p>Given the initial guess <span class="math notranslate nohighlight">\(x_0\)</span>, learning rate <span class="math notranslate nohighlight">\(\eta_t&gt;0\)</span></p>
+<p><strong>For</strong> t=1,2,<span class="math notranslate nohighlight">\(\cdots\)</span>,\</p>
+<div class="math notranslate nohighlight">
+\[
     x_{t+1} =  x_{t} - \eta_{t} \nabla f({x}_{t}),
-$$
-</pre></div>
+\]</div>
 </div>
-<p>In practice, we need a “stopping criterion” that determines when the
+</div><p>In practice, we need a “stopping criterion” that determines when the
 above gradient descent method to stop. One possibility is</p>
 <blockquote>
 <div><p><strong>While</strong> <span class="math notranslate nohighlight">\(S(x_t; f) = \|\nabla f(x_t)\|\le \epsilon\)</span> or <span class="math notranslate nohighlight">\(t \ge T\)</span></p>
@@ -519,19 +546,24 @@ another by the step-size strategy. Let us consider the most important
 examples.</p>
 <ol>
 <li><p>The sequence <span class="math notranslate nohighlight">\(\left\{\eta_t\right\}_{t=0}^{\infty}\)</span> is chosen in
-advance. For example, (constant step)
-$<span class="math notranslate nohighlight">\(
-    \eta_t=\frac{\eta}{\sqrt{t+1}};
-\)</span>$</p></li>
-<li><p>Full relaxation:
-$<span class="math notranslate nohighlight">\(
-    \eta_t=\arg \min _{\eta \geq 0} f\left(x_t-\eta \nabla f\left(x_t\right)\right);
-\)</span>$</p></li>
+advance. For example, (constant step)</p>
+<div class="math notranslate nohighlight">
+\[
+        \eta_t=\frac{\eta}{\sqrt{t+1}};
+    \]</div>
+</li>
+<li><p>Full relaxation:</p>
+<div class="math notranslate nohighlight">
+\[
+        \eta_t=\arg \min _{\eta \geq 0} f\left(x_t-\eta \nabla f\left(x_t\right)\right);
+    \]</div>
+</li>
 <li><p>The Armijo rule: Find <span class="math notranslate nohighlight">\(x_{t+1}=x_t-\eta \nabla f\left(x_t\right)\)</span>
-with <span class="math notranslate nohighlight">\(\eta&gt;0\)</span> such that
-$<span class="math notranslate nohighlight">\(
-    \alpha\left(\nabla f\left(x_t\right), x_t-x_{t+1}\right) \leq f\left(x_t\right)-f\left(x_{t+1}\right),
-\)</span>$</p>
+with <span class="math notranslate nohighlight">\(\eta&gt;0\)</span> such that</p>
+<div class="math notranslate nohighlight">
+\[
+        \alpha\left(\nabla f\left(x_t\right), x_t-x_{t+1}\right) \leq f\left(x_t\right)-f\left(x_{t+1}\right),
+    \]</div>
 <div class="math notranslate nohighlight">
 \[
         \beta\left(\nabla f\left(x_t\right), x_t-x_{t+1}\right) \geq f\left(x_t\right)-f\left(x_{t+1}\right),
@@ -573,6 +605,121 @@ However, their detailed description is not important for us now.</p>
 </ol>
 </div>
 </div>
+<div class="section" id="convergence-of-gradient-descent-method">
+<h2>4.1.2 Convergence of Gradient Descent method<a class="headerlink" href="#convergence-of-gradient-descent-method" title="Permalink to this headline">¶</a></h2>
+<p>Now we are ready to study the rate of convergence of unconstrained
+minimization schemes. For the optimization problem <a class="reference internal" href="#equation-problem">(17)</a></p>
+<div class="math notranslate nohighlight">
+\[
+    \min_{x\in \mathbb{R}^n} f(x).
+\]</div>
+<p>We assume that <span class="math notranslate nohighlight">\(f(x)\)</span> is convex. Then we say that <span class="math notranslate nohighlight">\(x^*\)</span> is a minimizer if</p>
+<div class="math notranslate nohighlight">
+\[
+    f(x^*) = \min_{x \in \mathbb{R}^n} f(x).
+\]</div>
+<p>For minimizer <span class="math notranslate nohighlight">\(x^*\)</span>, we have</p>
+<div class="math notranslate nohighlight">
+\[
+    \label{key}
+    \nabla f(x^*) = 0.
+\]</div>
+<p>We have the next two properties of the minimizer
+for convex functions:</p>
+<ol>
+<li><p>If <span class="math notranslate nohighlight">\(f(x) \ge c_0\)</span>, for some <span class="math notranslate nohighlight">\(c_0 \in \mathbb{R}\)</span>, then we have</p>
+<div class="math notranslate nohighlight">
+\[
+        \mathop{\arg\min} f \neq \emptyset.
+    \]</div>
+</li>
+<li><p>If <span class="math notranslate nohighlight">\(f(x)\)</span> is <span class="math notranslate nohighlight">\(\lambda\)</span>-strongly convex, then <span class="math notranslate nohighlight">\(f(x)\)</span> has a unique
+minimizer, namely, there exists a unique <span class="math notranslate nohighlight">\(x^*\in \mathbb{R}^n\)</span> such
+that</p>
+<div class="math notranslate nohighlight">
+\[
+        f(x^*) = \min_{x\in \mathbb{R}^n }f(x).
+    \]</div>
+</li>
+</ol>
+<p>To investigate the convergence of gradient descent method, let us recall
+the gradient descent method:</p>
+<div class="proof algorithm admonition" id="my-algorithm">
+<p class="admonition-title"><span class="caption-number">Algorithm 2 </span> (Algorithm)</p>
+<div class="algorithm-content section" id="proof-content">
+<p><strong>For</strong>: <span class="math notranslate nohighlight">\(t = 1, 2, \cdots\)</span></p>
+<div class="math notranslate nohighlight">
+\[
+    \label{equ:fgd-iteration}
+    x_{t+1} =  x_{t} - \eta_t \nabla f(x_t),
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(\eta_t\)</span> is the stepsize / learning rate.</p>
+</div>
+</div><p>We have the next theorem about the convergence of gradient descent
+method under the Assumption.</p>
+<div class="admonition-theorem admonition">
+<p class="admonition-title">Theorem</p>
+<p>For Gradient Descent Algorithm <a class="reference internal" href="#my-algorithm">Algorithm 2</a> , if
+<span class="math notranslate nohighlight">\(f(x)\)</span> satisfies Assumption, then</p>
+<div class="math notranslate nohighlight">
+\[
+    \|x_t - x^*\|^2 \le  \alpha^t \|x_0 - x^*\|^2
+\]</div>
+<p>if <span class="math notranslate nohighlight">\(0&lt;\eta_t &lt;\frac{2\lambda}{L^2}\)</span> and <span class="math notranslate nohighlight">\(\alpha &lt; 1\)</span>.</p>
+<p>Particularly, if <span class="math notranslate nohighlight">\(\eta_t = \frac{\lambda}{L^2}\)</span>, then</p>
+<div class="math notranslate nohighlight">
+\[
+    \|x_t - x^*\|^2 \le  \left(1 - \frac{\lambda^2}{L^2}\right)^t \|x_0 - x^*\|^2.
+\]</div>
+</div>
+<div class="admonition-proof admonition">
+<p class="admonition-title">Proof</p>
+<p><em>Proof.</em> Note that</p>
+<div class="math notranslate nohighlight">
+\[
+    x_{t+1} - x =  x_{t} - \eta_t \nabla f(x_t)  - x.
+\]</div>
+<p>By taking <span class="math notranslate nohighlight">\(L^2\)</span> norm for both sides, we get</p>
+<div class="math notranslate nohighlight">
+\[
+    \|x_{t+1} - x \|^2 = \|x_{t} - \eta_t \nabla f(x_t) - x \|^2.
+\]</div>
+<p>Let
+<span class="math notranslate nohighlight">\(x = x^*\)</span>. It holds that</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+    \begin{aligned}
+    \|x_{t+1} - x^* \|^2 &amp;=  \| x_{t} - \eta_t \nabla f(x_t) - x^* \|^2 \\
+    &amp;= \|x_t-x^*\|^2 - 2\eta_t \nabla f(x_t)^\top (x_t - x^*) + \eta_t^2 \|\nabla f(x_t) - \nabla f(x^*)\|^2 \qquad \mbox{ (by $\nabla f(x^*)=0$)}\\
+    &amp;\le \|x_t - x^*\|^2 - 2\eta_t \lambda \|x_t - x^*\|^2 + \eta_t ^2 L^2 \|x_t - x^*\|^2  \quad
+    \mbox{(by $\lambda$- strongly convex \eqref{strongConvIneq} and Lipschitz)}\\
+    &amp;\le (1 - 2\eta_t \lambda + \eta_t^2 L^2) \|x_t - x^*\|^2
+    =\alpha \|x_t - x^*\|^2,
+    \end{aligned}
+\end{split}\]</div>
+<p>where</p>
+<div class="math notranslate nohighlight">
+\[
+    \alpha = \left(L^2 (\eta_t  -{\lambda\over L^2})^2 + 1-{\lambda^2\over L^2}\right)&lt;1\  \mbox{if } 0&lt; \eta_t&lt;\frac{2\lambda}{L^2}.
+\]</div>
+<p>Particularly, if <span class="math notranslate nohighlight">\(\eta_t =\frac{\lambda}{L^2}\)</span>,</p>
+<div class="math notranslate nohighlight">
+\[
+    \alpha=1-{\lambda^2\over L^2},
+\]</div>
+<p>which finishes the proof. ◻</p>
+</div>
+<p>This means that if the learning rate is chosen appropriatly,
+<span class="math notranslate nohighlight">\(\{x_t\}_{t=1}^\infty\)</span> from the gradient descent method will converge to
+the minimizer <span class="math notranslate nohighlight">\(x^*\)</span> of the function.</p>
+<p>There are some issues on Gradient Descent method:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\nabla f(x_{t})\)</span> is very expensive to compute.</p></li>
+<li><p>Gradient Descent method does not yield generalization accuracy.</p></li>
+</ul>
+<p>The stochastic gradient descent (SGD) method in the next section will
+focus on these two issues.</p>
+</div>
 </div>
 
     <script type="text/x-thebe-config">
@@ -609,7 +756,7 @@ However, their detailed description is not important for us now.</p>
             <i class="prevnext-label fas fa-angle-left"></i>
             <div class="prevnext-info">
                 <p class="prevnext-label">previous</p>
-                <p class="prevnext-title">Chapter 4</p>
+                <p class="prevnext-title">Chapter 4 Training Algorithms</p>
             </div>
         </a>
     </div>
@@ -627,7 +774,7 @@ However, their detailed description is not important for us now.</p>
         
         </div>
     </div>
-    <footer class="footer mt-5 mt-md-0">
+    <footer class="footer">
     <div class="container">
       <p>
         

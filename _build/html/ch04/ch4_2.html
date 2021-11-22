@@ -23,11 +23,12 @@
 
     
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/sphinx-book-theme.e8f53015daec13862f6db5e763c41738.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
     <link rel="stylesheet" type="text/css" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     
@@ -53,6 +54,7 @@
     <script async="async" src="../_static/sphinx-thebe.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Chapter 5 Polynomials and Weierstrass theorem" href="../ch05/ch5_.html" />
     <link rel="prev" title="4.1 Line search and gradient descent method" href="ch4_1.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
@@ -71,6 +73,10 @@
     
         <div class="navbar-brand-box">
     <a class="navbar-brand text-wrap" href="../index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
       
       <img src="../_static/PSU_SCI_RGB_2C.png" class="logo" alt="logo">
       
@@ -256,7 +262,7 @@
  </li>
  <li class="toctree-l1 current active has-children">
   <a class="reference internal" href="ch4_.html">
-   Chapter 4
+   Chapter 4 Training Algorithms
   </a>
   <input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
   <label for="toctree-checkbox-5">
@@ -272,6 +278,28 @@
    <li class="toctree-l2 current active">
     <a class="current reference internal" href="#">
      4.2 Stochastic gradient descent method and convergence theory
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../ch05/ch5_.html">
+   Chapter 5 Polynomials and Weierstrass theorem
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+  <label for="toctree-checkbox-6">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../ch05/ch5_1.html">
+     5.1 Weierstrass Theorem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../ch05/ch5_2.html">
+     Fourier transform and Fourier series
     </a>
    </li>
   </ul>
@@ -389,52 +417,43 @@
 <h1>4.2 Stochastic gradient descent method and convergence theory<a class="headerlink" href="#stochastic-gradient-descent-method-and-convergence-theory" title="Permalink to this headline">¶</a></h1>
 <p>The next optimization problem is the most common case in machine
 learning.</p>
-<div class="highlight-problem notranslate"><div class="highlight"><pre><span></span>
-$$\label{SGDproblem}  
-    \min_{x \in \mathbb{R}^n} f(x)\quad \mbox{and}\quad f(x) = \frac{1}{N} \sum_{i=1}^N f_i(x).
-$$
-
-</pre></div>
-</div>
 <p>One version of stochastic gradient descent (SGD) algorithm is:</p>
-<div class="highlight-algorithm notranslate"><div class="highlight"><pre><span></span>**Input**: initialization $x_0$, learning rate $\eta_t$.
-
-**For**: t = 0,1,2,$\dots$
-
-Randomly pick $i_t \in \{1, 2, \cdots, N\}$ independently with
-probability $\frac{1}{N}$ 
-
-$$
-    \label{equ:sgd-iteration}
+<div class="proof algorithm admonition" id="algorithm-0">
+<p class="admonition-title"><span class="caption-number">Algorithm 3 </span> (SGD)</p>
+<div class="algorithm-content section" id="proof-content">
+<p><strong>Input</strong>: initialization <span class="math notranslate nohighlight">\(x_0\)</span>, learning rate <span class="math notranslate nohighlight">\(\eta_t\)</span>.</p>
+<p><strong>For</strong>: t = 0,1,2,<span class="math notranslate nohighlight">\(\dots\)</span></p>
+<p>Randomly pick <span class="math notranslate nohighlight">\(i_t \in \{1, 2, \cdots, N\}\)</span> independently with
+probability <span class="math notranslate nohighlight">\(\frac{1}{N}\)</span></p>
+<div class="math notranslate nohighlight">
+\[
     x_{t+1} = x_{t} - \eta_t \nabla f_{i_t}(x_t).
-$$
-
-</pre></div>
+\]</div>
 </div>
-<div class="section" id="convergence-of-sgd">
+</div><div class="section" id="convergence-of-sgd">
 <h2>4.2.1 Convergence of SGD<a class="headerlink" href="#convergence-of-sgd" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-theorem notranslate"><div class="highlight"><pre><span></span>Assume that each $f_i(x)$ is $\lambda$-strongly convex and
-$\|\nabla f_i(x)\| \le M$ for some $M &gt;0$. If we take
-$\eta_t = \frac{a}{\lambda (t+1)}$ with sufficiently large $a$ such that
-
-$$
-    \label{key}
+<div class="proof theorem admonition" id="theorem-1">
+<p class="admonition-title"><span class="caption-number">Theorem 1 </span> (Theorem)</p>
+<div class="theorem-content section" id="proof-content">
+<p>Assume that each <span class="math notranslate nohighlight">\(f_i(x)\)</span> is <span class="math notranslate nohighlight">\(\lambda\)</span>-strongly convex and
+<span class="math notranslate nohighlight">\(\|\nabla f_i(x)\| \le M\)</span> for some <span class="math notranslate nohighlight">\(M &gt;0\)</span>. If we take
+<span class="math notranslate nohighlight">\(\eta_t = \frac{a}{\lambda (t+1)}\)</span> with sufficiently large <span class="math notranslate nohighlight">\(a\)</span> such that</p>
+<div class="math notranslate nohighlight">
+\[
     \|x_0 - x^*\|^2 \le \frac{a^2M^2}{(a-1)\lambda^2}
-$$
-
-then
-
-$$
+\]</div>
+<p>then</p>
+<div class="math notranslate nohighlight">
+\[
     \mathbb{E}e_{t}^2 \le \frac{a^2M^2}{(a-1)\lambda^2 (t+1)}, \quad  t\ge 1,
-$$
-
-where $e_t = \|x_t - x^*\|$.
-</pre></div>
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(e_t = \|x_t - x^*\|\)</span>.</p>
 </div>
-<div class="highlight-proof notranslate"><div class="highlight"><pre><span></span>*Proof.* The $L^2$ error of SGD can be written as 
-
-$$
-    \label{equ:L2SGD}
+</div><div class="proof admonition" id="proof">
+<p>Proof. Proof
+<em>Proof.</em> The <span class="math notranslate nohighlight">\(L^2\)</span> error of SGD can be written as</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
       \begin{split}
             \mathbb{E} \|x_{t+1} - x^*\|^2 &amp;\le \mathbb{E}\| x_{t} - \eta_t \nabla f_{i_t}(x_t) - x^* \|^2 \\
             &amp;\le \mathbb{E} \|x_t - x^*\|^2 
@@ -445,38 +464,31 @@ $$
             &amp; \le \mathbb{E} \|x_t - x^*\|^2 -  \eta_t \lambda \mathbb{E} \|x_t - x^*\|^2 + \eta_t^2 M^2 \\
             &amp; = (1 - \eta_t\lambda) \mathbb{E} \|x_t - x^*\|^2 + \eta_t^2 M^2
       \end{split}
-$$
-
-The third line comes from the fact that
-
-$$
-    \label{key}
+\end{split}\]</div>
+<p>The third line comes from the fact that</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
     \begin{aligned}
     \mathbb{E} (\nabla f_{i_t}(x_t) \cdot (x_t - x^*))  &amp;= \mathbb{E}_{i_1i_2\cdots i_t} (\nabla f_{i_t}(x_t) \cdot (x_t - x^*)) \\
 &amp;= \mathbb{E}_{i_1i_2\cdots i_{t-1}} \frac{1}{N} \sum_{i=1}^N \nabla f_i(x_t)\cdot (x_t - x^*) \\
 &amp;= \mathbb{E}_{i_1i_2\cdots i_{t-1}}  \nabla f(x_t)\cdot (x_t - x^*) \\
 &amp;= \mathbb{E}\nabla f(x_t)\cdot (x_t - x^*),
 \end{aligned}
-$$ 
-
-and
-
-$$
+\end{split}\]</div>
+<p>and</p>
+<div class="math notranslate nohighlight">
+\[
     \mathbb{E} \|\nabla f_{i_t}(x_t)\|^2 \le \mathbb{E} M^2 = M^2.
-$$
-
-Note when $t=0$, we have 
-
-$$
-    \label{key}
+\]</div>
+<p>Note when <span class="math notranslate nohighlight">\(t=0\)</span>, we have</p>
+<div class="math notranslate nohighlight">
+\[
     \mathbb{E} e_0^2 = \|x_0 - x^*\|^2 \le \frac{a^2M^2}{(a-1)\lambda},
-$$
-
-based on the assumption.
-
-In the case of SDG, by the inductive hypothesis, 
-
-$$
+\]</div>
+<p>based on the assumption.</p>
+<p>In the case of SDG, by the inductive hypothesis,</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
     \begin{split}
             \mathbb{E}e_{t+1}^2 &amp; \le (1 - \eta_t\lambda)\mathbb{E}e_{t}^2  + \eta_t^2 M^2\\
             &amp;\le  (1 - \frac{a}{t+1}) \frac{a^2M^2}{(a-1)\lambda^2 (t+1)} + \frac{a^2M^2}{\lambda^2 (t+1)^2} \\
@@ -484,29 +496,24 @@ $$
             &amp; = \frac{a^2M^2}{(a-1)\lambda^2} \frac{t}{(t+1)^2} \\
             &amp; \le \frac{a^2M^2}{(a-1)\lambda^2(t+2)}. \quad \left(\frac{t}{(t+1)^2} \le \frac{1}{t+2}\right),
       \end{split}
-$$
-
-which completes the proof. ◻
-</pre></div>
+\end{split}\]</div>
+<p>which completes the proof. ◻</p>
 </div>
 </div>
 <div class="section" id="sgd-with-mini-batch">
 <h2>4.2.2 SGD with mini-batch<a class="headerlink" href="#sgd-with-mini-batch" title="Permalink to this headline">¶</a></h2>
 <p>Firstly, we will introduce a natural extended version of the SGD
 discussed above with introducing mini-batch.</p>
-<div class="highlight-algorithm notranslate"><div class="highlight"><pre><span></span>**Input**: initialization $x_0$, learning rate $\eta_t$.
-
-**For**: t = 0,1,2,$\dots$
-
-::: center
-Randomly pick $B_t \subset \{1, 2, \cdots, N\}$ independently with
-probability $\frac{m!(N-m)!}{N!}$\
-and $\# B_t = m$.
-</pre></div>
-</div>
+<div class="proof algorithm admonition" id="algorithm-2">
+<p class="admonition-title"><span class="caption-number">Algorithm 4 </span> (SGD with mini-batch)</p>
+<div class="algorithm-content section" id="proof-content">
+<p><strong>Input</strong>: initialization <span class="math notranslate nohighlight">\(x_0\)</span>, learning rate <span class="math notranslate nohighlight">\(\eta_t\)</span>.</p>
+<p><strong>For</strong>: t = 0,1,2,<span class="math notranslate nohighlight">\(\dots\)</span></p>
+<p>Randomly pick <span class="math notranslate nohighlight">\(B_t \subset \{1, 2, \cdots, N\}\)</span> independently with
+probability <span class="math notranslate nohighlight">\(\frac{m!(N-m)!}{N!}\)</span><br />
+and <span class="math notranslate nohighlight">\(\# B_t = m\)</span>.</p>
 <div class="math notranslate nohighlight">
 \[
-    \label{equ:sgd-iteration}
     x_{t+1} = x_{t} - \eta_t g_t(x_t).
 \]</div>
 <p>where</p>
@@ -514,21 +521,17 @@ and $\# B_t = m$.
 \[
     g_{t}(x_t) = \frac{1}{m} \sum_{i \in B_{t}}  \nabla f_i(x_t)
 \]</div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
-Now we introduce the SGD algorithm with mini-batch without replacement
-which is the most commonly used version of SGD in machine learning.
-
-::: algorithm
-**Input**: learning rate $\eta_k$, mini-batch size $m$, parameter
-initialization $x_{0}$ and denote $M = \lceil \frac{N}{m} \rceil$.
-
-**For** Epoch $k = 1,2,\dots$
-
-::: center
-Randomly pick $B_t \subset \{1, 2, \cdots, N \}$ without replacement\
-with $\# B_t = m$ for $t = 1,2,\cdots,M$.
-</pre></div>
 </div>
+</div><p>Now we introduce the SGD algorithm with mini-batch without replacement
+which is the most commonly used version of SGD in machine learning.</p>
+<div class="proof algorithm admonition" id="algorithm-3">
+<p class="admonition-title"><span class="caption-number">Algorithm 5 </span> (Shuffle SGD with mini-batch)</p>
+<div class="algorithm-content section" id="proof-content">
+<p><strong>Input</strong>: learning rate <span class="math notranslate nohighlight">\(\eta_k\)</span>, mini-batch size <span class="math notranslate nohighlight">\(m\)</span>, parameter
+initialization <span class="math notranslate nohighlight">\(x_{0}\)</span> and denote <span class="math notranslate nohighlight">\(M = \lceil \frac{N}{m} \rceil\)</span>.</p>
+<p><strong>For</strong> Epoch <span class="math notranslate nohighlight">\(k = 1,2,\dots\)</span></p>
+<p>Randomly pick <span class="math notranslate nohighlight">\(B_t \subset \{1, 2, \cdots, N \}\)</span> without replacement<br />
+with <span class="math notranslate nohighlight">\(\# B_t = m\)</span> for <span class="math notranslate nohighlight">\(t = 1,2,\cdots,M\)</span>.</p>
 <p>mini-batch <span class="math notranslate nohighlight">\(t = 1:M\)</span></p>
 <p>Compute the gradient on <span class="math notranslate nohighlight">\(B_{t}\)</span>:</p>
 <div class="math notranslate nohighlight">
@@ -541,35 +544,31 @@ with $\# B_t = m$ for $t = 1,2,\cdots,M$.
     x  \leftarrow  x - \eta_k g_t(x),
 \]</div>
 <p><strong>EndFor</strong></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
-To \&quot;randomly pick $B_i \subset \{1, 2, \cdots, N \}$ without
-replacement with $\# B_i = m$ for $i = 1,2,\cdots,t$&quot;, we usually just
+</div>
+</div><p>To “randomly pick <span class="math notranslate nohighlight">\(B_i \subset \{1, 2, \cdots, N \}\)</span> without
+replacement with <span class="math notranslate nohighlight">\(\# B_i = m\)</span> for <span class="math notranslate nohighlight">\(i = 1,2,\cdots,t\)</span>”, we usually just
 randomly shuffle the index set first and then consecutively pick every
-$m$ elements in the shuffled index set. That is the reason why we would
+<span class="math notranslate nohighlight">\(m\)</span> elements in the shuffled index set. That is the reason why we would
 like to call the algorithm as shuffled SGD while this is the mostly used
-version of SGD in machine learning.
-
-::: remark
-Let us recall a general machine learning loss function 
-
-$$
+version of SGD in machine learning.</p>
+<div class="admonition-remark admonition">
+<p class="admonition-title">Remark</p>
+<p>Let us recall a general machine learning loss function</p>
+<div class="math notranslate nohighlight">
+\[
     \label{key}
     L(\theta) = \frac{1}{N}\sum_{i=1}^N \ell(h(X_i; \theta), Y_i),
-$$
-
-where
-$\{(X_i, Y_i)\}_{i=1}^N$ correspond to these data pairs. For example,
-$\ell(\cdot, \cdot)$ takes cross-entropy and
-$h(x; \theta) = \bm p(x;\theta)$ as we discussed in Section
-[\[sec:LR\]](#sec:LR){reference-type=&quot;ref&quot; reference=&quot;sec:LR&quot;}. Thus, we
-have the following corresponding relation
-
-$$
+\]</div>
+<p>where
+<span class="math notranslate nohighlight">\(\{(X_i, Y_i)\}_{i=1}^N\)</span> correspond to these data pairs. For example,
+<span class="math notranslate nohighlight">\(\ell(\cdot, \cdot)\)</span> takes cross-entropy and
+<span class="math notranslate nohighlight">\(h(x; \theta) = p(x;\theta)\)</span> as we discussed in Section 2.2.1. Thus, we
+have the following corresponding relation</p>
+<div class="math notranslate nohighlight">
+\[
     f(x) \leftrightsquigarrow L(\theta), \quad
     f_i(x) \leftrightsquigarrow \ell(h(X_i; \theta), Y_i).
-$$
-    
-</pre></div>
+\]</div>
 </div>
 </div>
 </div>
@@ -612,12 +611,21 @@ $$
             </div>
         </a>
     </div>
+     <div id="next">
+        <a class="right-next" href="../ch05/ch5_.html" title="next page">
+            <div class="prevnext-info">
+                <p class="prevnext-label">next</p>
+                <p class="prevnext-title">Chapter 5 Polynomials and Weierstrass theorem</p>
+            </div>
+            <i class="prevnext-label fas fa-angle-right"></i>
+        </a>
+     </div>
 
 </div>
         
         </div>
     </div>
-    <footer class="footer mt-5 mt-md-0">
+    <footer class="footer">
     <div class="container">
       <p>
         

@@ -6,17 +6,18 @@
 # The next optimization problem is the most common case in machine
 # learning.
 # 
-# ::: problem
+# ```{admonition} Problem
+# :label: SGDproblem
 # 
-# $$\label{SGDproblem}  
+# $$
 #     \min_{x \in \mathbb{R}^n} f(x)\quad \mbox{and}\quad f(x) = \frac{1}{N} \sum_{i=1}^N f_i(x).
 # $$
 # 
-# :::
+# ```
 # 
 # One version of stochastic gradient descent (SGD) algorithm is:
 # 
-# ::: algorithm
+# ```{prf:algorithm} SGD
 # **Input**: initialization $x_0$, learning rate $\eta_t$.
 # 
 # **For**: t = 0,1,2,$\dots$
@@ -25,21 +26,19 @@
 # probability $\frac{1}{N}$ 
 # 
 # $$
-#     \label{equ:sgd-iteration}
 #     x_{t+1} = x_{t} - \eta_t \nabla f_{i_t}(x_t).
 # $$
 # 
-# :::
+# ```
 # 
 # ## 4.2.1 Convergence of SGD
 # 
-# ::: theorem
+# ```{prf:theorem} Theorem
 # Assume that each $f_i(x)$ is $\lambda$-strongly convex and
 # $\|\nabla f_i(x)\| \le M$ for some $M >0$. If we take
 # $\eta_t = \frac{a}{\lambda (t+1)}$ with sufficiently large $a$ such that
 # 
 # $$
-#     \label{key}
 #     \|x_0 - x^*\|^2 \le \frac{a^2M^2}{(a-1)\lambda^2}
 # $$
 # 
@@ -50,13 +49,12 @@
 # $$
 # 
 # where $e_t = \|x_t - x^*\|$.
-# :::
+# ```
 # 
-# ::: proof
+# ```{prf:proof} Proof
 # *Proof.* The $L^2$ error of SGD can be written as 
 # 
 # $$
-#     \label{equ:L2SGD}
 #       \begin{split}
 #             \mathbb{E} \|x_{t+1} - x^*\|^2 &\le \mathbb{E}\| x_{t} - \eta_t \nabla f_{i_t}(x_t) - x^* \|^2 \\
 #             &\le \mathbb{E} \|x_t - x^*\|^2 
@@ -72,7 +70,6 @@
 # The third line comes from the fact that
 # 
 # $$
-#     \label{key}
 #     \begin{aligned}
 #     \mathbb{E} (\nabla f_{i_t}(x_t) \cdot (x_t - x^*))  &= \mathbb{E}_{i_1i_2\cdots i_t} (\nabla f_{i_t}(x_t) \cdot (x_t - x^*)) \\
 # &= \mathbb{E}_{i_1i_2\cdots i_{t-1}} \frac{1}{N} \sum_{i=1}^N \nabla f_i(x_t)\cdot (x_t - x^*) \\
@@ -90,7 +87,6 @@
 # Note when $t=0$, we have 
 # 
 # $$
-#     \label{key}
 #     \mathbb{E} e_0^2 = \|x_0 - x^*\|^2 \le \frac{a^2M^2}{(a-1)\lambda},
 # $$
 # 
@@ -109,26 +105,24 @@
 # $$
 # 
 # which completes the proof. ◻
-# :::
+# ```
 # 
 # ## 4.2.2 SGD with mini-batch
 # 
 # Firstly, we will introduce a natural extended version of the SGD
 # discussed above with introducing mini-batch.
 # 
-# ::: algorithm
+# ```{prf:algorithm} SGD with mini-batch
 # **Input**: initialization $x_0$, learning rate $\eta_t$.
 # 
 # **For**: t = 0,1,2,$\dots$
 # 
-# ::: center
+# 
 # Randomly pick $B_t \subset \{1, 2, \cdots, N\}$ independently with
 # probability $\frac{m!(N-m)!}{N!}$\
 # and $\# B_t = m$.
-# :::
 # 
 # $$
-#     \label{equ:sgd-iteration}
 #     x_{t+1} = x_{t} - \eta_t g_t(x_t).
 # $$
 # 
@@ -138,21 +132,21 @@
 #     g_{t}(x_t) = \frac{1}{m} \sum_{i \in B_{t}}  \nabla f_i(x_t)
 # $$
 # 
-# :::
+# ```
 # 
 # Now we introduce the SGD algorithm with mini-batch without replacement
 # which is the most commonly used version of SGD in machine learning.
 # 
-# ::: algorithm
+# ```{prf:algorithm} Shuffle SGD with mini-batch
 # **Input**: learning rate $\eta_k$, mini-batch size $m$, parameter
 # initialization $x_{0}$ and denote $M = \lceil \frac{N}{m} \rceil$.
 # 
 # **For** Epoch $k = 1,2,\dots$
 # 
-# ::: center
+# 
 # Randomly pick $B_t \subset \{1, 2, \cdots, N \}$ without replacement\
 # with $\# B_t = m$ for $t = 1,2,\cdots,M$.
-# :::
+# 
 # 
 # mini-batch $t = 1:M$
 # 
@@ -169,7 +163,7 @@
 # $$
 # 
 # **EndFor**
-# :::
+# ```
 # 
 # To \"randomly pick $B_i \subset \{1, 2, \cdots, N \}$ without
 # replacement with $\# B_i = m$ for $i = 1,2,\cdots,t$", we usually just
@@ -178,7 +172,7 @@
 # like to call the algorithm as shuffled SGD while this is the mostly used
 # version of SGD in machine learning.
 # 
-# ::: remark
+# ```{admonition} Remark
 # Let us recall a general machine learning loss function 
 # 
 # $$
@@ -189,8 +183,7 @@
 # where
 # $\{(X_i, Y_i)\}_{i=1}^N$ correspond to these data pairs. For example,
 # $\ell(\cdot, \cdot)$ takes cross-entropy and
-# $h(x; \theta) = \bm p(x;\theta)$ as we discussed in Section
-# [\[sec:LR\]](#sec:LR){reference-type="ref" reference="sec:LR"}. Thus, we
+# $h(x; \theta) = p(x;\theta)$ as we discussed in Section 2.2.1. Thus, we
 # have the following corresponding relation
 # 
 # $$
@@ -198,7 +191,7 @@
 #     f_i(x) \leftrightsquigarrow \ell(h(X_i; \theta), Y_i).
 # $$
 #     
-# :::
+# ```
 # 
 
 # In[ ]:

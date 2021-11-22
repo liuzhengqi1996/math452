@@ -40,6 +40,11 @@ parts:
     sections:
     - file: ch04/ch4_1.ipynb
     - file: ch04/ch4_2.ipynb
+  - file: ch05/ch5_
+    sections:
+    - file: ch05/ch5_1.ipynb
+    - file: ch05/ch5_2.ipynb
+
 
 
    
