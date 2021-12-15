@@ -44,7 +44,7 @@ parts:
     sections:
     - file: ch05/ch5_1.ipynb
     - file: ch05/ch5_2.ipynb
-  - file: ch06/ch6 
+  - file: ch06/ch6_
     sections:
     - file: ch06/ch6_1.ipynb
   - file: ch07/ch7_
